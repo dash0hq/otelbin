@@ -5,6 +5,7 @@
 ```sh
 git clone git@github.com:dash0hq/opentelemetry-collector-web.git
 cd opentelemetry-collector-web
+cp .env.example .env
 npm install
 npm run dev
 ```
