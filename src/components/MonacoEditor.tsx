@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
 export default function MonacoEditor() {
 
@@ -52,6 +53,7 @@ export default function MonacoEditor() {
             <div className='flex flex-col gap-y-4'>
                 <Button onClick={handleCopy}>Copy</Button>
                 <Button onClick={handleSave}>Save</Button>
+                <Link href="/react-flow">go to the flow</Link>
             </div>
         </div>
     );
