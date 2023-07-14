@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Link from "next/link";
 import MonacoEditor from "~/components/MonacoEditor";
 
 export default function Home() {

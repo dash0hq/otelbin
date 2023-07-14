@@ -1,9 +1,8 @@
-import { Params } from 'next/dist/shared/lib/router/utils/route-matcher';
-import React, { SetStateAction, useCallback } from 'react';
-import ReactFlow, { Background, Connection, Controls, Edge, EdgeAddChange, EdgeChange, EdgeProps, EdgeSelectionChange, NodeChange, NodePositionChange, OnConnect, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import React, { useCallback } from 'react';
+import ReactFlow, { Background, Connection, Controls, Edge, EdgeChange, NodeChange, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-const initialEdges = [];
+// const initialEdges = [];
 
 const initialNodes = [
   {
@@ -29,8 +28,6 @@ export default function Flow() {
     (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     []
   ); 
-  // NodeDimensionChange
-
     return (
       <div style={{ height: '800px', width: "800px" }}>
         <ReactFlow 
