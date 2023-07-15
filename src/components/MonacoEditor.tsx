@@ -1,26 +1,13 @@
 import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from './ui/button';
-import Router from 'next/router';
-import prisma from '../lib/prisma';
-import { GetServerSideProps } from 'next';
+import { useConfigs } from '~/queries/config';
 
-
-export type IConfig = {
-    id: number
-    name: string
-    config: string
-}
 
 export default function MonacoEditor() {
     const name = 'test'
     const [config, setConfig] = useState<string | undefined>('');
     const editorRef = useRef<any>(null);
-
-
-    function handleEditorDidMount(editor: any, monaco: any) {
-        editorRef.current = editor;
-    }
 
     function handleCopy() {
 
@@ -50,6 +37,12 @@ export default function MonacoEditor() {
         }
     }
 
+    function handleEditorDidMount(editor: any, monaco: any) {
+        editorRef.current = editor;
+    }
+
+    const { data, isLoading, isError } = useConfigs()
+
     const submitData = async (e: any) => {
         e.preventDefault()
         try {
@@ -65,24 +58,6 @@ export default function MonacoEditor() {
         } catch (error) {
             console.error(error)
         }
-    }
-
-    const loadData = async (e: any) => {
-        e.preventDefault()
-        try {
-            const res = await fetch(`/api/config`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-
-            })
-            const data = await res.json()
-            console.log(data)
-            editorRef.current.setValue(data[0].config)
-        }
-        catch (error) {
-            console.error(error)
-        }
-
     }
 
     return (
@@ -103,7 +78,7 @@ export default function MonacoEditor() {
                 <Button onClick={handleCopy}>Copy</Button>
                 <Button onClick={handleSave}>Save</Button>
                 <Button onClick={submitData}>Save to database</Button>
-                <Button onClick={loadData}>Load from database</Button>
+                <Button >Load from database</Button>
             </div>
         </div>
     );
