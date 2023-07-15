@@ -10,7 +10,6 @@ async function main() {
             config: 'test 123',
         },
     })
-    console.log(config)
 }
 
 main()
