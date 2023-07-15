@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from './ui/button';
-import { useConfigs } from '~/queries/config';
+import { useConfigs, useInsertConfigs } from '~/queries/config';
+import { Input } from "./ui/input"
 
 
 export default function MonacoEditor() {
-    const name = 'test'
-    const [config, setConfig] = useState<string | undefined>('');
+    const [data, setData] = useState({ name: '', config: '' })
+    // const [name, setName] = useState<string | undefined>('');
+    // const [config, setConfig] = useState<string | undefined>('');
     const editorRef = useRef<any>(null);
 
     function handleCopy() {
@@ -37,57 +39,67 @@ export default function MonacoEditor() {
         }
     }
 
+    function handleOpen() {
+
+    }
+
     function handleEditorDidMount(editor: any, monaco: any) {
         editorRef.current = editor;
     }
 
-    const { data, isLoading, isError } = useConfigs()
+    const { data: configs, isLoading, isError } = useConfigs()
+    const mutation = useInsertConfigs()
 
-    const submitData = async (e: any) => {
+
+    const submitData = async (e: React.FormEvent) => {
         e.preventDefault()
+
         try {
-            const body = { name, config }
-            await fetch(`/api/config`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            })
-            setConfig('')
-            editorRef.current.setValue('')
-            // await Router.push('/')
-        } catch (error) {
-            console.error(error)
+            const result = await mutation.mutateAsync(data);
+            setData({ name: '', config: '' })
+        } catch (err: any) {
+
         }
+
     }
 
     return (
         <div className="flex gap-x-4">
             <Editor
+                value={data.config}
                 onMount={handleEditorDidMount}
                 height="100vh"
                 width={'50%'}
                 defaultLanguage="yaml"
-                defaultValue="hello world"
                 theme="vs-dark"
                 options={{ automaticLayout: true }}
                 onChange={(value, event) => {
-                    setConfig(value)
+                    setData({ name: data.name, config: value || '' })
                 }}
             />
             <div className='flex flex-col gap-y-4'>
-                <Button onClick={handleCopy}>Copy</Button>
-                <Button onClick={handleSave}>Save</Button>
-                <Button onClick={submitData}>Save to database</Button>
-                <Button >Load from database</Button>
+                <div className='flex flex-col gap-y-4 w-56'>
+                    <Button onClick={handleCopy}>Copy</Button>
+                    <Button onClick={handleSave}>Download</Button>
+                    <Button onClick={submitData}>Save to database</Button>
+                    <Input
+                        value={data.name}
+                        onChange={
+                            (e) => {
+                                setData({ name: e.target.value, config: data.config })
+                            }
+                        } placeholder="config name" />
+                </div>
+                <div className='flex flex-wrap'>
+                    {configs && configs?.length > 0 && configs.map((config) => {
+                        return <Button onClick={() => {
+                            config &&
+                                setData({ name: config.name, config: config.config })
+                        }} key={config.id} variant={'outline'}>{config.name}</Button>
+                    })}
+                </div>
             </div>
         </div>
     );
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const data = await prisma.otelColConfig.findMany()
-//     return {
-//         props: { data },
-//     }
-// }
 
