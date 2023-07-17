@@ -23,7 +23,7 @@ export default function MonacoEditor() {
         }
     }
 
-    function handleSave() {
+    function handleDownload() {
 
         const allText = editorRef.current.getValue();
 
@@ -39,8 +39,8 @@ export default function MonacoEditor() {
         }
     }
 
-    function handleOpen() {
-
+    function handleChangeInput(e: React.ChangeEvent<HTMLInputElement>) {
+        setData({ name: e.target.value, config: data.config })
     }
 
     function handleEditorDidMount(editor: any, monaco: any) {
@@ -80,15 +80,11 @@ export default function MonacoEditor() {
             <div className='flex flex-col gap-y-4'>
                 <div className='flex flex-col gap-y-4 w-56'>
                     <Button onClick={handleCopy}>Copy</Button>
-                    <Button onClick={handleSave}>Download</Button>
+                    <Button onClick={handleDownload}>Download</Button>
                     <Button onClick={submitData}>Save to database</Button>
                     <Input
                         value={data.name}
-                        onChange={
-                            (e) => {
-                                setData({ name: e.target.value, config: data.config })
-                            }
-                        } placeholder="config name" />
+                        onChange={handleChangeInput} placeholder="config name" />
                 </div>
                 <div className='flex flex-wrap'>
                     {configs && configs?.length > 0 && configs.map((config) => {
