@@ -1,4 +1,4 @@
-import { useApiRequest } from "./useApiRequest"
+import { UseApiRequest } from "./useApiRequest"
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 
@@ -19,9 +19,9 @@ async function getConfig(uuid?: string): Promise<IConfig> {
         throw "config uuid should not be empty in getConfig()";
     }
     try {
-        const resp = await useApiRequest<IConfig>(`/api/config?id=${uuid}`).fetchData();
+        const resp = await UseApiRequest<IConfig>(`/api/config?id=${uuid}`).fetchData();
         const data = resp;
-        let result = data;
+        const result = data;
         return result;
     } catch (err: any) {
         throw err;
@@ -41,9 +41,9 @@ export function useConfig(uuid?: string) {
 async function getConfigs(uuid?: string): Promise<IConfig[]> {
 
     try {
-        const resp = await useApiRequest<IConfig[]>("/api/configs").fetchData();
+        const resp = await UseApiRequest<IConfig[]>("/api/configs").fetchData();
         const data = resp;
-        let result = data;
+        const result = data;
         return result;
     } catch (err: any) {
         throw err;
@@ -67,9 +67,9 @@ async function insertConfigs(params: IConfig): Promise<IConfigResult> {
             name: params.name,
             config: params.config,
         };
-        const resp = await useApiRequest<IConfigResult>("/api/config", { method: 'POST', body: dataParams }).fetchData();
+        const resp = await UseApiRequest<IConfigResult>("/api/config", { method: 'POST', body: dataParams }).fetchData();
         const data = resp;
-        let result = data;
+        const result = data;
         return result;
     } catch (err: any) {
         throw err;
@@ -91,9 +91,9 @@ export function useInsertConfigs() {
 async function deleteConfig(params: IConfig): Promise<IConfigResult> {
 
     try {
-        const resp = await useApiRequest<IConfigResult>(`/api/config?id=${params.id}`, { method: 'DELETE' }).fetchData();
+        const resp = await UseApiRequest<IConfigResult>(`/api/config?id=${params.id}`, { method: 'DELETE' }).fetchData();
         const data = resp;
-        let result = data;
+        const result = data;
         return result;
     } catch (err: any) {
         throw err;

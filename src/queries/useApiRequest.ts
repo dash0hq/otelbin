@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 interface ApiResponse<T> {
     fetchData: () => Promise<T>;
@@ -13,7 +12,7 @@ interface RequestOptions {
 }
 
 
-export function useApiRequest<T>(
+export function UseApiRequest<T>(
     url: string,
     options: RequestOptions = {}
 ): ApiResponse<T> {

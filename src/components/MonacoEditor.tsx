@@ -18,7 +18,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const editorRef = useRef<any>(null);
     const [clicked, setClicked] = useState(false)
     const [data, setData] = useState({ name: '', config: '' })
-    const { data: configs, isLoading, isError } = useConfigs()
+    const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
 
@@ -124,13 +124,12 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 <div className='flex flex-col max-h-[400px] overflow-y-auto'>
                     {configs && configs?.length > 0 && configs.map((config) => {
                         return (
-                            <div className='flex'>
+                            <div className='flex' key={config.id}>
                                 <Button className='min-w-[250px]'
                                     onClick={() => {
                                         setClicked(false)
                                         Router.push(`/config/${config.id}`)
                                     }}
-                                    key={config.id}
                                     variant={'outline'}>
                                     {config.name}
                                 </Button>
