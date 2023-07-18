@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { useConfig } from '~/queries/config';
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
