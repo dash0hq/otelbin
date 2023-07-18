@@ -21,7 +21,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 }
 
-async function handleGET(res: NextApiResponse<any>) {
+async function handleGET(res: NextApiResponse<JSON>) {
   const result = await prisma.otelColConfig.findMany();
   res.json(result);
 }
