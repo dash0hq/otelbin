@@ -60,6 +60,10 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     const submitData = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (data.name === '' || data.config === '') {
+            alert('Please fill all fields')
+            return
+        }
         try {
             const result = await mutation.mutateAsync(data);
             setData({ name: '', config: '' })
