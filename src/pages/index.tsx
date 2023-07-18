@@ -1,8 +1,11 @@
+//React & Next
 import Head from "next/head";
-import Link from "next/link";
+//Internal components
 import MonacoEditor from "~/components/MonacoEditor";
 
+
 export default function Home() {
+
   return (
     <>
       <Head>

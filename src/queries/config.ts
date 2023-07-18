@@ -14,10 +14,34 @@ export type IConfigResult = {
     config?: string
 }
 
-async function getConfigs(): Promise<IConfig[]> {
+async function getConfig(uuid?: string): Promise<IConfig> {
+    if (!uuid) {
+        throw "config uuid should not be empty in getConfig()";
+    }
+    try {
+        const resp = await useApiRequest<IConfig>(`/api/config?id=${uuid}`).fetchData();
+        const data = resp;
+        let result = data;
+        return result;
+    } catch (err: any) {
+        throw err;
+    }
+}
+
+export function useConfig(uuid?: string) {
+    return useQuery<IConfig, Error>(
+        ["config", uuid],
+        () => getConfig(uuid),
+        {
+            refetchOnWindowFocus: false,
+        }
+    );
+}
+
+async function getConfigs(uuid?: string): Promise<IConfig[]> {
 
     try {
-        const resp = await useApiRequest<IConfig[]>("/api/config").fetchData();
+        const resp = await useApiRequest<IConfig[]>("/api/configs").fetchData();
         const data = resp;
         let result = data;
         return result;
@@ -59,6 +83,31 @@ export function useInsertConfigs() {
         {
             onSuccess: (data) => {
                 queryClient.invalidateQueries(["configs"]);
+            },
+        }
+    );
+}
+
+async function deleteConfig(params: IConfig): Promise<IConfigResult> {
+
+    try {
+        const resp = await useApiRequest<IConfigResult>(`/api/config?id=${params.id}`, { method: 'DELETE' }).fetchData();
+        const data = resp;
+        let result = data;
+        return result;
+    } catch (err: any) {
+        throw err;
+    }
+}
+
+export function useDeleteConfig() {
+    const queryClient = useQueryClient();
+    return useMutation<IConfigResult, Error, IConfig>(
+        deleteConfig,
+        {
+            onSuccess: (_, data) => {
+                queryClient.invalidateQueries(["configs"]);
+                queryClient.invalidateQueries(["config", data.id]);
             },
         }
     );
