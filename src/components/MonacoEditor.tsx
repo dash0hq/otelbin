@@ -106,14 +106,15 @@ export default function MonacoEditor({ id }: { id?: string }) {
                         onClick={handleDownload}>
                         Download
                     </Button>
-                    <Button
+                    {!clicked && <Button
                         onClick={() => {
                             setData({ name: '', config: '' })
                             setClicked(true)
                         }}
                     >
                         Create New
-                    </Button>
+                    </Button>}
+
                     {clicked && <div className='flex gap-x-4'>
                         <Input
                             value={data.name}
