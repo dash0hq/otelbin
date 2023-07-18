@@ -19,7 +19,7 @@ async function getConfig(uuid?: string): Promise<IConfig> {
         throw "config uuid should not be empty in getConfig()";
     }
     try {
-        const resp = await UseApiRequest<IConfig>(`/api/config?id=${uuid}`).fetchData();
+        const resp = await UseApiRequest<IConfig>(`/api/config?id=${uuid}`);
         const data = resp;
         const result = data;
         return result;
@@ -38,10 +38,10 @@ export function useConfig(uuid?: string) {
     );
 }
 
-async function getConfigs(uuid?: string): Promise<IConfig[]> {
+async function getConfigs(): Promise<IConfig[]> {
 
     try {
-        const resp = await UseApiRequest<IConfig[]>("/api/configs").fetchData();
+        const resp = await UseApiRequest<IConfig[]>("/api/configs");
         const data = resp;
         const result = data;
         return result;
@@ -67,7 +67,7 @@ async function insertConfigs(params: IConfig): Promise<IConfigResult> {
             name: params.name,
             config: params.config,
         };
-        const resp = await UseApiRequest<IConfigResult>("/api/config", { method: 'POST', body: dataParams }).fetchData();
+        const resp = await UseApiRequest<IConfigResult>("/api/config", { method: 'POST', body: dataParams });
         const data = resp;
         const result = data;
         return result;
@@ -81,7 +81,7 @@ export function useInsertConfigs() {
     return useMutation<IConfigResult, Error, IConfig>(
         insertConfigs,
         {
-            onSuccess: (data) => {
+            onSuccess: () => {
                 queryClient.invalidateQueries(["configs"]);
             },
         }
@@ -91,7 +91,7 @@ export function useInsertConfigs() {
 async function deleteConfig(params: IConfig): Promise<IConfigResult> {
 
     try {
-        const resp = await UseApiRequest<IConfigResult>(`/api/config?id=${params.id}`, { method: 'DELETE' }).fetchData();
+        const resp = await UseApiRequest<IConfigResult>(`/api/config?id=${params.id}`, { method: 'DELETE' });
         const data = resp;
         const result = data;
         return result;

@@ -1,8 +1,3 @@
-
-interface ApiResponse<T> {
-    fetchData: () => Promise<T>;
-}
-
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 interface RequestOptions {
@@ -11,35 +6,31 @@ interface RequestOptions {
     headers?: Record<string, string>;
 }
 
-
-export function UseApiRequest<T>(
+export async function UseApiRequest<T>(
     url: string,
     options: RequestOptions = {}
-): ApiResponse<T> {
+): Promise<T> {
+    try {
+        const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + url, {
+            method: options.method || "GET",
+            body: JSON.stringify(options.body),
+            headers: {
+                "Content-Type": "application/json",
+                ...options.headers,
+            },
+        });
 
-    const fetchData = async () => {
-        // setIsLoading(true);
-        try {
-            const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + url, {
-                method: options.method || "GET",
-                body: JSON.stringify(options.body),
-                headers: {
-                    "Content-Type": "application/json",
-                    ...options.headers,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-
-            const responseData = await response.json();
-            return responseData;
-        } catch (err: any) {
-            return err.message || "An error occurred";
+        if (!response.ok) {
+            throw new Error(response.statusText);
         }
-    };
-    return { fetchData };
+
+        const responseData = await response.json();
+        return responseData;
+    } catch (err: any) {
+        return err.message || "An error occurred";
+    }
+
+
 }
 
 
