@@ -1,15 +1,26 @@
+//React & Next
 import { useRef, useState } from 'react';
-import Editor from '@monaco-editor/react';
-import { Button } from './ui/button';
+import Router from 'next/router';
+//Queries and scripts
 import { useConfigs, useInsertConfigs } from '~/queries/config';
+//Internal components
+import DeleteConfigButton from './DeleteConfigButton';
+//External libraries
+import Editor from '@monaco-editor/react';
+//UI
+import { Button } from './ui/button';
 import { Input } from "./ui/input"
 
 
-export default function MonacoEditor() {
-    const [data, setData] = useState({ name: '', config: '' })
-    // const [name, setName] = useState<string | undefined>('');
-    // const [config, setConfig] = useState<string | undefined>('');
+
+
+export default function MonacoEditor({ id }: { id?: string }) {
     const editorRef = useRef<any>(null);
+    const [clicked, setClicked] = useState(false)
+    const [data, setData] = useState({ name: '', config: '' })
+    const { data: configs, isLoading, isError } = useConfigs()
+    const mutation = useInsertConfigs()
+
 
     function handleCopy() {
 
@@ -47,51 +58,85 @@ export default function MonacoEditor() {
         editorRef.current = editor;
     }
 
-    const { data: configs, isLoading, isError } = useConfigs()
-    const mutation = useInsertConfigs()
-
-
     const submitData = async (e: React.FormEvent) => {
         e.preventDefault()
-
         try {
             const result = await mutation.mutateAsync(data);
             setData({ name: '', config: '' })
         } catch (err: any) {
 
         }
-
+        setClicked(false)
     }
 
     return (
         <div className="flex gap-x-4">
             <Editor
-                value={data.config}
+                value={
+                    !clicked ?
+                        configs && configs?.length > 0 &&
+                        configs.filter((config) => config.id === id)[0]?.config || data.config
+                        : data.config
+                }
                 onMount={handleEditorDidMount}
                 height="100vh"
                 width={'50%'}
                 defaultLanguage="yaml"
                 theme="vs-dark"
                 options={{ automaticLayout: true }}
-                onChange={(value, event) => {
-                    setData({ name: data.name, config: value || '' })
-                }}
+                onChange={
+                    (value, event) => {
+                        setData({
+                            name: data.name,
+                            config: value || ''
+                        })
+                    }}
             />
-            <div className='flex flex-col gap-y-4'>
+            <div className='flex flex-col gap-y-4 h-[100vh]'>
                 <div className='flex flex-col gap-y-4 w-56'>
-                    <Button onClick={handleCopy}>Copy</Button>
-                    <Button onClick={handleDownload}>Download</Button>
-                    <Button onClick={submitData}>Save to database</Button>
-                    <Input
-                        value={data.name}
-                        onChange={handleChangeInput} placeholder="config name" />
+                    <Button
+                        onClick={handleCopy}>
+                        Copy
+                    </Button>
+                    <Button
+                        onClick={handleDownload}>
+                        Download
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            setData({ name: '', config: '' })
+                            setClicked(true)
+                        }}
+                    >
+                        Create New
+                    </Button>
+                    {clicked && <div className='flex gap-x-4'>
+                        <Input
+                            value={data.name}
+                            onChange={handleChangeInput}
+                            placeholder="config name"
+                        />
+                        <Button onClick={submitData}>
+                            Submit
+                        </Button>
+                    </div>}
                 </div>
-                <div className='flex flex-wrap'>
+                <div className='flex flex-col max-h-[400px] overflow-y-auto'>
                     {configs && configs?.length > 0 && configs.map((config) => {
-                        return <Button onClick={() => {
-                            config &&
-                                setData({ name: config.name, config: config.config })
-                        }} key={config.id} variant={'outline'}>{config.name}</Button>
+                        return (
+                            <div className='flex'>
+                                <Button className='min-w-[250px]'
+                                    onClick={() => {
+                                        setClicked(false)
+                                        Router.push(`/config/${config.id}`)
+                                    }}
+                                    key={config.id}
+                                    variant={'outline'}>
+                                    {config.name}
+                                </Button>
+                                <DeleteConfigButton config={config} />
+                            </div>
+                        )
                     })}
                 </div>
             </div>
