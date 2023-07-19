@@ -1,8 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-// import prisma from "../../../lib/prisma";
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+import prisma from "../../../lib/prisma";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -21,7 +18,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 }
 
-async function handleGET(res: NextApiResponse<JSON>) {
+async function handleGET(res: NextApiResponse) {
   const result = await prisma.otelColConfig.findMany();
   res.json(result);
 }

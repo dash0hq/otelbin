@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-const { PrismaClient } = require("@prisma/client");
+import prisma from "../../../lib/prisma";
 
-const prisma = new PrismaClient();
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   const configId = req.query.id?.toString() || '';
@@ -31,7 +30,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 }
 
-async function handlePOST(req: NextApiRequest, res: NextApiResponse<JSON>) {
+async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   const result = await prisma.otelColConfig.create({
     data: {
       ...req.body,
@@ -40,14 +39,14 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse<JSON>) {
   res.json(result);
 }
 
-async function handleDELETE(configId: string, res: NextApiResponse<JSON>) {
+async function handleDELETE(configId: string, res: NextApiResponse) {
   const result = await prisma.otelColConfig.delete({
     where: { id: configId },
   })
   return res.json(result)
 }
 
-async function handleGET(configId: string, res: NextApiResponse<JSON>) {
+async function handleGET(configId: string, res: NextApiResponse) {
   const result = await prisma.otelColConfig.findUnique({
     where: {
       id: configId,
@@ -56,7 +55,7 @@ async function handleGET(configId: string, res: NextApiResponse<JSON>) {
   return res.json(result);
 }
 
-async function handlePUT(configId: string, req: NextApiRequest, res: NextApiResponse<JSON>) {
+async function handlePUT(configId: string, req: NextApiRequest, res: NextApiResponse) {
   const result = await prisma.otelColConfig.update({
     where: { id: configId }
     ,
