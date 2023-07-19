@@ -79,7 +79,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 value={
                     !clicked ?
                         configs && configs?.length > 0 &&
-                        configs.filter((config) => config.id.toString() === id)[0]?.config || data.config
+                        configs.filter((config) => config.id?.toString() === id)[0]?.config || data.config
                         : data.config
                 }
                 onMount={handleEditorDidMount}
