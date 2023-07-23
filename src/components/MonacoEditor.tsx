@@ -1,9 +1,12 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import Flow from './react-flow/ReactFlowCom';
+import { ReactFlowProvider } from 'reactflow';
 
 export default function MonacoEditor() {
+    const [value, setValue] = useState<string>('hello world');
 
     const editorRef = useRef<any>(null);
 
@@ -49,11 +52,12 @@ export default function MonacoEditor() {
                 defaultValue="hello world"
                 theme="vs-dark"
                 options={{ automaticLayout: true }}
+                onChange={(value, event) => {return setValue(value!), console.log(value, event)}}
             />
             <div className='flex flex-col gap-y-4'>
-                <Button onClick={handleCopy}>Copy</Button>
-                <Button onClick={handleSave}>Save</Button>
-                <Link href="/react-flow">go to the flow</Link>
+            <ReactFlowProvider>
+                <Flow value={value}/>
+            </ReactFlowProvider>
             </div>
         </div>
     );
