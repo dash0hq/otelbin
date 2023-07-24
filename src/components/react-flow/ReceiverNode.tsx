@@ -15,13 +15,11 @@ const customNodeStyles = {
   fontSize: "10px",
 }
 
-// interface ChildProps {
-//   setNodeName: React.Dispatch<React.SetStateAction<string>>;
-// }
 
-
-// export default function TextUpdaterNode({setNodeName}: ChildProps) {
-  const ReceiverNode = () => {
+interface IData {
+  label: string;
+}
+  const ReceiverNode = ({data, id}: {data:IData, id: string}) => {
 
 
   const [isSelected, setIsSelected] = useState(false);
@@ -44,7 +42,7 @@ const customNodeStyles = {
       <div className='w-full flex justify-center items-center flex-col'>
         {/* <input id="text" name="text" onChange={onChange}  className="nodrag w-16 rounded-sm h-6 pl-1 bg-[rgb(44 48 70 / 0%)] text-center"  style={handleSelectInput}/> */}
         <div className='text-white'>Icon</div>
-        <div className='text-white'>Batch</div>
+        <div className='text-white'>{data.label}</div>
       </div>
     </div>
   );

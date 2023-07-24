@@ -33,7 +33,7 @@ const initialEdges: Edge[] =
 
 export default function Flow({value}:{value: string}) {
   const reactFlowInstance = useReactFlow();
-  const exportersArray= data.filter((item) => item.exporters);
+  const exportersArray= data.filter((item) => item.service);
   const jsonData = useExporterReader(exportersArray, reactFlowInstance);
   const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode  }), []);
     console.log(reactFlowInstance)

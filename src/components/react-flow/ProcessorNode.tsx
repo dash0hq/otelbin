@@ -15,25 +15,11 @@ const customNodeStyles = {
   fontSize: "10px",
 }
 
-// interface ChildProps {
-//   setNodeName: React.Dispatch<React.SetStateAction<string>>;
-// }
+interface IData {
+  label: string;
+}
 
-
-// export default function TextUpdaterNode({setNodeName}: ChildProps) {
-  const ProcessorNode = () => {
-
-
-  const [isSelected, setIsSelected] = useState(false);
-  const onChange = useCallback((evt: any) => {
-    // setNodeName(evt.target.value);
-    console.log(evt.target.value)
-  }, []);
-  
-  const handleSelectInput = {
-    backgroundColor: isSelected ? "#red" : "#2B3546",
-    color: "#fff",
-  }
+const ProcessorNode = ({data, id}: {data:IData, id: string}) => {
 
   return (
     <div 
@@ -42,7 +28,7 @@ const customNodeStyles = {
       <Tag tag="Processor"/>
       <Handle type="target" position={Position.Left} id='c'/>
       <div className='w-full flex justify-center items-center flex-col'>
-        <input id="text" name="text" onChange={onChange}  className="nodrag w-16 rounded-sm h-6 pl-1 bg-[rgb(44 48 70 / 0%)] text-center"  style={handleSelectInput}/>
+      <div className='text-white'>{data.label}</div>
         <div className='w-full text-[7px] text-[#8491A6] flex justify-center'>remove temporary attributes</div>
       </div>
       <Handle type="source" position={Position.Right} id="a" />

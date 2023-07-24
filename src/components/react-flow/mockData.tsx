@@ -15,19 +15,53 @@
 // }
 export const data: IConfig[] = [
   {
-    exporters: [
-      { name: "loadbalancing/traceProcessor",id: "1",  },
-      {  name: "logging", id: "2", },
-    ],
-    processors: [
-      { id: "processor1", name: "batching" },
-      { id: "processor2", name: "filter/dropNilValues" },
-    ],
-    receivers: [
-      { id: "receiver1", name: "jaeger" },
-      { id: "receiver2", name: "otlp" },
-    ],
-  },
+    "service": {
+        "pipelines": {
+            "logs": {
+                "exporters": [
+                    "otl/resourceExtractor"
+                ],
+                "processors": [
+                    "memory_limiter",
+                    "resourc/defaultDataset",
+                    "batch"
+                ],
+                "receivers": [
+                    "otlp"
+                ]
+            },
+            "metrics": {
+                "exporters": [
+                    "otl/resourceExtractor",
+                    "prometheu/metricsStore"
+                ],
+                "processors": [
+                    "memory_limiter",
+                    "filte/dropNilValues",
+                    "transfor/fixMetricDescriptions",
+                    "resourc/defaultDataset",
+                    "batch"
+                ],
+                "receivers": [
+                    "otlp"
+                ]
+            },
+            "traces": {
+                "exporters": [
+                    "loadbalancin/traceProcessor"
+                ],
+                "processors": [
+                    "memory_limiter",
+                    "resourc/defaultDataset",
+                    "batch"
+                ],
+                "receivers": [
+                    "otlp"
+                ]
+            }
+        },
+    }
+}
 ];
 
 export interface Node {
@@ -37,8 +71,30 @@ export interface Node {
     type?: string;
   }
   
+  interface ILog {
+    exporters: string[];
+    processors: string[];
+    receivers: string[];
+  }
+  interface IMetrics {
+    exporters: string[];
+    processors: string[];
+    receivers: string[];
+  }
+  interface ITraces {
+    exporters: string[];
+    processors: string[];
+    receivers: string[];
+  }
+  interface IPipeline {
+    logs: ILog;
+    metrics: IMetrics;
+    traces: ITraces;
+  }
+  interface IService {
+    pipelines: IPipeline;
+  }
  export interface IConfig {
-    exporters: { name: string, id: string }[];
-    processors: { name: string, id: string }[];
-    receivers: { name: string, id: string }[];
+  service: IService;
+    
   }

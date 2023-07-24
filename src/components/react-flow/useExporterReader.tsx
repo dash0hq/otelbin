@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Node, ReactFlowInstance, useReactFlow } from 'reactflow';
+import { IConfig } from './mockData';
 
 interface IExporter {
   name: string;
   id: string;
-}
-
-interface IConfig {
-  exporters: IExporter[];
-  processors: { name: string; id: string }[];
-  receivers: { name: string; id: string }[];
 }
 
 interface IJSON {
@@ -30,24 +25,43 @@ const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowIn
     let nodeId = 98765;
 
     configFile.forEach((file) => {
-      if (file.exporters) {
-        file.exporters.forEach((exporter) => {
+      if (file.service.pipelines.logs.exporters) {
+        file.service.pipelines.logs.exporters.forEach((exporter) => {
           reactFlowInstance.addNodes({
             id: `${++nodeId}`,
             position: { x: Math.random() * 100,
               y: Math.random() * 100, },
-            data: { label: exporter.name },
+            data: { label: exporter },
             type: "exporterNode",
           });
-          // updatedJsonData.push({
-          //   id: `${++nodeId}`,
-          //   position: { x: Math.random() * 100,
-          //     y: Math.random() * 100, },
-          //   data: { label: exporter.name },
-          //   type: "exporterNode",
-          // });
+          
         });
       }
+
+      if (file.service.pipelines.logs.processors) {
+        file.service.pipelines.logs.processors.forEach((processor) => {
+          reactFlowInstance.addNodes({
+            id: `${++nodeId}`,
+            position: { x: Math.random() * 100,
+              y: Math.random() * 100, },
+            data: { label: processor },
+            type: "processorNode",
+          });
+        });
+      }
+
+      if (file.service.pipelines.logs.receivers) {
+        file.service.pipelines.logs.receivers.forEach((receiver) => {
+          reactFlowInstance.addNodes({
+            id: `${++nodeId}`,
+            position: { x: Math.random() * 100,
+              y: Math.random() * 100, },
+            data: { label: receiver },
+            type: "receiverNode",
+          });
+        });
+      }
+      
     });
 
     setJsonData(updatedJsonData);
