@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Node, ReactFlowInstance, useReactFlow } from 'reactflow';
+import { Node, ReactFlowInstance } from 'reactflow';
 import { IConfig, IPipeline } from './mockData';
 
 const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance) => {
@@ -67,8 +67,8 @@ const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowIn
 
   
   useEffect(() => {
-    let updatedJsonData: Node[] = [];
-    let nodeId = Math.random() * 100;
+    const updatedJsonData: Node[] = [];
+    const nodeId = Math.random() * 100;
 
     configFile.forEach((file) => {
       const { logs, metrics, traces } = file.service.pipelines;

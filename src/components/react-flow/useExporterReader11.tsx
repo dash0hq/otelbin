@@ -1,18 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Node, ReactFlowInstance, useReactFlow } from 'reactflow';
+import { Node, ReactFlowInstance } from 'reactflow';
 import { IConfig } from './mockData';
-
-interface IExporter {
-  name: string;
-  id: string;
-}
-
-interface IJSON {
-  id: string;
-  position: { x: number; y: number };
-  data: { label: string };
-  type: string;
-}
 
 const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowInstance) => {
   // const reactFlowInstance = useReactFlow();
@@ -21,7 +9,7 @@ const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowIn
   ]);
 
   useEffect(() => {
-    let updatedJsonData: Node[] = [];
+    const updatedJsonData: Node[] = [];
     let nodeId = 98765;
 
     configFile.forEach((file) => {

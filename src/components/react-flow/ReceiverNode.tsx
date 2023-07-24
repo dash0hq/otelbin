@@ -3,7 +3,6 @@ import { Handle, Position } from 'reactflow';
 import Tag from '../ui/Tag';
 
 
-const handleStyle = { left: 10 };
 const customNodeStyles = {
   width: 65,
   height: 75,
@@ -22,16 +21,11 @@ interface IData {
   const ReceiverNode = ({data, id}: {data:IData, id: string}) => {
 
 
-  const [isSelected, setIsSelected] = useState(false);
-  const onChange = useCallback((evt: any) => {
-    // setNodeName(evt.target.value);
-    console.log(evt.target.value)
-  }, []);
+  // const onChange = useCallback((evt: any) => {
+  //   // setNodeName(evt.target.value);
+  //   console.log(evt.target.value)
+  // }, []);
   
-  const handleSelectInput = {
-    backgroundColor: isSelected ? "#red" : "#2B3546",
-    color: "#fff",
-  }
 
   return (
     <div 

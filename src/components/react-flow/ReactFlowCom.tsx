@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import ReactFlow, { Background, Connection, Controls, Edge, EdgeChange, MiniMap, Node, NodeChange, OnConnect, OnEdgesChange, OnNodesChange, addEdge, applyEdgeChanges, applyNodeChanges, getConnectedEdges, getIncomers, getOutgoers, useReactFlow } from 'reactflow';
+import React, { useCallback, useMemo } from 'react';
+import ReactFlow, { Background, Controls, Edge, MiniMap, Node, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ReceiverNode from './ReceiverNode';
 import ProcessorNode from './ProcessorNode';
@@ -38,7 +38,6 @@ export default function Flow({value}:{value: string}) {
   const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode  }), []);
     console.log(reactFlowInstance)
     let nodeId = 0;
-    let receiverId = 0;
     
 console.log(jsonData)
 
