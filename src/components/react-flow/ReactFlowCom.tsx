@@ -4,8 +4,8 @@ import 'reactflow/dist/style.css';
 import ReceiverNode from './ReceiverNode';
 import ProcessorNode from './ProcessorNode';
 import ExporterNode from './ExporterNode';
-import useExporterReader from './useExporterReader';
 import { data } from './mockData';
+import useExporterReader from './useExporterReader';
 
 // const initialEdges = [];
 
@@ -69,7 +69,7 @@ console.log(jsonData)
   };
   
     return (
-      <div style={{ height: '800px', width: "800px" }}>
+      <div style={{ height: '884px', width: "1040px" }}>
         <ReactFlow 
         defaultNodes={jsonData}
         defaultEdges={initialEdges}
@@ -85,7 +85,7 @@ console.log(jsonData)
         <Controls />
         <MiniMap />
         </ReactFlow>
-        <div className='flex flex-col items-end'>
+        {/* <div className='flex flex-col items-end'>
           <button onClick={() => handleAddNode("processor", "processor")} className="btn-add">
             add node
           </button>
@@ -95,7 +95,7 @@ console.log(jsonData)
           <button onClick={() => handleAddNode("exporter", "exporter")} className="btn-add">
             add exporter
           </button>
-        </div>
+        </div> */}
 
       </div>
         

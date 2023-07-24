@@ -47,14 +47,14 @@ export default function MonacoEditor() {
             <Editor
                 onMount={handleEditorDidMount}
                 height="100vh"
-                width={'50%'}
+                width={'30%'}
                 defaultLanguage="yaml"
                 defaultValue="hello world"
                 theme="vs-dark"
                 options={{ automaticLayout: true }}
                 onChange={(value, event) => {return setValue(value!), console.log(value, event)}}
             />
-            <div className='flex flex-col gap-y-4'>
+            <div className='flex flex-col gap-y-4 '>
             <ReactFlowProvider>
                 <Flow value={value}/>
             </ReactFlowProvider>

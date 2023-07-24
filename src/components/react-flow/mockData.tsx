@@ -86,7 +86,7 @@ export interface Node {
     processors: string[];
     receivers: string[];
   }
-  interface IPipeline {
+  export  interface IPipeline {
     logs: ILog;
     metrics: IMetrics;
     traces: ITraces;
