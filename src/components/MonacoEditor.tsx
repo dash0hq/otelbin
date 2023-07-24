@@ -5,22 +5,93 @@ import Router from 'next/router';
 import { useConfigs, useInsertConfigs } from '~/queries/config';
 //Internal components
 import DeleteConfigButton from './DeleteConfigButton';
+import { schema } from './JSONSchema';
 //External libraries
 import Editor from '@monaco-editor/react';
+import JsYaml from 'js-yaml';
+import Ajv from "ajv"
 //UI
 import { Button } from './ui/button';
 import { Input } from "./ui/input"
 
-
-
-
 export default function MonacoEditor({ id }: { id?: string }) {
     const editorRef = useRef<any>(null);
+    const monacoRef = useRef<any>(null);
     const [clicked, setClicked] = useState(false)
     const [data, setData] = useState({ name: '', config: '' })
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
+    function handleEditorDidMount(editor: any, monaco: any) {
+        editorRef.current = editor;
+        monacoRef.current = monaco;
+    }
+
+    function handleEditorWillMount(editor: any) {
+        editorRef.current = editor;
+        editor.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: true,
+            schemas: [
+                schema
+            ]
+        });
+    }
+
+    function handleYamlValidation(configData?: any) {
+        const ajv = new Ajv({ allErrors: true })
+
+        try {
+            const jsonData = JsYaml.load(configData);
+            const valid = ajv.validate(schema, jsonData);
+            if (!valid) {
+
+                const errors = ajv.errors;
+
+                if (errors) {
+                    const validationErrors = errors.map((error: any) => {
+
+                        const errorInfo = {
+                            line: null as number | null,
+                            column: null as number | null,
+                            message: error.message || 'Unknown error',
+                        };
+
+                        if (error instanceof JsYaml.YAMLException) {
+                            errorInfo.line = error.mark.line + 1;
+                            errorInfo.column = error.mark.column + 1;
+                        }
+
+                        return errorInfo;
+                    });
+                    console.log('Validation Errors:', validationErrors);
+                }
+            } else {
+                console.log('Validation successful');
+            }
+
+            return true;
+
+        } catch (error: any) {
+            console.log(error)
+            const model = editorRef.current.getModel();
+            const errorLineNumber = error.mark.line;
+            const errorColumn = error.mark.column;
+            const errorMessage = error.reason;
+            const errorMarker = {
+                startLineNumber: errorLineNumber,
+                endLineNumber: errorLineNumber,
+                startColumn: errorColumn,
+                endColumn: errorColumn,
+                severity: monacoRef.current.MarkerSeverity.Error,
+                message: errorMessage,
+            };
+
+            if (model) {
+                monacoRef.current?.editor.setModelMarkers(model, "json", [errorMarker]);
+            }
+            return false;
+        }
+    }
 
     function handleCopy() {
 
@@ -54,10 +125,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
         setData({ name: e.target.value, config: data.config })
     }
 
-    function handleEditorDidMount(editor: any, monaco: any) {
-        editorRef.current = editor;
-    }
-
     const submitData = async (e: React.FormEvent) => {
         e.preventDefault()
         if (data.name === '' || data.config === '') {
@@ -67,7 +134,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
         try {
             const result = await mutation.mutateAsync(data);
             setData({ name: '', config: '' })
-        } catch (err: any) {
+        } catch (err: unknown) {
 
         }
         setClicked(false)
@@ -82,66 +149,74 @@ export default function MonacoEditor({ id }: { id?: string }) {
                         configs.filter((config) => config.id?.toString() === id)[0]?.config || data.config
                         : data.config
                 }
+                beforeMount={handleEditorWillMount}
                 onMount={handleEditorDidMount}
                 height="100vh"
                 width={'50%'}
-                defaultLanguage="yaml"
+                defaultLanguage='yaml'
                 theme="vs-dark"
                 options={{ automaticLayout: true }}
                 onChange={
-                    (value, event) => {
+                    (value) => {
                         setData({
                             name: data.name,
                             config: value || ''
                         })
-                    }}
+                        handleYamlValidation(value ?? '')
+                        // console.log(jsYamlValidation.message)
+                        // console.log(ajvValidation)
+                    }
+                }
             />
-            <div className='flex flex-col gap-y-4 h-[100vh]'>
-                <div className='flex flex-col gap-y-4 w-56'>
-                    <Button
-                        onClick={handleCopy}>
-                        Copy
-                    </Button>
-                    <Button
-                        onClick={handleDownload}>
-                        Download
-                    </Button>
-                    {!clicked && <Button
-                        onClick={() => {
-                            setData({ name: '', config: '' })
-                            setClicked(true)
-                        }}
-                    >
-                        Create New
-                    </Button>}
-
-                    {clicked && <div className='flex gap-x-4'>
-                        <Input
-                            value={data.name}
-                            onChange={handleChangeInput}
-                            placeholder="config name"
-                        />
-                        <Button onClick={submitData}>
-                            Submit
+            <div className='flex w-full gap-x-4'>
+                <div className='flex flex-col gap-y-4 h-[100vh]'>
+                    <div className='flex flex-col gap-y-4 w-56'>
+                        <Button
+                            onClick={handleCopy}>
+                            Copy
                         </Button>
-                    </div>}
-                </div>
-                <div className='flex flex-col max-h-[400px] overflow-y-auto'>
-                    {configs && configs?.length > 0 && configs.map((config) => {
-                        return (
-                            <div className='flex' key={config.id}>
-                                <Button className='min-w-[250px]'
-                                    onClick={() => {
-                                        setClicked(false)
-                                        Router.push(`/config/${config.id}`)
-                                    }}
-                                    variant={'outline'}>
-                                    {config.name}
-                                </Button>
-                                <DeleteConfigButton config={config} />
-                            </div>
-                        )
-                    })}
+                        <Button
+                            onClick={handleDownload}>
+                            Download
+                        </Button>
+                        {!clicked && <Button
+                            onClick={() => {
+                                setData({ name: '', config: '' })
+                                setClicked(true)
+                            }}
+                        >
+                            Create New
+                        </Button>}
+
+                        {clicked && <div className='flex gap-x-4'>
+                            <Input
+                                value={data.name}
+                                onChange={handleChangeInput}
+                                placeholder="config name"
+                            />
+                            <Button onClick={submitData}>
+                                Submit
+                            </Button>
+                        </div>}
+                    </div>
+                    <div className='flex flex-col max-h-[400px] overflow-y-auto'>
+                        {configs && configs?.length > 0 && configs.map((config) => {
+                            return (
+                                <div className='flex' key={config.id}>
+                                    <Button className='min-w-[250px]'
+                                        onClick={() => {
+                                            setClicked(false)
+                                            Router.push(`/config/${config.id}`)
+                                            handleYamlValidation(config.config)
+                                        }}
+                                        variant={'outline'}>
+                                        {config.name}
+                                    </Button>
+                                    <DeleteConfigButton config={config} />
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
