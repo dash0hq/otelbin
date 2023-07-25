@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Edge, Node, ReactFlowInstance } from 'reactflow';
-import { IConfig, IPipeline } from './mockData';
+import type { Node, ReactFlowInstance } from 'reactflow';
+import type { IConfig, IPipeline } from './mockData';
 import { uuid } from 'uuidv4';
 
 const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance) => {

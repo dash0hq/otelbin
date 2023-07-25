@@ -1,7 +1,5 @@
 import Head from "next/head";
-import Link from "next/link";
 import MonacoEditor from "~/components/MonacoEditor";
-import Flow from "~/components/react-flow/ReactFlowCom";
 
 export default function Home() {
   return (
@@ -14,7 +12,6 @@ export default function Home() {
       <main className="min-h-screen">
         <MonacoEditor />
         
-        {/* <Link href="/react-flow">go to the flow</Link> */}
       </main>
     </>
   );

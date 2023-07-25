@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Edge, ReactFlowInstance } from 'reactflow';
+import type { Edge, ReactFlowInstance } from 'reactflow';
 
 function useEdgeCreator(nodeIdsArray: string[], reactFlowInstance: ReactFlowInstance) {
   const initialEdges = reactFlowInstance.getEdges();

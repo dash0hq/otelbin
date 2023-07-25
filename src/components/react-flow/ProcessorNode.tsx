@@ -1,9 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { Handle, Position } from 'reactflow';
 import Tag from '../ui/Tag';
 
 
-const handleStyle = { left: 10 };
 const customNodeStyles = {
   width: 135,
   height: 65,
@@ -19,7 +18,7 @@ interface IData {
   label: string;
 }
 
-const ProcessorNode = ({data, id}: {data:IData, id: string}) => {
+const ProcessorNode = ({data}: {data:IData}) => {
 
   return (
     <div 
@@ -32,7 +31,6 @@ const ProcessorNode = ({data, id}: {data:IData, id: string}) => {
         <div className='w-full text-[7px] text-[#8491A6] flex justify-center'>remove temporary attributes</div>
       </div>
       <Handle type="source" position={Position.Left} />
-      {/* <Handle type="source" position={Position.Bottom} id="b" style={handleStyle} /> */}
     </div>
   );
 }
