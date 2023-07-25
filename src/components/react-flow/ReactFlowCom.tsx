@@ -37,9 +37,10 @@ export default function Flow({value}:{value: string}) {
   const exportersArray= data.filter((item) => item.service);
   const jsonData = useExporterReader(exportersArray, reactFlowInstance);
   const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode  }), []);
-    
-  const exportersID = reactFlowInstance.getNodes().filter((node) =>  node.parentNode === "logs" && (node.type === "exporterNode" || "processorNode" || "receiverNode")).map((node) => node.id);
-  const edges = useEdgeCreator(exportersID, reactFlowInstance);
+  const createdNodes = reactFlowInstance.getNodes().filter(node => node.extent && (node.type === "processorNode" || "receiverNode" || "exporteNode")).map(id => id.id)
+  // const exportersID = reactFlowInstance.getNodes().filter((node) =>  node.parentNode === "logs" && (node.type === "exporterNode" || "processorNode" || "receiverNode")).map((node) => node.id);
+  const edges = useEdgeCreator(createdNodes, reactFlowInstance);
+  // const edges = reactFlowInstance.getEdges();
 
   const connectionLineStyle = { stroke: 'red`' };
 
@@ -62,7 +63,6 @@ export default function Flow({value}:{value: string}) {
           backgroundColor: '#D3D2E5',
         }}
         connectionLineStyle={connectionLineStyle}
-        // onLoad={(_reactFlowInstance) => useEdgeCreator(nodeIdsArray, _reactFlowInstance)}
       >
         <Background />
         <Controls />

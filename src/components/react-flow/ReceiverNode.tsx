@@ -32,7 +32,7 @@ interface IData {
     style={customNodeStyles}
     >
       <Tag tag="Receiver"/>
-      <Handle type="source" position={Position.Right} id='u'/>
+      <Handle type="target" position={Position.Right}/>
       <div className='w-full flex justify-center items-center flex-col'>
         {/* <input id="text" name="text" onChange={onChange}  className="nodrag w-16 rounded-sm h-6 pl-1 bg-[rgb(44 48 70 / 0%)] text-center"  style={handleSelectInput}/> */}
         <div className='text-white'>Icon</div>

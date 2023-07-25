@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Node, ReactFlowInstance } from 'reactflow';
+import { Edge, Node, ReactFlowInstance } from 'reactflow';
 import { IConfig, IPipeline } from './mockData';
-import useEdgeCreator from './useEdgeCreator';
+import { uuid } from 'uuidv4';
 
 const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance) => {
   if (pipelines.logs) {
@@ -46,9 +46,9 @@ const addNodesForType = (nodes: string[], type: string, reactFlowInstance: React
   if (nodes) {
     nodes.forEach((node) => {
       reactFlowInstance.addNodes({
-        id: `${pipelineType}+${node}+${type}Node`,
-        position: { x: Math.random() * 600, y: Math.random() * 100 },
-        // position: { x: Math.random() * 600, y: Math.random() * 100 },
+        id: uuid(),
+        // id: `${pipelineType}+${node}+${type}Node`,
+        position: { x: Math.random() + 500, y:  100 },
         data: { label: node },
         type: `${type}Node`,
         parentNode: pipelineType === "log" ? "logs" :
@@ -61,12 +61,12 @@ const addNodesForType = (nodes: string[], type: string, reactFlowInstance: React
   }
 };
 
+
 const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowInstance) => {
   const [jsonData, setJsonData] = useState<Node[]>([]);
-  
+  console.log(jsonData)
   useEffect(() => {
     const updatedJsonData: Node[] = [];
-    const nodeId = Math.random() * 100;
 
     configFile.forEach((file) => {
       const { logs, metrics, traces } = file.service.pipelines;

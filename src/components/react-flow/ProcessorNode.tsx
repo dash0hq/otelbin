@@ -26,12 +26,12 @@ const ProcessorNode = ({data, id}: {data:IData, id: string}) => {
     style={customNodeStyles}
     >
       <Tag tag="Processor"/>
-      <Handle type="target" position={Position.Left}  id="b" />
+      <Handle type="target" position={Position.Right} />
       <div className='w-full flex justify-center items-center flex-col'>
       <div className='text-white'>{data.label}</div>
         <div className='w-full text-[7px] text-[#8491A6] flex justify-center'>remove temporary attributes</div>
       </div>
-      <Handle type="source" position={Position.Right} id="a" />
+      <Handle type="source" position={Position.Left} />
       {/* <Handle type="source" position={Position.Bottom} id="b" style={handleStyle} /> */}
     </div>
   );
