@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Node, ReactFlowInstance } from 'reactflow';
 import { IConfig, IPipeline } from './mockData';
+import useEdgeCreator from './useEdgeCreator';
 
 const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance) => {
   if (pipelines.logs) {
       reactFlowInstance.addNodes({
-        id: `pipline+logs`,
+        id: `logs`,
         type: 'group',
-        position: { x: Math.random() * 10, y: Math.random() * 10 },
+        position: { x: 100, y: 0 },
         data: { label: 'Logs' },
         style: {
           width: 1570,
@@ -17,9 +18,9 @@ const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance
   }
   if (pipelines.metrics) {
       reactFlowInstance.addNodes({
-        id: `pipline+metrics`,
+        id: `metrics`,
         type: 'group',
-        position: { x: Math.random() * 10, y: Math.random() * 10 },
+        position: { x: 100, y: 300 },
         data: { label: 'Metrics' },
         style: {
           width: 1570,
@@ -29,9 +30,9 @@ const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance
   }
   if (pipelines.traces) {
       reactFlowInstance.addNodes({
-        id: `pipline+traces`,
+        id: `traces`,
         type: 'group',
-        position: { x: Math.random() * 10, y: Math.random() * 10 },
+        position: { x: 100, y: 600 },
         data: { label: 'Traces' },
         style: {
           width: 1570,
@@ -41,17 +42,18 @@ const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance
   }
 }
 
-const addNodesForType = (nodes: string[], type: string, nodeId: number, reactFlowInstance: ReactFlowInstance, pipelineType: string) => {
+const addNodesForType = (nodes: string[], type: string, reactFlowInstance: ReactFlowInstance, pipelineType: string) => {
   if (nodes) {
     nodes.forEach((node) => {
       reactFlowInstance.addNodes({
         id: `${pipelineType}+${node}+${type}Node`,
-        position: { x: Math.random() * 100, y: Math.random() * 100 },
+        position: { x: Math.random() * 600, y: Math.random() * 100 },
+        // position: { x: Math.random() * 600, y: Math.random() * 100 },
         data: { label: node },
         type: `${type}Node`,
-        parentNode: pipelineType === "log" ? "pipline+logs" :
-        pipelineType === "metrics" ? "pipline+metrics" :
-        pipelineType === "traces" ? "pipline+traces" :
+        parentNode: pipelineType === "log" ? "logs" :
+        pipelineType === "metrics" ? "metrics" :
+        pipelineType === "traces" ? "traces" :
         "",
         extent: 'parent',
       });
@@ -60,11 +62,7 @@ const addNodesForType = (nodes: string[], type: string, nodeId: number, reactFlo
 };
 
 const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowInstance) => {
-  // const reactFlowInstance = useReactFlow();
-  const [jsonData, setJsonData] = useState<Node[]>([
-    
-  ]);
-
+  const [jsonData, setJsonData] = useState<Node[]>([]);
   
   useEffect(() => {
     const updatedJsonData: Node[] = [];
@@ -75,19 +73,19 @@ const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowIn
       const { pipelines} = file.service;
       addPipleType(pipelines, reactFlowInstance);
       // Process logs exporters, processors, and receivers
-      addNodesForType(logs.exporters, 'exporter', nodeId, reactFlowInstance, "log");
-      addNodesForType(logs.processors, 'processor', nodeId, reactFlowInstance, "log");
-      addNodesForType(logs.receivers, 'receiver', nodeId, reactFlowInstance, "log");
+      addNodesForType(logs.exporters, 'exporter', reactFlowInstance, "log");
+      addNodesForType(logs.processors, 'processor', reactFlowInstance, "log");
+      addNodesForType(logs.receivers, 'receiver', reactFlowInstance, "log");
 
       // Process metrics exporters, processors, and receivers
-      addNodesForType(metrics.exporters, 'exporter', nodeId, reactFlowInstance, "metrics");
-      addNodesForType(metrics.processors, 'processor', nodeId, reactFlowInstance, "metrics");
-      addNodesForType(metrics.receivers, 'receiver', nodeId, reactFlowInstance, "metrics");
+      addNodesForType(metrics.exporters, 'exporter', reactFlowInstance, "metrics");
+      addNodesForType(metrics.processors, 'processor', reactFlowInstance, "metrics");
+      addNodesForType(metrics.receivers, 'receiver', reactFlowInstance, "metrics");
 
       // // // Process traces exporters, processors, and receivers
-      addNodesForType(traces.exporters, 'exporter', nodeId, reactFlowInstance, "traces");
-      addNodesForType(traces.processors, 'processor', nodeId, reactFlowInstance, "traces");
-      addNodesForType(traces.receivers, 'receiver', nodeId, reactFlowInstance, "traces");
+      addNodesForType(traces.exporters, 'exporter', reactFlowInstance, "traces");
+      addNodesForType(traces.processors, 'processor', reactFlowInstance, "traces");
+      addNodesForType(traces.receivers, 'receiver', reactFlowInstance, "traces");
     });
 
     setJsonData(updatedJsonData);

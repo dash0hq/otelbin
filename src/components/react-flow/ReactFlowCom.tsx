@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import ReactFlow, { Background, Controls, Edge, MiniMap, Node, useReactFlow } from 'reactflow';
+import ReactFlow, { Background, Controls, Edge, MiniMap, Node, useNodes, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ReceiverNode from './ReceiverNode';
 import ProcessorNode from './ProcessorNode';
 import ExporterNode from './ExporterNode';
 import { data } from './mockData';
 import useExporterReader from './useExporterReader';
+import useEdgeCreator from './useEdgeCreator';
 
 // const initialEdges = [];
 
@@ -36,34 +37,16 @@ export default function Flow({value}:{value: string}) {
   const exportersArray= data.filter((item) => item.service);
   const jsonData = useExporterReader(exportersArray, reactFlowInstance);
   const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode  }), []);
-    console.log(reactFlowInstance)
-    let nodeId = 0;
     
-console.log(jsonData)
-
-  const handleAddNode = useCallback((type: string, label: string) => {
-    const id = `${++nodeId}`;
-    const newNode = {
-      id,
-      position: {
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-      },
-      type: type === "processor" ? "processorNode" : type === "receiver" ? "receiverNode" : "exporterNode",
-      data: {
-        label: `Node ${id}`,
-      },
-    };
-    reactFlowInstance.addNodes(newNode);
-    console.log(reactFlowInstance)
-  }, []);
+  const exportersID = reactFlowInstance.getNodes().filter((node) =>  node.parentNode === "logs" && (node.type === "exporterNode" || "processorNode" || "receiverNode")).map((node) => node.id);
+  const edges = useEdgeCreator(exportersID, reactFlowInstance);
 
   const connectionLineStyle = { stroke: 'red`' };
 
   const edgeOptions = {
     animated: true,
     style: {
-      stroke: 'white',
+      stroke: '#000',
     },
   };
   
@@ -71,7 +54,7 @@ console.log(jsonData)
       <div style={{ height: '884px', width: "1040px" }}>
         <ReactFlow 
         defaultNodes={jsonData}
-        defaultEdges={initialEdges}
+        defaultEdges={edges}
         defaultEdgeOptions={edgeOptions}
         nodeTypes={nodeTypes}
         fitView
@@ -79,6 +62,7 @@ console.log(jsonData)
           backgroundColor: '#D3D2E5',
         }}
         connectionLineStyle={connectionLineStyle}
+        // onLoad={(_reactFlowInstance) => useEdgeCreator(nodeIdsArray, _reactFlowInstance)}
       >
         <Background />
         <Controls />
