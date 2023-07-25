@@ -1,6 +1,7 @@
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
 generator client {
