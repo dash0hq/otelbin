@@ -27,6 +27,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const [data, setData] = useState({ name: '', config: '' })
     const [errors, setErrors] = useState<IError>({});
 
+
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
