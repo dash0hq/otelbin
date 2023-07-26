@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import Router from 'next/router';
 //Queries and scripts
-import { useConfigs, useInsertConfigs } from '~/queries/config';
+import { IConfig, useConfigs, useInsertConfigs } from '~/queries/config';
 //Internal components
 import DeleteConfigButton from './DeleteConfigButton';
 //External libraries
@@ -10,6 +10,8 @@ import Editor from '@monaco-editor/react';
 //UI
 import { Button } from './ui/button';
 import { Input } from "./ui/input"
+import { ReactFlowProvider } from 'reactflow';
+import Flow from './react-flow/ReactFlowCom';
 
 
 
@@ -79,7 +81,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 value={
                     !clicked ?
                         configs && configs?.length > 0 &&
-                        configs.filter((config) => config.id?.toString() === id)[0]?.config || data.config
+                        configs.filter((config: IConfig) => config.id?.toString() === id)[0]?.config || data.config
                         : data.config
                 }
                 onMount={handleEditorDidMount}
@@ -96,55 +98,11 @@ export default function MonacoEditor({ id }: { id?: string }) {
                         })
                     }}
             />
-            <div className='flex flex-col gap-y-4 h-[100vh]'>
-                <div className='flex flex-col gap-y-4 w-56'>
-                    <Button
-                        onClick={handleCopy}>
-                        Copy
-                    </Button>
-                    <Button
-                        onClick={handleDownload}>
-                        Download
-                    </Button>
-                    {!clicked && <Button
-                        onClick={() => {
-                            setData({ name: '', config: '' })
-                            setClicked(true)
-                        }}
-                    >
-                        Create New
-                    </Button>}
-
-                    {clicked && <div className='flex gap-x-4'>
-                        <Input
-                            value={data.name}
-                            onChange={handleChangeInput}
-                            placeholder="config name"
-                        />
-                        <Button onClick={submitData}>
-                            Submit
-                        </Button>
-                    </div>}
-                </div>
-                <div className='flex flex-col max-h-[400px] overflow-y-auto'>
-                    {configs && configs?.length > 0 && configs.map((config) => {
-                        return (
-                            <div className='flex' key={config.id}>
-                                <Button className='min-w-[250px]'
-                                    onClick={() => {
-                                        setClicked(false)
-                                        Router.push(`/config/${config.id}`)
-                                    }}
-                                    variant={'outline'}>
-                                    {config.name}
-                                </Button>
-                                <DeleteConfigButton config={config} />
-                            </div>
-                        )
-                    })}
-                </div>
+             <div className='flex flex-col gap-y-4 '>
+            <ReactFlowProvider>
+                <Flow value={data.config}/>
+            </ReactFlowProvider>
             </div>
         </div>
     );
 }
-
