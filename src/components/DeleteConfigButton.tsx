@@ -1,5 +1,6 @@
 //Queries and scripts
-import { IConfig, useDeleteConfig } from "~/queries/config";
+import { useDeleteConfig } from "~/queries/config";
+import type { IConfig } from "~/queries/config";
 //UI
 import { Button } from "./ui/button";
 
