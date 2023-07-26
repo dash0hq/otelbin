@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import Router from 'next/router';
 //Queries and scripts
-import { useConfigs, useInsertConfigs } from '~/queries/config';
+import { IConfig, useConfigs, useInsertConfigs } from '~/queries/config';
 //Internal components
 import DeleteConfigButton from './DeleteConfigButton';
 import { schema } from './JSONSchema';
@@ -14,7 +14,11 @@ import Ajv from "ajv"
 //UI
 import { Button } from './ui/button';
 import { Input } from "./ui/input"
-import Buttons from './Buttons';
+import { ReactFlowProvider } from 'reactflow';
+import Flow from './react-flow/ReactFlowCom';
+
+
+
 
 export default function MonacoEditor({ id }: { id?: string }) {
     const editorRef = useRef<any>(null);
@@ -128,8 +132,12 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 />
                 <ErrorConsole errors={errors} />
             </div>
+            <div className='flex flex-col gap-y-4 '>
+                <ReactFlowProvider>
+                    <Flow value={data.config} />
+                </ReactFlowProvider>
+            </div>
 
         </div>
     );
 }
-
