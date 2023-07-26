@@ -8,11 +8,11 @@ import { data } from './mockData';
 import useExporterReader from './useExporterReader';
 import useEdgeCreator from './useEdgeCreator';
 
-export default function Flow({value}:{value: string}) {
+export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
-  const exportersArray= data.filter((item) => item.service);
+  const exportersArray = data.filter((item) => item.service);
   const nodes = useExporterReader(exportersArray, reactFlowInstance);
-  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode  }), []);
+  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode }), []);
   const createdNodes = reactFlowInstance.getNodes().filter(node => node.extent && (node.type === "processorNode" || "receiverNode" || "exporteNode")).map(id => id.id)
   const edges = useEdgeCreator(createdNodes, reactFlowInstance);
 
@@ -23,10 +23,10 @@ export default function Flow({value}:{value: string}) {
       stroke: '#000',
     },
   };
-  
-    return (
-      <div style={{ height: '884px', width: "1040px" }}>
-        <ReactFlow 
+
+  return (
+    <div style={{ height: '100vh', width: "1040px" }}>
+      <ReactFlow
         defaultNodes={nodes}
         defaultEdges={edges}
         defaultEdgeOptions={edgeOptions}
@@ -40,8 +40,8 @@ export default function Flow({value}:{value: string}) {
         <Background />
         <Controls />
         <MiniMap />
-        </ReactFlow>
-      </div>
-        
-    );
-  }
+      </ReactFlow>
+    </div>
+
+  );
+}

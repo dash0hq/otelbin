@@ -104,7 +104,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
 
     return (
-        <div className="flex gap-x-4">
+        <div className="flex">
             <div className='relative w-[50%]'>
                 <Editor
                     value={
