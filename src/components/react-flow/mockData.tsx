@@ -72,19 +72,19 @@ export interface Node {
   }
   
   interface ILog {
-    exporters: string[];
-    processors: string[];
-    receivers: string[];
+      exporters: string[];
+      processors: string[];
+      receivers: string[];
   }
   interface IMetrics {
-    exporters: string[];
-    processors: string[];
-    receivers: string[];
+      exporters: string[];
+      processors: string[];
+      receivers: string[];
   }
   interface ITraces {
-    exporters: string[];
-    processors: string[];
-    receivers: string[];
+      exporters: string[];
+      processors: string[];
+      receivers: string[];
   }
   export  interface IPipeline {
     logs: ILog;

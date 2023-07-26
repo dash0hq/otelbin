@@ -17,7 +17,6 @@ export default function Flow({value}:{value: string}) {
   const edges = useEdgeCreator(createdNodes, reactFlowInstance);
 
   const connectionLineStyle = { stroke: 'red`' };
-
   const edgeOptions = {
     animated: true,
     style: {
