@@ -11,7 +11,7 @@ import useEdgeCreator from './useEdgeCreator';
 export default function Flow({value}:{value: string}) {
   const reactFlowInstance = useReactFlow();
   const exportersArray= data.filter((item) => item.service);
-  const jsonData = useExporterReader(exportersArray, reactFlowInstance);
+  const nodes = useExporterReader(exportersArray, reactFlowInstance);
   const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode  }), []);
   const createdNodes = reactFlowInstance.getNodes().filter(node => node.extent && (node.type === "processorNode" || "receiverNode" || "exporteNode")).map(id => id.id)
   const edges = useEdgeCreator(createdNodes, reactFlowInstance);
@@ -27,7 +27,7 @@ export default function Flow({value}:{value: string}) {
     return (
       <div style={{ height: '884px', width: "1040px" }}>
         <ReactFlow 
-        defaultNodes={jsonData}
+        defaultNodes={nodes}
         defaultEdges={edges}
         defaultEdgeOptions={edgeOptions}
         nodeTypes={nodeTypes}

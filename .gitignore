@@ -7,10 +7,14 @@
 
 # testing
 /coverage
+/__tests__
+jest.config.mjs
 
 # database
 /prisma/db.sqlite
 /prisma/db.sqlite-journal
+/prisma/dev.db
+/prisma/migrations
 
 # next.js
 /.next/

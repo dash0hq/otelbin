@@ -1,18 +1,3 @@
-// export interface IExporter {
-//     name: string;
-// }
-// export interface IProcessors {
-//     name: string;
-// }
-// export interface IReceivers {
-//     name: string;
-// }
-
-// export interface IData {
-//     exporters?: IExporter[]
-//     processors?: IProcessors[]
-//     receivers?: IReceivers[]
-// }
 export const data: IConfig[] = [
   {
     "service": {
