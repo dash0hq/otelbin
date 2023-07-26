@@ -6,6 +6,7 @@ import { useConfigs, useInsertConfigs } from '~/queries/config';
 //Internal components
 import DeleteConfigButton from './DeleteConfigButton';
 import { schema } from './JSONSchema';
+import ErrorConsole, { IAjvError, IError } from './ErrorConsole';
 //External libraries
 import Editor from '@monaco-editor/react';
 import JsYaml from 'js-yaml';
@@ -19,6 +20,8 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const monacoRef = useRef<any>(null);
     const [clicked, setClicked] = useState(false)
     const [data, setData] = useState({ name: '', config: '' })
+    const [errors, setErrors] = useState<IError>({});
+
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
@@ -39,7 +42,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     function handleYamlValidation(configData?: any) {
         const ajv = new Ajv({ allErrors: true })
-
+        let ajvError: IAjvError[] = []
         try {
             const jsonData = JsYaml.load(configData);
             const valid = ajv.validate(schema, jsonData);
@@ -48,6 +51,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 const errors = ajv.errors;
 
                 if (errors) {
+
                     const validationErrors = errors.map((error: any) => {
 
                         const errorInfo = {
@@ -62,17 +66,16 @@ export default function MonacoEditor({ id }: { id?: string }) {
                         }
 
                         return errorInfo;
+
                     });
-                    console.log('Validation Errors:', validationErrors);
+                    ajvError.push(...validationErrors)
                 }
             } else {
-                console.log('Validation successful');
+                ajvError = []
             }
-
-            return true;
+            setErrors({ ...errors, ajvErrors: ajvError })
 
         } catch (error: any) {
-            console.log(error)
             const model = editorRef.current.getModel();
             const errorLineNumber = error.mark.line;
             const errorColumn = error.mark.column;
@@ -89,7 +92,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
             if (model) {
                 monacoRef.current?.editor.setModelMarkers(model, "json", [errorMarker]);
             }
-            return false;
+            setErrors({ ...errors, jsYamlError: error })
         }
     }
 
@@ -142,32 +145,34 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     return (
         <div className="flex gap-x-4">
-            <Editor
-                value={
-                    !clicked ?
-                        configs && configs?.length > 0 &&
-                        configs.filter((config) => config.id?.toString() === id)[0]?.config || data.config
-                        : data.config
-                }
-                beforeMount={handleEditorWillMount}
-                onMount={handleEditorDidMount}
-                height="100vh"
-                width={'50%'}
-                defaultLanguage='yaml'
-                theme="vs-dark"
-                options={{ automaticLayout: true }}
-                onChange={
-                    (value) => {
-                        setData({
-                            name: data.name,
-                            config: value || ''
-                        })
-                        handleYamlValidation(value ?? '')
-                        // console.log(jsYamlValidation.message)
-                        // console.log(ajvValidation)
+            <div className='relative w-[50%]'>
+                <Editor
+                    value={
+                        !clicked ?
+                            configs && configs?.length > 0 &&
+                            configs.filter((config) => config.id?.toString() === id)[0]?.config || data.config
+                            : data.config
                     }
-                }
-            />
+                    beforeMount={handleEditorWillMount}
+                    onMount={handleEditorDidMount}
+                    height="100vh"
+                    width={'100%'}
+                    defaultLanguage='yaml'
+                    theme="vs-dark"
+                    options={{ automaticLayout: true }}
+                    onChange={
+                        (value) => {
+                            setData({
+                                name: data.name,
+                                config: value || ''
+                            })
+                            handleYamlValidation(value ?? '')
+                        }
+                    }
+                />
+                <ErrorConsole errors={errors} />
+            </div>
+
             <div className='flex w-full gap-x-4'>
                 <div className='flex flex-col gap-y-4 h-[100vh]'>
                     <div className='flex flex-col gap-y-4 w-56'>
