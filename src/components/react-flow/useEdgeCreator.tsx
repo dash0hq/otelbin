@@ -6,7 +6,6 @@ function useEdgeCreator(nodeIdsArray: string[], reactFlowInstance: ReactFlowInst
   const [edgeList, setEdgeList] = useState<Edge[]>(initialEdges);
   const reactFlowInstanceRef = useRef(reactFlowInstance);
 
-  console.log(nodeIdsArray)
   useEffect(() => {
     if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2 || !reactFlowInstanceRef.current) {
       console.error('Invalid input: An array of at least two node IDs and a valid reactFlowInstance are required.');
@@ -28,7 +27,6 @@ function useEdgeCreator(nodeIdsArray: string[], reactFlowInstance: ReactFlowInst
         edgesToAdd.push(edge);
       }
       reactFlowInstance.addEdges(edgesToAdd);
-      console.log(edgesToAdd);
       setEdgeList(edgesToAdd);
     
   }, [reactFlowInstance]);

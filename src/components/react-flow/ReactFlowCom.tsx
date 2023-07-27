@@ -7,6 +7,7 @@ import ExporterNode from './ExporterNode';
 import { data } from './mockData';
 import useExporterReader from './useExporterReader';
 import useEdgeCreator from './useEdgeCreator';
+import JsYaml from 'js-yaml';
 
 export default function Flow({value}:{value: string}) {
   const reactFlowInstance = useReactFlow();
@@ -16,9 +17,10 @@ export default function Flow({value}:{value: string}) {
   const createdNodes = reactFlowInstance.getNodes().filter(node => node.extent && (node.type === "processorNode" || "receiverNode" || "exporteNode")).map(id => id.id)
   const edges = useEdgeCreator(createdNodes, reactFlowInstance);
 
-  const connectionLineStyle = { stroke: 'red`' };
+  const jsonData = jsyaml.load(value);
+
   const edgeOptions = {
-    animated: true,
+    animated: false,
     style: {
       stroke: '#000',
     },
@@ -35,11 +37,10 @@ export default function Flow({value}:{value: string}) {
         style={{
           backgroundColor: '#D3D2E5',
         }}
-        connectionLineStyle={connectionLineStyle}
+        className="disable-attribution" 
       >
         <Background />
         <Controls />
-        <MiniMap />
         </ReactFlow>
       </div>
         

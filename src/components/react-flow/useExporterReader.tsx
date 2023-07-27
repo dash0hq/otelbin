@@ -15,6 +15,7 @@ const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance
         type: 'group',
         position: { x: 100, y: 0 },
         data: { label: 'Logs' },
+        draggable: false,
         style: {
           width: 1570,
           height: 239,
@@ -27,6 +28,7 @@ const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance
         type: 'group',
         position: { x: 100, y: 300 },
         data: { label: 'Metrics' },
+        draggable: false,
         style: {
           width: 1570,
           height: 239,
@@ -39,6 +41,7 @@ const addPipleType = (pipelines: IPipeline, reactFlowInstance: ReactFlowInstance
         type: 'group',
         position: { x: 100, y: 600 },
         data: { label: 'Traces' },
+        draggable: false,
         style: {
           width: 1570,
           height: 239,
@@ -60,6 +63,7 @@ const addNodesForType = (nodes: string[], type: string, reactFlowInstance: React
         pipelineType === "traces" ? "traces" :
         "",
         extent: 'parent',
+        draggable: false,
       });
     });
   }
@@ -67,8 +71,10 @@ const addNodesForType = (nodes: string[], type: string, reactFlowInstance: React
 
 
 const useExporterReader = (configFile: IConfig[], reactFlowInstance: ReactFlowInstance) => {
-  const [jsonData, setJsonData] = useState<Node[]>([]);
+  const nodeList = reactFlowInstance.getNodes();
+  const [jsonData, setJsonData] = useState<Node[]>(nodeList);
   console.log(jsonData)
+
   useEffect(() => {
     const updatedJsonData: Node[] = [];
 
