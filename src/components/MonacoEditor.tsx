@@ -120,7 +120,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     width={'100%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
-                    options={{ automaticLayout: true }}
+                    options={{ automaticLayout: true, minimap: { enabled: false } }}
                     onChange={
                         (value) => {
                             setData({
