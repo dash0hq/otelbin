@@ -1,5 +1,5 @@
-import { Node } from "reactflow";
-import { IConfig, ILog, IMetrics, IPipeline, ITraces } from "./mockData";
+import type { Node } from "reactflow";
+import type { IConfig, ILog, IMetrics, IPipeline, ITraces } from "./mockData";
 import { useEffect, useState } from "react";
 
 const addPipleType = (pipelines: IPipeline) => {

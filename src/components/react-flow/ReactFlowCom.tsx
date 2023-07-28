@@ -4,7 +4,7 @@ import 'reactflow/dist/style.css';
 import ReceiverNode from './ReceiverNode';
 import ProcessorNode from './ProcessorNode';
 import ExporterNode from './ExporterNode';
-import { IConfig } from './mockData';
+import type { IConfig } from './mockData';
 import useEdgeCreator from './useEdgeCreator';
 import JsYaml from 'js-yaml';
 import useConfigReader from './useConfigReader';
