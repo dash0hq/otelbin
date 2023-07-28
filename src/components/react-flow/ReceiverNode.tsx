@@ -25,10 +25,11 @@ interface IData {
     style={customNodeStyles}
     >
       <Tag tag="Receiver"/>
-      <Handle type="target" position={Position.Right}/>
+      <Handle type="target" position={Position.Left}/>
       <div className='w-full flex justify-center items-center flex-col'>
         <div className='text-white'>{data.label}</div>
       </div>
+      <Handle type="source" position={Position.Right}/>
     </div>
   );
 }

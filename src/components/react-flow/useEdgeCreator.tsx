@@ -8,22 +8,33 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 
   const [edgeList, setEdgeList] = useState<Edge[]>([]);
   const edgesToAdd: Edge[] = [];
-  const addToLogs = (nodeLogs: Node[]) => {
-    for (let i = 0; i < nodeLogs.length - 1; i++) {
-      const sourceNode = nodeLogs[i];
-      const targetNode = nodeLogs[i + 1];
 
+  const calculateExportersNode = (exporterNodes: Node[], processorNode: Node) => {
+    exporterNodes.forEach((targetNode) => {
+      if (!processorNode || !targetNode) {
+        return;
+      }
+      const sourceNodeId = processorNode.id;
+      const targetNodeId = targetNode.id;
+      const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
+      const edge: Edge = {
+        id: edgeId,
+        source: sourceNodeId,
+        target: targetNodeId,
+      };
+      edgesToAdd.push(edge);
+    });
+  };
+  const calculateProcessorNode = (processorNodes: Node[]) => {
+    for (let i = 0; i < processorNodes.length - 1; i++) {
+      const sourceNode = processorNodes[i];
+      const targetNode = processorNodes[i + 1];
       if (!sourceNode || !targetNode) {
-        // Handle the case when source or target node is undefined or null
-        console.error('Invalid node found.');
         continue;
       }
-
       const sourceNodeId = sourceNode.id;
       const targetNodeId = targetNode.id;
-
       const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
-
       const edge: Edge = {
         id: edgeId,
         source: sourceNodeId,
@@ -31,58 +42,59 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
       };
       edgesToAdd.push(edge);
     }
+  };
+  const calculateReceiverNode = (receiverNodes: Node[], firstProcessorNode: Node) => {
+    receiverNodes.forEach((sourceNode) => {
+      if (!receiverNodes || !sourceNode) {
+        return;
+      }
+      const sourceNodeId = sourceNode.id;
+      const targetNodeId = firstProcessorNode.id;
+      const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
+      const edge: Edge = {
+        id: edgeId,
+        source: sourceNodeId,
+        target: targetNodeId,
+      };
+      edgesToAdd.push(edge);
+    });
+  };
+  
+  const addToLogs = (nodeLogs: Node[]) => {
+    const exporterNodes = nodeLogs.filter((node) => node.type === 'exporterNode');
+    const processorNodes = nodeLogs.filter((node) => node.type === 'processorNode');
+    const receiverNodes = nodeLogs.filter((node) => node.type === 'receiverNode');
+    const firstProcessorNode = processorNodes[0] as Node;
+      const lastProcessorNode = processorNodes[processorNodes.length - 1] as Node;
+      calculateExportersNode(exporterNodes, lastProcessorNode);
+  
+    calculateProcessorNode(processorNodes);
+    calculateReceiverNode(receiverNodes, firstProcessorNode);
   };
   const addToMetrics = (nodeMetrics: Node[]) => {
-    for (let i = 0; i < nodeMetrics.length - 1; i++) {
-      const sourceNode = nodeMetrics[i];
-      const targetNode = nodeMetrics[i + 1];
-
-      if (!sourceNode || !targetNode) {
-        // Handle the case when source or target node is undefined or null
-        console.error('Invalid node found.');
-        continue;
-      }
-
-      const sourceNodeId = sourceNode.id;
-      const targetNodeId = targetNode.id;
-
-      const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
-
-      const edge: Edge = {
-        id: edgeId,
-        source: sourceNodeId,
-        target: targetNodeId,
-      };
-      edgesToAdd.push(edge);
-    }
+    const exporterNodes = nodeMetrics.filter((node) => node.type === 'exporterNode');
+    const processorNodes = nodeMetrics.filter((node) => node.type === 'processorNode');
+    const receiverNodes = nodeMetrics.filter((node) => node.type === 'receiverNode');
+    const firstProcessorNode = processorNodes[0] as Node;
+      const lastProcessorNode = processorNodes[processorNodes.length - 1] as Node;
+      calculateExportersNode(exporterNodes, lastProcessorNode);
+  
+    calculateProcessorNode(processorNodes);
+    calculateReceiverNode(receiverNodes, firstProcessorNode);
   };
   const addToTraces = (nodeTraces: Node[]) => {
-    for (let i = 0; i < nodeTraces.length - 1; i++) {
-      const sourceNode = nodeTraces[i];
-      const targetNode = nodeTraces[i + 1];
-
-      if (!sourceNode || !targetNode) {
-        // Handle the case when source or target node is undefined or null
-        console.error('Invalid node found.');
-        continue;
-      }
-
-      const sourceNodeId = sourceNode.id;
-      const targetNodeId = targetNode.id;
-
-      const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
-
-      const edge: Edge = {
-        id: edgeId,
-        source: sourceNodeId,
-        target: targetNodeId,
-      };
-      edgesToAdd.push(edge);
-    }
+    const exporterNodes = nodeTraces.filter((node) => node.type === 'exporterNode');
+    const processorNodes = nodeTraces.filter((node) => node.type === 'processorNode');
+    const receiverNodes = nodeTraces.filter((node) => node.type === 'receiverNode');
+    const firstProcessorNode = processorNodes[0] as Node;
+      const lastProcessorNode = processorNodes[processorNodes.length - 1] as Node;
+      calculateExportersNode(exporterNodes, lastProcessorNode);
+  
+    calculateProcessorNode(processorNodes);
+    calculateReceiverNode(receiverNodes, firstProcessorNode);
   };
   useEffect(() => {
     if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2) {
-      console.error('Invalid input: An array of at least two node IDs is required.');
       return;
     }
 

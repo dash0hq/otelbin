@@ -15,7 +15,6 @@ export default function Flow({ value }: { value: string }) {
   const nodes = useConfigReader(jsonData);
   const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode }), []);
   const edges = useEdgeCreator(nodes);
-  console.log(edges);
   
   useEffect(() => {
       reactFlowInstance.addNodes(nodes);
@@ -24,7 +23,6 @@ export default function Flow({ value }: { value: string }) {
 
 
 
-  console.log(nodes);
   const edgeOptions = {
     animated: false,
     style: {

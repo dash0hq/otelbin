@@ -24,11 +24,11 @@ interface IData {
     style={customNodeStyles}
     >
       <Tag tag="Exporter"/>
-      <Handle type="source" position={Position.Left}/>
+      <Handle type="target" position={Position.Left}/>
       <div className='w-full flex justify-center items-center flex-col'>
-        <div className='text-white'>Icon</div>
         <div className='text-white'>{data.label}</div>
       </div>
+      <Handle type="source" position={Position.Right}/>
     </div>
   );
 }

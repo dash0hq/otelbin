@@ -1,7 +1,6 @@
-import { Node, ReactFlowInstance } from "reactflow";
+import { Node } from "reactflow";
 import { IConfig, ILog, IMetrics, IPipeline, ITraces } from "./mockData";
 import { useEffect, useState } from "react";
-import { uuid } from "uuidv4";
 
 const addPipleType = (pipelines: IPipeline) => {
   const nodesToAdd: Node[] = [];
@@ -52,15 +51,17 @@ const addPipleType = (pipelines: IPipeline) => {
 }
 const addToLogs = (log: ILog) => {
   const nodesToAdd: Node[] = [];
+  const offsetX = 300;
 
   if (log?.exporters) {
-    log.exporters.forEach((exporter) => {
+    log.exporters.forEach((exporter, index) => {
+      const plusIndex = index + 1;
       nodesToAdd.push({
         id: `Logs-Exporter-NodeExporter-${exporter}`,
         parentNode: 'logs',
         extent: 'parent',
         type: 'exporterNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: plusIndex * 1300, y: 75 }, 
         data: { label: exporter }, 
         draggable: true,
       });
@@ -68,13 +69,14 @@ const addToLogs = (log: ILog) => {
   }
 
   if (log?.processors) {
-    log.processors.forEach((processor) => {
+    log.processors.forEach((processor, index) => {
+      const indexUpdate = index + 1;
       nodesToAdd.push({
         id: `Logs-Processor-NodeProcessor-${processor}`,
         parentNode: 'logs',
         extent: 'parent',
         type: 'processorNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: indexUpdate * offsetX, y: 80 }, 
         data: { label: processor },
         draggable: true,
       });
@@ -82,17 +84,19 @@ const addToLogs = (log: ILog) => {
   }
 
   if (log?.receivers) {
-    log.receivers.forEach((receiver) => {
+    log.receivers.forEach((receiver, index) => {
+      const indexUpdate = index + 1;
       nodesToAdd.push({
         id: `Logs-Receiver-NodeReceiver-${receiver}`,
         parentNode: 'logs',
         extent: 'parent',
         type: 'receiverNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: indexUpdate * 100, y: 75 }, 
         data: { label: receiver }, 
         draggable: true,
       });
     });
+    console.log(nodesToAdd.map(c => {return `${c.position.x}, ${c.position.y}`}));
   }
 
   return nodesToAdd;
@@ -100,15 +104,17 @@ const addToLogs = (log: ILog) => {
 
 const addToMetrics = (metrics: IMetrics) => {
   const nodesToAdd: Node[] = [];
+  const offsetX = 200;
 
   if (metrics?.exporters) {
-    metrics.exporters.forEach((exporter) => {
+    metrics.exporters.forEach((exporter, index) => {
+      const plusIndex = index + 1;
       nodesToAdd.push({
         id: `Metrics-Exporter-NodeExporter-${exporter}`,
         parentNode: 'metrics',
         extent: 'parent',
         type: 'exporterNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: plusIndex === 1 ? plusIndex * 1300 : plusIndex * 700 , y: plusIndex * 85 }, 
         data: { label: exporter },
         draggable: true,
       });
@@ -116,13 +122,14 @@ const addToMetrics = (metrics: IMetrics) => {
   }
 
   if (metrics?.processors) {
-    metrics.processors.forEach((processor) => {
+    metrics.processors.forEach((processor, index) => {
+      const indexUpdate = index + 1;
       nodesToAdd.push({
         id: `Metrics-Processor-NodeProcessor-${processor}`,
         parentNode: 'metrics',
         extent: 'parent',
         type: 'processorNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: indexUpdate * offsetX, y: 80 }, 
         data: { label: processor }, 
         draggable: true,
       });
@@ -130,13 +137,14 @@ const addToMetrics = (metrics: IMetrics) => {
   }
 
   if (metrics?.receivers) {
-    metrics.receivers.forEach((receiver) => {
+    metrics.receivers.forEach((receiver, index) => {
+      const indexUpdate = index + 1;
       nodesToAdd.push({
         id: `Metrics-Receiver-NodeReceiver-${receiver}`,
         parentNode: 'metrics',
         extent: 'parent',
         type: 'receiverNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: indexUpdate * 70, y: 75 }, 
         data: { label: receiver }, 
         draggable: true,
       });
@@ -147,15 +155,17 @@ const addToMetrics = (metrics: IMetrics) => {
 }
 const addToTraces = (traces: ITraces) => {
   const nodesToAdd: Node[] = [];
+  const offsetX = 300;
 
   if (traces?.exporters) {
-    traces.exporters.forEach((exporter) => {
+    traces.exporters.forEach((exporter, index) => {
+      const plusIndex = index + 1;
       nodesToAdd.push({
         id: `Traces-Exporter-NodeExporter-${exporter}`,
         parentNode: 'traces',
         extent: 'parent',
         type: 'exporterNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: plusIndex === 1 ? plusIndex * 1300 : plusIndex * 100 , y: 75 }, 
         data: { label: exporter },
         draggable: true,
       });
@@ -163,13 +173,14 @@ const addToTraces = (traces: ITraces) => {
   }
 
   if (traces?.processors) {
-    traces.processors.forEach((processor) => {
+    traces.processors.forEach((processor, index) => {
+      const indexUpdate = index + 1;
       nodesToAdd.push({
         id: `Trace-Processor-NodeProcessor-${processor}`,
         parentNode: 'traces',
         extent: 'parent',
         type: 'processorNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: indexUpdate * offsetX, y: 80 }, 
         data: { label: processor },
         draggable: true,
       });
@@ -177,13 +188,14 @@ const addToTraces = (traces: ITraces) => {
   }
 
   if (traces?.receivers) {
-    traces.receivers.forEach((receiver) => {
+    traces.receivers.forEach((receiver, index) => {
+      const indexUpdate = index + 1;
       nodesToAdd.push({
         id: `Traces-Receiver-NodeReceiver-${receiver}`,
         parentNode: 'traces',
         extent: 'parent',
         type: 'receiverNode',
-        position: { x: Math.random() * 100, y: 10 }, 
+        position: { x: 100, y: indexUpdate * 85 }, 
         data: { label: receiver },
         draggable: true,
       });
@@ -197,7 +209,6 @@ const addToTraces = (traces: ITraces) => {
 
 const useConfigReader = (value: IConfig) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
-  console.log("component Node creator");
 
   useEffect(() => {
     const logs = value?.service?.pipelines?.logs ?? [];
@@ -215,7 +226,6 @@ const useConfigReader = (value: IConfig) => {
 
     setJsonDataState(nodesToAdd);
   }, [value]);
-console.log(jsonDataState)
   return jsonDataState;
 };
 
