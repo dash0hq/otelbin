@@ -1,24 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
-import type { Edge, ReactFlowInstance } from 'reactflow';
+import { useEffect, useState } from 'react';
+import type { Edge, Node } from 'reactflow';
 
-function useEdgeCreator(nodeIdsArray: string[], reactFlowInstance: ReactFlowInstance) {
-  const initialEdges = reactFlowInstance.getEdges();
-  const [edgeList, setEdgeList] = useState<Edge[]>(initialEdges);
-  const reactFlowInstanceRef = useRef(reactFlowInstance);
+function useEdgeCreator(nodeIdsArray: Node[]) {
+  const nodeLogs = nodeIdsArray.filter((node) => node.parentNode === 'logs');
+  const nodeMetrics = nodeIdsArray.filter((node) => node.parentNode === 'metrics');
+  const nodeTraces = nodeIdsArray.filter((node) => node.parentNode === 'traces');
+
+  const [edgeList, setEdgeList] = useState<Edge[]>([]);
 
   useEffect(() => {
-    if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2 || !reactFlowInstanceRef.current) {
-      console.error('Invalid input: An array of at least two node IDs and a valid reactFlowInstance are required.');
+    if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2) {
+      console.error('Invalid input: An array of at least two node IDs is required.');
       return;
     }
 
-      const edgesToAdd: Edge[] = [];
-      for (let i = 0; i < nodeIdsArray.length - 1; i++) {
-        const sourceNodeId = nodeIdsArray[i] || '';
-        const targetNodeId = nodeIdsArray[i + 1] || '';
-        
-        const edgeId = `edges-${(sourceNodeId).slice(0,6)}-${(targetNodeId).slice(0,6)}`;
-    
+    const edgesToAdd: Edge[] = [];
+
+    const addToEdges = (nodes: Node[]) => {
+      for (let i = 0; i < nodes.length - 1; i++) {
+        const sourceNode = nodes[i];
+        const targetNode = nodes[i + 1];
+
+        if (!sourceNode || !targetNode) {
+          console.error('Invalid node found.');
+          continue;
+        }
+
+        const sourceNodeId = sourceNode.id;
+        const targetNodeId = targetNode.id;
+
+        const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
+
         const edge: Edge = {
           id: edgeId,
           source: sourceNodeId,
@@ -26,11 +38,31 @@ function useEdgeCreator(nodeIdsArray: string[], reactFlowInstance: ReactFlowInst
         };
         edgesToAdd.push(edge);
       }
-      reactFlowInstance.addEdges(edgesToAdd);
-      setEdgeList(edgesToAdd);
-    
-  }, [reactFlowInstance]);
+    };
 
+    addToEdges(nodeLogs);
+    addToEdges(nodeMetrics);
+    addToEdges(nodeTraces);
+
+    if (nodeTraces.length > 0) {
+      const lastProcessorNode = nodeTraces[nodeTraces.length - 1];
+      const exporterNodes = nodeIdsArray.filter((node) => node.type === 'exporterNode');
+      
+      if (exporterNodes.length > 0) {
+        const firstExporterNode = exporterNodes[0];
+        const edgeId = `edge-${lastProcessorNode?.id}-${firstExporterNode?.id}`;
+        
+        const edge: Edge = {
+          id: edgeId,
+          source: lastProcessorNode?.id!,
+          target: firstExporterNode?.id!,
+        };
+        edgesToAdd.push(edge);
+      }
+    }
+
+    setEdgeList(edgesToAdd);
+  }, [nodeIdsArray]);
 
   return edgeList;
 }

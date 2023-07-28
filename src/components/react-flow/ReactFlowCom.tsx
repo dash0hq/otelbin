@@ -1,34 +1,40 @@
-import React, { useMemo } from 'react';
-import ReactFlow, { Background, Controls, MiniMap, useReactFlow } from 'reactflow';
+import React, { useEffect, useMemo } from 'react';
+import ReactFlow, { Background, Controls, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ReceiverNode from './ReceiverNode';
 import ProcessorNode from './ProcessorNode';
 import ExporterNode from './ExporterNode';
-import { data } from './mockData';
-import useExporterReader from './useExporterReader';
+import { IConfig } from './mockData';
 import useEdgeCreator from './useEdgeCreator';
 import JsYaml from 'js-yaml';
+import useConfigReader from './useConfigReader';
 
-export default function Flow({value}:{value: string}) {
+export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
-  const exportersArray= data.filter((item) => item.service);
-  const nodes = useExporterReader(exportersArray, reactFlowInstance);
-  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode  }), []);
-  const createdNodes = reactFlowInstance.getNodes().filter(node => node.extent && (node.type === "processorNode" || "receiverNode" || "exporteNode")).map(id => id.id)
-  const edges = useEdgeCreator(createdNodes, reactFlowInstance);
+  const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
+  const nodes = useConfigReader(jsonData);
+  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode }), []);
+  const edges = useEdgeCreator(nodes);
+  console.log(edges);
+  
+  useEffect(() => {
+      reactFlowInstance.addNodes(nodes);
+      reactFlowInstance.addEdges(edges);
+  }, [nodes, edges]);
 
-  const jsonData = jsyaml.load(value);
 
+
+  console.log(nodes);
   const edgeOptions = {
     animated: false,
     style: {
       stroke: '#000',
     },
   };
-  
-    return (
-      <div style={{ height: '884px', width: "1040px" }}>
-        <ReactFlow 
+
+  return (
+    <div style={{ height: '100vh', width: "1040px" }}>
+      <ReactFlow
         defaultNodes={nodes}
         defaultEdges={edges}
         defaultEdgeOptions={edgeOptions}

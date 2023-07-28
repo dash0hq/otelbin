@@ -27,6 +27,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const [data, setData] = useState({ name: '', config: '' })
     const [errors, setErrors] = useState<IError>({});
 
+
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
@@ -104,7 +105,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
 
     return (
-        <div className="flex gap-x-4">
+        <div className="flex">
             <div className='relative w-[50%]'>
                 <Editor
                     value={
