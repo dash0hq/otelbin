@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import Tag from '../ui/Tag';
+import Tag from '../ui/NodTag';
 
 
 const customNodeStyles = {
@@ -25,12 +25,12 @@ const ProcessorNode = ({data}: {data:IData}) => {
     style={customNodeStyles}
     >
       <Tag tag="Processor"/>
-      <Handle type="target" position={Position.Left} />
+      <Handle type="target" position={Position.Left} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}} />
       <div className='w-full flex justify-center items-center flex-col'>
       <div className='text-white'>{data.label}</div>
         <div className='w-full text-[7px] text-[#8491A6] flex justify-center'>remove temporary attributes</div>
       </div>
-      <Handle type="source" position={Position.Right} id='processor-a'/>
+      <Handle type="source" position={Position.Right} id='processor-a' style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
     </div>
   );
 }

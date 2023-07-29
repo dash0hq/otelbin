@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import ReactFlow, { Background, Controls, useReactFlow } from 'reactflow';
+import ReactFlow, { Controls, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ReceiverNode from './ReceiverNode';
 import ProcessorNode from './ProcessorNode';
@@ -8,12 +8,13 @@ import type { IConfig } from './mockData';
 import useEdgeCreator from './useEdgeCreator';
 import JsYaml from 'js-yaml';
 import useConfigReader from './useConfigReader';
+import parentNodeType from './parentNodeType';
 
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
   const nodes = useConfigReader(jsonData);
-  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode }), []);
+  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode, parentNodeType: parentNodeType }), []);
   const edges = useEdgeCreator(nodes);
   
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function Flow({ value }: { value: string }) {
   const edgeOptions = {
     animated: false,
     style: {
-      stroke: '#000',
+      stroke: '#fff',
     },
   };
 
@@ -39,11 +40,10 @@ export default function Flow({ value }: { value: string }) {
         nodeTypes={nodeTypes}
         fitView
         style={{
-          backgroundColor: '#D3D2E5',
+          backgroundColor: '#000',
         }}
         className="disable-attribution" 
       >
-        <Background />
         <Controls />
         </ReactFlow>
       </div>

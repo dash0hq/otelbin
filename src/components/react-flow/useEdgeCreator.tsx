@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Edge, Node } from 'reactflow';
+import { MarkerType, type Edge, type Node } from 'reactflow';
 
 function useEdgeCreator(nodeIdsArray: Node[]) {
   const nodeLogs = nodeIdsArray.filter((node) => node.parentNode === 'logs');
@@ -21,6 +21,12 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
         id: edgeId,
         source: sourceNodeId,
         target: targetNodeId,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: '#fff',
+          width: 30,
+          height: 30,
+        },
       };
       edgesToAdd.push(edge);
     });
@@ -39,6 +45,12 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
         id: edgeId,
         source: sourceNodeId,
         target: targetNodeId,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: '#fff',
+          width: 30,
+          height: 30,
+        },
       };
       edgesToAdd.push(edge);
     }
@@ -55,6 +67,12 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
         id: edgeId,
         source: sourceNodeId,
         target: targetNodeId,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: '#fff',
+          width: 30,
+          height: 30,
+        },
       };
       edgesToAdd.push(edge);
     });

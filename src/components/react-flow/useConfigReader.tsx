@@ -8,10 +8,10 @@ const addPipleType = (pipelines: IPipeline) => {
   if (pipelines?.logs) {
     nodesToAdd.push({
       id: `logs`,
-      type: 'group',
+      type: 'parentNodeType',
       position: { x: 100, y: 0 },
       data: { label: 'Logs' },
-      draggable: true,
+      draggable: false,
       style: {
         width: 1570,
         height: 239,
@@ -22,10 +22,10 @@ const addPipleType = (pipelines: IPipeline) => {
   if (pipelines?.metrics) {
     nodesToAdd.push({
       id: `metrics`,
-      type: 'group',
+      type: 'parentNodeType',
       position: { x: 100, y: 300 },
       data: { label: 'Metrics' },
-      draggable: true,
+      draggable: false,
       style: {
         width: 1570,
         height: 239,
@@ -36,10 +36,10 @@ const addPipleType = (pipelines: IPipeline) => {
   if (pipelines?.traces) {
     nodesToAdd.push({
       id: `traces`,
-      type: 'group',
+      type: 'parentNodeType',
       position: { x: 100, y: 600 },
       data: { label: 'Traces' },
-      draggable: true,
+      draggable: false,
       style: {
         width: 1570,
         height: 239,
@@ -63,7 +63,7 @@ const addToLogs = (log: ILog) => {
         type: 'exporterNode',
         position: { x: plusIndex * 1300, y: 75 }, 
         data: { label: exporter }, 
-        draggable: true,
+        draggable: false,
       });
     });
   }
@@ -78,7 +78,7 @@ const addToLogs = (log: ILog) => {
         type: 'processorNode',
         position: { x: indexUpdate * offsetX, y: 80 }, 
         data: { label: processor },
-        draggable: true,
+        draggable: false,
       });
     });
   }
@@ -93,7 +93,7 @@ const addToLogs = (log: ILog) => {
         type: 'receiverNode',
         position: { x: indexUpdate * 100, y: 75 }, 
         data: { label: receiver }, 
-        draggable: true,
+        draggable: false,
       });
     });
     console.log(nodesToAdd.map(c => {return `${c.position.x}, ${c.position.y}`}));
@@ -108,15 +108,17 @@ const addToMetrics = (metrics: IMetrics) => {
 
   if (metrics?.exporters) {
     metrics.exporters.forEach((exporter, index) => {
-      const plusIndex = index + 1;
+      const plusIndex = index === 0 ? index + 10 : index + 150;
+      const xUpdater = index + 1;
       nodesToAdd.push({
         id: `Metrics-Exporter-NodeExporter-${exporter}`,
         parentNode: 'metrics',
         extent: 'parent',
         type: 'exporterNode',
-        position: { x: plusIndex === 1 ? plusIndex * 1300 : plusIndex * 700 , y: plusIndex * 85 }, 
+        position: { x: 1300 , y: plusIndex * 1 }, 
+        // position: { x: xUpdater === 0 ? xUpdater * 7000 : xUpdater * 700 , y: plusIndex * 1 }, 
         data: { label: exporter },
-        draggable: true,
+        draggable: false,
       });
     });
   }
@@ -131,7 +133,7 @@ const addToMetrics = (metrics: IMetrics) => {
         type: 'processorNode',
         position: { x: indexUpdate * offsetX, y: 80 }, 
         data: { label: processor }, 
-        draggable: true,
+        draggable: false,
       });
     });
   }
@@ -146,7 +148,7 @@ const addToMetrics = (metrics: IMetrics) => {
         type: 'receiverNode',
         position: { x: indexUpdate * 70, y: 75 }, 
         data: { label: receiver }, 
-        draggable: true,
+        draggable: false,
       });
     });
   }
@@ -167,7 +169,7 @@ const addToTraces = (traces: ITraces) => {
         type: 'exporterNode',
         position: { x: plusIndex === 1 ? plusIndex * 1300 : plusIndex * 100 , y: 75 }, 
         data: { label: exporter },
-        draggable: true,
+        draggable: false,
       });
     });
   }
@@ -182,22 +184,22 @@ const addToTraces = (traces: ITraces) => {
         type: 'processorNode',
         position: { x: indexUpdate * offsetX, y: 80 }, 
         data: { label: processor },
-        draggable: true,
+        draggable: false,
       });
     });
   }
 
   if (traces?.receivers) {
     traces.receivers.forEach((receiver, index) => {
-      const indexUpdate = index + 1;
+      const indexUpdate = index === 0 ? index + 10 : index + 150;
       nodesToAdd.push({
         id: `Traces-Receiver-NodeReceiver-${receiver}`,
         parentNode: 'traces',
         extent: 'parent',
         type: 'receiverNode',
-        position: { x: 100, y: indexUpdate * 85 }, 
+        position: { x: 100, y: indexUpdate * 1 }, 
         data: { label: receiver },
-        draggable: true,
+        draggable: false,
       });
     });
   }
