@@ -46,7 +46,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
         });
     }
 
-    function handleYamlValidation(configData?: any) {
+    function handleYamlValidation(configData: string) {
         const ajv = new Ajv({ allErrors: true })
         let ajvError: IAjvError[] = []
         try {

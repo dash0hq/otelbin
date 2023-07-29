@@ -1,26 +1,33 @@
-import React, { useMemo } from 'react';
-import ReactFlow, { Background, Controls, MiniMap, useReactFlow } from 'reactflow';
+import React, { useEffect, useMemo } from 'react';
+import ReactFlow, { Controls, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ReceiverNode from './ReceiverNode';
 import ProcessorNode from './ProcessorNode';
 import ExporterNode from './ExporterNode';
-import { data } from './mockData';
-import useExporterReader from './useExporterReader';
+import type { IConfig } from './mockData';
 import useEdgeCreator from './useEdgeCreator';
+import JsYaml from 'js-yaml';
+import useConfigReader from './useConfigReader';
+import parentNodeType from './parentNodeType';
 
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
-  const exportersArray = data.filter((item) => item.service);
-  const nodes = useExporterReader(exportersArray, reactFlowInstance);
-  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode }), []);
-  const createdNodes = reactFlowInstance.getNodes().filter(node => node.extent && (node.type === "processorNode" || "receiverNode" || "exporteNode")).map(id => id.id)
-  const edges = useEdgeCreator(createdNodes, reactFlowInstance);
+  const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
+  const nodes = useConfigReader(jsonData);
+  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode, parentNodeType: parentNodeType }), []);
+  const edges = useEdgeCreator(nodes);
+  
+  useEffect(() => {
+      reactFlowInstance.addNodes(nodes);
+      reactFlowInstance.addEdges(edges);
+  }, [nodes, edges]);
 
-  const connectionLineStyle = { stroke: 'red`' };
+
+
   const edgeOptions = {
-    animated: true,
+    animated: false,
     style: {
-      stroke: '#000',
+      stroke: '#fff',
     },
   };
 
@@ -33,15 +40,13 @@ export default function Flow({ value }: { value: string }) {
         nodeTypes={nodeTypes}
         fitView
         style={{
-          backgroundColor: '#D3D2E5',
+          backgroundColor: '#000',
         }}
-        connectionLineStyle={connectionLineStyle}
+        className="disable-attribution" 
       >
-        <Background />
         <Controls />
-        <MiniMap />
-      </ReactFlow>
-    </div>
-
-  );
-}
+        </ReactFlow>
+      </div>
+        
+    );
+  }

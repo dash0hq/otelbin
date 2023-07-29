@@ -56,17 +56,17 @@ export interface Node {
     type?: string;
   }
   
-  interface ILog {
+  export interface ILog {
       exporters: string[];
       processors: string[];
       receivers: string[];
   }
-  interface IMetrics {
+  export interface IMetrics {
       exporters: string[];
       processors: string[];
       receivers: string[];
   }
-  interface ITraces {
+  export interface ITraces {
       exporters: string[];
       processors: string[];
       receivers: string[];
@@ -80,6 +80,6 @@ export interface Node {
     pipelines: IPipeline;
   }
  export interface IConfig {
-  service: IService;
-    
+    [key: string]: any;
+  service: IService; 
   }

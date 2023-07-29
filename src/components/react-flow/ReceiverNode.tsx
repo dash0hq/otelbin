@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import Tag from '../ui/Tag';
+import Tag from '../ui/NodTag';
 
 
 const customNodeStyles = {
@@ -25,10 +25,10 @@ interface IData {
     style={customNodeStyles}
     >
       <Tag tag="Receiver"/>
-      <Handle type="target" position={Position.Right}/>
       <div className='w-full flex justify-center items-center flex-col'>
-        <div className='text-white'>{data.label}</div>
+        <div className='text-white mt-[10px]'>{data.label}</div>
       </div>
+      <Handle type="source" position={Position.Right} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
     </div>
   );
 }
