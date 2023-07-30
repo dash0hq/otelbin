@@ -1,21 +1,21 @@
 //React & Next
 import { useRef, useState } from 'react';
-import Router from 'next/router';
 //Queries and scripts
-import { IConfig, useConfigs, useInsertConfigs } from '~/queries/config';
+import { useConfigs, useInsertConfigs } from '~/queries/config';
 //Internal components
-import DeleteConfigButton from './DeleteConfigButton';
 import { schema } from './JSONSchema';
-import ErrorConsole, { IAjvError, IError } from './ErrorConsole';
+import ErrorConsole from './ErrorConsole';
+import type { IAjvError, IError } from './ErrorConsole';
 //External libraries
 import Editor from '@monaco-editor/react';
+import type { Monaco, OnMount } from '@monaco-editor/react';
 import JsYaml from 'js-yaml';
 import Ajv from "ajv"
+import type { editor } from 'monaco-editor';
 //UI
-import { Button } from './ui/button';
-import { Input } from "./ui/input"
 import { ReactFlowProvider } from 'reactflow';
 import Flow from './react-flow/ReactFlowCom';
+import React from 'react';
 
 
 
@@ -31,20 +31,15 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
-    function handleEditorDidMount(editor: any, monaco: any) {
+    const [monacoInstance, setMonacoInstance] = React.useState<editor.IStandaloneCodeEditor | null>(null);
+
+
+    const handleEditorDidMount: OnMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
+        setMonacoInstance(editor);
     }
 
-    function handleEditorWillMount(editor: any) {
-        editorRef.current = editor;
-        editor.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
-            schemas: [
-                schema
-            ]
-        });
-    }
 
     function handleYamlValidation(configData: string) {
         const ajv = new Ajv({ allErrors: true })
@@ -103,7 +98,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
     }
 
 
-
     return (
         <div className="flex">
             <div className='relative w-[50%]'>
@@ -114,7 +108,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                             configs.filter((config) => config.id?.toString() === id)[0]?.config || data.config
                             : data.config
                     }
-                    beforeMount={handleEditorWillMount}
+
                     onMount={handleEditorDidMount}
                     height="100vh"
                     width={'100%'}
@@ -132,6 +126,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     }
                 />
                 <ErrorConsole errors={errors} />
+
             </div>
             <div className='flex flex-col gap-y-4 '>
                 <ReactFlowProvider>
