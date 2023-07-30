@@ -135,7 +135,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
             </div>
             <div className='flex flex-col gap-y-4 '>
                 <ReactFlowProvider>
-                    <Flow value={data.config} />
+                    <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? data.config : ''} />
                 </ReactFlowProvider>
             </div>
 
