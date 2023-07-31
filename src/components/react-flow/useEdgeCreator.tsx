@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
-import { MarkerType, type Edge, type Node } from 'reactflow';
+import { MarkerType, type Edge, type Node, ReactFlowInstance } from 'reactflow';
 
-function useEdgeCreator(nodeIdsArray: Node[]) {
-  const nodeLogs = nodeIdsArray.filter((node) => node.parentNode === 'logs');
-  const nodeMetrics = nodeIdsArray.filter((node) => node.parentNode === 'metrics');
-  const nodeTraces = nodeIdsArray.filter((node) => node.parentNode === 'traces');
-
+function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstance) {
   const [edgeList, setEdgeList] = useState<Edge[]>([]);
+  useEffect(() => {
   const edgesToAdd: Edge[] = [];
 
   const calculateExportersNode = (exporterNodes: Node[], processorNode: Node) => {
@@ -111,7 +108,11 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
     calculateProcessorNode(processorNodes);
     calculateReceiverNode(receiverNodes, firstProcessorNode);
   };
-  useEffect(() => {
+
+    const nodeLogs = nodeIdsArray.filter((node) => node.parentNode === 'logs');
+    const nodeMetrics = nodeIdsArray.filter((node) => node.parentNode === 'metrics');
+    const nodeTraces = nodeIdsArray.filter((node) => node.parentNode === 'traces');
+    
     if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2) {
       return;
     }
@@ -121,7 +122,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
     addToTraces(nodeTraces)
 
     setEdgeList(edgesToAdd);
-  }, [nodeIdsArray]);
+  }, [nodeIdsArray, reactFlowInstance]);
 
   return edgeList;
 }
