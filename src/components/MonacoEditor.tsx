@@ -1,22 +1,22 @@
 //React & Next
 import { useRef, useState } from 'react';
+import React from 'react';
 //Queries and scripts
 import { useConfigs, useInsertConfigs } from '~/queries/config';
 //Internal components
+import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
-import type { IAjvError, IError } from './ErrorConsole';
+import { DefaultConfig } from './DefaultConfig';
 //External libraries
 import Editor from '@monaco-editor/react';
 import type { Monaco, OnMount } from '@monaco-editor/react';
+import type { editor } from 'monaco-editor';
 import JsYaml from 'js-yaml';
 import Ajv from "ajv"
-import type { editor } from 'monaco-editor';
-//UI
 import { ReactFlowProvider } from 'reactflow';
 import Flow from './react-flow/ReactFlowCom';
-import React from 'react';
-
+//UI
 
 
 
@@ -26,13 +26,10 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const [clicked, setClicked] = useState(false)
     const [data, setData] = useState({ name: '', config: '' })
     const [errors, setErrors] = useState<IError>({});
-
-
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
     const [monacoInstance, setMonacoInstance] = React.useState<editor.IStandaloneCodeEditor | null>(null);
-
 
     const handleEditorDidMount: OnMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editorRef.current = editor;
@@ -102,6 +99,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
         <div className="flex">
             <div className='relative w-[50%]'>
                 <Editor
+                    defaultValue={DefaultConfig}
                     value={
                         !clicked ?
                             configs && configs?.length > 0 &&
