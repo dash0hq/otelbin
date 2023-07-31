@@ -19,7 +19,6 @@ import Flow from './react-flow/ReactFlowCom';
 //UI
 
 
-
 export default function MonacoEditor({ id }: { id?: string }) {
     const editorRef = useRef<any>(null);
     const monacoRef = useRef<any>(null);
@@ -97,6 +96,14 @@ export default function MonacoEditor({ id }: { id?: string }) {
         }
     }
 
+    function handleClickBackground() {
+        let pipelinesPosition = editorRef.current.getModel().findMatches('pipelines', true, false, false, null, true)
+        if (pipelinesPosition) {
+            editorRef.current.setPosition({ lineNumber: pipelinesPosition[0].range.startLineNumber, column: pipelinesPosition[0].range.startColumn });
+            editorRef.current.focus();
+            editorRef.current.revealPositionInCenter({ lineNumber: pipelinesPosition[0].range.startLineNumber, column: pipelinesPosition[0].range.startColumn });
+        }
+    }
 
     return (
         <div className="flex">
@@ -129,7 +136,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 <ErrorConsole errors={errors} />
 
             </div>
-            <div className='flex flex-col gap-y-4 '>
+            <div className='flex flex-col gap-y-4' onClick={handleClickBackground}>
                 <ReactFlowProvider>
                     <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? data.config : ''} />
                 </ReactFlowProvider>
