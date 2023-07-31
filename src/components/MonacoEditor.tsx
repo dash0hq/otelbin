@@ -71,8 +71,11 @@ export default function MonacoEditor({ id }: { id?: string }) {
             } else {
                 ajvError = []
             }
-            setErrors({ ...errors, ajvErrors: ajvError })
-
+            setErrors({ ajvErrors: ajvError })
+            const model = editorRef.current.getModel();
+            if (model) {
+                monacoRef.current?.editor.setModelMarkers(model, "json", []);
+            }
         } catch (error: any) {
             const model = editorRef.current.getModel();
             const errorLineNumber = error.mark.line;
@@ -90,7 +93,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
             if (model) {
                 monacoRef.current?.editor.setModelMarkers(model, "json", [errorMarker]);
             }
-            setErrors({ ...errors, jsYamlError: error })
+            setErrors({ jsYamlError: error })
         }
     }
 
