@@ -8,6 +8,7 @@ import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
 import { DefaultConfig } from './DefaultConfig';
+import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
 //External libraries
 import Editor from '@monaco-editor/react';
 import type { Monaco, OnMount } from '@monaco-editor/react';
@@ -20,25 +21,18 @@ import Flow from './react-flow/ReactFlowCom';
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
-    const editorRef = useRef<any>(null);
-    const monacoRef = useRef<any>(null);
+    const editorDidMount = useEditorDidMount();
+    const editorRef = useEditorRef();
+    const monacoRef = useMonacoRef();
     const [clicked, setClicked] = useState(false)
     const [data, setData] = useState({ name: '', config: '' })
     const [errors, setErrors] = useState<IError>({});
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
 
-    const [monacoInstance, setMonacoInstance] = React.useState<editor.IStandaloneCodeEditor | null>(null);
-
-    const handleEditorDidMount: OnMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-        editorRef.current = editor;
-        monacoRef.current = monaco;
-        setMonacoInstance(editor);
-    }
-
-
     function handleYamlValidation(configData: string) {
         const ajv = new Ajv({ allErrors: true })
+        const model = editorRef && editorRef.current && editorRef.current.getModel();
         let ajvError: IAjvError[] = []
         try {
             const jsonData = JsYaml.load(configData);
@@ -71,12 +65,10 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 ajvError = []
             }
             setErrors({ ajvErrors: ajvError })
-            const model = editorRef.current.getModel();
             if (model) {
                 monacoRef.current?.editor.setModelMarkers(model, "json", []);
             }
         } catch (error: any) {
-            const model = editorRef.current.getModel();
             const errorLineNumber = error.mark.line;
             const errorColumn = error.mark.column;
             const errorMessage = error.reason;
@@ -97,11 +89,13 @@ export default function MonacoEditor({ id }: { id?: string }) {
     }
 
     function handleClickBackground() {
-        const pipelinesPosition = editorRef.current.getModel().findMatches('pipelines', true, false, false, null, true)
-        if (pipelinesPosition) {
-            editorRef.current.setPosition({ lineNumber: pipelinesPosition[0].range.startLineNumber, column: pipelinesPosition[0].range.startColumn });
-            editorRef.current.focus();
-            editorRef.current.revealPositionInCenter({ lineNumber: pipelinesPosition[0].range.startLineNumber, column: pipelinesPosition[0].range.startColumn });
+        const pipelinesPosition: editor.FindMatch[] | undefined = editorRef?.current?.getModel()?.findMatches('pipelines', true, false, false, null, true)
+        if (pipelinesPosition && pipelinesPosition?.length > 0) {
+            editorRef?.current?.setPosition({ lineNumber: pipelinesPosition[0] && pipelinesPosition[0].range.startLineNumber || 1, column: pipelinesPosition[0] && pipelinesPosition[0].range.startColumn || 1 });
+            editorRef?.current?.focus();
+            editorRef?.current?.revealPositionInCenter({ lineNumber: pipelinesPosition[0] && pipelinesPosition[0].range.startLineNumber || 1, column: pipelinesPosition[0] && pipelinesPosition[0].range.startColumn || 1 });
+        } else {
+            editorRef?.current?.focus();
         }
     }
 
@@ -117,7 +111,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                             : data.config
                     }
 
-                    onMount={handleEditorDidMount}
+                    onMount={editorDidMount}
                     height="100vh"
                     width={'100%'}
                     defaultLanguage='yaml'

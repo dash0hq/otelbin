@@ -1,5 +1,6 @@
 import Head from "next/head";
 import MonacoEditor from "~/components/MonacoEditor";
+import { EditorProvider } from "~/contexts/EditorContext";
 
 export default function Home() {
   return (
@@ -10,8 +11,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen">
+        <EditorProvider>
         <MonacoEditor />
+        </EditorProvider>
       </main>
     </>
   );
 }
+
