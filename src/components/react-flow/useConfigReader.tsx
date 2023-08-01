@@ -1,4 +1,4 @@
-import type { Node } from "reactflow";
+import type { Node, ReactFlowInstance } from "reactflow";
 import type { IConfig, ILog, IMetrics, IPipeline, ITraces } from "./mockData";
 import { useEffect, useState } from "react";
 
@@ -96,7 +96,6 @@ const addToLogs = (log: ILog) => {
         draggable: false,
       });
     });
-    console.log(nodesToAdd.map(c => {return `${c.position.x}, ${c.position.y}`}));
   }
 
   return nodesToAdd;
@@ -209,7 +208,7 @@ const addToTraces = (traces: ITraces) => {
 
 
 
-const useConfigReader = (value: IConfig) => {
+const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
 
   useEffect(() => {
@@ -227,7 +226,7 @@ const useConfigReader = (value: IConfig) => {
     
 
     setJsonDataState(nodesToAdd);
-  }, [value]);
+  }, [value, reactFlowInstance]);
   return jsonDataState;
 };
 
