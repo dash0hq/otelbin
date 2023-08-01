@@ -72,7 +72,7 @@ export function Error(
                 error &&
                 <p className='text-primaryMagenta text-xs font-normal flex items-center gap-x-1'>
 
-                    <div className='p-0 self-end'><XCircleIcon /></div>
+                        <div className='p-0 self-start mt-[5px]'><XCircleIcon /></div>
                     <p>{`${error.message}`}</p>
                 </p>
             }
@@ -80,7 +80,7 @@ export function Error(
                 jsYamlError
                     ? (
                         <p className='text-primaryMagenta text-xs font-normal flex items-center gap-x-1'>
-                            <div className='p-0 self-start'><XCircleIcon /></div>
+                            <div className='p-0 self-start mt-[5px]'><XCircleIcon /></div>
                             <p>{`${jsYamlError.reason} ${jsYamlError.mark && `(Line ${jsYamlError.mark.line})`}`}</p>
                         </p>)
 
