@@ -97,7 +97,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     }
 
     function handleClickBackground() {
-        let pipelinesPosition = editorRef.current.getModel().findMatches('pipelines', true, false, false, null, true)
+        const pipelinesPosition = editorRef.current.getModel().findMatches('pipelines', true, false, false, null, true)
         if (pipelinesPosition) {
             editorRef.current.setPosition({ lineNumber: pipelinesPosition[0].range.startLineNumber, column: pipelinesPosition[0].range.startColumn });
             editorRef.current.focus();
