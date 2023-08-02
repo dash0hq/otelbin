@@ -18,13 +18,12 @@ const addPipleType = (pipelines: IPipeline) => {
         draggable: false,
         style: {
           width: 1570,
-          height: 239,
+          padding: "4px 12px 10px 4px",
+          // height: 239,
         },
       });
     });
   }
-
-
 
   return nodesToAdd;
 }

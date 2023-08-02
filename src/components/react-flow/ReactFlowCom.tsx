@@ -9,6 +9,7 @@ import JsYaml from 'js-yaml';
 import useConfigReader from './useConfigReader';
 import parentNodeType from './parentNodeType';
 import useEdgeCreator from './useEdgeCreator';
+import { IconButton } from '../ui/IconButton';
 
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
@@ -37,7 +38,10 @@ export default function Flow({ value }: { value: string }) {
         }}
         className="disable-attribution" 
       >
-        <Controls />
+     <IconButton variant="default">
+        +
+      </IconButton>
+        {/* <Controls /> */}
         </ReactFlow>
       </div>
         
