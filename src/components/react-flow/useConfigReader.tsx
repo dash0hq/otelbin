@@ -5,47 +5,26 @@ import { useEffect, useState } from "react";
 const addPipleType = (pipelines: IPipeline) => {
   const nodesToAdd: Node[] = [];
 
-  if (pipelines?.logs) {
-    nodesToAdd.push({
-      id: `logs`,
-      type: 'parentNodeType',
-      position: { x: 100, y: 0 },
-      data: { label: 'Logs' },
-      draggable: false,
-      style: {
-        width: 1570,
-        height: 239,
-      },
+  if (pipelines) {
+    const keyValue = Object.keys(pipelines);
+    console.log(keyValue);
+
+    keyValue.map((key, index) => {
+      nodesToAdd.push({
+        id: `${key}`,
+        type: 'parentNodeType',
+        position: { x: 100, y: index *  300 },
+        data: { label: key },
+        draggable: false,
+        style: {
+          width: 1570,
+          height: 239,
+        },
+      });
     });
   }
 
-  if (pipelines?.metrics) {
-    nodesToAdd.push({
-      id: `metrics`,
-      type: 'parentNodeType',
-      position: { x: 100, y: 300 },
-      data: { label: 'Metrics' },
-      draggable: false,
-      style: {
-        width: 1570,
-        height: 239,
-      },
-    });
-  }
 
-  if (pipelines?.traces) {
-    nodesToAdd.push({
-      id: `traces`,
-      type: 'parentNodeType',
-      position: { x: 100, y: 600 },
-      data: { label: 'Traces' },
-      draggable: false,
-      style: {
-        width: 1570,
-        height: 239,
-      },
-    });
-  }
 
   return nodesToAdd;
 }
