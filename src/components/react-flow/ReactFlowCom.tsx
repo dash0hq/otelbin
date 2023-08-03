@@ -9,6 +9,8 @@ import JsYaml from 'js-yaml';
 import useConfigReader from './useConfigReader';
 import parentNodeType from './parentNodeType';
 import useEdgeCreator from './useEdgeCreator';
+import { useEditorRef } from '~/contexts/EditorContext';
+import { FlowClick } from './FlowClick';
 
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
@@ -16,6 +18,7 @@ export default function Flow({ value }: { value: string }) {
   const nodes = useConfigReader(jsonData, reactFlowInstance);
   const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode, parentNodeType: parentNodeType }), []);
   const edges = useEdgeCreator(nodes, reactFlowInstance);
+  const editorRef = useEditorRef();
 
   const edgeOptions = {
     animated: false,
@@ -24,9 +27,14 @@ export default function Flow({ value }: { value: string }) {
     },
   };
 
+  function handleClickBackground(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    FlowClick(event, { label: 'pipelines', parentNode: '' }, editorRef, "pipelines");
+  }
+
   return (
-    <div style={{ height: '100vh', width: "1040px" }}>
+    <div className='z-0' style={{ height: '100vh', width: "1040px" }}>
       <ReactFlow
+        onClick={handleClickBackground}
         nodes={nodes}
         edges={edges}
         defaultEdgeOptions={edgeOptions}

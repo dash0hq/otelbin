@@ -62,7 +62,7 @@ const addToLogs = (log: ILog) => {
         extent: 'parent',
         type: 'exporterNode',
         position: { x: plusIndex * 1300, y: 75 }, 
-        data: { label: exporter }, 
+        data: { label: exporter, parentNode: 'logs' }, 
         draggable: false,
       });
     });
@@ -77,7 +77,7 @@ const addToLogs = (log: ILog) => {
         extent: 'parent',
         type: 'processorNode',
         position: { x: indexUpdate * offsetX, y: 80 }, 
-        data: { label: processor },
+        data: { label: processor, parentNode: 'logs' },
         draggable: false,
       });
     });
@@ -92,7 +92,7 @@ const addToLogs = (log: ILog) => {
         extent: 'parent',
         type: 'receiverNode',
         position: { x: indexUpdate * 100, y: 75 }, 
-        data: { label: receiver }, 
+        data: { label: receiver, parentNode: 'logs' }, 
         draggable: false,
       });
     });
@@ -116,7 +116,7 @@ const addToMetrics = (metrics: IMetrics) => {
         type: 'exporterNode',
         position: { x: 1300 , y: plusIndex * 1 }, 
         // position: { x: xUpdater === 0 ? xUpdater * 7000 : xUpdater * 700 , y: plusIndex * 1 }, 
-        data: { label: exporter },
+        data: { label: exporter, parentNode: 'metrics' },
         draggable: false,
       });
     });
@@ -131,7 +131,7 @@ const addToMetrics = (metrics: IMetrics) => {
         extent: 'parent',
         type: 'processorNode',
         position: { x: indexUpdate * offsetX, y: 80 }, 
-        data: { label: processor }, 
+        data: { label: processor, parentNode: 'metrics' }, 
         draggable: false,
       });
     });
@@ -146,7 +146,7 @@ const addToMetrics = (metrics: IMetrics) => {
         extent: 'parent',
         type: 'receiverNode',
         position: { x: indexUpdate * 70, y: 75 }, 
-        data: { label: receiver }, 
+        data: { label: receiver, parentNode: 'metrics' }, 
         draggable: false,
       });
     });
@@ -167,7 +167,7 @@ const addToTraces = (traces: ITraces) => {
         extent: 'parent',
         type: 'exporterNode',
         position: { x: plusIndex === 1 ? plusIndex * 1300 : plusIndex * 100 , y: 75 }, 
-        data: { label: exporter },
+        data: { label: exporter, parentNode: 'traces' },
         draggable: false,
       });
     });
@@ -182,7 +182,7 @@ const addToTraces = (traces: ITraces) => {
         extent: 'parent',
         type: 'processorNode',
         position: { x: indexUpdate * offsetX, y: 80 }, 
-        data: { label: processor },
+        data: { label: processor, parentNode: 'traces' },
         draggable: false,
       });
     });
@@ -197,7 +197,7 @@ const addToTraces = (traces: ITraces) => {
         extent: 'parent',
         type: 'receiverNode',
         position: { x: 100, y: indexUpdate * 1 }, 
-        data: { label: receiver },
+        data: { label: receiver, parentNode: 'traces' },
         draggable: false,
       });
     });

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import Tag from '../ui/NodTag';
+import { useEditorRef } from '~/contexts/EditorContext';
+import { FlowClick } from './FlowClick';
 
 
 const customNodeStyles = {
@@ -14,15 +16,23 @@ const customNodeStyles = {
   fontSize: "10px",
 }
 
-
 interface IData {
   label: string;
+  parentNode: string;
 }
+
   const ReceiverNode = ({data}: {data:IData}) => {
+    const editorRef = useEditorRef();
+
+    function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+      FlowClick(event, data, editorRef, 'receivers');
+    }
 
   return (
     <div 
     style={customNodeStyles}
+      className='cursor-pointer'
+      onClick={handleClickNode}
     >
       <Tag tag="Receiver"/>
       <div className='w-full flex justify-center items-center flex-col'>

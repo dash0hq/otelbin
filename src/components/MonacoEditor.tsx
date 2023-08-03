@@ -88,17 +88,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
         }
     }
 
-    function handleClickBackground() {
-        const pipelinesPosition: editor.FindMatch[] | undefined = editorRef?.current?.getModel()?.findMatches('pipelines', true, false, false, null, true)
-        if (pipelinesPosition && pipelinesPosition?.length > 0) {
-            editorRef?.current?.setPosition({ lineNumber: pipelinesPosition[0] && pipelinesPosition[0].range.startLineNumber || 1, column: pipelinesPosition[0] && pipelinesPosition[0].range.startColumn || 1 });
-            editorRef?.current?.focus();
-            editorRef?.current?.revealPositionInCenter({ lineNumber: pipelinesPosition[0] && pipelinesPosition[0].range.startLineNumber || 1, column: pipelinesPosition[0] && pipelinesPosition[0].range.startColumn || 1 });
-        } else {
-            editorRef?.current?.focus();
-        }
-    }
-
     return (
         <div className="flex">
             <div className='relative w-[50%]'>
@@ -130,7 +119,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 <ErrorConsole errors={errors} />
 
             </div>
-            <div className='flex flex-col gap-y-4' onClick={handleClickBackground}>
+            <div className='flex flex-col gap-y-4'>
                 <ReactFlowProvider>
                     <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? data.config : ''} />
                 </ReactFlowProvider>
