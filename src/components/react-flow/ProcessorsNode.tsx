@@ -18,7 +18,7 @@ interface IData {
   label: string;
 }
 
-const ProcessorNode = ({data}: {data:IData}) => {
+const processorsNode = ({data}: {data:IData}) => {
 
   return (
     <div 
@@ -34,4 +34,4 @@ const ProcessorNode = ({data}: {data:IData}) => {
     </div>
   );
 }
-export default ProcessorNode;
+export default processorsNode;

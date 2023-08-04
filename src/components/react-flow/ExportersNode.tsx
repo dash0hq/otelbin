@@ -17,9 +17,7 @@ const customNodeStyles = {
 interface IData {
   label: string;
 }
-  export default function ExporterNode({data}: {data:IData}) {
-
-    const text = data.label.split("/");
+  export default function exportersNode({data}: {data:IData}) {
 
   return (
     <div 
@@ -28,8 +26,7 @@ interface IData {
       <Tag tag="Exporter"/>
       <Handle type="target" position={Position.Left} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
       <div className='w-full flex justify-center items-center flex-col'>
-        <div className='text-white'>{text[0]}</div>
-        {/* <div className='text-white'>{text[1]}</div> */}
+        <div className='text-white'>{data.label}</div>
       </div>
     </div>
   );
