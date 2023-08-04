@@ -33,7 +33,7 @@ const addPipleType = (pipelines: IPipeline): Node[] => {
       nodesToAdd.push({
         id: key,
         type: 'parentNodeType',
-        position: { x: 100, y: calculateHeight(index + 1) },
+        position: { x: 0, y: calculateHeight(index + 1) },
         data: { label: key },
         draggable: false,
         style: {
