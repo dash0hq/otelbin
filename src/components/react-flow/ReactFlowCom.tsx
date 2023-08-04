@@ -4,7 +4,6 @@ import 'reactflow/dist/style.css';
 import type { IConfig } from './mockData';
 import JsYaml from 'js-yaml';
 import useConfigReader from './useConfigReader';
-import parentNodeType from './ParentNodeType';
 import useEdgeCreator from './useEdgeCreator';
 import { ControlButton } from '@reactflow/controls';
 import { MaximizeIcon, MinusIcon, PlusIcon } from 'lucide-react';
@@ -51,7 +50,7 @@ export default function Flow({ value }: { value: string }) {
       >
         <Panel position="bottom-left" className='flex gap-2'>
           <div className='flex gap-0.5 '>
-            <ControlButton onClick={(e) => reactFlowInstance.zoomIn()} title="Zoom-In" className='z-10 rounded-l-sm' style={controlButtonStyle}>
+            <ControlButton onClick={() => reactFlowInstance.zoomIn()} title="Zoom-In" className='z-10 rounded-l-sm' style={controlButtonStyle}>
             <PlusIcon />
             </ControlButton>
             <ControlButton onClick={() => reactFlowInstance.zoomOut()} title="Zoom-In" className='z-10 rounded-r-sm' style={controlButtonStyle}>

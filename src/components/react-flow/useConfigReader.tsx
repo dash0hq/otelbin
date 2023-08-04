@@ -66,7 +66,6 @@ const addToLogs = (log: ILog) => {
   const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
   const parentHeight = (compareLength * 80) / 2;
   const offsetX = 200;
-  const offsetY = 80;
   const keyLogs = Object.keys(log);
 
    
@@ -104,7 +103,6 @@ const addToLogs = (log: ILog) => {
     if (logItem === "exporters") {
       const exporters = log.exporters;
       exporters.map((exporter, index) => {
-        const indexFined = keyLogs.findIndex((node) => node === 'exporters');
         nodesToAdd.push({
           id: `Logs-exporter-exporterNode-${exporter}-${uuid().slice(0, 4)}`,
           parentNode: 'logs',
@@ -126,7 +124,6 @@ const addToMetrics = (metric: IMetrics) => {
   const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
   const parentHeight = (compareLength * 80) / 2;
   const offsetX = 200;
-  const offsetY = 80;
   const keyMetrics = Object.keys(metric);
   keyMetrics.map((metricItem, index) => {
     if (metricItem === "processors") {
@@ -181,7 +178,6 @@ const addToTraces = (trace: ITraces) => {
   const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
   const parentHeight = (compareLength * 80) / 2;
   const offsetX = 200;
-  const offsetY = 80;
   const keyTraces = Object.keys(trace);
 
   keyTraces.map((traceItem, index) => {
