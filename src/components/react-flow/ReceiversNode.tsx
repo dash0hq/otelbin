@@ -18,7 +18,7 @@ const customNodeStyles = {
 interface IData {
   label: string;
 }
-  const ReceiverNode = ({data}: {data:IData}) => {
+  const receiversNode = ({data}: {data:IData}) => {
 
   return (
     <div 
@@ -28,8 +28,9 @@ interface IData {
       <div className='w-full flex justify-center items-center flex-col'>
         <div className='text-white mt-[10px]'>{data.label}</div>
       </div>
-      <Handle type="source" position={Position.Right} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
+      <Handle type="source" position={Position.Right} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)",
+    }}/>
     </div>
   );
 }
-export default ReceiverNode;
+export default receiversNode;

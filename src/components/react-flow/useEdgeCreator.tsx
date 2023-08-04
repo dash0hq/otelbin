@@ -6,12 +6,12 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
   useEffect(() => {
   const edgesToAdd: Edge[] = [];
 
-  const calculateExportersNode = (exporterNodes: Node[], processorNode: Node) => {
-    exporterNodes.forEach((targetNode) => {
-      if (!processorNode || !targetNode) {
+  const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node) => {
+    exportersNodes.forEach((targetNode) => {
+      if (!processorsNode || !targetNode) {
         return;
       }
-      const sourceNodeId = processorNode.id;
+      const sourceNodeId = processorsNode.id;
       const targetNodeId = targetNode.id;
       const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
       const edge: Edge = {
@@ -28,10 +28,10 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
       edgesToAdd.push(edge);
     });
   };
-  const calculateProcessorNode = (processorNodes: Node[]) => {
-    for (let i = 0; i < processorNodes.length - 1; i++) {
-      const sourceNode = processorNodes[i];
-      const targetNode = processorNodes[i + 1];
+  const calculateprocessorsNode = (processorsNodes: Node[]) => {
+    for (let i = 0; i < processorsNodes.length - 1; i++) {
+      const sourceNode = processorsNodes[i];
+      const targetNode = processorsNodes[i + 1];
       if (!sourceNode || !targetNode) {
         continue;
       }
@@ -52,13 +52,13 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
       edgesToAdd.push(edge);
     }
   };
-  const calculateReceiverNode = (receiverNodes: Node[], firstProcessorNode: Node) => {
-    receiverNodes.forEach((sourceNode) => {
-      if (!receiverNodes || !sourceNode) {
+  const calculatereceiversNode = (receiversNodes: Node[], firstprocessorsNode: Node) => {
+    receiversNodes.forEach((sourceNode) => {
+      if (!receiversNodes || !sourceNode) {
         return;
       }
       const sourceNodeId = sourceNode.id;
-      const targetNodeId = firstProcessorNode.id;
+      const targetNodeId = firstprocessorsNode.id;
       const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
       const edge: Edge = {
         id: edgeId,
@@ -76,37 +76,37 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
   };
   
   const addToLogs = (nodeLogs: Node[]) => {
-    const exporterNodes = nodeLogs.filter((node) => node.type === 'exporterNode');
-    const processorNodes = nodeLogs.filter((node) => node.type === 'processorNode');
-    const receiverNodes = nodeLogs.filter((node) => node.type === 'receiverNode');
-    const firstProcessorNode = processorNodes[0] as Node;
-      const lastProcessorNode = processorNodes[processorNodes.length - 1] as Node;
-      calculateExportersNode(exporterNodes, lastProcessorNode);
+    const exportersNodes = nodeLogs.filter((node) => node.type === 'exportersNode');
+    const processorsNodes = nodeLogs.filter((node) => node.type === 'processorsNode');
+    const receiversNodes = nodeLogs.filter((node) => node.type === 'receiversNode');
+    const firstprocessorsNode = processorsNodes[0] as Node;
+      const lastprocessorsNode = processorsNodes[processorsNodes.length - 1] as Node;
+      calculateExportersNode(exportersNodes, lastprocessorsNode);
   
-    calculateProcessorNode(processorNodes);
-    calculateReceiverNode(receiverNodes, firstProcessorNode);
+    calculateprocessorsNode(processorsNodes);
+    calculatereceiversNode(receiversNodes, firstprocessorsNode);
   };
   const addToMetrics = (nodeMetrics: Node[]) => {
-    const exporterNodes = nodeMetrics.filter((node) => node.type === 'exporterNode');
-    const processorNodes = nodeMetrics.filter((node) => node.type === 'processorNode');
-    const receiverNodes = nodeMetrics.filter((node) => node.type === 'receiverNode');
-    const firstProcessorNode = processorNodes[0] as Node;
-      const lastProcessorNode = processorNodes[processorNodes.length - 1] as Node;
-      calculateExportersNode(exporterNodes, lastProcessorNode);
+    const exportersNodes = nodeMetrics.filter((node) => node.type === 'exportersNode');
+    const processorsNodes = nodeMetrics.filter((node) => node.type === 'processorsNode');
+    const receiversNodes = nodeMetrics.filter((node) => node.type === 'receiversNode');
+    const firstprocessorsNode = processorsNodes[0] as Node;
+      const lastprocessorsNode = processorsNodes[processorsNodes.length - 1] as Node;
+      calculateExportersNode(exportersNodes, lastprocessorsNode);
   
-    calculateProcessorNode(processorNodes);
-    calculateReceiverNode(receiverNodes, firstProcessorNode);
+    calculateprocessorsNode(processorsNodes);
+    calculatereceiversNode(receiversNodes, firstprocessorsNode);
   };
   const addToTraces = (nodeTraces: Node[]) => {
-    const exporterNodes = nodeTraces.filter((node) => node.type === 'exporterNode');
-    const processorNodes = nodeTraces.filter((node) => node.type === 'processorNode');
-    const receiverNodes = nodeTraces.filter((node) => node.type === 'receiverNode');
-    const firstProcessorNode = processorNodes[0] as Node;
-      const lastProcessorNode = processorNodes[processorNodes.length - 1] as Node;
-      calculateExportersNode(exporterNodes, lastProcessorNode);
+    const exportersNodes = nodeTraces.filter((node) => node.type === 'exportersNode');
+    const processorsNodes = nodeTraces.filter((node) => node.type === 'processorsNode');
+    const receiversNodes = nodeTraces.filter((node) => node.type === 'receiversNode');
+    const firstprocessorsNode = processorsNodes[0] as Node;
+      const lastprocessorsNode = processorsNodes[processorsNodes.length - 1] as Node;
+      calculateExportersNode(exportersNodes, lastprocessorsNode);
   
-    calculateProcessorNode(processorNodes);
-    calculateReceiverNode(receiverNodes, firstProcessorNode);
+    calculateprocessorsNode(processorsNodes);
+    calculatereceiversNode(receiversNodes, firstprocessorsNode);
   };
 
     const nodeLogs = nodeIdsArray.filter((node) => node.parentNode === 'logs');

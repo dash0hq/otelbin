@@ -1,16 +1,17 @@
 import React, { useMemo } from 'react';
 import ReactFlow, { Panel, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
-import ReceiverNode from './ReceiverNode';
-import ProcessorNode from './ProcessorNode';
-import ExporterNode from './ExporterNode';
 import type { IConfig } from './mockData';
 import JsYaml from 'js-yaml';
 import useConfigReader from './useConfigReader';
-import parentNodeType from './parentNodeType';
+import parentNodeType from './ParentNodeType';
 import useEdgeCreator from './useEdgeCreator';
-import { Controls, ControlButton } from '@reactflow/controls';
+import { ControlButton } from '@reactflow/controls';
 import { MaximizeIcon, MinusIcon, PlusIcon } from 'lucide-react';
+import exportersNode from './ExportersNode';
+import receiversNode from './ReceiversNode';
+import processorsNode from './ProcessorsNode';
+import ParentNodeType from './ParentNodeType';
 
 const controlButtonStyle = {
   backgroundColor: "#293548",
@@ -25,10 +26,9 @@ export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
   const nodes = useConfigReader(jsonData, reactFlowInstance);
-  const nodeTypes = useMemo(() => ({ processorNode: ProcessorNode, receiverNode: ReceiverNode, exporterNode: ExporterNode, parentNodeType: parentNodeType }), []);
+  const nodeTypes = useMemo(() => ({ processorsNode: processorsNode, receiversNode: receiversNode, exportersNode: exportersNode, parentNodeType: ParentNodeType }), []);
   const edges = useEdgeCreator(nodes, reactFlowInstance);
 
-  console.log(Controls.$$typeof, ControlButton);
   const edgeOptions = {
     animated: false,
     style: {
