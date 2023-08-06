@@ -20,8 +20,8 @@ interface IData {
   label: string;
   parentNode: string;
 }
+const ReceiversNode = ({ data }: { data: IData }) => {
 
-  const ReceiverNode = ({data}: {data:IData}) => {
     const editorRef = useEditorRef();
 
     function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -38,8 +38,9 @@ interface IData {
       <div className='w-full flex justify-center items-center flex-col'>
         <div className='text-white mt-[10px]'>{data.label}</div>
       </div>
-      <Handle type="source" position={Position.Right} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
+      <Handle type="source" position={Position.Right} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)",
+    }}/>
     </div>
   );
 }
-export default ReceiverNode;
+export default ReceiversNode;

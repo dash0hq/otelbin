@@ -1,216 +1,237 @@
 import type { Node, ReactFlowInstance } from "reactflow";
 import type { IConfig, ILog, IMetrics, IPipeline, ITraces } from "./mockData";
 import { useEffect, useState } from "react";
+import { uuid } from "uuidv4";
 
-const addPipleType = (pipelines: IPipeline) => {
+const addPipleType = (pipelines: IPipeline): Node[] => {
   const nodesToAdd: Node[] = [];
 
-  if (pipelines?.logs) {
-    nodesToAdd.push({
-      id: `logs`,
-      type: 'parentNodeType',
-      position: { x: 100, y: 0 },
-      data: { label: 'Logs' },
-      draggable: false,
-      style: {
-        width: 1570,
-        height: 239,
-      },
+  const calculateMaxHeight = (data: IPipeline): number => {
+    const heights = Object.values(data).map(pipeline => {
+      const receiversLength = pipeline.receivers.length;
+      const exportersLength = pipeline.exporters.length;
+      return Math.max(receiversLength, exportersLength);
     });
-  }
+    return Math.max(...heights) * 200;
+  };
 
-  if (pipelines?.metrics) {
-    nodesToAdd.push({
-      id: `metrics`,
-      type: 'parentNodeType',
-      position: { x: 100, y: 300 },
-      data: { label: 'Metrics' },
-      draggable: false,
-      style: {
-        width: 1570,
-        height: 239,
-      },
-    });
-  }
+  const calculateHeight = (index: number): number => {
+    if (index === 1) {
+      return 100;
+    } else if (index > 1) {
+      const actualHeight = calculateMaxHeight(pipelines);
+      return ((actualHeight / 2) + 300) * (index - 1);
+    } else {
+      throw new Error("Invalid index");
+    }
+  };
+  
+  if (pipelines) {
+    const pipelineKeys = Object.keys(pipelines);
 
-  if (pipelines?.traces) {
-    nodesToAdd.push({
-      id: `traces`,
-      type: 'parentNodeType',
-      position: { x: 100, y: 600 },
-      data: { label: 'Traces' },
-      draggable: false,
-      style: {
-        width: 1570,
-        height: 239,
-      },
+    pipelineKeys.forEach((key, index) => {
+      nodesToAdd.push({
+        id: key,
+        type: 'parentNodeType',
+        position: { x: 0, y: calculateHeight(index + 1) },
+        data: { label: key },
+        draggable: false,
+        style: {
+          width: 1570,
+          padding: "4px 12px 10px 4px",
+          height: calculateMaxHeight(pipelines),
+        },
+      });
     });
   }
 
   return nodesToAdd;
-}
+};
+
+const calculateValue = (parentHeight: number, index: number): number => {
+  if (index === 0) {
+    return parentHeight;
+  } else if (index % 2 === 1) {
+    return parentHeight - 80 * index;
+  } else {
+    return parentHeight + 60 * index;
+  }
+};
+
+
 const addToLogs = (log: ILog) => {
   const nodesToAdd: Node[] = [];
-  const offsetX = 300;
-
-  if (log?.exporters) {
-    log.exporters.forEach((exporter, index) => {
-      const plusIndex = index + 1;
-      nodesToAdd.push({
-        id: `Logs-Exporter-NodeExporter-${exporter}`,
-        parentNode: 'logs',
-        extent: 'parent',
-        type: 'exporterNode',
-        position: { x: plusIndex * 1300, y: 75 }, 
-        data: { label: exporter, parentNode: 'logs' }, 
-        draggable: false,
-      });
-    });
-  }
-
-  if (log?.processors) {
-    log.processors.forEach((processor, index) => {
-      const indexUpdate = index + 1;
-      nodesToAdd.push({
-        id: `Logs-Processor-NodeProcessor-${processor}`,
-        parentNode: 'logs',
-        extent: 'parent',
-        type: 'processorNode',
-        position: { x: indexUpdate * offsetX, y: 80 }, 
-        data: { label: processor, parentNode: 'logs' },
-        draggable: false,
-      });
-    });
-  }
-
-  if (log?.receivers) {
-    log.receivers.forEach((receiver, index) => {
-      const indexUpdate = index + 1;
-      nodesToAdd.push({
-        id: `Logs-Receiver-NodeReceiver-${receiver}`,
-        parentNode: 'logs',
-        extent: 'parent',
-        type: 'receiverNode',
-        position: { x: indexUpdate * 100, y: 75 }, 
-        data: { label: receiver, parentNode: 'logs' }, 
-        draggable: false,
-      });
-    });
-  }
-
-  return nodesToAdd;
-}
-
-const addToMetrics = (metrics: IMetrics) => {
-  const nodesToAdd: Node[] = [];
+   const receiversLength = log.receivers?.length
+  const exportersLength = log.exporters?.length
+  const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
+  const parentHeight = (compareLength * 80) / 2;
   const offsetX = 200;
+  const keyLogs = Object.keys(log);
 
-  if (metrics?.exporters) {
-    metrics.exporters.forEach((exporter, index) => {
-      const plusIndex = index === 0 ? index + 10 : index + 150;
-      const xUpdater = index + 1;
-      nodesToAdd.push({
-        id: `Metrics-Exporter-NodeExporter-${exporter}`,
-        parentNode: 'metrics',
-        extent: 'parent',
-        type: 'exporterNode',
-        position: { x: 1300 , y: plusIndex * 1 }, 
-        // position: { x: xUpdater === 0 ? xUpdater * 7000 : xUpdater * 700 , y: plusIndex * 1 }, 
-        data: { label: exporter, parentNode: 'metrics' },
-        draggable: false,
+   
+    
+  keyLogs.map((logItem, index) => {
+    if (logItem === "processors") {
+      const processors = log.processors;
+      processors.forEach((processor, index) => {
+        nodesToAdd.push({
+          id: `Logs-Processor-processorNode-${processor}-${uuid().slice(0, 6)}}}`,
+          parentNode: 'logs',
+          extent: 'parent',
+          type: 'processorsNode',
+          position: { x: (index + 1) * offsetX, y: parentHeight }, 
+          data: { label: processor,parentNode: 'logs'  },
+          draggable: false,
+        });
       });
-    });
-  }
-
-  if (metrics?.processors) {
-    metrics.processors.forEach((processor, index) => {
-      const indexUpdate = index + 1;
-      nodesToAdd.push({
-        id: `Metrics-Processor-NodeProcessor-${processor}`,
-        parentNode: 'metrics',
-        extent: 'parent',
-        type: 'processorNode',
-        position: { x: indexUpdate * offsetX, y: 80 }, 
-        data: { label: processor, parentNode: 'metrics' }, 
-        draggable: false,
+    }
+    if (logItem === "receivers") {
+      const plusIndex = index + 0.5;
+      const receivers = log.receivers;
+      receivers.map((receiver, index) => {
+        nodesToAdd.push({
+          id: `Logs-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
+          parentNode: 'logs',
+          extent: 'parent',
+          type: 'receiversNode',
+          position: { x: 50, y: calculateValue(parentHeight, index) }, 
+          data: { label: receiver,parentNode: 'logs'  },
+          draggable: false,
+        });
       });
-    });
-  }
-
-  if (metrics?.receivers) {
-    metrics.receivers.forEach((receiver, index) => {
-      const indexUpdate = index + 1;
-      nodesToAdd.push({
-        id: `Metrics-Receiver-NodeReceiver-${receiver}`,
-        parentNode: 'metrics',
-        extent: 'parent',
-        type: 'receiverNode',
-        position: { x: indexUpdate * 70, y: 75 }, 
-        data: { label: receiver, parentNode: 'metrics' }, 
-        draggable: false,
+    }
+    if (logItem === "exporters") {
+      const exporters = log.exporters;
+      exporters.map((exporter, index) => {
+        nodesToAdd.push({
+          id: `Logs-exporter-exporterNode-${exporter}-${uuid().slice(0, 4)}`,
+          parentNode: 'logs',
+          extent: 'parent',
+          type: 'exportersNode',
+          position: { x: (log.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
+          data: { label: exporter,parentNode: 'logs' },
+          draggable: false,
+        });
       });
-    });
-  }
-
+    }
+})
   return nodesToAdd;
 }
-const addToTraces = (traces: ITraces) => {
+const addToMetrics = (metric: IMetrics) => {
   const nodesToAdd: Node[] = [];
-  const offsetX = 300;
-
-  if (traces?.exporters) {
-    traces.exporters.forEach((exporter, index) => {
-      const plusIndex = index + 1;
-      nodesToAdd.push({
-        id: `Traces-Exporter-NodeExporter-${exporter}`,
-        parentNode: 'traces',
-        extent: 'parent',
-        type: 'exporterNode',
-        position: { x: plusIndex === 1 ? plusIndex * 1300 : plusIndex * 100 , y: 75 }, 
-        data: { label: exporter, parentNode: 'traces' },
-        draggable: false,
+  const receiversLength = metric.receivers?.length
+  const exportersLength = metric.exporters?.length
+  const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
+  const parentHeight = (compareLength * 80) / 2;
+  const offsetX = 200;
+  const keyMetrics = Object.keys(metric);
+  keyMetrics.map((metricItem, index) => {
+    if (metricItem === "processors") {
+      const processors = metric.processors;
+      processors.forEach((processor, index) => {
+        nodesToAdd.push({
+          id: `Metrics-Processor-processorNode-${processor}-${uuid().slice(0, 4)}`,
+          parentNode: 'metrics',
+          extent: 'parent',
+          type: 'processorsNode',
+          position: { x: (index + 1) * offsetX, y: parentHeight }, 
+          data: { label: processor,parentNode: 'metrics' },
+          draggable: false,
+        });
       });
-    });
-  }
-
-  if (traces?.processors) {
-    traces.processors.forEach((processor, index) => {
-      const indexUpdate = index + 1;
-      nodesToAdd.push({
-        id: `Trace-Processor-NodeProcessor-${processor}`,
-        parentNode: 'traces',
-        extent: 'parent',
-        type: 'processorNode',
-        position: { x: indexUpdate * offsetX, y: 80 }, 
-        data: { label: processor, parentNode: 'traces' },
-        draggable: false,
+    }
+    if (metricItem === "receivers") {
+      const plusIndex = index + 0.3;
+      const receivers = metric.receivers;
+      receivers.map((receiver, index) => {
+        nodesToAdd.push({
+          id: `Metrics-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
+          parentNode: 'metrics',
+          extent: 'parent',
+          type: 'receiversNode',
+          position: { x: 50, y: calculateValue(parentHeight, index) }, 
+          data: { label: receiver,parentNode: 'metrics' },
+          draggable: false,
+        });
       });
-    });
-  }
-
-  if (traces?.receivers) {
-    traces.receivers.forEach((receiver, index) => {
-      const indexUpdate = index === 0 ? index + 10 : index + 150;
-      nodesToAdd.push({
-        id: `Traces-Receiver-NodeReceiver-${receiver}`,
-        parentNode: 'traces',
-        extent: 'parent',
-        type: 'receiverNode',
-        position: { x: 100, y: indexUpdate * 1 }, 
-        data: { label: receiver, parentNode: 'traces' },
-        draggable: false,
+    }
+    if (metricItem === "exporters") {
+      const exporters = metric.exporters;
+      exporters.map((exporter, index) => {
+        nodesToAdd.push({
+          id: `Metrics-exporter-exporterNode-${exporter}-${uuid().slice(0, 4)}`,
+          parentNode: 'metrics',
+          extent: 'parent',
+          type: 'exportersNode',
+          position: { x: (metric.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
+          data: { label: exporter,parentNode: 'metrics' },
+        });
       });
-    });
-  }
-
+    }
+})
   return nodesToAdd;
 }
+const addToTraces = (trace: ITraces) => {
+  const nodesToAdd: Node[] = [];
+  const receiversLength = trace.receivers?.length
+  const exportersLength = trace.exporters?.length
+  const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
+  const parentHeight = (compareLength * 80) / 2;
+  const offsetX = 200;
+  const keyTraces = Object.keys(trace);
 
-
+  keyTraces.map((traceItem, index) => {
+    if (traceItem === "processors") {
+      const processors = trace.processors;
+      processors.forEach((processor, index) => {
+        nodesToAdd.push({
+          id: `Traces-Processor-processorNode-${processor}-${uuid().slice(0, 4)}`,
+          parentNode: 'traces',
+          extent: 'parent',
+          type: 'processorsNode',
+          position: { x: (index + 1) * offsetX, y: parentHeight }, 
+          data: { label: processor,parentNode: 'traces'  },
+          draggable: false,
+        });
+      });
+    }
+    if (traceItem === "receivers") {
+      const plusIndex = index + 0.3;
+      const receivers = trace.receivers;
+      receivers.map((receiver, index) => {
+        nodesToAdd.push({
+          id: `Traces-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
+          parentNode: 'traces',
+          extent: 'parent',
+          type: 'receiversNode',
+          position: { x: 50, y: calculateValue(parentHeight, index) }, 
+          data: { label: receiver,parentNode: 'traces' },
+          draggable: false,
+        });
+      });
+    }
+    if (traceItem === "exporters") {
+      const exporters = trace.exporters;
+      exporters.map((exporter, index) => {
+        nodesToAdd.push({
+          id: `Traces-exporter-exporterNode-${exporter}-${uuid().slice(0, 4)}`,
+          parentNode: 'traces',
+          extent: 'parent',
+          type: 'exportersNode',
+          position: { x: (trace.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
+          data: { label: exporter,parentNode: 'traces' },
+          draggable: false,
+        });
+      });
+    }
+})
+  return nodesToAdd;
+}
 
 const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
 
+  
   useEffect(() => {
     const logs = value?.service?.pipelines?.logs ?? [];
     const metrics = value?.service?.pipelines?.metrics ?? [];

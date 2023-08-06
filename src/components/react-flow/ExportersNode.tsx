@@ -20,15 +20,13 @@ interface IData {
   label: string;
   parentNode: string;
 }
+export default function ExportersNode({ data }: { data: IData }) {
 
-export default function ExporterNode({ data }: { data: IData; }) {
+    const editorRef = useEditorRef();
 
-    const text = data.label.split("/");
-  const editorRef = useEditorRef();
-
-  function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    FlowClick(event, data, editorRef, "exporters");
-  }
+    function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+      FlowClick(event, data, editorRef, "exporters");
+    }
 
   return (
     <div 
@@ -39,8 +37,7 @@ export default function ExporterNode({ data }: { data: IData; }) {
       <Tag tag="Exporter"/>
       <Handle type="target" position={Position.Left} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
       <div className='w-full flex justify-center items-center flex-col'>
-        <div className='text-white'>{text[0]}</div>
-        {/* <div className='text-white'>{text[1]}</div> */}
+        <div className='text-white'>{data.label}</div>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@ import React, { RefObject } from 'react';
 import { Handle, Position } from 'reactflow';
 import Tag from '../ui/NodTag';
 import { useEditorRef } from '~/contexts/EditorContext';
-import { editor } from 'monaco-editor';
 import { FlowClick } from './FlowClick';
 
 
@@ -22,7 +21,8 @@ interface IData {
   parentNode: string;
 }
 
-const ProcessorNode = ({data}: {data:IData}) => {
+const ProcessorsNode = ({ data }: { data: IData }) => {
+
   const editorRef = useEditorRef();
 
   function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -45,4 +45,4 @@ const ProcessorNode = ({data}: {data:IData}) => {
     </div>
   );
 }
-export default ProcessorNode;
+export default ProcessorsNode;
