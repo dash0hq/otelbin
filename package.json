@@ -1,5 +1,5 @@
 {
-  "name": "opentelemetry-collector-web",
+  "name": "otelbin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
