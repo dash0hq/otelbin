@@ -1,5 +1,5 @@
 //React & Next
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import React from 'react';
 //Queries and scripts
 import { useConfigs, useInsertConfigs } from '~/queries/config';
@@ -11,8 +11,6 @@ import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
 //External libraries
 import Editor from '@monaco-editor/react';
-import type { Monaco, OnMount } from '@monaco-editor/react';
-import type { editor } from 'monaco-editor';
 import JsYaml from 'js-yaml';
 import Ajv from "ajv"
 import { ReactFlowProvider } from 'reactflow';
@@ -99,7 +97,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
                             configs.filter((config) => config.id?.toString() === id)[0]?.config || data.config
                             : data.config
                     }
-
                     onMount={editorDidMount}
                     height="100vh"
                     width={'100%'}
@@ -112,7 +109,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                                 name: data.name,
                                 config: value || ''
                             })
-                            handleYamlValidation(value ?? '')
+                            handleYamlValidation(value || '')
                         }
                     }
                 />

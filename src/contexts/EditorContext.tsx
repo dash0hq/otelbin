@@ -1,4 +1,4 @@
-import React, { createContext, useRef, FC, RefObject } from "react";
+import React, { createContext, useRef, RefObject } from "react";
 import { editor } from "monaco-editor"; // Import Monaco editor API
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
