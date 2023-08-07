@@ -88,7 +88,7 @@ const addToLogs = (log: ILog) => {
     if (logItem === "receivers") {
       const plusIndex = index + 0.5;
       const receivers = log.receivers;
-      receivers.map((receiver, index) => {
+      receivers?.map((receiver, index) => {
         nodesToAdd.push({
           id: `Logs-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
           parentNode: 'logs',

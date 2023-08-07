@@ -61,9 +61,9 @@ export default function Flow({ value }: { value: string }) {
     const parentMetricsNodePosition = getNodePosition('metrics');
 
     if (e.position.lineNumber === logsLinePosition) {
-      setViewport(parentTraceNodePosition, { duration: 400 });
-    } else if (e.position.lineNumber === tracesLinePosition) {
       setViewport(parentLogNodePosition, { duration: 400 });
+    } else if (e.position.lineNumber === tracesLinePosition) {
+      setViewport(parentTraceNodePosition, { duration: 400 });
     } else if (e.position.lineNumber === metricsLinePosition) {
       setViewport(parentMetricsNodePosition, { duration: 400 });
     } else {
@@ -78,11 +78,11 @@ export default function Flow({ value }: { value: string }) {
   function getNodePosition(nodeId: string) {
     return {
       x: Number(nodeInfo?.find((node) => node.id === nodeId && node.type === 'parentNodeType')?.position?.x) || 0,
-      y: Number(nodeInfo?.find((node) => node.id === nodeId && node.type === 'parentNodeType')?.position?.y) || 0,
+      y: -Number(nodeInfo?.find((node) => node.id === nodeId && node.type === 'parentNodeType')?.position?.y) || 0,
       zoom: 1
     };
   }
-
+  console.log(nodeInfo)
   return (
     <div className='z-0' style={{ height: '100vh', width: "1040px" }}>
       <ReactFlow
