@@ -82,7 +82,7 @@ export default function Flow({ value }: { value: string }) {
       zoom: 1
     };
   }
-  console.log(nodeInfo)
+
   return (
     <div className='z-0' style={{ height: '100vh', width: "1040px" }}>
       <ReactFlow
