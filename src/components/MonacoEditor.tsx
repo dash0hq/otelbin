@@ -15,7 +15,7 @@ import type { editor } from 'monaco-editor';
 import JsYaml from 'js-yaml';
 import Ajv from "ajv"
 import { ReactFlowProvider } from 'reactflow';
-import Flow from './react-flow/ReactFlowCom';
+import Flow from './react-flow/ReactFlow';
 //UI
 
 
