@@ -34,7 +34,7 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
         id: key,
         type: 'parentNodeType',
         position: { x: 0, y: calculateHeight(index + 1) },
-        data: { label: key },
+        data: { label: key, parentNode: key },
         draggable: false,
         style: {
           width: 1570,
@@ -84,7 +84,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: parentHeight }, 
-          data: { label: processor },
+          data: { label: processor,parentNode: 'traces'  },
           draggable: false,
         });
       });
