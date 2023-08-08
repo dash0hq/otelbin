@@ -1,4 +1,4 @@
-# OpenTelemetry Collector Web
+# OTelBin
 
 ## Getting Started
 
