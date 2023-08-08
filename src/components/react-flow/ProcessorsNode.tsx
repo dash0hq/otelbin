@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import { Handle, Position } from 'reactflow';
 import Tag from '../ui/NodTag';
+import { useEditorRef } from '~/contexts/EditorContext';
+import { FlowClick } from './FlowClick';
 
 
 const customNodeStyles = {
@@ -16,16 +18,25 @@ const customNodeStyles = {
 
 interface IData {
   label: string;
+  parentNode: string;
 }
 
-const processorsNode = ({data}: {data:IData}) => {
+const ProcessorsNode = ({ data }: { data: IData }) => {
+
+  const editorRef = useEditorRef();
+
+  function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    FlowClick(event, data, editorRef, "processors");
+  }
 
   return (
     <div 
     style={customNodeStyles}
+      className='cursor-pointer'
+      onClick={handleClickNode}
     >
       <Tag tag="Processor"/>
-      <Handle type="target" position={Position.Left} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}} />
+      <Handle type="target" position={Position.Left} style={{ backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)" }} />
       <div className='w-full flex justify-center items-center flex-col'>
       <div className='text-white'>{data.label}</div>
         <div className='w-full text-[7px] text-[#8491A6] flex justify-center'>remove temporary attributes</div>
@@ -34,4 +45,4 @@ const processorsNode = ({data}: {data:IData}) => {
     </div>
   );
 }
-export default processorsNode;
+export default ProcessorsNode;

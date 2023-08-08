@@ -80,22 +80,22 @@ const addToLogs = (log: ILog) => {
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: parentHeight }, 
-          data: { label: processor },
+          data: { label: processor,parentNode: 'logs'  },
           draggable: false,
         });
       });
     }
     if (logItem === "receivers") {
-      const plusIndex = index + 0.3;
+      const plusIndex = index + 0.5;
       const receivers = log.receivers;
-      receivers.map((receiver, index) => {
+      receivers?.map((receiver, index) => {
         nodesToAdd.push({
           id: `Logs-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
           parentNode: 'logs',
           extent: 'parent',
           type: 'receiversNode',
-          position: { x: plusIndex * offsetX, y: calculateValue(parentHeight, index)}, 
-          data: { label: receiver },
+          position: { x: 50, y: calculateValue(parentHeight, index) }, 
+          data: { label: receiver,parentNode: 'logs'  },
           draggable: false,
         });
       });
@@ -109,7 +109,7 @@ const addToLogs = (log: ILog) => {
           extent: 'parent',
           type: 'exportersNode',
           position: { x: (log.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
-          data: { label: exporter },
+          data: { label: exporter,parentNode: 'logs' },
           draggable: false,
         });
       });
@@ -135,7 +135,7 @@ const addToMetrics = (metric: IMetrics) => {
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: parentHeight }, 
-          data: { label: processor },
+          data: { label: processor,parentNode: 'metrics' },
           draggable: false,
         });
       });
@@ -149,8 +149,8 @@ const addToMetrics = (metric: IMetrics) => {
           parentNode: 'metrics',
           extent: 'parent',
           type: 'receiversNode',
-          position: { x: plusIndex * offsetX, y: calculateValue(parentHeight, index) }, 
-          data: { label: receiver },
+          position: { x: 50, y: calculateValue(parentHeight, index) }, 
+          data: { label: receiver,parentNode: 'metrics' },
           draggable: false,
         });
       });
@@ -164,7 +164,7 @@ const addToMetrics = (metric: IMetrics) => {
           extent: 'parent',
           type: 'exportersNode',
           position: { x: (metric.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
-          data: { label: exporter },
+          data: { label: exporter,parentNode: 'metrics' },
         });
       });
     }
@@ -190,7 +190,7 @@ const addToTraces = (trace: ITraces) => {
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: parentHeight }, 
-          data: { label: processor },
+          data: { label: processor,parentNode: 'traces'  },
           draggable: false,
         });
       });
@@ -204,8 +204,8 @@ const addToTraces = (trace: ITraces) => {
           parentNode: 'traces',
           extent: 'parent',
           type: 'receiversNode',
-          position: { x: plusIndex * offsetX, y: calculateValue(parentHeight, index) }, 
-          data: { label: receiver },
+          position: { x: 50, y: calculateValue(parentHeight, index) }, 
+          data: { label: receiver,parentNode: 'traces' },
           draggable: false,
         });
       });
@@ -219,7 +219,7 @@ const addToTraces = (trace: ITraces) => {
           extent: 'parent',
           type: 'exportersNode',
           position: { x: (trace.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
-          data: { label: exporter },
+          data: { label: exporter,parentNode: 'traces' },
           draggable: false,
         });
       });
