@@ -1,12 +1,12 @@
 import type { Node, ReactFlowInstance } from "reactflow";
-import type { IConfig, ILog, IMetrics, IPipeline, ITraces } from "./mockData";
+import type { IConfig, IParentNode, IPipeline1 } from "./dataType";
 import { useEffect, useState } from "react";
 import { uuid } from "uuidv4";
 
-const addPipleType = (pipelines: IPipeline): Node[] => {
+const addPipleType = (pipelines: IPipeline1): Node[] => {
   const nodesToAdd: Node[] = [];
 
-  const calculateMaxHeight = (data: IPipeline): number => {
+  const calculateMaxHeight = (data: IPipeline1): number => {
     const heights = Object.values(data).map(pipeline => {
       const receiversLength = pipeline.receivers.length;
       const exportersLength = pipeline.exporters.length;
@@ -17,7 +17,7 @@ const addPipleType = (pipelines: IPipeline): Node[] => {
 
   const calculateHeight = (index: number): number => {
     if (index === 1) {
-      return 100;
+      return 10;
     } else if (index > 1) {
       const actualHeight = calculateMaxHeight(pipelines);
       return ((actualHeight / 2) + 300) * (index - 1);
@@ -34,7 +34,7 @@ const addPipleType = (pipelines: IPipeline): Node[] => {
         id: key,
         type: 'parentNodeType',
         position: { x: 0, y: calculateHeight(index + 1) },
-        data: { label: key },
+        data: { label: key, parentNode: key },
         draggable: false,
         style: {
           width: 1570,
@@ -58,135 +58,29 @@ const calculateValue = (parentHeight: number, index: number): number => {
   }
 };
 
-
-const addToLogs = (log: ILog) => {
-  const nodesToAdd: Node[] = [];
-   const receiversLength = log.receivers?.length
-  const exportersLength = log.exporters?.length
-  const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
-  const parentHeight = (compareLength * 80) / 2;
-  const offsetX = 200;
-  const keyLogs = Object.keys(log);
-
-   
-    
-  keyLogs.map((logItem, index) => {
-    if (logItem === "processors") {
-      const processors = log.processors;
-      processors.forEach((processor, index) => {
-        nodesToAdd.push({
-          id: `Logs-Processor-processorNode-${processor}-${uuid().slice(0, 6)}}}`,
-          parentNode: 'logs',
-          extent: 'parent',
-          type: 'processorsNode',
-          position: { x: (index + 1) * offsetX, y: parentHeight }, 
-          data: { label: processor,parentNode: 'logs'  },
-          draggable: false,
-        });
-      });
+const calculateExportersLocation = (processorLength: number, offsetX: number): number => {
+    if (processorLength) {
+      return processorLength * offsetX + offsetX;
     }
-    if (logItem === "receivers") {
-      const plusIndex = index + 0.5;
-      const receivers = log.receivers;
-      receivers?.map((receiver, index) => {
-        nodesToAdd.push({
-          id: `Logs-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
-          parentNode: 'logs',
-          extent: 'parent',
-          type: 'receiversNode',
-          position: { x: 50, y: calculateValue(parentHeight, index) }, 
-          data: { label: receiver,parentNode: 'logs'  },
-          draggable: false,
-        });
-      });
-    }
-    if (logItem === "exporters") {
-      const exporters = log.exporters;
-      exporters.map((exporter, index) => {
-        nodesToAdd.push({
-          id: `Logs-exporter-exporterNode-${exporter}-${uuid().slice(0, 4)}`,
-          parentNode: 'logs',
-          extent: 'parent',
-          type: 'exportersNode',
-          position: { x: (log.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
-          data: { label: exporter,parentNode: 'logs' },
-          draggable: false,
-        });
-      });
-    }
-})
-  return nodesToAdd;
+    return 1 * offsetX;
 }
-const addToMetrics = (metric: IMetrics) => {
+
+const createNode = (parentLable: string, parentNode: IParentNode | null) => {
   const nodesToAdd: Node[] = [];
-  const receiversLength = metric.receivers?.length
-  const exportersLength = metric.exporters?.length
+  const receiversLength = parentNode!.receivers?.length
+  const exportersLength = parentNode!.exporters?.length
   const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
   const parentHeight = (compareLength * 80) / 2;
   const offsetX = 200;
-  const keyMetrics = Object.keys(metric);
-  keyMetrics.map((metricItem, index) => {
-    if (metricItem === "processors") {
-      const processors = metric.processors;
-      processors.forEach((processor, index) => {
-        nodesToAdd.push({
-          id: `Metrics-Processor-processorNode-${processor}-${uuid().slice(0, 4)}`,
-          parentNode: 'metrics',
-          extent: 'parent',
-          type: 'processorsNode',
-          position: { x: (index + 1) * offsetX, y: parentHeight }, 
-          data: { label: processor,parentNode: 'metrics' },
-          draggable: false,
-        });
-      });
-    }
-    if (metricItem === "receivers") {
-      const plusIndex = index + 0.3;
-      const receivers = metric.receivers;
-      receivers.map((receiver, index) => {
-        nodesToAdd.push({
-          id: `Metrics-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
-          parentNode: 'metrics',
-          extent: 'parent',
-          type: 'receiversNode',
-          position: { x: 50, y: calculateValue(parentHeight, index) }, 
-          data: { label: receiver,parentNode: 'metrics' },
-          draggable: false,
-        });
-      });
-    }
-    if (metricItem === "exporters") {
-      const exporters = metric.exporters;
-      exporters.map((exporter, index) => {
-        nodesToAdd.push({
-          id: `Metrics-exporter-exporterNode-${exporter}-${uuid().slice(0, 4)}`,
-          parentNode: 'metrics',
-          extent: 'parent',
-          type: 'exportersNode',
-          position: { x: (metric.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
-          data: { label: exporter,parentNode: 'metrics' },
-        });
-      });
-    }
-})
-  return nodesToAdd;
-}
-const addToTraces = (trace: ITraces) => {
-  const nodesToAdd: Node[] = [];
-  const receiversLength = trace.receivers?.length
-  const exportersLength = trace.exporters?.length
-  const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
-  const parentHeight = (compareLength * 80) / 2;
-  const offsetX = 200;
-  const keyTraces = Object.keys(trace);
+  const keyTraces = Object.keys(parentNode!);
 
   keyTraces.map((traceItem, index) => {
     if (traceItem === "processors") {
-      const processors = trace.processors;
+      const processors = parentNode!.processors;
       processors.forEach((processor, index) => {
         nodesToAdd.push({
-          id: `Traces-Processor-processorNode-${processor}-${uuid().slice(0, 4)}`,
-          parentNode: 'traces',
+          id: `${parentLable}-Processor-processorNode-${processor}-${uuid()}`,
+          parentNode: parentLable,
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: parentHeight }, 
@@ -197,34 +91,34 @@ const addToTraces = (trace: ITraces) => {
     }
     if (traceItem === "receivers") {
       const plusIndex = index + 0.3;
-      const receivers = trace.receivers;
+      const receivers = parentNode!.receivers;
       receivers.map((receiver, index) => {
         nodesToAdd.push({
-          id: `Traces-Receiver-receiverNode-${receiver}-${uuid().slice(0, 4)}`,
-          parentNode: 'traces',
+          id: `${parentLable}-Receiver-receiverNode-${receiver}-${uuid()}`,
+          parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
-          position: { x: 50, y: calculateValue(parentHeight, index) }, 
-          data: { label: receiver,parentNode: 'traces' },
+          position: { x: 0.2 * offsetX, y: calculateValue(parentHeight, index) }, 
+          data: { label: receiver },
           draggable: false,
         });
       });
     }
     if (traceItem === "exporters") {
-      const exporters = trace.exporters;
+      const exporters = parentNode!.exporters;
       exporters.map((exporter, index) => {
         nodesToAdd.push({
-          id: `Traces-exporter-exporterNode-${exporter}-${uuid().slice(0, 4)}`,
-          parentNode: 'traces',
+          id: `${parentLable}-exporter-exporterNode-${exporter}-${uuid()}`,
+          parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
-          position: { x: (trace.processors.length  * offsetX + offsetX), y: calculateValue(parentHeight, index) }, 
-          data: { label: exporter,parentNode: 'traces' },
+          position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(parentHeight, index) }, 
+          data: { label: exporter },
           draggable: false,
         });
       });
     }
-})
+  })
   return nodesToAdd;
 }
 
@@ -233,17 +127,25 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
 
   
   useEffect(() => {
-    const logs = value?.service?.pipelines?.logs ?? [];
-    const metrics = value?.service?.pipelines?.metrics ?? [];
-    const traces = value?.service?.pipelines?.traces ?? [];
+    const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
     const pipelines = value?.service?.pipelines;
+
+    const getArrayByName = (objectName: string): IParentNode | null => {
+      if (pipelines.hasOwnProperty(objectName)) {
+        return pipelines[objectName];
+      } else {
+        return null;
+      }
+    };
 
     const nodesToAdd: Node[] = [];
 
+    
     nodesToAdd.push(...addPipleType(pipelines));
-    nodesToAdd.push(...addToLogs(logs));
-    nodesToAdd.push(...addToMetrics(metrics));
-    nodesToAdd.push(...addToTraces(traces));
+    parentNodeLabels.forEach((node) => {
+      const parentNode = getArrayByName(node);
+      nodesToAdd.push(...createNode(node, parentNode));
+    })
     
 
     setJsonDataState(nodesToAdd);

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import ReactFlow, { Panel, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
-import type { IConfig } from './mockData';
+import type { IConfig } from './dataType';
 import JsYaml from 'js-yaml';
 import useConfigReader from './useConfigReader';
 import useEdgeCreator from './useEdgeCreator';
