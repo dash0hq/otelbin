@@ -67,7 +67,7 @@ export default function Flow({ value }: { value: string }) {
     } else if (e.position.lineNumber === metricsLinePosition) {
       setViewport(parentMetricsNodePosition, { duration: 400 });
     } else {
-      setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 800 });
+      reactFlowInstance.fitView();
     }
   }
 
