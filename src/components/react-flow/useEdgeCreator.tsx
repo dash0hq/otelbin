@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MarkerType, type Edge, type Node, ReactFlowInstance } from 'reactflow';
+import { MarkerType, type Edge, type Node, type ReactFlowInstance } from 'reactflow';
 
 function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstance) {
   const [edgeList, setEdgeList] = useState<Edge[]>([]);
