@@ -28,6 +28,7 @@ export const EditorProvider = ({ children }: { children: any }) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
         setMonacoInstance(editor);
+        monacoRef.current.languages.setLanguageConfiguration('yaml', { wordPattern: /\w+\/\w+|\w+/ });
     }
 
     return (
