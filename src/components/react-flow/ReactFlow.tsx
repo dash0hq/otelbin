@@ -14,6 +14,7 @@ import ReceiversNode from './ReceiversNode';
 import ProcessorsNode from './ProcessorsNode';
 import ExportersNode from './ExportersNode';
 import { Parser } from 'yaml'
+import { editor } from 'monaco-editor';
 
 const controlButtonStyle = {
   backgroundColor: "#293548",
@@ -56,7 +57,7 @@ export default function Flow({ value }: { value: string }) {
       doc = token.type === 'document' && token;
     }
     const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) || 0;
-    const wordAtCursor: any = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || '';
+    const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || { word: '', startColumn: 0, endColumn: 0, };
     const docItems = doc.value.items.length > 0 && doc.value.items || [];
     const docService = docItems?.filter((item: any) => item.key.source === 'service')[0];
     const docPipelines = docService && docService.value.items.length > 0 && docService.value.items.filter((item: any) => item.key.source === 'pipelines')[0];
