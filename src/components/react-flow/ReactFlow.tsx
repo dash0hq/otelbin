@@ -13,6 +13,8 @@ import ParentNodeType from './ParentNodeType';
 import ReceiversNode from './ReceiversNode';
 import ProcessorsNode from './ProcessorsNode';
 import ExportersNode from './ExportersNode';
+import { Parser } from 'yaml'
+import { editor } from 'monaco-editor';
 
 const controlButtonStyle = {
   backgroundColor: "#293548",
@@ -49,33 +51,65 @@ export default function Flow({ value }: { value: string }) {
   editorRef?.current?.onDidChangeCursorPosition(handleCursorPositionChange);
 
   function handleCursorPositionChange(e: any) {
-    const lines = editorRef?.current?.getModel()?.getLinesContent();
-    const pipeLinesPosition = lines?.findIndex((line) => line.includes('pipelines:')) || 0;
 
-    const logsLinePosition = findSectionLine('logs:', pipeLinesPosition, lines);
-    const tracesLinePosition = findSectionLine('traces:', pipeLinesPosition, lines);
-    const metricsLinePosition = findSectionLine('metrics:', pipeLinesPosition, lines);
+    let doc: any;
+    for (const token of new Parser().parse(editorRef?.current?.getValue() || '')) {
+      doc = token.type === 'document' && token;
+    }
+    const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) || 0;
+    const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || { word: '', startColumn: 0, endColumn: 0, };
+    const docItems = doc.value.items.length > 0 && doc.value.items || [];
+    const docService = docItems?.filter((item: any) => item.key.source === 'service')[0];
+    const docPipelines = docService && docService.value.items.length > 0 && docService.value.items.filter((item: any) => item.key.source === 'pipelines')[0];
 
-    const parentLogNodePosition = getNodePosition('logs');
-    const parentTraceNodePosition = getNodePosition('traces');
-    const parentMetricsNodePosition = getNodePosition('metrics');
+    for (let i = 0; docPipelines.value.items.length > i; i++) {
+      if (cursorOffset >= docPipelines.value.items[i].key.offset && cursorOffset <= docPipelines.value.items[i].sep[1].offset) {
+        setViewport(getParentNodePosition(wordAtCursor.word), { duration: 400 });
+      }
+      for (let j = 0; docPipelines.value.items[i].value.items.length > j; j++) {
 
-    if (e.position.lineNumber === logsLinePosition) {
-      setViewport(parentLogNodePosition, { duration: 400 });
-    } else if (e.position.lineNumber === tracesLinePosition) {
-      setViewport(parentTraceNodePosition, { duration: 400 });
-    } else if (e.position.lineNumber === metricsLinePosition) {
-      setViewport(parentMetricsNodePosition, { duration: 400 });
-    } else {
+        if (docPipelines.value.items[i].value.items[j].value.items.length === 1
+          &&
+          cursorOffset >= docPipelines.value.items[i].value.items[j].value.items[0].value.offset
+          &&
+          cursorOffset <= (docPipelines.value.items[i].value.items[j].value.items[0].value.offset + docPipelines.value.items[i].value.items[j].value.items[0].value.source.length)
+        ) {
+
+          const level2 = docPipelines.value.items[i].key.source;
+          const level3 = docPipelines.value.items[i].value.items[j].key.source;
+          setViewport(getNodePosition(wordAtCursor.word, level2, level3), { duration: 400 });
+
+        } else if (docPipelines.value.items[i].value.items[j].value.items.length > 1) {
+
+          for (let k = 0; docPipelines.value.items[i].value.items[j].value.items.length > k; k++) {
+            if (cursorOffset >= docPipelines.value.items[i].value.items[j].value.items[k].value.offset
+              &&
+              cursorOffset <= (docPipelines.value.items[i].value.items[j].value.items[k].value.offset + docPipelines.value.items[i].value.items[j].value.items[k].value.source.length)
+            ) {
+              const level2 = docPipelines.value.items[i].key.source;
+              const level3 = docPipelines.value.items[i].value.items[j].key.source;
+              setViewport(getNodePosition(wordAtCursor.word, level2, level3), { duration: 400 });
+            }
+          }
+        }
+      }
+    }
+    if (cursorOffset > docPipelines.key.offset && cursorOffset < docPipelines.sep[1].offset) {
       reactFlowInstance.fitView();
     }
+
   }
 
-  function findSectionLine(sectionKeyword: string, startIndex: number, lines?: string[]) {
-    return Number(lines?.findIndex((line) => line.includes(sectionKeyword) && lines.indexOf(line) > startIndex)) + 1 || 0;
+  function getNodePosition(nodeId: string, level2: string, level3: string,) {
+    return {
+
+      x: -Number(nodeInfo?.find((node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3))?.position?.x) || 0,
+      y: -Number(nodeInfo?.find((node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3))?.positionAbsolute?.y) || 0,
+      zoom: 1.5
+    };
   }
 
-  function getNodePosition(nodeId: string) {
+  function getParentNodePosition(nodeId: string) {
     return {
       x: Number(nodeInfo?.find((node) => node.id === nodeId && node.type === 'parentNodeType')?.position?.x) || 0,
       y: -Number(nodeInfo?.find((node) => node.id === nodeId && node.type === 'parentNodeType')?.position?.y) || 0,

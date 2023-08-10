@@ -1,5 +1,6 @@
-import React, { createContext, useRef, RefObject } from "react";
-import { editor } from "monaco-editor"; // Import Monaco editor API
+import React, { createContext, useRef } from "react";
+import type { RefObject } from "react";
+import type { editor } from "monaco-editor";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -28,6 +29,7 @@ export const EditorProvider = ({ children }: { children: any }) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
         setMonacoInstance(editor);
+        monacoRef.current.languages.setLanguageConfiguration('yaml', { wordPattern: /\w+\/\w+|\w+/ });
     }
 
     return (
