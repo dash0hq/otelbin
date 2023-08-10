@@ -84,7 +84,7 @@ export default function Flow({ value }: { value: string }) {
   }
 
   return (
-    <div className='z-0' style={{ height: '100vh', width: "1040px" }}>
+
       <ReactFlow
         onClick={handleClickBackground}
         nodes={nodes}
@@ -112,7 +112,7 @@ export default function Flow({ value }: { value: string }) {
         </Panel>
           
         </ReactFlow>
-      </div>
+
         
     );
   }

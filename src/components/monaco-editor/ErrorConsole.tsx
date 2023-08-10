@@ -1,6 +1,6 @@
 //SVG
 import { useEffect, useState } from 'react';
-import XCircleIcon from '../components/assets/svg/x-circle.svg'
+import XCircleIcon from '../../components/assets/svg/x-circle.svg'
 
 export interface IAjvError {
     message: string;
@@ -72,7 +72,7 @@ export function Error(
                 error &&
                 <p className='text-primaryMagenta text-xs font-normal flex items-center gap-x-1'>
 
-                        <div className='p-0 self-start mt-[5px]'><XCircleIcon /></div>
+                    <div className='p-0 self-start mt-[5px]'><XCircleIcon /></div>
                     <p>{`${error.message}`}</p>
                 </p>
             }
