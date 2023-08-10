@@ -27,7 +27,6 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 
   function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     FlowClick(event, data, editorRef, "processors");
-    console.log(data.label, '', data.parentNode);
   }
 
   return (
