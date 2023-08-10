@@ -84,7 +84,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: parentHeight }, 
-          data: { label: processor, parentNode: parentLable },
+          data: { label: processor,parentNode: 'traces'  },
           draggable: false,
         });
       });
@@ -99,7 +99,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
           extent: 'parent',
           type: 'receiversNode',
           position: { x: 0.2 * offsetX, y: calculateValue(parentHeight, index) }, 
-          data: { label: receiver, parentNode: parentLable },
+          data: { label: receiver },
           draggable: false,
         });
       });
@@ -113,7 +113,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
           extent: 'parent',
           type: 'exportersNode',
           position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(parentHeight, index) }, 
-          data: { label: exporter, parentNode: parentLable },
+          data: { label: exporter },
           draggable: false,
         });
       });
