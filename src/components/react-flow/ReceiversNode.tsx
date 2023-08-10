@@ -26,7 +26,6 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 
     function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
       FlowClick(event, data, editorRef, 'receivers');
-      console.log(data.label, '', data.parentNode);
     }
 
   return (

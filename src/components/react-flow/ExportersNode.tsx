@@ -26,7 +26,6 @@ export default function ExportersNode({ data }: { data: IData }) {
 
     function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
       FlowClick(event, data, editorRef, "exporters");
-      console.log(data.label, '', data.parentNode);
     }
 
   return (
