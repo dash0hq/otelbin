@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import MonacoEditor from "~/components/MonacoEditor";
+import MonacoEditor from "~/components/monaco-editor/MonacoEditor";
 
 export default function Config() {
     const router = useRouter()
