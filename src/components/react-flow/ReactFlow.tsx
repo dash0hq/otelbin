@@ -3,25 +3,29 @@ import ReactFlow, { Panel, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import type { IConfig } from './dataType';
 import JsYaml from 'js-yaml';
-import useConfigReader from './useConfigReader';
 import useEdgeCreator from './useEdgeCreator';
 import { useEditorRef } from '~/contexts/EditorContext';
 import { FlowClick } from './FlowClick';
-import { ControlButton } from '@reactflow/controls';
 import { MaximizeIcon, MinusIcon, PlusIcon } from 'lucide-react';
 import ParentNodeType from './ParentNodeType';
 import ReceiversNode from './ReceiversNode';
 import ProcessorsNode from './ProcessorsNode';
 import ExportersNode from './ExportersNode';
+import { IconButton } from '../ui/IconButton';
+import useConfigReader from './useConfigReader';
 
-const controlButtonStyle = {
+const zoomInControlButtonStyle = {
   backgroundColor: "#293548",
-  color: "#94A3B8",
-  borderBottom: "1px solid #293548",
-  paddingTop: 8.5,
-  paddingBottom: 8.5,
-  paddingLeft: 13.5,
-  paddingRight: 13.5,
+  borderBottomRightRadius: "0px",
+  borderTopRightRadius: "0px",
+}
+const zoomOutControlButtonStyle = {
+  backgroundColor: "#293548",
+  borderBottomLeftRadius: "0px",
+  borderTopLeftRadius: "0px",
+}
+const fitViewControlButtonStyle = {
+  backgroundColor: "#293548",
 }
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
@@ -97,18 +101,18 @@ export default function Flow({ value }: { value: string }) {
         }}
         className="disable-attribution" 
       >
-        <Panel position="bottom-left" className='flex gap-2'>
-          <div className='flex gap-0.5 '>
-            <ControlButton onClick={() => reactFlowInstance.zoomIn()} title="Zoom-In" className='z-10 rounded-l-sm' style={controlButtonStyle}>
-            <PlusIcon />
-            </ControlButton>
-            <ControlButton onClick={() => reactFlowInstance.zoomOut()} title="Zoom-In" className='z-10 rounded-r-sm' style={controlButtonStyle}>
-            <MinusIcon />
-            </ControlButton>
+        <Panel position="bottom-left" className='flex gap-0.5'>
+          <div className='flex'>
+            <IconButton onClick={() => reactFlowInstance.zoomIn()} size="sm" variant="default" style={zoomInControlButtonStyle}>
+              <PlusIcon color='#94A3B8'/>
+            </IconButton>
+            <IconButton onClick={() => reactFlowInstance.zoomOut()} size="sm" variant="default" style={zoomOutControlButtonStyle}>
+              <MinusIcon color='#94A3B8'/>
+            </IconButton>
           </div>
-            <ControlButton onClick={() => reactFlowInstance.fitView()} title="Zoom-In" className='rounded-sm' style={controlButtonStyle}>
-            <MaximizeIcon size={84}/>
-            </ControlButton>
+            <IconButton onClick={() => reactFlowInstance.fitView()} size="sm" variant="default" style={fitViewControlButtonStyle}>
+              <MaximizeIcon color='#94A3B8'/>
+            </IconButton>
         </Panel>
           
         </ReactFlow>
