@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import ReactFlow, { Panel, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import type { IConfig } from './dataType';
@@ -33,7 +33,8 @@ export default function Flow({ value }: { value: string }) {
   const edges = useEdgeCreator(nodes, reactFlowInstance);
   const editorRef = useEditorRef();
   const { setViewport } = useReactFlow();
-
+  const nodeInfo = reactFlowInstance.getNodes();
+  const mouseUp = useRef<boolean>(false)
 
   const edgeOptions = {
     animated: false,
@@ -46,9 +47,17 @@ export default function Flow({ value }: { value: string }) {
     FlowClick(event, { label: 'pipelines', parentNode: '' }, editorRef, "pipelines");
   }
 
-  const nodeInfo = reactFlowInstance.getNodes();
+  editorRef?.current?.onDidChangeCursorPosition(handleMouseUp);
 
-  editorRef?.current?.onDidChangeCursorPosition(handleCursorPositionChange);
+  function handleMouseUp(e: any) {
+    editorRef?.current?.onMouseUp(() => {
+      mouseUp.current = true
+      if (mouseUp.current) {
+        handleCursorPositionChange(e)
+        mouseUp.current = false
+      }
+    })
+  }
 
   function handleCursorPositionChange(e: any) {
 
