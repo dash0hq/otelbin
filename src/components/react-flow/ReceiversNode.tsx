@@ -39,7 +39,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
    const label = data.label || "";
     const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
     const splitedLabel = capitalizedLabel.split("/");
-
+    const hasSlash = splitedLabel.length > 1
   return (
     <div className='h-20 w-20 flex flex-col items-center rounded-sm'>
       <div 
@@ -59,7 +59,11 @@ const ReceiversNode = ({ data }: { data: IData }) => {
           <Handle type="source" position={Position.Right} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)",
           }}/>
       </div>
-      <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] rounded-full mt-1'>{splitedLabel[1]}</div>
+      {hasSlash && (
+        <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] rounded-full mt-1'>
+          {splitedLabel[1]}
+        </div>
+      )}
     </div>
   );
 }

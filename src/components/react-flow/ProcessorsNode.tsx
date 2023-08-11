@@ -23,6 +23,9 @@ const tagstyles = {
   borderRadius: "100%",
   padding: '8px',
 }
+const radius = {
+  borderRadius: "15px",
+}
 
 interface IData {
   label: string;
@@ -39,7 +42,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 
   const capitalizedLabel = data.label.charAt(0).toUpperCase() + data.label.slice(1)
   const splitedLabel = capitalizedLabel.split("/");
-
+  const hasSlash = splitedLabel.length > 1
   return (
     <>
     <div className='h-20 w-20 flex flex-col items-center'>
@@ -58,8 +61,11 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
           </div>
         <Handle type="source" position={Position.Right} id='processor-a' style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
       </div>
-        <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] rounded-full mt-1'>{splitedLabel[1]}</div>
-    
+      {hasSlash && (
+        <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] mt-1' style={radius}>
+          {splitedLabel[1]}
+        </div>
+      )}
     </div>
     </>
   );
