@@ -1,5 +1,9 @@
 # OTelBin
 
+## Deployment
+
+ - [Development](https://otelbin.vercel.app)
+
 ## Getting Started
 
 ```sh
