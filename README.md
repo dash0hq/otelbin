@@ -3,6 +3,7 @@
 ## Deployment
 
  - [Development](https://otelbin.vercel.app)
+ - [Production](https://www.otelbin.com)
 
 ## Getting Started
 
