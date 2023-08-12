@@ -24,6 +24,9 @@ const tagstyles = {
   marginTop: '4px',
 }
 
+const radius = {
+  borderRadius: "15px",
+}
 interface IData {
   label: string;
   parentNode: string;
@@ -71,7 +74,7 @@ export default function ExportersNode({ data }: { data: IData }) {
         </div>
       </div>
       {hasSlash && (
-        <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] rounded-full mt-1'>
+        <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] rounded-full mt-1' style={radius}>
           {splitedLabel[1]}
         </div>
       )}

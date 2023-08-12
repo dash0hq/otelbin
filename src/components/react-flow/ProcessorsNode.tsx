@@ -22,6 +22,7 @@ const tagstyles = {
   backgroundColor: '#F59E0B',
   borderRadius: "100%",
   padding: '8px',
+  marginTop: '4px',
 }
 const radius = {
   borderRadius: "15px",
