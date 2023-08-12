@@ -1,7 +1,30 @@
-export default function PipelineTag({tag}:{tag: string}) {
+const calculateColor = (index: number): string => {
+    switch (index) {
+      case 0:
+        return '#F59E0B';
+      case 1:
+        return '#0AA8FF';
+      case 2:
+        return '#40ad54';
+      case 3:
+        return '#911dc9';
+    }
+    return '#FFC542';
+  };
+
+  export default function PipelineTag({findIndex, tag}:{findIndex: number, tag: string}) {
+    const tagColor = {
+      backgroundColor: calculateColor(findIndex),
+      color: "#fff",
+      fontSize: "12px",
+      fontWeight: 500,
+      borderRadius:'5px',
+      width: 'fit-content',
+      padding: '2px 5px',
+    }
     return(
         <>
-        <div className={`flex items-center justify-center ${tag === "traces" ? "bg-[#F59E0B]" : tag === "metrics" ? "bg-[#0AA8FF]" : "bg-[#5a9d51]" } text-white text-[12px] font-medium rounded-[5px] w-[48px] h-[23px] font-normal py-0.5`}>
+        <div style={tagColor}>
             {tag}
         </div>
         </>

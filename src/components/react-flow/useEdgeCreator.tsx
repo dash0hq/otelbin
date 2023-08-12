@@ -6,7 +6,21 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
   useEffect(() => {
   const edgesToAdd: Edge[] = [];
 
-  const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node) => {
+    const calculateColor = (index: number): string => {
+      switch (index) {
+        case 0:
+          return '#F59E0B';
+        case 1:
+          return '#0AA8FF';
+        case 2:
+          return '#40ad54';
+        case 3:
+          return '#911dc9';
+      }
+      return '#FFC542';
+    };
+
+  const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node, index: number) => {
     exportersNodes.forEach((targetNode) => {
       if (!processorsNode || !targetNode) {
         return;
@@ -20,15 +34,18 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
         target: targetNodeId,
         markerEnd: {
           type: MarkerType.Arrow,
-          color: '#8491A6',
+          color: calculateColor(index),
           width: 30,
           height: 30,
         },
+        style: {
+          stroke: calculateColor(index),
+        }
       };
       edgesToAdd.push(edge);
     });
   };
-  const calculateProcessorsNode = (processorsNodes: Node[]) => {
+  const calculateProcessorsNode = (processorsNodes: Node[], index: number) => {
     for (let i = 0; i < processorsNodes.length; i++) {
       const sourceNode = processorsNodes[i];
       const targetNode =  processorsNodes[i + 1];
@@ -44,16 +61,19 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
         target: targetNodeId,
         markerEnd: {
           type: MarkerType.Arrow,
-          color: '#8491A6',
+          color: calculateColor(index),
           width: 30,
           height: 30,
         },
+        style: {
+          stroke: calculateColor(index),
+        }
       };
       edgesToAdd.push(edge);
     }
   };
 
-  const calculateReceiversNode = (receiversNodes: Node[], firstprocessorsNode: Node | undefined, exportersNodes: Node[]) => {
+  const calculateReceiversNode = (receiversNodes: Node[], firstprocessorsNode: Node | undefined, exportersNodes: Node[], index: number) => {
     if (!firstprocessorsNode) {
       receiversNodes.forEach((sourceNode) => {
         if (!sourceNode) {
@@ -75,10 +95,13 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
             target: targetNodeId,
             markerEnd: {
               type: MarkerType.Arrow,
-              color: '#8491A6',
+              color: calculateColor(index),
               width: 30,
               height: 30,
             },
+            style: {
+              stroke: calculateColor(index),
+            }
           };
           edgesToAdd.push(edge);
         });
@@ -98,10 +121,13 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
           target: targetNodeId,
           markerEnd: {
             type: MarkerType.Arrow,
-            color: '#8491A6',
+            color: calculateColor(index),
             width: 30,
             height: 30,
           },
+          style: {
+            stroke: calculateColor(index),
+          }
         };
         edgesToAdd.push(edge);
       });
@@ -109,16 +135,16 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
   };
   
   
-  const addEdgesToNodes = (nodes: Node[]) => {
+  const addEdgesToNodes = (nodes: Node[], index: number) => {
     const exportersNodes = nodes.filter((node) => node.type === 'exportersNode');
     const processorsNodes = nodes.filter((node) => node.type === 'processorsNode');
     const receiversNodes = nodes.filter((node) => node.type === 'receiversNode');
     const firstprocessorsNode = processorsNodes[0] as Node;
     const lastprocessorsNode = processorsNodes[processorsNodes.length - 1] as Node;
 
-      calculateExportersNode(exportersNodes, lastprocessorsNode);
-      calculateProcessorsNode(processorsNodes);
-      calculateReceiversNode(receiversNodes, firstprocessorsNode, exportersNodes);
+      calculateExportersNode(exportersNodes, lastprocessorsNode, index);
+      calculateProcessorsNode(processorsNodes, index);
+      calculateReceiversNode(receiversNodes, firstprocessorsNode, exportersNodes, index);
   };
 
     const childNodes = (parentNode: string) => {
@@ -132,9 +158,10 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
       return;
     }
 
-    parentNodes.forEach((parentNode) => {
+    parentNodes.forEach((parentNode, index) => {
+      console.log(parentNode)
       const childNode = childNodes(parentNode);
-      addEdgesToNodes(childNode)
+      addEdgesToNodes(childNode, index)
     });
 
     setEdgeList(edgesToAdd);
