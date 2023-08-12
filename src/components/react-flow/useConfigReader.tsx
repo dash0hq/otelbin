@@ -52,7 +52,7 @@ const calculateValue = (parentHeight: number, index: number): number => {
   if (index === 0) {
     return parentHeight;
   } else if (index % 2 === 1) {
-    return parentHeight - 80 * index;
+    return parentHeight - 85 * index;
   } else {
     return parentHeight + 60 * index;
   }
@@ -65,7 +65,7 @@ const calculateExportersLocation = (processorLength: number, offsetX: number): n
     return 1 * offsetX;
 }
 
-const createNode = (parentLable: string, parentNode: IParentNode | null) => {
+const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline1) => {
   const nodesToAdd: Node[] = [];
   const receiversLength = parentNode!.receivers?.length
   const exportersLength = parentNode!.exporters?.length
@@ -73,6 +73,21 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
   const parentHeight = (compareLength * 80) / 2;
   const offsetX = 200;
   const keyTraces = Object.keys(parentNode!);
+
+  const calculateMaxHeight = (data: IPipeline1, parentLabel: string): number => {
+    const targetPipeline = data[parentLabel];
+    if (!targetPipeline) {
+      throw new Error(`Pipeline with parent label "${parentLabel}" not found in data.`);
+    }
+  
+    const receiversLength = targetPipeline.receivers?.length || 0;
+    const exportersLength = targetPipeline.exporters?.length || 0;
+    const maxNodes = Math.max(receiversLength, exportersLength) * 100;
+  
+    const minMaxNodes = Math.max(maxNodes, 100);
+  
+    return minMaxNodes;
+  };
 
   keyTraces.map((traceItem, index) => {
     if (traceItem === "processors") {
@@ -83,7 +98,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
           parentNode: parentLable,
           extent: 'parent',
           type: 'processorsNode',
-          position: { x: (index + 1) * offsetX, y: parentHeight }, 
+          position: { x: (index + 1) * offsetX, y: calculateMaxHeight(pipelines, parentLable) / 2 }, 
           data: { label: processor, parentNode: parentLable },
           draggable: false,
         });
@@ -98,7 +113,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
           parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
-          position: { x: 0.2 * offsetX, y: calculateValue(parentHeight, index) }, 
+          position: { x: 0.2 * offsetX, y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
           data: { label: receiver, parentNode: parentLable },
           draggable: false,
         });
@@ -112,7 +127,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null) => {
           parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
-          position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(parentHeight, index) }, 
+          position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
           data: { label: exporter, parentNode: parentLable },
           draggable: false,
         });
@@ -144,7 +159,7 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
     nodesToAdd.push(...addPipleType(pipelines));
     parentNodeLabels.forEach((node) => {
       const parentNode = getArrayByName(node);
-      nodesToAdd.push(...createNode(node, parentNode));
+      nodesToAdd.push(...createNode(node, parentNode, pipelines));
     })
     
 

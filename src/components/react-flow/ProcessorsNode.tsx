@@ -1,19 +1,31 @@
-import React, { RefObject } from 'react';
+import React from 'react';
 import { Handle, Position } from 'reactflow';
-import Tag from '../ui/NodTag';
 import { useEditorRef } from '~/contexts/EditorContext';
 import { FlowClick } from './FlowClick';
+import ProcessorsIcon from '../assets/svg/processors.svg';
 
 
 const customNodeStyles = {
-  width: 135,
-  height: 65,
-  padding: "4px 12px 10px 4px",
-  background: '#2B3546',
-  color: '#000',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '4px',
+  width: 80,
+  height: 80,
+  background: '#30353D',
   borderRadius: "10px",
-  zIndex: 10,
   fontSize: "10px",
+  paddingBottom: "6px",
+  paddingTop: "6px",
+}
+const tagstyles = {
+  backgroundColor: '#F59E0B',
+  borderRadius: "100%",
+  padding: '8px',
+  marginTop: '4px',
+}
+const radius = {
+  borderRadius: "15px",
 }
 
 interface IData {
@@ -29,20 +41,34 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
     FlowClick(event, data, editorRef, "processors");
   }
 
+  const capitalizedLabel = data.label?.charAt(0).toUpperCase() + data.label?.slice(1)
+  const splitedLabel = typeof capitalizedLabel === 'string' ? capitalizedLabel.split("/") : [];
+  const hasSlash = splitedLabel?.length > 1
   return (
-    <div 
-    style={customNodeStyles}
-      className='cursor-pointer'
-      onClick={handleClickNode}
-    >
-      <Tag tag="Processor"/>
+    <>
+    <div className='h-20 w-20 flex flex-col items-center'>
+
+      <div 
+      style={customNodeStyles}
+        className='cursor-pointer flex-col'
+        onClick={handleClickNode}
+      >
       <Handle type="target" position={Position.Left} style={{ backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)" }} />
-      <div className='w-full flex justify-center items-center flex-col'>
-      <div className='text-white'>{data.label}</div>
-        <div className='w-full text-[7px] text-[#8491A6] flex justify-center'>remove temporary attributes</div>
+          <div className='flex flex-col items-center'>
+            <div className='text-white text-sm font-semibold flex items-center'>{splitedLabel[0]}</div>
+            <div style={tagstyles}>
+            <ProcessorsIcon color="#ffffff" />
+            </div>
+          </div>
+        <Handle type="source" position={Position.Right} id='processor-a' style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
       </div>
-      <Handle type="source" position={Position.Right} id='processor-a' style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
+      {hasSlash && (
+        <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] mt-1' style={radius}>
+          {splitedLabel[1]}
+        </div>
+      )}
     </div>
+    </>
   );
 }
 export default ProcessorsNode;

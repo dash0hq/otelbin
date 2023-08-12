@@ -19,8 +19,8 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
         source: sourceNodeId!,
         target: targetNodeId,
         markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: '#fff',
+          type: MarkerType.Arrow,
+          color: '#8491A6',
           width: 30,
           height: 30,
         },
@@ -43,8 +43,8 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
         source: sourceNodeId,
         target: targetNodeId,
         markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: '#fff',
+          type: MarkerType.Arrow,
+          color: '#8491A6',
           width: 30,
           height: 30,
         },
@@ -74,8 +74,8 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
             source: sourceNodeId,
             target: targetNodeId,
             markerEnd: {
-              type: MarkerType.ArrowClosed,
-              color: '#fff',
+              type: MarkerType.Arrow,
+              color: '#8491A6',
               width: 30,
               height: 30,
             },
@@ -97,8 +97,8 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
           source: sourceNodeId,
           target: targetNodeId,
           markerEnd: {
-            type: MarkerType.ArrowClosed,
-            color: '#fff',
+            type: MarkerType.Arrow,
+            color: '#8491A6',
             width: 30,
             height: 30,
           },
