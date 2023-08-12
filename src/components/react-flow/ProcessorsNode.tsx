@@ -40,9 +40,9 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
     FlowClick(event, data, editorRef, "processors");
   }
 
-  const capitalizedLabel = data.label.charAt(0).toUpperCase() + data.label.slice(1)
-  const splitedLabel = capitalizedLabel.split("/");
-  const hasSlash = splitedLabel.length > 1
+  const capitalizedLabel = data.label?.charAt(0).toUpperCase() + data.label?.slice(1)
+  const splitedLabel = typeof capitalizedLabel === 'string' ? capitalizedLabel.split("/") : [];
+  const hasSlash = splitedLabel?.length > 1
   return (
     <>
     <div className='h-20 w-20 flex flex-col items-center'>
