@@ -159,7 +159,6 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
     }
 
     parentNodes.forEach((parentNode, index) => {
-      console.log(parentNode)
       const childNode = childNodes(parentNode);
       addEdgesToNodes(childNode, index)
     });
