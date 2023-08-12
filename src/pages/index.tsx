@@ -1,5 +1,5 @@
 import Head from "next/head";
-import MonacoEditor from "~/components/MonacoEditor";
+import MonacoEditor from "~/components/monaco-editor/MonacoEditor";
 import { EditorProvider } from "~/contexts/EditorContext";
 
 export default function Home() {

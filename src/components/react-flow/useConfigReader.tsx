@@ -52,7 +52,7 @@ const calculateValue = (parentHeight: number, index: number): number => {
   if (index === 0) {
     return parentHeight;
   } else if (index % 2 === 1) {
-    return parentHeight - 80 * index;
+    return parentHeight - 85 * index;
   } else {
     return parentHeight + 60 * index;
   }
@@ -99,7 +99,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: calculateMaxHeight(pipelines, parentLable) / 2 }, 
-          data: { label: processor,parentNode: 'traces'  },
+          data: { label: processor, parentNode: parentLable },
           draggable: false,
         });
       });
@@ -114,7 +114,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           extent: 'parent',
           type: 'receiversNode',
           position: { x: 0.2 * offsetX, y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: receiver },
+          data: { label: receiver, parentNode: parentLable },
           draggable: false,
         });
       });
@@ -128,7 +128,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           extent: 'parent',
           type: 'exportersNode',
           position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: exporter },
+          data: { label: exporter, parentNode: parentLable },
           draggable: false,
         });
       });
