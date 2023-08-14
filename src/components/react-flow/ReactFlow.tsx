@@ -37,7 +37,7 @@ export default function Flow({ value }: { value: string }) {
   const nodeTypes = useMemo(() => ({ processorsNode: ProcessorsNode, receiversNode: ReceiversNode, exportersNode: ExportersNode, parentNodeType: ParentNodeType }), []);
   const edges = useEdgeCreator(nodes, reactFlowInstance);
   const editorRef = useEditorRef();
-  const { setViewport, setCenter } = useReactFlow();
+  const { setCenter } = useReactFlow();
   const nodeInfo = reactFlowInstance.getNodes();
   const mouseUp = useRef<boolean>(false)
   const docPipelines = ParseYaml('pipelines');
