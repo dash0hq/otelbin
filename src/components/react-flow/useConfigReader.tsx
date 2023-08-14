@@ -35,7 +35,7 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
         type: 'parentNodeType',
         position: { x: 0, y: calculateHeight(index + 1) },
         data: { label: key, parentNode: key },
-        draggable: false,
+        draggable: true,
         style: {
           width: 1570,
           padding: "4px 12px 10px 4px",
@@ -144,7 +144,6 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
     const pipelines = value?.service?.pipelines;
-
     const getArrayByName = (objectName: string): IParentNode | null => {
       if (pipelines.hasOwnProperty(objectName)) {
         return pipelines[objectName];
@@ -158,8 +157,8 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
     
     nodesToAdd.push(...addPipleType(pipelines));
     parentNodeLabels.forEach((node) => {
-      const parentNode = getArrayByName(node);
-      nodesToAdd.push(...createNode(node, parentNode, pipelines));
+      const childNodes = getArrayByName(node);
+      nodesToAdd.push(...createNode(node, childNodes, pipelines));
     })
     
 

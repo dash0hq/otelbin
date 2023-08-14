@@ -15,6 +15,7 @@ import { IconButton } from '../ui/IconButton';
 import useConfigReader from './useConfigReader';
 import { Parser } from 'yaml'
 import { editor } from 'monaco-editor';
+import * as d3 from 'd3-hierarchy';
 
 const zoomInControlButtonStyle = {
   backgroundColor: "#293548",
@@ -33,7 +34,7 @@ export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
   const nodes = useConfigReader(jsonData, reactFlowInstance);
-  const nodeTypes = useMemo(() => ({ processorsNode: ProcessorsNode, receiversNode: ReceiversNode, exportersNode: ExportersNode, parentNodeType: ParentNodeType }), []);
+  const nodeTypes = useMemo(() => ({ processorsNode: ProcessorsNode, receiversNode: ReceiversNode, exportersNode: ExportersNode, parentNodeType: ParentNodeType}), []);
   const edges = useEdgeCreator(nodes, reactFlowInstance);
   const editorRef = useEditorRef();
   const { setViewport } = useReactFlow();
@@ -129,12 +130,12 @@ export default function Flow({ value }: { value: string }) {
       zoom: 1
     };
   }
-
   return (
-
       <ReactFlow
         onClick={handleClickBackground}
+        defaultNodes={nodes}
         nodes={nodes}
+        defaultEdges={edges}
         edges={edges}
         defaultEdgeOptions={edgeOptions}
         nodeTypes={nodeTypes}
@@ -143,7 +144,7 @@ export default function Flow({ value }: { value: string }) {
           backgroundColor: '#000',
         }}
         className="disable-attribution" 
-      >
+        >
         <Panel position="bottom-left" className='flex gap-0.5'>
           <div className='flex'>
             <IconButton onClick={() => reactFlowInstance.zoomIn()} size="sm" variant="default" style={zoomInControlButtonStyle}>
@@ -157,7 +158,6 @@ export default function Flow({ value }: { value: string }) {
               <MaximizeIcon color='#94A3B8'/>
             </IconButton>
         </Panel>
-          
         </ReactFlow>
 
         
