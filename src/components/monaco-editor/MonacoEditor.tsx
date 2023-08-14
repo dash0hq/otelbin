@@ -10,12 +10,11 @@ import ErrorConsole from './ErrorConsole';
 import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
 //External libraries
-import Editor, { loader } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 import JsYaml from 'js-yaml';
 import Ajv from "ajv"
 import { ReactFlowProvider } from 'reactflow';
 import Flow from '../react-flow/ReactFlow';
-import { relative } from 'path';
 import { useMouseDelta } from './MouseDelta';
 //UI
 

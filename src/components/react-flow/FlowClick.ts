@@ -8,7 +8,7 @@ interface IData {
     parentNode: string;
 }
 
-export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null, section: string) {
+export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null) {
     event.stopPropagation();
 
     const findMatch = (label: string) => editorRef?.current?.getModel()?.findMatches(label, true, false, false, null, true);
@@ -20,7 +20,6 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
         const startLine = positions && positions[0]?.range.startLineNumber || 0;
         return { positions, startLine };
     };
-
 
     const { positions: pipelinePositions, startLine: pipeLinesStartLine } = getStartPosition('pipelines');
     const lines = editorRef?.current?.getModel()?.getValue().split(/\r?\n/) || [];
@@ -35,36 +34,46 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 
     const getStartPositionInPipeline = (keyword: string) => {
         const positions = findMatch(keyword);
+        return positions?.filter((position) => position.range.startLineNumber > getStartPosition('pipelines').startLine && position.range.startLineNumber <= pipeLinesEndLine) || [];
+    };
+
+    const getStartPositionOffset = (parent: string, keyword: string) => {
+        const childPosition = getStartPositionInPipeline(keyword).filter((position) => position.range.startLineNumber >= (getStartPositionInPipeline(parent)[0]?.range.startLineNumber || 0))[0];
+        return editorRef?.current?.getModel()?.getOffsetAt({ column: childPosition?.range.startColumn || 0, lineNumber: childPosition?.range.startLineNumber || 0 }) || 0;
+    };
+
+    const getStartLineInPipeline = (keyword: string) => {
+        const positions = findMatch(keyword);
         return positions?.filter((position) => position.range.startLineNumber > getStartPosition('pipelines').startLine && position.range.startLineNumber < pipeLinesEndLine)[0]?.range.startLineNumber;
     };
 
     const goToSection = (keyword: string, startLine: number) => {
         const activePosition = findMatch(keyword)?.filter((position) => position.range.startLineNumber > startLine);
-        const labelPosition = findMatch(data.label)?.filter((position) => position.range.startLineNumber > (activePosition && activePosition[0]?.range.startLineNumber || 0));
-        changePosition(labelPosition || []);
+        const matchLabel = activePosition?.filter((position) => (editorRef?.current?.getModel()?.getOffsetAt({ column: position.range.startColumn, lineNumber: position.range.startLineNumber }) || 0) >= getStartPositionOffset(data.parentNode, keyword))[0];
+        changePosition(matchLabel);
     };
 
     switch (data.parentNode) {
         case 'logs':
-            goToSection(section, getStartPositionInPipeline('logs') || 0);
+            goToSection(data.label, getStartLineInPipeline('logs') || 0);
             break;
 
         case 'metrics':
-            goToSection(section, getStartPositionInPipeline('metrics') || 0);
+            goToSection(data.label, getStartLineInPipeline('metrics') || 0);
             break;
 
         case 'traces':
-            goToSection(section, getStartPositionInPipeline('traces') || 0);
+            goToSection(data.label, getStartLineInPipeline('traces') || 0);
             break;
 
         default:
-            changePosition(pipelinePositions || []);
+            changePosition(pipelinePositions?.[0]);
             break;
     }
 
-    function changePosition(position: editor.FindMatch[]) {
-        editorRef?.current?.setPosition({ lineNumber: position[0]?.range.startLineNumber || 1, column: position[0]?.range.startColumn || 1 });
+    function changePosition(position?: editor.FindMatch) {
+        editorRef?.current?.setPosition({ lineNumber: position?.range.startLineNumber || 1, column: position?.range.startColumn || 1 });
         editorRef?.current?.focus();
-        editorRef?.current?.revealPositionInCenter({ lineNumber: position[0]?.range.startLineNumber || 1, column: position[0]?.range.startColumn || 1 });
+        editorRef?.current?.revealPositionInCenter({ lineNumber: position?.range.startLineNumber || 1, column: position?.range.startColumn || 1 });
     }
 }

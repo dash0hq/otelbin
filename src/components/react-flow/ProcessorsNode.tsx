@@ -36,9 +36,8 @@ interface IData {
 const ProcessorsNode = ({ data }: { data: IData }) => {
 
   const editorRef = useEditorRef();
-
   function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    FlowClick(event, data, editorRef, "processors");
+    FlowClick(event, data, editorRef);
   }
 
   const capitalizedLabel = data.label?.charAt(0).toUpperCase() + data.label?.slice(1)

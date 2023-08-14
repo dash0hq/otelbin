@@ -13,8 +13,8 @@ import ProcessorsNode from './ProcessorsNode';
 import ExportersNode from './ExportersNode';
 import { IconButton } from '../ui/IconButton';
 import useConfigReader from './useConfigReader';
-import { Parser } from 'yaml'
 import { editor } from 'monaco-editor';
+import { ParseYaml } from './ParseYaml';
 
 const zoomInControlButtonStyle = {
   backgroundColor: "#293548",
@@ -29,6 +29,7 @@ const zoomOutControlButtonStyle = {
 const fitViewControlButtonStyle = {
   backgroundColor: "#293548",
 }
+
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
@@ -39,6 +40,7 @@ export default function Flow({ value }: { value: string }) {
   const { setViewport } = useReactFlow();
   const nodeInfo = reactFlowInstance.getNodes();
   const mouseUp = useRef<boolean>(false)
+  const docPipelines = ParseYaml('pipelines');
 
   const edgeOptions = {
     animated: false,
@@ -48,12 +50,12 @@ export default function Flow({ value }: { value: string }) {
   };
 
   function handleClickBackground(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    FlowClick(event, { label: 'pipelines', parentNode: '' }, editorRef, "pipelines");
+    FlowClick(event, { label: 'pipelines', parentNode: '' }, editorRef);
   }
 
   editorRef?.current?.onDidChangeCursorPosition(handleMouseUp);
 
-  function handleMouseUp(e: any) {
+  function handleMouseUp(e: editor.ICursorPositionChangedEvent) {
     editorRef?.current?.onMouseUp(() => {
       mouseUp.current = true
       if (mouseUp.current) {
@@ -63,17 +65,11 @@ export default function Flow({ value }: { value: string }) {
     })
   }
 
-  function handleCursorPositionChange(e: any) {
+  function handleCursorPositionChange(e: editor.ICursorPositionChangedEvent) {
 
-    let doc: any;
-    for (const token of new Parser().parse(editorRef?.current?.getValue() || '')) {
-      doc = token.type === 'document' && token;
-    }
     const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) || 0;
     const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || { word: '', startColumn: 0, endColumn: 0, };
-    const docItems = doc.value.items.length > 0 && doc.value.items || [];
-    const docService = docItems?.filter((item: any) => item.key.source === 'service')[0];
-    const docPipelines = docService && docService.value.items.length > 0 && docService.value.items.filter((item: any) => item.key.source === 'pipelines')[0];
+
 
     for (let i = 0; docPipelines.value.items.length > i; i++) {
       if (cursorOffset >= docPipelines.value.items[i].key.offset && cursorOffset <= docPipelines.value.items[i].sep[1].offset) {

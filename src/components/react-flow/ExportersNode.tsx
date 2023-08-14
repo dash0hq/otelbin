@@ -50,7 +50,7 @@ export default function ExportersNode({ data }: { data: IData }) {
     }
 
     function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-      FlowClick(event, data, editorRef, "exporters");
+      FlowClick(event, data, editorRef);
     }
     const label = data.label || "";
     const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);

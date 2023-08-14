@@ -37,7 +37,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
     paddingTop: "6px",
   }
     function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-      FlowClick(event, data, editorRef, 'receivers');
+      FlowClick(event, data, editorRef);
     }
    const label = data.label || "";
     const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
