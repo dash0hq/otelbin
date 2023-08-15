@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
-import { FlowClick } from './FlowClick';
+import { FlowClick, IData } from './FlowClick';
 import ExportersIcon  from '../assets/svg/exporters.svg';
 
 
@@ -27,10 +27,7 @@ const tagstyles = {
 const radius = {
   borderRadius: "15px",
 }
-interface IData {
-  label: string;
-  parentNode: string;
-}
+
 export default function ExportersNode({ data }: { data: IData }) {
   const [hovered, setHovered] = useState(false);
   const editorRef = useEditorRef();

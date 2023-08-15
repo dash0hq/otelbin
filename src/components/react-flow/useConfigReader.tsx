@@ -99,7 +99,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: calculateMaxHeight(pipelines, parentLable) / 2 }, 
-          data: { label: processor, parentNode: parentLable },
+          data: { label: processor, parentNode: parentLable, type: 'processors' },
           draggable: false,
         });
       });
@@ -114,7 +114,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           extent: 'parent',
           type: 'receiversNode',
           position: { x: 0.2 * offsetX, y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: receiver, parentNode: parentLable },
+          data: { label: receiver, parentNode: parentLable, type: 'receivers' },
           draggable: false,
         });
       });
@@ -128,7 +128,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           extent: 'parent',
           type: 'exportersNode',
           position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: exporter, parentNode: parentLable },
+          data: { label: exporter, parentNode: parentLable, type: 'exporters' },
           draggable: false,
         });
       });

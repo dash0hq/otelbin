@@ -1,7 +1,7 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
-import { FlowClick } from './FlowClick';
+import { FlowClick, IData } from './FlowClick';
 import ProcessorsIcon from '../assets/svg/processors.svg';
 
 
@@ -28,10 +28,6 @@ const radius = {
   borderRadius: "15px",
 }
 
-interface IData {
-  label: string;
-  parentNode: string;
-}
 
 const ProcessorsNode = ({ data }: { data: IData }) => {
 
