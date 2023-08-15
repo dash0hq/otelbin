@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
-import { FlowClick, IData } from './FlowClick';
+import { FlowClick } from './FlowClick';
+import type { IData } from './FlowClick';
 import ReceiversIcon  from '../assets/svg/receivers.svg';
 
 

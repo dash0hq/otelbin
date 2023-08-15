@@ -1,5 +1,4 @@
 import type { editor } from "monaco-editor";
-import { type } from "os";
 import type { RefObject } from "react";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
@@ -39,7 +38,7 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
         return positions?.filter((position) => position.range.startLineNumber > getStartPosition('pipelines').startLine && position.range.startLineNumber <= pipeLinesEndLine) || [];
     };
 
-    const getStartPositionOffset = (parent: string, keyword: string) => {
+    const getStartPositionOffset = () => {
         const parentPosition = getStartPositionInPipeline(data.parentNode)[0];
         const childPosition = getStartPositionInPipeline(data.type || '').filter((position) => position.range.startLineNumber >= (parentPosition && parentPosition.range.startLineNumber || 0))[0];
         return editorRef?.current?.getModel()?.getOffsetAt({ column: childPosition?.range.startColumn || 0, lineNumber: childPosition?.range.startLineNumber || 0 }) || 0;
@@ -50,23 +49,23 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
         return positions?.filter((position) => position.range.startLineNumber > getStartPosition('pipelines').startLine && position.range.startLineNumber < pipeLinesEndLine)[0]?.range.startLineNumber;
     };
 
-    const goToSection = (keyword: string, startLine: number, type?: string,) => {
+    const goToSection = (keyword: string, startLine: number) => {
         const activePosition = findMatch(keyword)?.filter((position) => position.range.startLineNumber > startLine);
-        const matchLabel = activePosition?.filter((position) => (editorRef?.current?.getModel()?.getOffsetAt({ column: position.range.startColumn, lineNumber: position.range.startLineNumber }) || 0) >= getStartPositionOffset(data.parentNode, keyword))[0];
+        const matchLabel = activePosition?.filter((position) => (editorRef?.current?.getModel()?.getOffsetAt({ column: position.range.startColumn, lineNumber: position.range.startLineNumber }) || 0) >= getStartPositionOffset())[0];
         changePosition(matchLabel);
     };
 
     switch (data.parentNode) {
         case 'logs':
-            goToSection(data.label, getStartLineInPipeline('logs') || 0, data.type);
+            goToSection(data.label, getStartLineInPipeline('logs') || 0);
             break;
 
         case 'metrics':
-            goToSection(data.label, getStartLineInPipeline('metrics') || 0, data.type,);
+            goToSection(data.label, getStartLineInPipeline('metrics') || 0);
             break;
 
         case 'traces':
-            goToSection(data.label, getStartLineInPipeline('traces') || 0, data.type,);
+            goToSection(data.label, getStartLineInPipeline('traces') || 0);
             break;
 
         default:

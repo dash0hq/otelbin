@@ -1,5 +1,5 @@
 //React & Next
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import React from 'react';
 //Queries and scripts
 import { useConfigs, useInsertConfigs } from '~/queries/config';
@@ -29,7 +29,13 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
     const editorDivRef = useRef(null);
-    const width = useMouseDelta(445, editorDivRef);
+    const savedWidth = typeof window !== "undefined" ? localStorage.getItem('width') : '';
+    const width = useMouseDelta(Number(savedWidth) || 440, editorDivRef);
+    const [isServer, setIsServer] = useState<boolean>(false)
+
+    useEffect(() => {
+        setIsServer(true)
+    }, [])
 
     function handleYamlValidation(configData: string) {
         const ajv = new Ajv({ allErrors: true })
@@ -91,7 +97,8 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     return (
         <div className="flex">
-            <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '5px', backgroundColor: '#000' }}>
+            {isServer
+                ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '5px', backgroundColor: '#000' }}>
                 <Editor
                     defaultValue={DefaultConfig}
                     value={
@@ -118,6 +125,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 />
                 <ErrorConsole errors={errors} />
             </div>
+                : <></>}
             <div className='z-0 flex-grow-[3]' style={{ height: '100vh' }}>
                 <ReactFlowProvider>
                     <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? data.config : DefaultConfig} />

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
-import { FlowClick, IData } from './FlowClick';
+import { FlowClick } from './FlowClick';
+import type { IData } from './FlowClick';
 import ProcessorsIcon from '../assets/svg/processors.svg';
 
 
