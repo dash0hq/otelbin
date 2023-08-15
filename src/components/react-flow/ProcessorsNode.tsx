@@ -2,6 +2,7 @@ import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
 import { FlowClick } from './FlowClick';
+import type { IData } from './FlowClick';
 import ProcessorsIcon from '../assets/svg/processors.svg';
 
 
@@ -28,17 +29,12 @@ const radius = {
   borderRadius: "15px",
 }
 
-interface IData {
-  label: string;
-  parentNode: string;
-}
 
 const ProcessorsNode = ({ data }: { data: IData }) => {
 
   const editorRef = useEditorRef();
-
   function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    FlowClick(event, data, editorRef, "processors");
+    FlowClick(event, data, editorRef);
   }
 
   const capitalizedLabel = data.label?.charAt(0).toUpperCase() + data.label?.slice(1)

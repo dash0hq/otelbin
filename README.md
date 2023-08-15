@@ -1,8 +1,11 @@
 # OTelBin
 
+OTelBin is a configuration tool for OpenTelemetry collectors. See https://opentelemetry.io/docs/collector/ for more information.
+
 ## Deployment
 
  - [Development](https://otelbin.vercel.app)
+ - [Production](https://www.otelbin.com)
 
 ## Getting Started
 
