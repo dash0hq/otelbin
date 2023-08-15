@@ -1,7 +1,7 @@
 import type { Node, ReactFlowInstance } from "reactflow";
 import type { IConfig, IParentNode, IPipeline1 } from "./dataType";
 import { useEffect, useState } from "react";
-import { uuid } from "uuidv4";
+import { v4 } from "uuid";
 
 const addPipleType = (pipelines: IPipeline1): Node[] => {
   const nodesToAdd: Node[] = [];
@@ -94,7 +94,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const processors = parentNode!.processors;
       processors.forEach((processor, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-Processor-processorNode-${processor}-${uuid()}`,
+          id: `${parentLable}-Processor-processorNode-${processor}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'processorsNode',
@@ -109,7 +109,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const receivers = parentNode!.receivers;
       receivers.map((receiver, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-Receiver-receiverNode-${receiver}-${uuid()}`,
+          id: `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
@@ -123,7 +123,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const exporters = parentNode!.exporters;
       exporters.map((exporter, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-exporter-exporterNode-${exporter}-${uuid()}`,
+          id: `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
