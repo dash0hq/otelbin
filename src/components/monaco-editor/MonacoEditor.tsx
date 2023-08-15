@@ -1,5 +1,5 @@
 //React & Next
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import React from 'react';
 //Queries and scripts
 import { useConfigs, useInsertConfigs } from '~/queries/config';
@@ -16,6 +16,8 @@ import Ajv from "ajv"
 import { ReactFlowProvider } from 'reactflow';
 import Flow from '../react-flow/ReactFlow';
 import { useMouseDelta } from './MouseDelta';
+import { useRouter } from 'next/router';
+import { useUrlState } from '~/lib/urlState/client/useUrlState';
 //UI
 
 
@@ -32,6 +34,23 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const savedWidth = typeof window !== "undefined" ? localStorage.getItem('width') : '';
     const width = useMouseDelta(Number(savedWidth) || 440, editorDivRef);
     const [isServer, setIsServer] = useState<boolean>(false)
+    const router = useRouter();
+
+    const editorBinding = {
+        prefix: "",
+        name: "config",
+        fallback: data.config.trim() as string,
+    } as const;
+
+    const [{ config }, getLink] = useUrlState([editorBinding]);
+
+
+    const onChangeConfig = useCallback(
+        (newConfig: string) => {
+            router.replace(getLink({ config: newConfig }));
+        },
+        [getLink, router]
+    );
 
     useEffect(() => {
         setIsServer(true)
@@ -119,6 +138,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                                 name: data.name,
                                 config: value || ''
                             })
+                            onChangeConfig(data.config || '')
                             handleYamlValidation(value || '')
                         }
                     }

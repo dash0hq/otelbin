@@ -9,7 +9,7 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
   const calculateMaxHeight = (data: IPipeline1): number => {
     const heights = Object.values(data).map(pipeline => {
       const receiversLength = pipeline.receivers.length;
-      const exportersLength = pipeline.exporters.length;
+      const exportersLength = pipeline.exporters?.length;
       return Math.max(receiversLength, exportersLength);
     });
     return Math.max(...heights) * 200;
