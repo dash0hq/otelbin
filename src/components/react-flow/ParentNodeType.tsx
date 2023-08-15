@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PipelineTag from '../ui/PipelineTag';
-import { useReactFlow } from 'reactflow';
+import { NodeResizer, useReactFlow } from 'reactflow';
 
 interface IData {
   label: string;
@@ -18,6 +18,7 @@ const ParentNodeType = ({data}: {data:IData}) => {
   const thirdIndexOfPipelineBorder = "rgb(43 177 85)";
   const fourthIndexOfPipelineBorder = "#911dc9";
 
+  const parentmatchNodes = rectaFlowInstance.getNodes().filter((node) => node.parentNode === data.label);
   const parentLength = rectaFlowInstance.getNodes().filter((node) => node.parentNode === data.label).filter((node) => node.type === "receiversNode" || node.type ===  "exportersNode").length * 100;
   const parentNodes = rectaFlowInstance.getNodes().filter((node) => node.type === 'parentNodeType').map((node) => node.data.label);
   const findIndex = parentNodes.findIndex((node) => node === data.label);
@@ -30,19 +31,25 @@ const ParentNodeType = ({data}: {data:IData}) => {
     border: findIndex === 0 ? `1px solid ${firstIndexOfPipelineBorder}` : findIndex === 1 ? `1px solid ${secondIndexOfPipelineBorder}` : findIndex === 2 ? `1px solid ${thirdIndexOfPipelineBorder}` : findIndex === 3 ? `1px solid ${fourthIndexOfPipelineBorder}` : "1px dashed rgb(90 135 76 / 10%)",
     color: '#000',
     borderRadius: "10px",
-    zIndex: 10,
     fontSize: "10px",
     marginBottom: "10px",
   }
 
-    
+    const lineStyle = {
+      background: findIndex === 0 ? firstIndexOfPipeline : findIndex === 1 ? secondIndexOfPipeline : findIndex === 2 ? thirdIndexOfPipeline : findIndex === 3 ? fourthdIndexOfPipeline : "rgb(90 135 76 / 10%)",
+      border: findIndex === 0 ? `1px solid ${firstIndexOfPipelineBorder}` : findIndex === 1 ? `1px solid ${secondIndexOfPipelineBorder}` : findIndex === 2 ? `1px solid ${thirdIndexOfPipelineBorder}` : findIndex === 3 ? `1px solid ${fourthIndexOfPipelineBorder}` : "1px dashed rgb(90 135 76 / 10%)",
+      color: '#000',
+      borderRadius: "10px",
+    }
+
 
   return (
-    <div 
-    style={customNodeStyles}
-    >
+    <>
+    <NodeResizer minWidth={(parentmatchNodes.length + (parentmatchNodes.length - 1)) * 100} minHeight={50} lineStyle={lineStyle}/>
+    <div >
       <PipelineTag findIndex={findIndex} tag={data.label}/>
     </div>
+    </>
   );
 }
-export default ParentNodeType;
+export default memo(ParentNodeType);
