@@ -1,7 +1,5 @@
-//Queries and scripts
 import { useDeleteConfig } from "~/queries/config";
 import type { IConfig } from "~/queries/config";
-//UI
 import { Button } from "../ui/button";
 
 export default function DeleteConfigButton({ config }: { config: IConfig }) {

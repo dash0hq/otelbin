@@ -1,4 +1,3 @@
-//SVG
 import { useEffect, useState } from 'react';
 import XCircleIcon from '../../components/assets/svg/x-circle.svg'
 
