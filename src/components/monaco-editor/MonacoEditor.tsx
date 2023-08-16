@@ -1,15 +1,11 @@
-//React & Next
 import { useCallback, useEffect, useRef, useState } from 'react';
 import React from 'react';
-//Queries and scripts
 import { useConfigs, useInsertConfigs } from '~/queries/config';
-//Internal components
 import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
 import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
-//External libraries
 import Editor from '@monaco-editor/react';
 import JsYaml from 'js-yaml';
 import Ajv from "ajv"
@@ -18,7 +14,6 @@ import Flow from '../react-flow/ReactFlow';
 import { useMouseDelta } from './MouseDelta';
 import { useRouter } from 'next/router';
 import { useUrlState } from '~/lib/urlState/client/useUrlState';
-//UI
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
