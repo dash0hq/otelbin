@@ -19,10 +19,12 @@
     "@prisma/client": "^4.16.2",
     "@radix-ui/react-slot": "^1.0.2",
     "@reactflow/controls": "^11.1.15",
+    "@reactflow/node-resizer": "^2.1.3",
     "@t3-oss/env-nextjs": "^0.3.1",
     "ajv": "^8.12.0",
     "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
+    "d3-hierarchy": "^3.1.2",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.259.0",
     "monaco-editor": "^0.40.0",
@@ -35,7 +37,8 @@
     "tailwindcss-animate": "^1.0.6",
     "uuidv4": "^6.2.13",
     "yaml": "^2.3.1",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.0.1",

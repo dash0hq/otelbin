@@ -1,7 +1,7 @@
 import type { Node, ReactFlowInstance } from "reactflow";
 import type { IConfig, IParentNode, IPipeline1 } from "./dataType";
 import { useEffect, useState } from "react";
-import { uuid } from "uuidv4";
+import { v4 } from "uuid";
 
 const addPipleType = (pipelines: IPipeline1): Node[] => {
   const nodesToAdd: Node[] = [];
@@ -35,7 +35,7 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
         type: 'parentNodeType',
         position: { x: 0, y: calculateHeight(index + 1) },
         data: { label: key, parentNode: key },
-        draggable: false,
+        draggable: true,
         style: {
           width: 1570,
           padding: "4px 12px 10px 4px",
@@ -94,7 +94,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const processors = parentNode!.processors;
       processors.forEach((processor, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-Processor-processorNode-${processor}-${uuid()}`,
+          id: `${parentLable}-Processor-processorNode-${processor}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'processorsNode',
@@ -109,7 +109,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const receivers = parentNode!.receivers;
       receivers.map((receiver, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-Receiver-receiverNode-${receiver}-${uuid()}`,
+          id: `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
@@ -123,7 +123,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const exporters = parentNode!.exporters;
       exporters.map((exporter, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-exporter-exporterNode-${exporter}-${uuid()}`,
+          id: `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
@@ -144,7 +144,6 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
     const pipelines = value?.service?.pipelines;
-
     const getArrayByName = (objectName: string): IParentNode | null => {
       if (pipelines.hasOwnProperty(objectName)) {
         return pipelines[objectName];
@@ -158,8 +157,8 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
     
     nodesToAdd.push(...addPipleType(pipelines));
     parentNodeLabels.forEach((node) => {
-      const parentNode = getArrayByName(node);
-      nodesToAdd.push(...createNode(node, parentNode, pipelines));
+      const childNodes = getArrayByName(node);
+      nodesToAdd.push(...createNode(node, childNodes, pipelines));
     })
     
 

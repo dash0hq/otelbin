@@ -14,6 +14,7 @@ import ExportersNode from './ExportersNode';
 import { IconButton } from '../ui/IconButton';
 import useConfigReader from './useConfigReader';
 import { editor } from 'monaco-editor';
+import * as d3 from 'd3-hierarchy';
 import { ParseYaml } from './ParseYaml';
 
 const zoomInControlButtonStyle = {
@@ -34,7 +35,7 @@ export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
   const nodes = useConfigReader(jsonData, reactFlowInstance);
-  const nodeTypes = useMemo(() => ({ processorsNode: ProcessorsNode, receiversNode: ReceiversNode, exportersNode: ExportersNode, parentNodeType: ParentNodeType }), []);
+  const nodeTypes = useMemo(() => ({ processorsNode: ProcessorsNode, receiversNode: ReceiversNode, exportersNode: ExportersNode, parentNodeType: ParentNodeType}), []);
   const edges = useEdgeCreator(nodes, reactFlowInstance);
   const editorRef = useEditorRef();
   const { setCenter } = useReactFlow();
@@ -123,12 +124,12 @@ export default function Flow({ value }: { value: string }) {
   function getParentNodePositionY(nodeId: string) {
     return Number(nodeInfo?.find((node) => node.id === nodeId && node.type === 'parentNodeType')?.position?.y) + 100 || 0
   }
-
   return (
-
       <ReactFlow
         onClick={handleClickBackground}
+        defaultNodes={nodes}
         nodes={nodes}
+        defaultEdges={edges}
         edges={edges}
         defaultEdgeOptions={edgeOptions}
         nodeTypes={nodeTypes}
@@ -137,7 +138,7 @@ export default function Flow({ value }: { value: string }) {
           backgroundColor: '#000',
         }}
         className="disable-attribution" 
-      >
+        >
         <Panel position="bottom-left" className='flex gap-0.5'>
           <div className='flex'>
             <IconButton onClick={() => reactFlowInstance.zoomIn()} size="sm" variant="default" style={zoomInControlButtonStyle}>
@@ -151,7 +152,6 @@ export default function Flow({ value }: { value: string }) {
               <MaximizeIcon color='#94A3B8'/>
             </IconButton>
         </Panel>
-          
         </ReactFlow>
 
         
