@@ -44,7 +44,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     const [{ config }, getLink] = useUrlState([editorBinding]);
 
-
     const onChangeConfig = useCallback(
         (newConfig: string) => {
             router.replace(getLink({ config: newConfig }));
@@ -119,7 +118,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
             {isServer
                 ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '5px', backgroundColor: '#000' }}>
                 <Editor
-                    defaultValue={DefaultConfig}
+                        defaultValue={config.length ? config : DefaultConfig}
                     value={
                         !clicked ?
                             configs && configs?.length > 0 &&
@@ -138,7 +137,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                                 name: data.name,
                                 config: value || ''
                             })
-                            onChangeConfig(data.config || '')
+                            onChangeConfig(value || '')
                             handleYamlValidation(value || '')
                         }
                     }
