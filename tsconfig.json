@@ -18,7 +18,10 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "@dash0/*": [
+        "./node_modules/@dash0hq/ui/src/*"
+      ]
     }
   },
   "include": [
