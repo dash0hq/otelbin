@@ -15,6 +15,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@dash0hq/ui": "^0.0.84",
     "@monaco-editor/react": "^4.5.1",
     "@prisma/client": "^4.16.2",
     "@radix-ui/react-slot": "^1.0.2",
