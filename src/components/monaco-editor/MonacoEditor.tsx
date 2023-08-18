@@ -1,23 +1,19 @@
-//React & Next
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import React from 'react';
-//Queries and scripts
 import { useConfigs, useInsertConfigs } from '~/queries/config';
-//Internal components
 import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
 import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
-//External libraries
-import Editor, { loader } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 import JsYaml from 'js-yaml';
 import Ajv from "ajv"
 import { ReactFlowProvider } from 'reactflow';
 import Flow from '../react-flow/ReactFlow';
-import { relative } from 'path';
 import { useMouseDelta } from './MouseDelta';
-//UI
+import { useRouter } from 'next/router';
+import { useUrlState } from '~/lib/urlState/client/useUrlState';
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
@@ -30,7 +26,29 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const { data: configs } = useConfigs()
     const mutation = useInsertConfigs()
     const editorDivRef = useRef(null);
-    const width = useMouseDelta(445, editorDivRef);
+    const savedWidth = typeof window !== "undefined" ? localStorage.getItem('width') : '';
+    const width = useMouseDelta(Number(savedWidth) || 440, editorDivRef);
+    const [isServer, setIsServer] = useState<boolean>(false)
+    const router = useRouter();
+
+    const editorBinding = {
+        prefix: "",
+        name: "config",
+        fallback: data.config.trim() as string,
+    } as const;
+
+    const [{ config }, getLink] = useUrlState([editorBinding]);
+
+    const onChangeConfig = useCallback(
+        (newConfig: string) => {
+            router.replace(getLink({ config: newConfig }));
+        },
+        [getLink, router]
+    );
+
+    useEffect(() => {
+        setIsServer(true)
+    }, [])
 
     function handleYamlValidation(configData: string) {
         const ajv = new Ajv({ allErrors: true })
@@ -92,9 +110,10 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     return (
         <div className="flex">
-            <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '5px', backgroundColor: '#000' }}>
+            {isServer
+                ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '5px', backgroundColor: '#000' }}>
                 <Editor
-                    defaultValue={DefaultConfig}
+                        defaultValue={config.length ? config : DefaultConfig}
                     value={
                         !clicked ?
                             configs && configs?.length > 0 &&
@@ -103,7 +122,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     }
                     onMount={editorDidMount}
                     height="100vh"
-                    width={'100%'}
+                        width={'97%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
                     options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 } }}
@@ -113,15 +132,17 @@ export default function MonacoEditor({ id }: { id?: string }) {
                                 name: data.name,
                                 config: value || ''
                             })
+                            onChangeConfig(value || '')
                             handleYamlValidation(value || '')
                         }
                     }
                 />
                 <ErrorConsole errors={errors} />
             </div>
+                : <></>}
             <div className='z-0 flex-grow-[3]' style={{ height: '100vh' }}>
                 <ReactFlowProvider>
-                    <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? data.config : DefaultConfig} />
+                    <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? data.config : config.length > 0 ? config : DefaultConfig} />
                 </ReactFlowProvider>
             </div>
         </div>

@@ -6,6 +6,11 @@ export const useMouseDelta = (initialWidth: number, div: any
     const dragging = useRef(false);
     const previousClientX = useRef(0);
 
+
+    const saveLocalStorage = (width: number) => {
+        localStorage.setItem('width', width.toString());
+    }
+
     const handleMouseMove = useCallback((e: MouseEvent
 
     ) => {
@@ -16,6 +21,7 @@ export const useMouseDelta = (initialWidth: number, div: any
         setResult((result) => {
             const change = e.clientX - previousClientX.current;
             previousClientX.current = e.clientX;
+            saveLocalStorage(result + change);
             return result + change;
         });
     }, []);
@@ -23,7 +29,7 @@ export const useMouseDelta = (initialWidth: number, div: any
     const handleMouseDown = useCallback((e: MouseEvent
     ) => {
         const rightEdge = div.current.getBoundingClientRect().right;
-        if (e.clientX >= rightEdge - 20) {
+        if (e.clientX >= rightEdge - 15) {
             previousClientX.current = e.clientX;
             dragging.current = true;
         }
@@ -35,7 +41,7 @@ export const useMouseDelta = (initialWidth: number, div: any
 
     const handleMouseOver = useCallback((e: MouseEvent) => {
         const rightEdge = div.current.getBoundingClientRect().right;
-        if (e.clientX >= rightEdge - 20) {
+        if (e.clientX >= rightEdge - 15) {
             div.current.style.cursor = "col-resize";
         }
     }, []);

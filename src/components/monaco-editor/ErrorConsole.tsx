@@ -1,4 +1,3 @@
-//SVG
 import { useEffect, useState } from 'react';
 import XCircleIcon from '../../components/assets/svg/x-circle.svg'
 
@@ -29,7 +28,7 @@ export default function ErrorConsole(
     const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false)
     return (
         isOpenErrorConsole
-            ? (<div className='absolute bg-blackGrey left-2 bottom-2 z-10 w-[97%] h-[20vh] rounded-md px-3 pt-3 pb-1'>
+            ? (<div className='absolute bg-blackGrey left-2 bottom-2 z-10 w-[93%] h-[20vh] rounded-md px-3 pt-3 pb-1'>
                 <p className='text-lightGrey1 text-xs font-bold mb-2'>
                     Errors
                 </p>
@@ -122,7 +121,7 @@ export function ErrorCount(
     return (
         <div
             onClick={handleClick}
-            className={`${errorCount ? `text-primaryMagenta` : `text-lightGrey1`} ${!isOpen && 'h-[26px] px-2 justify-center bg-blackGrey rounded-md'} absolute right-4 bottom-2 flex items-center gap-x-1 cursor-pointer`}>
+            className={`${errorCount ? `text-primaryMagenta` : `text-lightGrey1`} ${!isOpen && 'h-[26px] px-2 justify-center bg-blackGrey rounded-md'} absolute right-7 bottom-2 flex items-center gap-x-1 cursor-pointer`}>
             <XCircleIcon />
             <p className='text-xs font-medium'>
                 {errorCount}

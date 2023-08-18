@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
 import { FlowClick } from './FlowClick';
+import type { IData } from './FlowClick';
 import ExportersIcon  from '../assets/svg/exporters.svg';
 
 
@@ -27,10 +28,7 @@ const tagstyles = {
 const radius = {
   borderRadius: "15px",
 }
-interface IData {
-  label: string;
-  parentNode: string;
-}
+
 export default function ExportersNode({ data }: { data: IData }) {
   const [hovered, setHovered] = useState(false);
   const editorRef = useEditorRef();
@@ -50,7 +48,7 @@ export default function ExportersNode({ data }: { data: IData }) {
     }
 
     function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-      FlowClick(event, data, editorRef, "exporters");
+      FlowClick(event, data, editorRef);
     }
     const label = data.label || "";
     const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);

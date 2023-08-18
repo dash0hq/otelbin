@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
 import { FlowClick } from './FlowClick';
+import type { IData } from './FlowClick';
 import ReceiversIcon  from '../assets/svg/receivers.svg';
 
 
@@ -15,10 +16,7 @@ const tagstyles = {
 const radius = {
   borderRadius: "15px",
 }
-interface IData {
-  label: string;
-  parentNode: string;
-}
+
 const ReceiversNode = ({ data }: { data: IData }) => {
   const [hovered, setHovered] = useState(false);
   const editorRef = useEditorRef();
@@ -37,7 +35,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
     paddingTop: "6px",
   }
     function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-      FlowClick(event, data, editorRef, 'receivers');
+      FlowClick(event, data, editorRef);
     }
    const label = data.label || "";
     const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);

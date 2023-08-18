@@ -1,7 +1,7 @@
 import type { Node, ReactFlowInstance } from "reactflow";
 import type { IConfig, IParentNode, IPipeline1 } from "./dataType";
 import { useEffect, useState } from "react";
-import { uuid } from "uuidv4";
+import { v4 } from "uuid";
 
 const addPipleType = (pipelines: IPipeline1): Node[] => {
   const nodesToAdd: Node[] = [];
@@ -9,7 +9,7 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
   const calculateMaxHeight = (data: IPipeline1): number => {
     const heights = Object.values(data).map(pipeline => {
       const receiversLength = pipeline.receivers.length;
-      const exportersLength = pipeline.exporters.length;
+      const exportersLength = pipeline.exporters?.length;
       return Math.max(receiversLength, exportersLength);
     });
     return Math.max(...heights) * 200;
@@ -94,12 +94,12 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const processors = parentNode!.processors;
       processors.forEach((processor, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-Processor-processorNode-${processor}-${uuid()}`,
+          id: `${parentLable}-Processor-processorNode-${processor}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'processorsNode',
           position: { x: (index + 1) * offsetX, y: calculateMaxHeight(pipelines, parentLable) / 2 }, 
-          data: { label: processor, parentNode: parentLable },
+          data: { label: processor, parentNode: parentLable, type: 'processors' },
           draggable: false,
         });
       });
@@ -109,12 +109,12 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const receivers = parentNode!.receivers;
       receivers.map((receiver, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-Receiver-receiverNode-${receiver}-${uuid()}`,
+          id: `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
           position: { x: 0.2 * offsetX, y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: receiver, parentNode: parentLable },
+          data: { label: receiver, parentNode: parentLable, type: 'receivers' },
           draggable: false,
         });
       });
@@ -123,12 +123,12 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
       const exporters = parentNode!.exporters;
       exporters.map((exporter, index) => {
         nodesToAdd.push({
-          id: `${parentLable}-exporter-exporterNode-${exporter}-${uuid()}`,
+          id: `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`,
           parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
           position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: exporter, parentNode: parentLable },
+          data: { label: exporter, parentNode: parentLable, type: 'exporters' },
           draggable: false,
         });
       });
