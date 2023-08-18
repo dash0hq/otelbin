@@ -31,9 +31,18 @@ const fitViewControlButtonStyle = {
   backgroundColor: "#293548",
 };
 
+function isValidJson(jsonData: string) {
+  try {
+    JsYaml.load(jsonData);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
-  const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
+  const jsonData = useMemo(() => JsYaml.load(isValidJson(value) ? value : '') as IConfig, [isValidJson(value) ? value : '']);
   const nodes = useConfigReader(jsonData, reactFlowInstance);
   const nodeTypes = useMemo(
     () => ({
@@ -61,12 +70,9 @@ export default function Flow({ value }: { value: string }) {
   editorRef?.current?.onDidChangeCursorPosition(handleMouseUp);
 
   function handleMouseUp(e: editor.ICursorPositionChangedEvent) {
+    mouseUp.current = true;
     editorRef?.current?.onMouseUp(() => {
-      mouseUp.current = true;
-      if (mouseUp.current) {
-        handleCursorPositionChange(e);
-        mouseUp.current = false;
-      }
+      handleCursorPositionChange(e);
     });
   }
 
@@ -148,6 +154,7 @@ export default function Flow({ value }: { value: string }) {
     ) {
       reactFlowInstance.fitView();
     }
+    mouseUp.current = false;
   }
 
   function getNodePositionX(nodeId: string, level2: string, level3: string) {

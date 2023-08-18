@@ -38,8 +38,8 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
     paddingBottom: "6px",
     paddingTop: "6px",
   }
-
-  const capitalizedLabel = data.label.toUpperCase();
+  const label = data.label || "";
+  const capitalizedLabel = label.toUpperCase();
   const splitedLabel = typeof capitalizedLabel === 'string' ? capitalizedLabel.split("/") : [];
   const hasSlash = splitedLabel?.length > 1
   return (

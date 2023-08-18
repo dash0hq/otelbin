@@ -150,7 +150,10 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 : <></>}
             <div className='z-0 flex-grow-[3]' style={{ height: '100vh' }}>
                 <ReactFlowProvider>
-                    <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? (config.length ? config : DefaultConfig) : DefaultConfig} />
+                    <Flow value={(errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0
+                        && configs && configs?.length > 0 && config || config) || DefaultConfig
+                    }
+                    />
                 </ReactFlowProvider>
             </div>
         </div>

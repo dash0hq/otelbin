@@ -11,16 +11,12 @@ const level3Offsets = { level2Field: 0, receivers: 0, processors: 0, exporters: 
 
 export function ParseYaml(field: string) {
     const editorRef = useEditorRef();
-    let doc: any;
-    for (const token of new Parser().parse(editorRef?.current?.getValue() || '')) {
-        if (token.type === 'document') {
-            doc = token;
-        }
-    }
-
+    const yamlContent = editorRef?.current?.getValue() || '';
+    const parsedYaml = Array.from(new Parser().parse(yamlContent));
+    const doc = parsedYaml && parsedYaml.find(token => token.type === 'document') as any;
     const docItems = doc?.value.items.length > 0 && doc.value.items || [];
-    const docService = docItems?.filter((item: any) => item.key.source === 'service')[0];
-    const docPipelines = docService && docService.value.items.length > 0 && docService.value.items.filter((item: any) => item.key.source === 'pipelines')[0];
+    const docService = docItems.find((item: any) => item.key.source === 'service');
+    const docPipelines = docService?.value.items.find((item: any) => item.key.source === 'pipelines');
 
     const level2Offset = (keyword: string) => {
         return docPipelines && docPipelines.value && docPipelines.value.items.filter((item: any) => item.key.source === keyword)[0] && docPipelines.value.items.filter((item: any) => item.key.source === keyword)[0].key.offset || 0;
