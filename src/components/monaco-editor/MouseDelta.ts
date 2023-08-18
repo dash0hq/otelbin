@@ -40,7 +40,7 @@ export const useMouseDelta = (initialWidth: number, div: any
     }, []);
 
     const handleMouseOver = useCallback((e: MouseEvent) => {
-        const rightEdge = div.current.getBoundingClientRect().right;
+        const rightEdge = div.current?.getBoundingClientRect().right;
         if (e.clientX >= rightEdge - 15) {
             div.current.style.cursor = "col-resize";
         }

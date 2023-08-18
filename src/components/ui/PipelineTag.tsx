@@ -13,6 +13,7 @@ const calculateColor = (index: number): string => {
   };
 
   export default function PipelineTag({findIndex, tag}:{findIndex: number, tag: string}) {
+    const capitalized = tag.toLocaleUpperCase();
     const tagColor = {
       backgroundColor: calculateColor(findIndex),
       color: "#fff",
@@ -25,7 +26,7 @@ const calculateColor = (index: number): string => {
     return(
         <>
         <div style={tagColor}>
-            {tag}
+            {capitalized}
         </div>
         </>
     )

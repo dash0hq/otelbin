@@ -21,7 +21,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
     };
 
   const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node, index: number) => {
-    if (exportersNodes.length === 0) return;
+    // if (exportersNodes.length === 0) return;
     exportersNodes.forEach((targetNode) => {
       if (!processorsNode || !targetNode) {
         return;
@@ -75,7 +75,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
   };
 
   const calculateReceiversNode = (receiversNodes: Node[], firstprocessorsNode: Node | undefined, exportersNodes: Node[], index: number) => {
-    if (receiversNodes.length === 0) return;
+    // if (receiversNodes.length === 0) return;
     if (!firstprocessorsNode) {
       receiversNodes.forEach((sourceNode) => {
         if (!sourceNode) {
