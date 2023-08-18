@@ -8,7 +8,7 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
 
   const calculateMaxHeight = (data: IPipeline1): number => {
     const heights = Object.values(data).map(pipeline => {
-      const receiversLength = pipeline.receivers.length;
+      const receiversLength = pipeline.receivers?.length;
       const exportersLength = pipeline.exporters?.length;
       return Math.max(receiversLength, exportersLength);
     });
@@ -35,9 +35,8 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
         type: 'parentNodeType',
         position: { x: 0, y: calculateHeight(index + 1) },
         data: { label: key, parentNode: key },
-        draggable: true,
+        draggable: false,
         style: {
-          width: 1570,
           padding: "4px 12px 10px 4px",
           height: calculateMaxHeight(pipelines),
         },
@@ -121,7 +120,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
     }
     if (traceItem === "exporters") {
       const exporters = parentNode!.exporters;
-      exporters.map((exporter, index) => {
+      exporters?.map((exporter, index) => {
         nodesToAdd.push({
           id: `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`,
           parentNode: parentLable,
