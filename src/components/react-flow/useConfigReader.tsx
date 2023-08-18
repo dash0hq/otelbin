@@ -37,7 +37,6 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
         data: { label: key, parentNode: key },
         draggable: false,
         style: {
-          width: 1570,
           padding: "4px 12px 10px 4px",
           height: calculateMaxHeight(pipelines),
         },
