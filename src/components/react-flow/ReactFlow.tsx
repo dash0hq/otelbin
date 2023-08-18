@@ -58,12 +58,6 @@ export default function Flow({ value }: { value: string }) {
     },
   };
 
-  function handleClickBackground(
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) {
-    FlowClick(event, { label: "pipelines", parentNode: "" }, editorRef);
-  }
-
   editorRef?.current?.onDidChangeCursorPosition(handleMouseUp);
 
   function handleMouseUp(e: editor.ICursorPositionChangedEvent) {
@@ -203,7 +197,6 @@ export default function Flow({ value }: { value: string }) {
   }
   return (
     <ReactFlow
-      onClick={handleClickBackground}
       defaultNodes={nodes}
       nodes={nodes}
       defaultEdges={edges}
