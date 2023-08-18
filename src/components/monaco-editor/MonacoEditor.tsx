@@ -111,7 +111,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     return (
         <div className="flex">
             {isServer
-                ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '5px', backgroundColor: '#000' }}>
+                ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '4px', backgroundColor: '#40454E' }}>
                 <Editor
                         defaultValue={config.length ? config : DefaultConfig}
                     value={
@@ -122,7 +122,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     }
                     onMount={editorDidMount}
                     height="100vh"
-                        width={'97%'}
+                        width={'99%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
                     options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 } }}

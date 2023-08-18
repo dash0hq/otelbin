@@ -30,7 +30,7 @@ export const useMouseDelta = (initialWidth: number, div: any
     ) => {
         if (e.button === 0) {
         const rightEdge = div.current.getBoundingClientRect().right;
-        if (e.clientX >= rightEdge - 15) {
+            if (e.clientX >= rightEdge - 4) {
             previousClientX.current = e.clientX;
             dragging.current = true;
         }
@@ -44,7 +44,7 @@ export const useMouseDelta = (initialWidth: number, div: any
     const handleMouseOver = useCallback((e: MouseEvent) => {
         if (e.button === 0) {
         const rightEdge = div.current.getBoundingClientRect().right;
-        if (e.clientX >= rightEdge - 15) {
+            if (e.clientX > rightEdge - 4) {
             div.current.style.cursor = "col-resize";
         }
         } else {
