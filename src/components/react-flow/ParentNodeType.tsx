@@ -35,18 +35,9 @@ const ParentNodeType = ({data}: {data:IData}) => {
     marginBottom: "10px",
   }
 
-    const lineStyle = {
-      background: findIndex === 0 ? firstIndexOfPipeline : findIndex === 1 ? secondIndexOfPipeline : findIndex === 2 ? thirdIndexOfPipeline : findIndex === 3 ? fourthdIndexOfPipeline : "rgb(90 135 76 / 10%)",
-      border: findIndex === 0 ? `1px solid ${firstIndexOfPipelineBorder}` : findIndex === 1 ? `1px solid ${secondIndexOfPipelineBorder}` : findIndex === 2 ? `1px solid ${thirdIndexOfPipelineBorder}` : findIndex === 3 ? `1px solid ${fourthIndexOfPipelineBorder}` : "1px dashed rgb(90 135 76 / 10%)",
-      color: '#000',
-      borderRadius: "10px",
-    }
-
-
   return (
     <>
-    <NodeResizer minWidth={(parentmatchNodes.length + (parentmatchNodes.length - 1)) * 100} minHeight={50} lineStyle={lineStyle}/>
-    <div >
+    <div style={customNodeStyles}>
       <PipelineTag findIndex={findIndex} tag={data.label}/>
     </div>
     </>
