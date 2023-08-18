@@ -45,8 +45,7 @@ const ParentNodeType = ({data}: {data:IData}) => {
 
   return (
     <>
-    <NodeResizer minWidth={(parentmatchNodes.length + (parentmatchNodes.length - 1)) * 100} minHeight={50} lineStyle={lineStyle}/>
-    <div >
+    <div style={customNodeStyles}>
       <PipelineTag findIndex={findIndex} tag={data.label}/>
     </div>
     </>
