@@ -41,30 +41,17 @@ export const useMouseDelta = (initialWidth: number, div: any
         dragging.current = false;
     }, []);
 
-    const handleMouseOver = useCallback((e: MouseEvent) => {
-        if (e.button === 0) {
-        const rightEdge = div.current.getBoundingClientRect().right;
-            if (e.clientX > rightEdge - 4) {
-            div.current.style.cursor = "col-resize";
-        }
-        } else {
-            return
-        }
-    }, []);
-
     useEffect(() => {
         window.addEventListener("mousedown", handleMouseDown);
         window.addEventListener("mouseup", handleMouseUp);
         window.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("mouseover", handleMouseOver);
 
         return () => {
             window.removeEventListener("mousedown", handleMouseDown);
             window.removeEventListener("mouseup", handleMouseUp);
             window.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseover", handleMouseOver);
         };
-    }, [handleMouseDown, handleMouseUp, handleMouseMove, handleMouseOver]);
+    }, [handleMouseDown, handleMouseUp, handleMouseMove]);
 
     return result;
 };

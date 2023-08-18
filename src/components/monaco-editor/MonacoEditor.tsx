@@ -111,7 +111,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     return (
         <div className="flex">
             {isServer
-                ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '4px', backgroundColor: '#40454E' }}>
+                ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '4px', backgroundColor: '#40454E', cursor: 'col-resize' }}>
                 <Editor
                         defaultValue={config.length ? config : DefaultConfig}
                     value={
