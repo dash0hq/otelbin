@@ -28,7 +28,7 @@ export default function ErrorConsole(
     const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false)
     return (
         isOpenErrorConsole
-            ? (<div className='absolute bg-[#030816] left-2 bottom-2 z-10 w-[95%] h-[20vh] rounded-md px-3 pt-3 pb-1'>
+            ? (<div className='absolute bg-[#030816] bottom-2 z-10 w-[calc(100%-27px)] left-2 h-[20vh] rounded-md px-3 pt-3 pb-1'>
                 <p className='text-[#8491A6] text-xs font-bold mb-2'>
                     Errors
                 </p>
