@@ -106,7 +106,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
     if (traceItem === "receivers") {
       const plusIndex = index + 0.3;
       const receivers = parentNode!.receivers;
-      receivers.map((receiver, index) => {
+      Array.isArray(receivers) && receivers.length > 0 && receivers.map((receiver, index) => {
         nodesToAdd.push({
           id: `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`,
           parentNode: parentLable,
