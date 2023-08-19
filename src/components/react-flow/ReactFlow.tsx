@@ -42,7 +42,10 @@ function isValidJson(jsonData: string) {
 
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
-  const jsonData = useMemo(() => JsYaml.load(isValidJson(value) ? value : '') as IConfig, [isValidJson(value) ? value : '']);
+  const jsonData = useMemo(
+    () => JsYaml.load(isValidJson(value) ? value : "") as IConfig,
+    [isValidJson(value) ? value : ""]
+  );
   const nodes = useConfigReader(jsonData, reactFlowInstance);
   const nodeTypes = useMemo(
     () => ({
@@ -215,6 +218,9 @@ export default function Flow({ value }: { value: string }) {
         backgroundColor: "#000",
       }}
       className="disable-attribution"
+      proOptions={{
+        hideAttribution: true,
+      }}
     >
       <Panel position="bottom-left" className="flex gap-0.5">
         <div className="flex">
