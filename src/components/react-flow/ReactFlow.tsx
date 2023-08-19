@@ -5,7 +5,6 @@ import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useEditorRef } from "~/contexts/EditorContext";
-import { FlowClick } from "./FlowClick";
 import { MaximizeIcon, MinusIcon, PlusIcon } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
@@ -13,8 +12,7 @@ import ProcessorsNode from "./ProcessorsNode";
 import ExportersNode from "./ExportersNode";
 import { IconButton } from "@dash0/components/ui/icon-button";
 import useConfigReader from "./useConfigReader";
-import { type editor } from "monaco-editor";
-import * as d3 from "d3-hierarchy";
+import type { editor } from "monaco-editor";
 import { ParseYaml } from "./ParseYaml";
 
 const zoomInControlButtonStyle = {

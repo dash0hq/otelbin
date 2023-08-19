@@ -1,5 +1,6 @@
 import { useEditorRef } from "~/contexts/EditorContext";
 import { Parser } from 'yaml'
+import { useMemo } from "react";
 
 export interface IParseParentType {
     level2Field: number;
@@ -10,13 +11,17 @@ export interface IParseParentType {
 const level3Offsets = { level2Field: 0, receivers: 0, processors: 0, exporters: 0 };
 
 export function ParseYaml(field: string) {
+
     const editorRef = useEditorRef();
     const yamlContent = editorRef?.current?.getValue() || '';
-    const parsedYaml = Array.from(new Parser().parse(yamlContent));
-    const doc = parsedYaml && parsedYaml.find(token => token.type === 'document') as any;
-    const docItems = doc?.value.items.length > 0 && doc.value.items || [];
-    const docService = docItems.find((item: any) => item.key.source === 'service');
-    const docPipelines = docService?.value.items.find((item: any) => item.key.source === 'pipelines');
+
+    const docPipelines = useMemo(() => {
+        const parsedYaml = Array.from(new Parser().parse(yamlContent));
+        const doc = parsedYaml.find(token => token.type === 'document') as any;
+        const docItems = doc?.value.items.length > 0 && doc.value.items || [];
+        const docService = docItems.find((item: any) => item.key.source === 'service');
+        return docService?.value.items.find((item: any) => item.key.source === 'pipelines');
+    }, [yamlContent]);
 
     const level2Offset = (keyword: string) => {
         return docPipelines && docPipelines.value && docPipelines.value.items.filter((item: any) => item.key.source === keyword)[0] && docPipelines.value.items.filter((item: any) => item.key.source === keyword)[0].key.offset || 0;
