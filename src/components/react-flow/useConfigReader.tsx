@@ -1,11 +1,12 @@
-import { Position, type Node, type ReactFlowInstance } from "reactflow";
+import { useNodes, type Node, type ReactFlowInstance } from "reactflow";
 import type { IConfig, IParentNode, IPipeline1 } from "./dataType";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 
+
 const addPipleType = (pipelines: IPipeline1): Node[] => {
   const nodesToAdd: Node[] = [];
-  const isHorizantal = true;
+ 
   
   if (pipelines) {
     const pipelineKeys = Object.keys(pipelines);
@@ -14,21 +15,13 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
       nodesToAdd.push({
         id: key,
         type: 'parentNodeType',
-        position: {x: 0, y: 0},
+        position: { x: 0, y: 0 },
         data: { label: key, parentNode: key },
-        draggable: true,
+        draggable: false,
         style: {
-          // width: isHorizantal ? width : calculateMaxHeight(pipelines) * 100,
           padding: "4px 12px 10px 4px",
-          // height: isHorizantal ? calculateMaxHeight(pipelines) * 200 : width * 100,
-          // backgroundColor: "#fff",
-          // border: 'red 1px solid',
-          // borderRadius: "10px",
-          // fontSize: "10px",
-          // marginBottom: "10px",
         },
       });
-      console.log(nodesToAdd.map(node => node))
     });
   }
 
@@ -37,9 +30,10 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
 
 const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline1) => {
   const nodesToAdd: Node[] = [];
-  const offsetX = 200;
-  const position= {x: 0, y: 0};
   const keyTraces = Object.keys(parentNode!);
+  const position = { x: 0, y: 0};
+
+
 
   keyTraces.map((traceItem, index) => {
     if (traceItem === "processors") {
@@ -53,15 +47,13 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           position, 
           data: { label: processor, parentNode: parentLable, type: 'processors' },
           draggable: false,
-          width: 80,
-          height: 80,
         });
       });
     }
     if (traceItem === "receivers") {
       const plusIndex = index + 0.3;
       const receivers = parentNode!.receivers;
-      receivers.map((receiver, index) => {
+      Array.isArray(receivers) && receivers.length > 0 && receivers.map((receiver, index) => {
         nodesToAdd.push({
           id: `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`,
           parentNode: parentLable,
@@ -70,14 +62,12 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           position, 
           data: { label: receiver, parentNode: parentLable, type: 'receivers' },
           draggable: false,
-          width: 80,
-          height: 80,
         });
       });
     }
     if (traceItem === "exporters") {
       const exporters = parentNode!.exporters;
-      exporters.map((exporter, index) => {
+      exporters?.map((exporter, index) => {
         nodesToAdd.push({
           id: `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`,
           parentNode: parentLable,
@@ -86,8 +76,6 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           position, 
           data: { label: exporter, parentNode: parentLable, type: 'exporters' },
           draggable: false,
-          width: 80,
-          height: 80,
         });
       });
     }
@@ -95,8 +83,10 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
   return nodesToAdd;
 }
 
-const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance, width: number, height: number) => {
+const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
+  const nodes = useNodes();
+  const parentNodes = nodes.filter(node => node.type === 'parentNodeType');
 
   
   useEffect(() => {
@@ -112,7 +102,6 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance, w
 
     const nodesToAdd: Node[] = [];
 
-    
     nodesToAdd.push(...addPipleType(pipelines));
     parentNodeLabels.forEach((node) => {
       const childNodes = getArrayByName(node);
