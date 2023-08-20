@@ -111,9 +111,9 @@ export default function MonacoEditor({ id }: { id?: string }) {
     }
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full">
             <AppHeader activeView={activeView} setView={setActiveView} />
-        <div className="flex">
+            <div className="flex">
             {isServer
                 ? <div ref={editorDivRef}
                     style={{
@@ -133,7 +133,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                             : data.config
                     }
                     onMount={editorDidMount}
-                    height="100vh"
+                            height="94.5vh"
                             width={activeView === 'both' ? '99%' : '100%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
@@ -152,7 +152,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 <ErrorConsole errors={errors} />
             </div>
                 : <></>}
-                <div className='z-0 flex-grow-[3]' style={{ height: '95vh' }}>
+                <div className='z-0 flex-grow-[3]' style={{ height: '94.5vh' }}>
                 <ReactFlowProvider>
                     <Flow value={(errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0
                         && configs && configs?.length > 0 && config || config) || DefaultConfig
