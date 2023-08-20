@@ -16,6 +16,7 @@ import type { editor } from "monaco-editor";
 import { ParseYaml } from "./ParseYaml";
 import dagre from 'dagre';
 import { set } from "zod";
+import { init } from "next/dist/compiled/@vercel/og/satori";
 
 const zoomInControlButtonStyle = {
   backgroundColor: "#293548",
@@ -54,16 +55,15 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => 
     const exporters = childrenForParent.filter((node) => node.type === 'exportersNode');
     const maxChildHeight = Math.max(receivers.length, exporters.length) * 200;
     const parentWidth = childrenForParent.length * 30;
-    const parentHeight = maxChildHeight + nodeHeight; // Add the height of the parent node
+    const parentHeight = maxChildHeight + nodeHeight;
     
     dagreGraph.setNode(pNode.id, { width: parentWidth, height: parentHeight });
     
-    // Calculate parent's position based on its children's positions
     const childrenPositions = childrenForParent.map(childNode => dagreGraph.node(childNode.id));
     const averageX = childrenPositions.reduce((sum, pos) => sum + pos.x, 0) / childrenPositions.length;
     const maxY = Math.max(...childrenPositions.map(pos => pos.y));
     const parentX = averageX - parentWidth / 2;
-    const parentY = maxY + nodeHeight; // Ensure parent is below its children
+    const parentY = maxY + nodeHeight;
     pNode.position = {
       x: parentX,
       y: parentY,
@@ -78,8 +78,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => 
 
   nodes.forEach((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
-    // node.targetPosition = isHorizontal ? Position.Left : Position.Top;
-    // node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
 
     if (node.type === 'parentNodeType') {
       const nodeParentWithPosition = dagreGraph.node(node.id);
@@ -120,6 +118,7 @@ export default function Flow({ value }: { value: string }) {
   );
   const initialNodes = useConfigReader(jsonData, reactFlowInstance);
   const initialEdges = useEdgeCreator(initialNodes, reactFlowInstance);
+  const nodesJsonString = JSON.stringify(initialNodes, null, 2);
   const nodeTypes = useMemo(
     () => ({
       processorsNode: ProcessorsNode,
@@ -136,8 +135,8 @@ export default function Flow({ value }: { value: string }) {
   const docPipelines = ParseYaml("pipelines");
 
   
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   
   useEffect(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
@@ -157,19 +156,6 @@ export default function Flow({ value }: { value: string }) {
       ),
     []
   );
-  // const onLayout = useCallback(
-  //   (direction: string | undefined) => {
-  //     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-  //       nodes,
-  //       edges,
-  //       direction
-  //     );
-  //     setNodes([...layoutedNodes]);
-  //     setEdges([...layoutedEdges]);
-  //   },
-  //   [nodes, edges]
-  // );
-
   
   const edgeOptions = {
     animated: false,
@@ -337,8 +323,6 @@ export default function Flow({ value }: { value: string }) {
       }}
     >
       <Panel position="bottom-left" className="flex gap-0.5">
-      {/* <button onClick={() => onLayout('TB')} style={btn}>vertical layout</button>
-        <button onClick={() => onLayout('LR')} style={btn}>horizontal layout</button> */}
         <div className="flex">
           <IconButton
             onClick={() => reactFlowInstance.zoomIn()}
