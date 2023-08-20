@@ -1,4 +1,4 @@
-import Logo from './assets/svg/otelBin-logo-full.svg'
+import Logo from './assets/svg/otelbin-logo-full.svg'
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { IconButton } from '@dash0hq/ui/src/components/ui/icon-button';
 import { Columns, Code2, Share2 } from 'lucide-react';
