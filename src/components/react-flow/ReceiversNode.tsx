@@ -38,7 +38,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
       FlowClick(event, data, editorRef);
     }
    const label = data.label || "";
-    const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
+    const capitalizedLabel = label.toUpperCase();
     const splitedLabel = capitalizedLabel.split("/");
     const hasSlash = splitedLabel.length > 1
   return (
@@ -48,7 +48,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
         className='cursor-pointer flex-col hover:bg-[#4F46E5] z-10'
         onClick={handleClickNode}
         onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+        onMouseLeave={() => setHovered(false)}
       >
         <div className='w-full flex justify-center items-center flex-col'>
 

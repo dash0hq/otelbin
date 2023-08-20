@@ -51,7 +51,7 @@ export default function ExportersNode({ data }: { data: IData }) {
       FlowClick(event, data, editorRef);
     }
     const label = data.label || "";
-    const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
+    const capitalizedLabel = label.toUpperCase();
     const splitedLabel = capitalizedLabel.split("/");
     const hasSlash = splitedLabel.length > 1
   return (

@@ -28,10 +28,12 @@ export const useMouseDelta = (initialWidth: number, div: any
 
     const handleMouseDown = useCallback((e: MouseEvent
     ) => {
+        if (e.button === 0) {
         const rightEdge = div.current.getBoundingClientRect().right;
-        if (e.clientX >= rightEdge - 15) {
+            if (e.clientX >= rightEdge - 4) {
             previousClientX.current = e.clientX;
             dragging.current = true;
+        }
         }
     }, []);
 
@@ -39,26 +41,17 @@ export const useMouseDelta = (initialWidth: number, div: any
         dragging.current = false;
     }, []);
 
-    const handleMouseOver = useCallback((e: MouseEvent) => {
-        const rightEdge = div.current?.getBoundingClientRect().right;
-        if (e.clientX >= rightEdge - 15) {
-            div.current.style.cursor = "col-resize";
-        }
-    }, []);
-
     useEffect(() => {
         window.addEventListener("mousedown", handleMouseDown);
         window.addEventListener("mouseup", handleMouseUp);
         window.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("mouseover", handleMouseOver);
 
         return () => {
             window.removeEventListener("mousedown", handleMouseDown);
             window.removeEventListener("mouseup", handleMouseUp);
             window.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseover", handleMouseOver);
         };
-    }, [handleMouseDown, handleMouseUp, handleMouseMove, handleMouseOver]);
+    }, [handleMouseDown, handleMouseUp, handleMouseMove]);
 
     return result;
 };

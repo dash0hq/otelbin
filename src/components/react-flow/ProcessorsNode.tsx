@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useEditorRef } from '~/contexts/EditorContext';
 import { FlowClick } from './FlowClick';
@@ -6,19 +6,6 @@ import type { IData } from './FlowClick';
 import ProcessorsIcon from '../assets/svg/processors.svg';
 
 
-const customNodeStyles = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '4px',
-  width: 80,
-  height: 80,
-  background: '#30353D',
-  borderRadius: "10px",
-  fontSize: "10px",
-  paddingBottom: "6px",
-  paddingTop: "6px",
-}
 const tagstyles = {
   backgroundColor: '#F59E0B',
   borderRadius: "100%",
@@ -31,13 +18,28 @@ const radius = {
 
 
 const ProcessorsNode = ({ data }: { data: IData }) => {
-
+  const [hovered, setHovered] = useState(false);
   const editorRef = useEditorRef();
   function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     FlowClick(event, data, editorRef);
   }
 
-  const capitalizedLabel = data.label?.charAt(0).toUpperCase() + data.label?.slice(1)
+  const customNodeStyles = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '4px',
+    width: 80,
+    height: 80,
+    background: hovered ? "#F59E0B" : '#30353D',
+    transition: 'background-color 0.3s ease-in-out',
+    borderRadius: "10px",
+    fontSize: "10px",
+    paddingBottom: "6px",
+    paddingTop: "6px",
+  }
+  const label = data.label || "";
+  const capitalizedLabel = label.toUpperCase();
   const splitedLabel = typeof capitalizedLabel === 'string' ? capitalizedLabel.split("/") : [];
   const hasSlash = splitedLabel?.length > 1
   return (
@@ -48,6 +50,8 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
       style={customNodeStyles}
         className='cursor-pointer flex-col'
         onClick={handleClickNode}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
       <Handle type="target" position={Position.Left} style={{ backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)" }} />
           <div className='flex flex-col items-center'>

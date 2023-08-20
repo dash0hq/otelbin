@@ -30,14 +30,6 @@ const zoomOutControlButtonStyle = {
 const fitViewControlButtonStyle = {
   backgroundColor: "#293548",
 };
-function isValidJson(jsonData: string) {
-  try {
-    JsYaml.load(jsonData);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -110,6 +102,15 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => 
 
 
 
+
+function isValidJson(jsonData: string) {
+  try {
+    JsYaml.load(jsonData);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();

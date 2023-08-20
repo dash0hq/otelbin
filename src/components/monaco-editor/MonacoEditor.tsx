@@ -111,7 +111,15 @@ export default function MonacoEditor({ id }: { id?: string }) {
     return (
         <div className="flex">
             {isServer
-                ? <div ref={editorDivRef} style={{ position: 'relative', width: `${width}px`, paddingRight: '5px', backgroundColor: '#000' }}>
+                ? <div ref={editorDivRef}
+                    style={{
+                        position: 'relative',
+                        width: `${width}px`,
+                        paddingRight: '4px',
+                        backgroundColor: '#40454E',
+                        cursor: 'col-resize',
+                        userSelect: 'none',
+                    }}>
                 <Editor
                         defaultValue={config.length ? config : DefaultConfig}
                     value={
@@ -122,7 +130,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     }
                     onMount={editorDidMount}
                     height="100vh"
-                        width={'97%'}
+                        width={'99%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
                     options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 } }}
@@ -142,7 +150,10 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 : <></>}
             <div className='z-0 flex-grow-[3]' style={{ height: '100vh' }}>
                 <ReactFlowProvider>
-                    <Flow value={errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0 ? data.config : config.length > 0 ? config : DefaultConfig} />
+                    <Flow value={(errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0
+                        && configs && configs?.length > 0 && config || config) || DefaultConfig
+                    }
+                    />
                 </ReactFlowProvider>
             </div>
         </div>
