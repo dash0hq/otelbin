@@ -114,11 +114,10 @@ function isValidJson(jsonData: string) {
 
 export default function Flow({ value }: { value: string }) {
   const reactFlowInstance = useReactFlow();
-  // const jsonData = useMemo(
-  //   () => JsYaml.load(isValidJson(value) ? value : "") as IConfig,
-  //   [isValidJson(value) ? value : ""]
-  // );
-  const jsonData = useMemo(() => JsYaml.load(value) as IConfig, [value]);
+  const jsonData = useMemo(
+    () => JsYaml.load(isValidJson(value) ? value : "") as IConfig,
+    [isValidJson(value) ? value : ""]
+  );
   const initialNodes = useConfigReader(jsonData, reactFlowInstance);
   const initialEdges = useEdgeCreator(initialNodes, reactFlowInstance);
   const nodeTypes = useMemo(
@@ -148,7 +147,7 @@ export default function Flow({ value }: { value: string }) {
 
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
-    }, [setEdges, setNodes, jsonData, reactFlowInstance]);
+    }, [initialNodes, initialEdges, setNodes, setEdges]);
     
 
   const onConnect = useCallback(
