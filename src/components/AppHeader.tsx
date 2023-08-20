@@ -1,8 +1,9 @@
 import Logo from './assets/svg/otelBin-logo-full.svg'
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { IconButton } from '@dash0hq/ui/src/components/ui/icon-button';
-import { ServiceMapIcon, ApplicationIcon, EnvironmentIcon } from "@dash0/icons";
-import { useState } from 'react';
+import { Columns, Code2, Share2 } from 'lucide-react';
+import { ServiceMapIcon } from "@dash0/icons";
+
 
 export default function AppHeader(
     { activeView,
@@ -20,18 +21,19 @@ export default function AppHeader(
     return (
         <div className='h-[48px] bg-[#0F172A] flex justify-between items-center px-4 py-2  border-b-1'>
             <Logo />
+            <div className='flex gap-x-2'>
             <ButtonGroup>
                 <IconButton
                     className={`${activeView === 'both' && 'bg-[#6D737D]'} `}
                     onClick={() => handleViewChange('both')}
                     variant={'default'} size={'sm'} >
-                    <EnvironmentIcon />
+                        <Columns />
                 </IconButton>
                 <IconButton
                     className={`${activeView === 'code' && 'bg-[#6D737D]'} `}
                     onClick={() => handleViewChange('code')}
                     variant={'default'} size={'sm'} >
-                    <ApplicationIcon />
+                        <Code2 />
                 </IconButton>
                 <IconButton
                     className={`${activeView === 'pipeline' && 'bg-[#6D737D]'} `}
@@ -40,6 +42,15 @@ export default function AppHeader(
                     <ServiceMapIcon />
                 </IconButton>
             </ButtonGroup>
+                <IconButton
+                    className={`${activeView === 'code' && 'bg-[#6D737D]'} min-w-[93px] bg-[#6366F1]`}
+                    onClick={() => handleViewChange('code')}
+                    variant={'default'} size={'sm'} >
+
+                    <Share2 color='white' className='mr-2' />
+                    Share
+                </IconButton>
+            </div>
         </div>
 
     )
