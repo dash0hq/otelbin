@@ -15,6 +15,7 @@ import { useMouseDelta } from './MouseDelta';
 import { useRouter } from 'next/router';
 import { useUrlState } from '~/lib/urlState/client/useUrlState';
 import AppHeader from '../AppHeader';
+import WelcomeModal from '../welcome-modal/WelcomeModal';
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
@@ -113,6 +114,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     return (
         <div className="flex flex-col h-full">
             <AppHeader activeView={activeView} setView={setActiveView} />
+            <WelcomeModal />
             <div className="flex">
             {isServer
                 ? <div ref={editorDivRef}
