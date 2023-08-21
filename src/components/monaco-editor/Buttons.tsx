@@ -8,34 +8,7 @@ export default function Buttons({
 }: {
   editorRef: MutableRefObject<any>;
   monacoRef: MutableRefObject<any>;
-}) {
-  function handleCopy() {
-    const selection = editorRef.current.getSelection();
-    if (selection.isEmpty()) {
-      const allText = editorRef.current.getValue();
-      navigator.clipboard.writeText(allText);
-    } else {
-      const selectedText = editorRef.current
-        .getModel()
-        .getValueInRange(selection);
-      navigator.clipboard.writeText(selectedText);
-    }
-  }
-
-  function handleDownload() {
-    const allText = editorRef.current.getValue();
-
-    if (allText.length > 0) {
-      const blob = new Blob([allText], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.download = "config.yaml";
-      link.href = url;
-      link.click();
-    } else {
-      alert("No text to save");
-    }
-  }
+  }) {
 
   // function handleChangeInput(e: React.ChangeEvent<HTMLInputElement>) {
   //     setData({ name: e.target.value, config: data.config })

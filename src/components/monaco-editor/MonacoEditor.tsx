@@ -4,6 +4,8 @@ import { useConfigs, useInsertConfigs } from '~/queries/config';
 import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
+import AppHeader from '../AppHeader';
+import EditorTopBar from '../EditorTopBar';
 import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
 import Editor from '@monaco-editor/react';
@@ -14,7 +16,6 @@ import Flow from '../react-flow/ReactFlow';
 import { useMouseDelta } from './MouseDelta';
 import { useRouter } from 'next/router';
 import { useUrlState } from '~/lib/urlState/client/useUrlState';
-import AppHeader from '../AppHeader';
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
@@ -113,6 +114,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
     return (
         <div className="flex flex-col h-full">
             <AppHeader activeView={activeView} setView={setActiveView} />
+
             <div className="flex">
             {isServer
                 ? <div ref={editorDivRef}
@@ -123,7 +125,11 @@ export default function MonacoEditor({ id }: { id?: string }) {
                         backgroundColor: '#40454E',
                         cursor: activeView === 'both' ? 'col-resize' : 'default',
                         userSelect: 'none',
+                        display: 'flex',
+                        flexDirection: 'column'
                     }}>
+
+                        <EditorTopBar />
                 <Editor
                         defaultValue={config.length ? config : DefaultConfig}
                     value={
