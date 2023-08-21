@@ -33,7 +33,8 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const [isServer, setIsServer] = useState<boolean>(false)
     const router = useRouter();
     const [activeView, setActiveView] = useState("both");
-    const [openDialog, setOpenDialog] = useState(false);
+    const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem('welcomeModal'));
+    const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 
     const editorBinding = {
         prefix: "",
@@ -52,7 +53,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     useEffect(() => {
         setIsServer(true)
-        setOpenDialog(true)
     }, [])
 
     function handleYamlValidation(configData: string) {
@@ -115,7 +115,9 @@ export default function MonacoEditor({ id }: { id?: string }) {
 
     return (
         <>
-            <WelcomeModal open={openDialog} setOpen={setOpenDialog} />
+            {isServer
+                ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} />
+                : <></>}
         <div className="flex flex-col h-full">
                 <AppHeader activeView={activeView} setView={setActiveView} />
             <div className="flex">

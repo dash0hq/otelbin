@@ -19,11 +19,13 @@ export default function WelcomeModal({
             setStep(step + 1)
         } else {
             setOpen(false)
+            localStorage.setItem('welcomeModal', '0');
         }
     }
 
     function handleSkip() {
         setOpen(false)
+        localStorage.setItem('welcomeModal', '0');
     }
 
     return (
