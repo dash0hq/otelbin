@@ -29,31 +29,31 @@ export default function AppHeader(
     }
 
     return (
-        <div className='h-[48px] bg-[#0F172A] flex justify-between items-center px-4 py-2  border-b-1'>
+        <div className='h-[48px] bg-otelbinDarkBlue flex justify-between items-center px-4 py-2 border-b-1'>
             <Logo />
             <div className='flex gap-x-2'>
             <ButtonGroup>
                 <IconButton
-                    className={`${activeView === 'both' && 'bg-[#6D737D]'} `}
+                        className={`${activeView === 'both' && 'bg-otelbinGrey'} `}
                     onClick={() => handleViewChange('both')}
                     variant={'default'} size={'sm'} >
                         <Columns />
                 </IconButton>
                 <IconButton
-                    className={`${activeView === 'code' && 'bg-[#6D737D]'} `}
+                        className={`${activeView === 'code' && 'bg-otelbinGrey'} `}
                     onClick={() => handleViewChange('code')}
                     variant={'default'} size={'sm'} >
                         <Code2 />
                 </IconButton>
                 <IconButton
-                    className={`${activeView === 'pipeline' && 'bg-[#6D737D]'} `}
+                        className={`${activeView === 'pipeline' && 'bg-otelbinGrey'} `}
                     onClick={() => handleViewChange('pipeline')}
                     variant={'default'} size={'sm'} >
                     <ServiceMapIcon />
                 </IconButton>
             </ButtonGroup>
                 <IconButton
-                    className={`${activeView === 'code' && 'bg-[#6D737D]'} min-w-[93px] bg-[#6366F1]`}
+                    className={`${activeView === 'code' && 'bg-otelbinGrey'} min-w-[93px] bg-otelbinPurple`}
                     onClick={handleShare}
                     variant={'default'} size={'sm'} >
 
