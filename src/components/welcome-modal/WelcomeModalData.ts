@@ -1,4 +1,4 @@
-import { StaticImageData } from 'next/image';
+import type { StaticImageData } from 'next/image';
 import WelcomeModal1 from '../../components/assets/png/welcome-modal-slide-1.png'
 import WelcomeModal2 from '../../components/assets/png/welcome-modal-slide-2.png'
 import WelcomeModal3 from '../../components/assets/png/welcome-modal-slide-3.png'

@@ -1,33 +1,83 @@
+import { useState } from 'react';
 import Logo from '../assets/svg/otelbin-logo-full.svg'
 import Image from 'next/image'
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from '@dash0/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from '@dash0/components/ui/dialog';
 import { Button } from '@dash0hq/ui/src/components/ui/button';
 import { WelcomeModalData } from './WelcomeModalData'
 
-export default function WelcomeModal() {
+export default function WelcomeModal({
+    open,
+    setOpen }
+    : {
+        open: boolean;
+        setOpen: (open: boolean) => void
+    }) {
+    const [step, setStep] = useState(0)
+
+    function handleNext() {
+        if (step <= 2) {
+            setStep(step + 1)
+        } else {
+            setOpen(false)
+        }
+    }
+
+    function handleSkip() {
+        setOpen(false)
+    }
+
     return (
-        <Dialog>
-            <DialogTrigger>
-                <Button>Open Dialog</Button>
-            </DialogTrigger>
-            <DialogContent className='p-4 flex flex-col justify-between'>
-                <div className='flex flex-col pt-4 gap-y-6 px-4'>
+        <Dialog open={open}>
+            <DialogContent className='p-4 flex flex-col justify-between bg-otelbinDarkPurple'>
+                <div className='flex flex-col pt-4 gap-y-7 px-4 relative mb-4'>
                     <DialogHeader className='mx-auto'>
-                        <DialogTitle><Logo /></DialogTitle>
+                        <DialogTitle>
+                            <Logo />
+                        </DialogTitle>
                     </DialogHeader>
-                    <Image src={WelcomeModalData[0]?.image || ''} alt='Welcome Modal Slide 1' />
+                    <Image src={WelcomeModalData[step]?.image || ''} alt='Welcome Modal Slide 1' />
                     <div className='flex flex-col gap-y-2'>
-                        <DialogTitle className='text-center'>{WelcomeModalData[0]?.title}</DialogTitle>
+                        <DialogTitle className='text-center'>
+                            {WelcomeModalData[step]?.title}
+                        </DialogTitle>
                         <DialogDescription className='text-center'>
-                            {WelcomeModalData[0]?.description}
+                            {WelcomeModalData[step]?.description}
                         </DialogDescription>
                     </div>
-                    <DialogFooter>
-                        <Button variant={'default'} size={'sm'}>Skip</Button>
-                        <Button variant={'default'} size={'sm'} className='bg-[#6366F1] bg-pri'>Next</Button>
-                    </DialogFooter>
                 </div>
+                <div className='absolute bottom-6 left-8'>
+                    <div className='flex items-center gap-x-1'>
+                        {Array.from({ length: 4 }, (_, index) => (
+                            <StepDiv key={index} activeStep={index === step} />
+                        ))}
+                    </div>
+                </div>
+                <DialogFooter>
+                    {step <= 2
+                        ? (<Button
+                            onClick={handleSkip}
+                            variant={'default'} size={'sm'}>
+                            Skip
+                        </Button>)
+                        : (<></>)}
+                    <Button
+                        onClick={handleNext}
+                        variant={'default'} size={'sm'} className='bg-otelbinPurple'>
+                        {step <= 2 ? 'Next' : 'Done'}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
+    )
+}
+
+function StepDiv({ activeStep }: { activeStep: boolean }) {
+    return (
+        <>
+            {activeStep
+                ? <div className='w-[30px] h-[10px] rounded-full bg-otelbinLightGrey' />
+                : (<div className='w-[10px] h-[10px] rounded-full bg-otelbinLighterGrey2' />)
+            }
+        </>
     )
 }
