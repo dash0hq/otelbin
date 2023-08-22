@@ -18,17 +18,17 @@ export const WelcomeModalData: IWelcomeModal[] = [
     },
     {
         title: 'Write your config in the Editor with live syntax validation.',
-        description: 'A simple tool to visualize your OpenTelemetry configs',
+        description: 'Craft your configuration seamlessly in the Editor with real-time syntax validation at your side.',
         image: WelcomeModal2,
     },
     {
         title: 'Easily find your config errors.',
-        description: 'A simple tool to visualize your OpenTelemetry configs',
+        description: 'Effortlessly pinpoint and rectify configuration errors with simplicity.',
         image: WelcomeModal3,
     },
     {
         title: 'Visualize your configs.',
-        description: 'A simple tool to visualize your OpenTelemetry configs',
+        description: 'Transform your configurations into clear visualizations.',
         image: WelcomeModal4,
     },
 ]
