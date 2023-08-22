@@ -33,7 +33,7 @@ export default function WelcomeModal({
 
     return (
         <Dialog open={open} onOpenChange={handleSkip}>
-            <DialogContent className='p-4 flex flex-col justify-between bg-otelbinDarkPurple min-h-[530px]'>
+            <DialogContent className='p-4 flex flex-col justify-between bg-otelbinDarkPurple min-h-[550px]'>
                 <div className='flex flex-col pt-4 gap-y-7 px-4 relative mb-4'>
                     <DialogHeader className='mx-auto'>
                         <DialogTitle>
