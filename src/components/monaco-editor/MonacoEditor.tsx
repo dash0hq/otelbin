@@ -15,6 +15,7 @@ import { useMouseDelta } from './MouseDelta';
 import { useRouter } from 'next/router';
 import { useUrlState } from '~/lib/urlState/client/useUrlState';
 import AppHeader from '../AppHeader';
+import WelcomeModal from '../welcome-modal/WelcomeModal';
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
@@ -32,6 +33,8 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const [isServer, setIsServer] = useState<boolean>(false)
     const router = useRouter();
     const [activeView, setActiveView] = useState("both");
+    const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem('welcomeModal'));
+    const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 
     const editorBinding = {
         prefix: "",
@@ -111,8 +114,12 @@ export default function MonacoEditor({ id }: { id?: string }) {
     }
 
     return (
+        <>
+            {isServer
+                ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} />
+                : <></>}
         <div className="flex flex-col h-full">
-            <AppHeader activeView={activeView} setView={setActiveView} />
+                <AppHeader activeView={activeView} setView={setActiveView} />
             <div className="flex">
             {isServer
                 ? <div ref={editorDivRef}
@@ -162,5 +169,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
             </div>
         </div>
         </div>
+        </>
     );
 }
