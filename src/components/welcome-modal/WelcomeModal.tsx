@@ -18,18 +18,21 @@ export default function WelcomeModal({
         if (step <= 2) {
             setStep(step + 1)
         } else {
-            setOpen(false)
-            localStorage.setItem('welcomeModal', '0');
+            closeAndStore()
         }
     }
 
     function handleSkip() {
-        setOpen(false)
+        closeAndStore()
+    }
+
+    function closeAndStore() {
+        setOpen(false);
         localStorage.setItem('welcomeModal', '0');
     }
 
     return (
-        <Dialog open={open}>
+        <Dialog open={open} onOpenChange={handleSkip}>
             <DialogContent className='p-4 flex flex-col justify-between bg-otelbinDarkPurple min-h-[530px]'>
                 <div className='flex flex-col pt-4 gap-y-7 px-4 relative mb-4'>
                     <DialogHeader className='mx-auto'>
