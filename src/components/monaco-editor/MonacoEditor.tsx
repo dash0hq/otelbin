@@ -127,7 +127,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     style={{
                         position: 'relative',
                         width: activeView === 'both' ? `${width}px` : activeView === 'code' ? '100%' : '0px',
-                        paddingTop: '10px',
                         backgroundColor: '#1E1E1E',
                         borderRight: '8px solid #40454E',
                         cursor: activeView === 'both' ? 'col-resize' : 'default',
@@ -137,6 +136,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                             }}>
                         <EditorTopBar />
                 <Editor
+
                         defaultValue={config.length ? config : DefaultConfig}
                     value={
                         !clicked ?
@@ -149,7 +149,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                                 width={'100%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
-                    options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 } }}
+                                options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 }, padding: { top: 20 } }}
                     onChange={
                         (value) => {
                             setData({
