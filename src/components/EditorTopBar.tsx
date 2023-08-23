@@ -42,7 +42,7 @@ export default function EditorTopBar() {
     }
 
     return (
-        <div className='flex justify-end items-center bg-[#1E1E1E] shadow-none w-[98.9%] -z-1'>
+        <div className='flex justify-end items-center shadow-none z-10 absolute top-3 right-1'>
             <IconButton
                 onClick={handleCopy}
                 className='min-w-[97px] bg-[#1E1E1E] rounded-none'
