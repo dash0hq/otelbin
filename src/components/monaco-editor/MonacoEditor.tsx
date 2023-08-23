@@ -4,6 +4,7 @@ import { useConfigs, useInsertConfigs } from '~/queries/config';
 import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
+import EditorTopBar from '../EditorTopBar';
 import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
 import Editor from '@monaco-editor/react';
@@ -118,7 +119,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
             {isServer
                 ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} />
                 : <></>}
-        <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full">
                 <AppHeader activeView={activeView} setView={setActiveView} />
             <div className="flex">
             {isServer
@@ -126,12 +127,16 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     style={{
                         position: 'relative',
                         width: activeView === 'both' ? `${width}px` : activeView === 'code' ? '100%' : '0px',
-                        paddingRight: activeView === 'both' ? '4px' : 0,
-                        backgroundColor: '#40454E',
+                        backgroundColor: '#1E1E1E',
+                        borderRight: '8px solid #40454E',
                         cursor: activeView === 'both' ? 'col-resize' : 'default',
                         userSelect: 'none',
-                    }}>
+                        display: 'flex',
+                        flexDirection: 'column'
+                            }}>
+                        <EditorTopBar />
                 <Editor
+
                         defaultValue={config.length ? config : DefaultConfig}
                     value={
                         !clicked ?
@@ -141,10 +146,10 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     }
                     onMount={editorDidMount}
                             height="94.5vh"
-                            width={activeView === 'both' ? '99%' : '100%'}
+                                width={'100%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
-                    options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 } }}
+                                options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 }, padding: { top: 20 } }}
                     onChange={
                         (value) => {
                             setData({
