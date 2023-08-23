@@ -28,7 +28,7 @@ export default function ErrorConsole(
     const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false)
     return (
         isOpenErrorConsole
-            ? (<div className='absolute bg-otelbinBlackGrey bottom-3 z-10 w-[calc(100%-27px)] left-2 h-[20vh] rounded-md px-3 pt-3 pb-1'>
+            ? (<div className='absolute bg-otelbinBlackGrey bottom-3 z-10 w-[calc(100%-20px)] left-2 h-[20vh] rounded-md px-3 pt-3 pb-1'>
                 <p className='text-otelbinLightGrey text-xs font-bold mb-2'>
                     Errors
                 </p>
@@ -121,7 +121,7 @@ export function ErrorCount(
     return (
         <div
             onClick={handleClick}
-            className={`${errorCount ? `text-otelbinMagenta` : `text-otelbinLightGrey`} ${!isOpen && 'h-[26px] px-2 justify-center bg-otelbinBlackGrey rounded-md'} absolute right-4 bottom-3 flex items-center gap-x-1 cursor-pointer`}>
+            className={`${errorCount ? `text-otelbinMagenta` : `text-otelbinLightGrey`} ${!isOpen && 'h-[26px] px-2 justify-center bg-otelbinBlackGrey rounded-md'} absolute right-2 bottom-3 flex items-center gap-x-1 cursor-pointer`}>
             <XCircleIcon />
             <p className='text-xs font-medium'>
                 {errorCount}
