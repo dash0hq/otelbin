@@ -4,7 +4,6 @@ import { useConfigs, useInsertConfigs } from '~/queries/config';
 import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
-import AppHeader from '../AppHeader';
 import EditorTopBar from '../EditorTopBar';
 import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
@@ -16,6 +15,8 @@ import Flow from '../react-flow/ReactFlow';
 import { useMouseDelta } from './MouseDelta';
 import { useRouter } from 'next/router';
 import { useUrlState } from '~/lib/urlState/client/useUrlState';
+import AppHeader from '../AppHeader';
+import WelcomeModal from '../welcome-modal/WelcomeModal';
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
@@ -33,6 +34,8 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const [isServer, setIsServer] = useState<boolean>(false)
     const router = useRouter();
     const [activeView, setActiveView] = useState("both");
+    const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem('welcomeModal'));
+    const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 
     const editorBinding = {
         prefix: "",
@@ -112,9 +115,12 @@ export default function MonacoEditor({ id }: { id?: string }) {
     }
 
     return (
+        <>
+            {isServer
+                ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} />
+                : <></>}
         <div className="flex flex-col h-full">
-            <AppHeader activeView={activeView} setView={setActiveView} />
-
+                <AppHeader activeView={activeView} setView={setActiveView} />
             <div className="flex">
             {isServer
                 ? <div ref={editorDivRef}
@@ -168,5 +174,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
             </div>
         </div>
         </div>
+        </>
     );
 }
