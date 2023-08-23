@@ -11,12 +11,12 @@ export interface INode {
       receivers: string[];
   }
 
-  export  interface IPipeline1 {
+  export  interface IPipeline {
     [key: string]: any;
     parentNode: IParentNode;
   }
   interface IService {
-    pipelines: IPipeline1;
+    pipelines: IPipeline;
   }
  export interface IConfig {
     [key: string]: any;

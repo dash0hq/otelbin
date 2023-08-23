@@ -1,34 +1,34 @@
 import { useNodes, type Node, type ReactFlowInstance } from "reactflow";
-import type { IConfig, IParentNode, IPipeline1 } from "./dataType";
+import type { IConfig, IParentNode, IPipeline } from "./dataType";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 
 
-const addPipleType = (pipelines: IPipeline1): Node[] => {
+const addPipleType = (pipelines: IPipeline, parentValue: Node[]): Node[] => {
   const nodesToAdd: Node[] = [];
- 
   
   if (pipelines) {
     const pipelineKeys = Object.keys(pipelines);
 
-    pipelineKeys.forEach((key, index) => {
+    pipelineKeys.map((key, index) => {
+     const parentYposition = parentValue.find(node => node.id === key);
+     console.log(parentYposition)
       nodesToAdd.push({
         id: key,
         type: 'parentNodeType',
-        position: { x: 0, y: 0 },
+        position: { x: 0, y:0  },
         data: { label: key, parentNode: key },
         draggable: false,
-        style: {
-          padding: "4px 12px 10px 4px",
-        },
       });
+      console.log(nodesToAdd.map(m => m.position))
     });
   }
 
   return nodesToAdd;
 };
 
-const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline1) => {
+const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline) => {
+
   const nodesToAdd: Node[] = [];
   const keyTraces = Object.keys(parentNode!);
   const position = { x: 0, y: 0};
@@ -86,8 +86,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
 const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
   const nodes = useNodes();
-  const parentNodes = nodes.filter(node => node.type === 'parentNodeType');
-
+  const parentNodesValue = nodes.filter(node => node.type === 'parentNodeType');
   
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
@@ -102,7 +101,7 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
 
     const nodesToAdd: Node[] = [];
 
-    nodesToAdd.push(...addPipleType(pipelines));
+    nodesToAdd.push(...addPipleType(pipelines, parentNodesValue));
     parentNodeLabels.forEach((node) => {
       const childNodes = getArrayByName(node);
       nodesToAdd.push(...createNode(node, childNodes, pipelines));

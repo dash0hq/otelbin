@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ReactFlow, { Connection, ConnectionLineType, Edge, Node, Panel, Position, addEdge, useEdges, useEdgesState, useNodes, useNodesState, useReactFlow } from "reactflow";
+import ReactFlow, { Connection, ConnectionLineType, Edge, Node, Panel, Position, addEdge, useEdges, useEdgesState, useNodes, useNodesInitialized, useNodesState, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
@@ -15,6 +15,7 @@ import useConfigReader from "./useConfigReader";
 import type { editor } from "monaco-editor";
 import { ParseYaml } from "./ParseYaml";
 import dagre from 'dagre';
+import Dagre from "@dagrejs/dagre";
 import { set } from "zod";
 import { init } from "next/dist/compiled/@vercel/og/satori";
 
@@ -32,69 +33,54 @@ const fitViewControlButtonStyle = {
   backgroundColor: "#293548",
 };
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
 const nodeWidth = 172;
 const nodeHeight = 80;
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
-  const isHorizontal = direction === 'LR';
-  dagreGraph.setGraph({ rankdir: direction });
+  const g = new Dagre.graphlib.Graph({compound: true}).setDefaultEdgeLabel(() => ({}));
+  g.setGraph({ rankdir: direction });
 
-  const parentNodes = nodes.filter((node) => node.type === 'parentNodeType');
-  const childNodes = nodes.filter((node) => node.type !== 'parentNodeType');
-  
-  childNodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
-
-  parentNodes.forEach((pNode) => {
-    const childrenForParent = nodes.filter((node) => node.parentNode === pNode.id);
-    const receivers = childrenForParent.filter((node) => node.type === 'receiversNode');
-    const exporters = childrenForParent.filter((node) => node.type === 'exportersNode');
-    const maxChildHeight = Math.max(receivers.length, exporters.length) * 200;
-    const parentWidth = childrenForParent.length * 30;
-    const parentHeight = maxChildHeight + nodeHeight;
-    
-    dagreGraph.setNode(pNode.id, { width: parentWidth, height: parentHeight });
-    
-    const childrenPositions = childrenForParent.map(childNode => dagreGraph.node(childNode.id));
-    const averageX = childrenPositions.reduce((sum, pos) => sum + pos.x, 0) / childrenPositions.length;
-    const maxY = Math.max(...childrenPositions.map(pos => pos.y));
-    const parentX = averageX - parentWidth / 2;
-    const parentY = maxY + nodeHeight;
-    pNode.position = {
-      x: parentX,
-      y: parentY,
-    };
+  nodes.forEach(node => {
+    if (node.parentNode) {
+      g.setParent(node.id, node.parentNode);
+    }
+    g.setNode(node.id, { width: nodeWidth / 2, height: nodeHeight /2 });
+    console.log(g.node(node.id).height)
   });
 
   edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+    g.setEdge(edge.source, edge.target);
   });
 
-  dagre.layout(dagreGraph);
+  if (g.nodes().length > 0) {
+    Dagre.layout(g)
 
-  nodes.forEach((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
+  }
 
+  nodes.forEach((node, index) => {
+    const nodeWithPosition = g.node(node.id);
     if (node.type === 'parentNodeType') {
-      const nodeParentWithPosition = dagreGraph.node(node.id);
+      const pNodeWithPosition = g.node(node.id);
       node.position = {
-        x:  nodeParentWithPosition.x - nodeParentWithPosition.width / 2,
-        y: nodeParentWithPosition.y - nodeParentWithPosition.height / 2,
+        x: nodeWithPosition.x - pNodeWithPosition.width / 2,
+        y: nodeWithPosition.y + pNodeWithPosition.height * 2,
       };
-    } else {
-      node.position = {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
-      };
+      return node;
     }
+    node.position = {
+      x: nodeWithPosition.x - nodeWithPosition.width /2 ,
+      y: nodeWithPosition.y  + nodeWithPosition.height / 2,
+    };
+
     return node;
   });
 
-
+  // nodes.map((node: Node) => {
+  //   const { x, y } = g.node(node.id);
+  //   node.position = { x, y };
+  //   return node;
+  // });
+  
   return { nodes, edges };
 };
 
@@ -118,7 +104,6 @@ export default function Flow({ value }: { value: string }) {
   );
   const initialNodes = useConfigReader(jsonData, reactFlowInstance);
   const initialEdges = useEdgeCreator(initialNodes, reactFlowInstance);
-  const nodesJsonString = JSON.stringify(initialNodes, null, 2);
   const nodeTypes = useMemo(
     () => ({
       processorsNode: ProcessorsNode,
@@ -133,20 +118,20 @@ export default function Flow({ value }: { value: string }) {
   const nodeInfo = reactFlowInstance.getNodes();
   const mouseUp = useRef<boolean>(false);
   const docPipelines = ParseYaml("pipelines");
-
   
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   
-  useEffect(() => {
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-      initialNodes,
-      initialEdges
-      );
+  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+    initialNodes,
+    initialEdges
+  );
 
-      setNodes(layoutedNodes);
-      setEdges(layoutedEdges);
-    }, [initialNodes, initialEdges, setNodes, setEdges]);
+  useEffect(() => {
+        
+        setNodes(layoutedNodes);
+        setEdges(layoutedEdges);
+    }, [layoutedEdges, layoutedNodes]);
     
 
   const onConnect = useCallback(
