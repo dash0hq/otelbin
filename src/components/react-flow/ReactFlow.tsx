@@ -33,20 +33,24 @@ const fitViewControlButtonStyle = {
   backgroundColor: "#293548",
 };
 
-const nodeWidth = 172;
-const nodeHeight = 80;
+const nodeWidth = 80;
+const nodeHeight = 100;
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
   const g = new Dagre.graphlib.Graph({compound: true}).setDefaultEdgeLabel(() => ({}));
   g.setGraph({ rankdir: direction });
-
+  console.log(nodes.map(n => n))
+  
   nodes.forEach(node => {
-    if (node.parentNode) {
-      g.setParent(node.id, node.parentNode);
-    }
-    g.setNode(node.id, { width: nodeWidth / 2, height: nodeHeight /2 });
-    console.log(g.node(node.id).height)
+    // debugger
+    g.setParent(node.id, node.parentNode!);
+    g.setNode(node.id, { width: nodeWidth, height: nodeHeight })
   });
+  // nodes.forEach(node => {
+  //   g.setNode(node.id, node)
+  // });
+
+  // g.filterNodes((n) => n !== 'parentNodeType').setNode(n.id, { width: 0, height: 0 });
 
   edges.forEach((edge) => {
     g.setEdge(edge.source, edge.target);
@@ -59,25 +63,61 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => 
 
   nodes.forEach((node, index) => {
     const nodeWithPosition = g.node(node.id);
-    if (node.type === 'parentNodeType') {
-      const pNodeWithPosition = g.node(node.id);
+    console.log(nodeWithPosition)
+    if (nodeWithPosition) {
       node.position = {
-        x: nodeWithPosition.x - pNodeWithPosition.width / 2,
-        y: nodeWithPosition.y + pNodeWithPosition.height * 2,
+        x: nodeWithPosition.x ,
+        // y: nodeWithPosition.y / 2,
+        y: nodeWithPosition.y,
       };
-      return node;
+      node.height = nodeWithPosition.height;
+      node.width = nodeWithPosition.width;
     }
-    node.position = {
-      x: nodeWithPosition.x - nodeWithPosition.width /2 ,
-      y: nodeWithPosition.y  + nodeWithPosition.height / 2,
-    };
-
     return node;
   });
 
+  // nodes.forEach((node, index) => {
+  //   debugger
+  //   const nodeWithPosition = g.node(node.id);
+  //   // const height = node.height ?? 0;
+  //   const parent = g.parent(node.id);
+  //   console.log(parent)
+  //   if (!parent) {
+  //     // const childNodes = nodes.filter(child => child.parentNode === node.id);
+  //     // const averageChildY = childNodes.reduce((sum, child) => sum + g.node(child.id)?.y, 0) / childNodes.length;
+  //     // Calculate the new parent height based on the children's positions
+  //     // const maxChildY = Math.max(...childNodes.map(child => g.node(child.id)?.y));
+  //     // const minChildY = Math.min(...childNodes.map(child => g.node(child.id)?.y));
+  //     // const maxChildX = Math.max(...childNodes.map(child => g.node(child.id)?.x));
+  //     // const minChildX = Math.min(...childNodes.map(child => g.node(child.id)?.x));
+  //     // const newParentHeight = maxChildY - minChildY + height;
+  //     // console.log(nodeWithPosition.x, nodeWithPosition.y, nodeWithPosition.width, nodeWithPosition.height)
+  //     // Adjust parent's position and height
+  //     node.position = {
+  //       x: nodeWithPosition?.x - nodeWithPosition?.width / 2,
+  //       y: nodeWithPosition?.y - nodeWithPosition?.height / 2,
+  //     };
+  //     node.style = {border: '3px solid white', marginBottom: '10px'}
+  //     console.log(nodeWithPosition.x, nodeWithPosition.y, nodeWithPosition.width, nodeWithPosition.height)
+  //   } 
+  //     // Adjust child's position and height
+  //     node.position = {
+  //       x: nodeWithPosition?.x - nodeWidth / 2,
+  //       y: nodeWithPosition?.y - node.data.height / 2,
+  //     };
+  //     nodeWithPosition.height = node.parentNode ? node.data.height : 0;
+  //     console.log(nodeWithPosition.x, nodeWithPosition.y, nodeWithPosition.width, nodeWithPosition.height)
+    
+  //   return node;
+  // });
+  
+
   // nodes.map((node: Node) => {
   //   const { x, y } = g.node(node.id);
+  //   // console.log(x, y)
+    
   //   node.position = { x, y };
+  //   // console.log(node)
   //   return node;
   // });
   
@@ -121,7 +161,7 @@ export default function Flow({ value }: { value: string }) {
   
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  
+  console.log(initialNodes)
   const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
     initialNodes,
     initialEdges

@@ -4,23 +4,24 @@ import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 
 
-const addPipleType = (pipelines: IPipeline, parentValue: Node[]): Node[] => {
+const addPipleType = (pipelines: IPipeline): Node[] => {
   const nodesToAdd: Node[] = [];
   
   if (pipelines) {
     const pipelineKeys = Object.keys(pipelines);
-
-    pipelineKeys.map((key, index) => {
-     const parentYposition = parentValue.find(node => node.id === key);
-     console.log(parentYposition)
+    
+    pipelineKeys.map((key) => {
       nodesToAdd.push({
         id: key,
         type: 'parentNodeType',
         position: { x: 0, y:0  },
-        data: { label: key, parentNode: key },
+        data: { label: key, parentNode: key},
         draggable: false,
+        // expandParent: true,
+        // height: 180,
+        ariaLabel: key,
       });
-      console.log(nodesToAdd.map(m => m.position))
+      // console.log(nodesToAdd.map(m => m.position))
     });
   }
 
@@ -45,8 +46,10 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           extent: 'parent',
           type: 'processorsNode',
           position, 
-          data: { label: processor, parentNode: parentLable, type: 'processors' },
+          ariaLabel: processor,
+          data: { label: processor, parentNode: parentLable, type: 'processors', height: 80 },
           draggable: false,
+          // expandParent: true,
         });
       });
     }
@@ -59,9 +62,11 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
+          ariaLabel: receiver,
           position, 
-          data: { label: receiver, parentNode: parentLable, type: 'receivers' },
+          data: { label: receiver, parentNode: parentLable, type: 'receivers', height: 80 },
           draggable: false,
+          // expandParent: true,
         });
       });
     }
@@ -73,9 +78,11 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
+          ariaLabel: exporter,
           position, 
-          data: { label: exporter, parentNode: parentLable, type: 'exporters' },
+          data: { label: exporter, parentNode: parentLable, type: 'exporters', height: 80 },
           draggable: false,
+          // expandParent: true,
         });
       });
     }
@@ -86,7 +93,8 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
 const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
   const nodes = useNodes();
-  const parentNodesValue = nodes.filter(node => node.type === 'parentNodeType');
+  console.log(nodes)
+  // const parentNodesValue = nodes.filter(node => node.type === 'parentNodeType');
   
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
@@ -101,7 +109,7 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
 
     const nodesToAdd: Node[] = [];
 
-    nodesToAdd.push(...addPipleType(pipelines, parentNodesValue));
+    nodesToAdd.push(...addPipleType(pipelines));
     parentNodeLabels.forEach((node) => {
       const childNodes = getArrayByName(node);
       nodesToAdd.push(...createNode(node, childNodes, pipelines));

@@ -10,16 +10,19 @@ const ParentNodeType = ({data}: {data:IData}) => {
   const nodes = useNodes();
   const childNodes = nodes.filter((node) => node.parentNode === data.label);
   const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
-  const childExportersNodes = childNodes.filter((node) => node.type === "exportersNode");
-  const childReceiversNodes = childNodes.filter((node) => node.type === "receiversNode");
-  const max = Math.max(childExportersNodes.length, childReceiversNodes.length);
   const maxWidth = (childProcessorsNodes.length * 200) + 600;
-  const maxHeight = (max * 60) + 150;
 
+
+
+  const children = nodes.filter(child => child.parentNode === data.label);
+      const minY = Math.min(...children.map(child => child.position.y));
+      const maxY = Math.max(...children.map(child => child.position.y));
+      const parentHeight = maxY - minY + 180;
 
   const parentNodes = rectaFlowInstance.getNodes().filter((node) => node.type === 'parentNodeType').map((node) => node.data.label);
   const findIndex = parentNodes.findIndex((node) => node === data.label);
 
+  console.log(parentHeight, maxWidth)
   const calculateBorderColor = (index: number): string => {
     switch (index) {
       case 0:
@@ -46,10 +49,10 @@ const ParentNodeType = ({data}: {data:IData}) => {
     }
     return 'f59e0b1a';
   };
-
+console.log(parentHeight)
   const customNodeStyles = {
     width: maxWidth,
-    height: maxHeight,
+    height: parentHeight ,
     padding: "4px 12px 10px 4px",
     background: calculateBackgroundColor(findIndex),
     border: calculateBorderColor(findIndex),
