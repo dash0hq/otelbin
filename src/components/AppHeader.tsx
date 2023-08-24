@@ -26,12 +26,12 @@ export default function AppHeader({
   }
 
   return (
-    <div className="flex h-[48px] items-center justify-between border-b-1 bg-otelbinDarkBlue px-4 py-2">
+      <div className="flex py-3 items-center justify-between border-b-1 bg-default px-4">
       <a
         href="https://www.dash0.com?utm_source=otelbin&utm_medium=logo&utm_campaign=otelbin"
         target="_blank"
       >
-        <Logo />
+              <Logo height='26' />
       </a>
       <div className="flex gap-x-2">
         <ButtonGroup>
@@ -39,7 +39,7 @@ export default function AppHeader({
             className={`${activeView === "both" && "bg-otelbinGrey"} `}
             onClick={() => handleViewChange("both")}
             variant={"default"}
-            size={"sm"}
+                      size={"xs"}
           >
             <Columns />
           </IconButton>
@@ -47,7 +47,7 @@ export default function AppHeader({
             className={`${activeView === "code" && "bg-otelbinGrey"} `}
             onClick={() => handleViewChange("code")}
             variant={"default"}
-            size={"sm"}
+                      size={"xs"}
           >
             <Code2 />
           </IconButton>
@@ -55,7 +55,7 @@ export default function AppHeader({
             className={`${activeView === "pipeline" && "bg-otelbinGrey"} `}
             onClick={() => handleViewChange("pipeline")}
             variant={"default"}
-            size={"sm"}
+                      size={"xs"}
           >
             <ServiceMapIcon />
           </IconButton>
@@ -63,12 +63,12 @@ export default function AppHeader({
         <IconButton
           className={`${
             activeView === "code" && "bg-otelbinGrey"
-          } min-w-[93px] bg-otelbinPurple`}
+                      } min-w-[90px] bg-otelbinPurple`}
           onClick={handleShare}
           variant={"default"}
-          size={"sm"}
+                  size={"xs"}
         >
-          <Share2 color="white" className="mr-2" />
+                  <Share2 color="white" className="mr-2" />
           Share
         </IconButton>
       </div>
