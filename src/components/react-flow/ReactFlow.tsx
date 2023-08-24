@@ -189,14 +189,7 @@ export default function Flow({ value }: { value: string }) {
     },
   };
 
-  editorRef?.current?.onDidChangeCursorPosition(handleMouseUp);
-
-  function handleMouseUp(e: editor.ICursorPositionChangedEvent) {
-    mouseUp.current = true;
-    editorRef?.current?.onMouseUp(() => {
-      handleCursorPositionChange(e);
-    });
-  }
+  editorRef?.current?.onDidChangeCursorPosition(handleCursorPositionChange);
 
   function handleCursorPositionChange(e: editor.ICursorPositionChangedEvent) {
     const cursorOffset =
@@ -276,7 +269,6 @@ export default function Flow({ value }: { value: string }) {
     ) {
       reactFlowInstance.fitView();
     }
-    mouseUp.current = false;
   }
 
   function getNodePositionX(nodeId: string, level2: string, level3: string) {

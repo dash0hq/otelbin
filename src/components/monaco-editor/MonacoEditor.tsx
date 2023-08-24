@@ -4,6 +4,7 @@ import { useConfigs, useInsertConfigs } from '~/queries/config';
 import type { IAjvError, IError } from './ErrorConsole';
 import { schema } from './JSONSchema';
 import ErrorConsole from './ErrorConsole';
+import EditorTopBar from '../EditorTopBar';
 import { DefaultConfig } from './DefaultConfig';
 import { useEditorRef, useEditorDidMount, useMonacoRef } from '~/contexts/EditorContext';
 import Editor from '@monaco-editor/react';
@@ -14,6 +15,8 @@ import Flow from '../react-flow/ReactFlow';
 import { useMouseDelta } from './MouseDelta';
 import { useRouter } from 'next/router';
 import { useUrlState } from '~/lib/urlState/client/useUrlState';
+import AppHeader from '../AppHeader';
+import WelcomeModal from '../welcome-modal/WelcomeModal';
 
 
 export default function MonacoEditor({ id }: { id?: string }) {
@@ -30,6 +33,9 @@ export default function MonacoEditor({ id }: { id?: string }) {
     const width = useMouseDelta(Number(savedWidth) || 440, editorDivRef);
     const [isServer, setIsServer] = useState<boolean>(false)
     const router = useRouter();
+    const [activeView, setActiveView] = useState("both");
+    const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem('welcomeModal'));
+    const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 
     const editorBinding = {
         prefix: "",
@@ -109,18 +115,28 @@ export default function MonacoEditor({ id }: { id?: string }) {
     }
 
     return (
-        <div className="flex">
+        <>
+            {isServer
+                ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} />
+                : <></>}
+            <div className="flex flex-col h-full">
+                <AppHeader activeView={activeView} setView={setActiveView} />
+            <div className="flex">
             {isServer
                 ? <div ref={editorDivRef}
                     style={{
                         position: 'relative',
-                        width: `${width}px`,
-                        paddingRight: '4px',
-                        backgroundColor: '#40454E',
-                        cursor: 'col-resize',
+                        width: activeView === 'both' ? `${width}px` : activeView === 'code' ? '100%' : '0px',
+                        backgroundColor: '#1E1E1E',
+                        borderRight: '8px solid #40454E',
+                        cursor: activeView === 'both' ? 'col-resize' : 'default',
                         userSelect: 'none',
-                    }}>
+                        display: 'flex',
+                        flexDirection: 'column'
+                            }}>
+                        <EditorTopBar />
                 <Editor
+
                         defaultValue={config.length ? config : DefaultConfig}
                     value={
                         !clicked ?
@@ -129,11 +145,11 @@ export default function MonacoEditor({ id }: { id?: string }) {
                             : data.config
                     }
                     onMount={editorDidMount}
-                    height="100vh"
-                        width={'99%'}
+                            height="94.5vh"
+                                width={'100%'}
                     defaultLanguage='yaml'
                     theme="vs-dark"
-                    options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 } }}
+                                options={{ automaticLayout: true, minimap: { enabled: false }, scrollbar: { verticalScrollbarSize: 5 }, padding: { top: 20 } }}
                     onChange={
                         (value) => {
                             setData({
@@ -148,7 +164,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 <ErrorConsole errors={errors} />
             </div>
                 : <></>}
-            <div className='z-0 flex-grow-[3]' style={{ height: '100vh' }}>
+                <div className='z-0 flex-grow-[3]' style={{ height: '94.5vh' }}>
                 <ReactFlowProvider>
                     <Flow value={(errors?.jsYamlError === undefined && errors.ajvErrors?.length === 0
                         && configs && configs?.length > 0 && config || config) || DefaultConfig
@@ -157,5 +173,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                 </ReactFlowProvider>
             </div>
         </div>
+        </div>
+        </>
     );
 }
