@@ -4,27 +4,26 @@ import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 
 
-const addPipleType = (pipelines: IPipeline): Node[] => {
+const addPipleType = (pipelines: IPipeline, nodes: Node[]): Node[] => {
   const nodesToAdd: Node[] = [];
-  
   if (pipelines) {
     const pipelineKeys = Object.keys(pipelines);
     
-    pipelineKeys.map((key) => {
+    pipelineKeys.map((key, index) => {
+      const childPositionY = nodes.filter(child => child.parentNode === key);
+      const parentHeight = nodes.find(child => child.id === key)?.height;
+      const childYposition = childPositionY[0]?.position.y! || 0;
       nodesToAdd.push({
         id: key,
         type: 'parentNodeType',
-        position: { x: 0, y:0  },
+        position: { x: 0, y:  0 },
         data: { label: key, parentNode: key},
         draggable: false,
-        // expandParent: true,
-        // height: 180,
         ariaLabel: key,
+        expandParent: true,
       });
-      // console.log(nodesToAdd.map(m => m.position))
     });
   }
-
   return nodesToAdd;
 };
 
@@ -49,7 +48,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           ariaLabel: processor,
           data: { label: processor, parentNode: parentLable, type: 'processors', height: 80 },
           draggable: false,
-          // expandParent: true,
+          expandParent: true,
         });
       });
     }
@@ -66,7 +65,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           position, 
           data: { label: receiver, parentNode: parentLable, type: 'receivers', height: 80 },
           draggable: false,
-          // expandParent: true,
+          expandParent: true,
         });
       });
     }
@@ -82,7 +81,7 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           position, 
           data: { label: exporter, parentNode: parentLable, type: 'exporters', height: 80 },
           draggable: false,
-          // expandParent: true,
+          expandParent: true,
         });
       });
     }
@@ -93,8 +92,6 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
 const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
   const nodes = useNodes();
-  console.log(nodes)
-  // const parentNodesValue = nodes.filter(node => node.type === 'parentNodeType');
   
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
@@ -109,7 +106,7 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
 
     const nodesToAdd: Node[] = [];
 
-    nodesToAdd.push(...addPipleType(pipelines));
+    nodesToAdd.push(...addPipleType(pipelines, nodes));
     parentNodeLabels.forEach((node) => {
       const childNodes = getArrayByName(node);
       nodesToAdd.push(...createNode(node, childNodes, pipelines));

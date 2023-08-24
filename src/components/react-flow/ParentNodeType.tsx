@@ -22,7 +22,6 @@ const ParentNodeType = ({data}: {data:IData}) => {
   const parentNodes = rectaFlowInstance.getNodes().filter((node) => node.type === 'parentNodeType').map((node) => node.data.label);
   const findIndex = parentNodes.findIndex((node) => node === data.label);
 
-  console.log(parentHeight, maxWidth)
   const calculateBorderColor = (index: number): string => {
     switch (index) {
       case 0:
@@ -49,7 +48,6 @@ const ParentNodeType = ({data}: {data:IData}) => {
     }
     return 'f59e0b1a';
   };
-console.log(parentHeight)
   const customNodeStyles = {
     width: maxWidth,
     height: parentHeight ,
