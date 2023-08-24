@@ -10,9 +10,9 @@ const addPipleType = (pipelines: IPipeline, nodes: Node[]): Node[] => {
     const pipelineKeys = Object.keys(pipelines);
     
     pipelineKeys.map((key, index) => {
-      const childPositionY = nodes.filter(child => child.parentNode === key);
-      const parentHeight = nodes.find(child => child.id === key)?.height;
-      const childYposition = childPositionY[0]?.position.y! || 0;
+      // const childPositionY = nodes.filter(child => child.parentNode === key);
+      // const parentHeight = nodes.find(child => child.id === key)?.height;
+      // const childYposition = childPositionY[0]?.position.y! || 0;
       nodesToAdd.push({
         id: key,
         type: 'parentNodeType',
