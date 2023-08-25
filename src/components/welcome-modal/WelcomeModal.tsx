@@ -37,7 +37,10 @@ export default function WelcomeModal({
                 <div className='flex flex-col pt-4 gap-y-7 px-4 relative mb-4'>
                     <DialogHeader className='mx-auto'>
                         <DialogTitle>
-                            <Logo />
+                            <a href='https://www.dash0.com?utm_source=otelbin&utm_medium=welcome&utm_campaign=otelbin'
+                                target='_blank'>
+                                <Logo height='40' />
+                            </a>
                         </DialogTitle>
                     </DialogHeader>
                     <Image src={WelcomeModalData[step]?.image || ''} alt='Welcome Modal Slide 1' />
@@ -60,12 +63,14 @@ export default function WelcomeModal({
                 <DialogFooter>
                     {step <= 2
                         ? (<Button
+
                             onClick={handleSkip}
                             variant={'default'} size={'sm'}>
                             Skip
                         </Button>)
                         : (<></>)}
                     <Button
+                        autoFocus={true}
                         onClick={handleNext}
                         variant={'default'} size={'sm'} className='bg-otelbinPurple'>
                         {step <= 2 ? 'Next' : 'Done'}
@@ -76,7 +81,7 @@ export default function WelcomeModal({
     )
 }
 
-function StepDiv({ activeStep }: { activeStep: boolean }) {
+function StepDiv({ activeStep }: { activeStep: boolean; }) {
     return (
         <>
             {activeStep
