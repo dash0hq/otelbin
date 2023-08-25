@@ -18,6 +18,7 @@ import dagre from 'dagre';
 import Dagre from "@dagrejs/dagre";
 import { set } from "zod";
 import { init } from "next/dist/compiled/@vercel/og/satori";
+import { cookies } from "next/dist/client/components/headers";
 
 const zoomInControlButtonStyle = {
   backgroundColor: "#293548",
@@ -38,28 +39,43 @@ const nodeHeight = 100;
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
   const g = new Dagre.graphlib.Graph({compound: true}).setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: direction, marginx: 100, marginy: 10, nodesep: 150, ranksep: 60,  });
+  g.setGraph({ rankdir: direction, marginx: 50, marginy: 10, nodesep: 150, ranksep: 70,  });
   
-  const children = nodes.filter(n => n.parentNode !== undefined);
 
   edges.forEach((edge) => {
     g.setEdge(edge.source, edge.target);
   });
-  children.forEach(node => {
-    g.setParent(node.id, node.parentNode!);
-    g.setNode(node.id,node)
+  nodes.forEach(node => {
+      g.setNode(node.id,node);
+      g.setParent(node.id, node.parentNode!);
   });
-
-
   if (g.nodes().length > 0) {
     Dagre.layout(g)
-
   }
 
-  children.map((node: Node) => {
+
+
+  nodes.forEach((node: Node) => {
+    // debugger
+    const parent = g.parent(node.id)
+    const children = nodes.filter(child => child.parentNode === parent);
+    const minY = Math.min(...children.map(child => child.position.y));
+      const maxY = Math.max(...children.map(child => child.position.y));
+      const parentHeight = maxY - minY ;
+      console.log(parentHeight)
+
     const { x, y } = g.node(node.id);
     
-    node.position = { x, y };
+    
+    if (node.parentNode === parent) {
+      node.position = { x, y:   y - (parentHeight / 2)};
+      node.parentNode = parent;
+    }
+    if(node.parentNode === undefined) {
+      node.position = { x: 0, y: y - minY   };
+      node.height = 300;
+    }
+    // node.height = 0;
     return node;
   });
   
@@ -95,6 +111,7 @@ export default function Flow({ value }: { value: string }) {
     }),
     []
   );
+
   const editorRef = useEditorRef();
   const { setCenter } = useReactFlow();
   const nodeInfo = reactFlowInstance.getNodes();
@@ -120,7 +137,7 @@ export default function Flow({ value }: { value: string }) {
       setEdges((eds) =>
         addEdge({ ...params}, eds)
       ),
-    []
+    [setEdges]
   );
   
   const edgeOptions = {

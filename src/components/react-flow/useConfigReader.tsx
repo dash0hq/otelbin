@@ -9,14 +9,11 @@ const addPipleType = (pipelines: IPipeline, nodes: Node[]): Node[] => {
   if (pipelines) {
     const pipelineKeys = Object.keys(pipelines);
     
-    pipelineKeys.map((key, index) => {
-      // const childPositionY = nodes.filter(child => child.parentNode === key);
-      // const parentHeight = nodes.find(child => child.id === key)?.height;
-      // const childYposition = childPositionY[0]?.position.y! || 0;
+    pipelineKeys.map((key) => {
       nodesToAdd.push({
         id: key,
         type: 'parentNodeType',
-        position: { x: 0, y:  0 },
+        position: { x: 0, y: 0 },
         data: { label: key, parentNode: key},
         draggable: false,
         ariaLabel: key,
@@ -48,7 +45,6 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           ariaLabel: processor,
           data: { label: processor, parentNode: parentLable, type: 'processors', height: 80 },
           draggable: false,
-          expandParent: true,
         });
       });
     }
@@ -65,7 +61,6 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           position, 
           data: { label: receiver, parentNode: parentLable, type: 'receivers', height: 80 },
           draggable: false,
-          expandParent: true,
         });
       });
     }
@@ -81,7 +76,6 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
           position, 
           data: { label: exporter, parentNode: parentLable, type: 'exporters', height: 80 },
           draggable: false,
-          expandParent: true,
         });
       });
     }
@@ -92,7 +86,6 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
 const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
   const nodes = useNodes();
-  
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
     const pipelines = value?.service?.pipelines;
