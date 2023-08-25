@@ -135,7 +135,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                             className={`relative flex select-none flex-col border-r-[8px] border-otelbinDarkBlue2 hover:border-otelbinDarkBlue3`}
                             style={{
                                 width:
-                                    activeView === "both"
+                                    activeView === "both" && openDialog === false
                                         ? `${width}px`
                                         : activeView === "code"
                                             ? "100%"
