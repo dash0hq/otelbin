@@ -22,6 +22,8 @@ import { useRouter } from "next/router";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
+import { Button } from "@dash0hq/ui/src/components/ui/button";
+import { set } from "zod";
 
 export default function MonacoEditor({ id }: { id?: string }) {
   const editorDidMount = useEditorDidMount();
@@ -131,14 +133,15 @@ export default function MonacoEditor({ id }: { id?: string }) {
           {isServer ? (
             <div
               ref={editorDivRef}
-              className={`relative flex select-none flex-col border-r-[8px] border-otelbinDarkBlue2 hover:border-otelbinDarkBlue3`}
+              className={`relative flex select-none flex-col border-otelbinDarkBlue2 hover:border-otelbinDarkBlue3 
+              ${activeView === "both" ? "border-r-[8px]" : "border-r-[0px]"}`}
               style={{
                 width:
-                  activeView === "both" && openDialog === false
-                    ? `${width}px`
-                    : activeView === "code"
+                  activeView === "code"
                     ? "100%"
-                    : "0px",
+                    : activeView === "pipeline"
+                    ? "0px"
+                    : `${width}px`,
                 cursor: activeView === "both" ? "col-resize" : "default",
               }}
             >
@@ -192,6 +195,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                   config ||
                   DefaultConfig
                 }
+                openDialog={setOpenDialog}
               />
             </ReactFlowProvider>
           </div>

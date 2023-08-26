@@ -1,11 +1,11 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import ReactFlow, { Panel, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useEditorRef } from "~/contexts/EditorContext";
-import { Maximize, Minus, Plus } from "lucide-react";
+import { Maximize, Minus, Plus, HelpCircle } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
 import ProcessorsNode from "./ProcessorsNode";
@@ -25,7 +25,13 @@ function isValidJson(jsonData: string) {
   }
 }
 
-export default function Flow({ value }: { value: string }) {
+export default function Flow({
+  value,
+  openDialog,
+}: {
+  value: string;
+  openDialog: (open: boolean) => void;
+}) {
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(
     () => JsYaml.load(isValidJson(value) ? value : "") as IConfig,
@@ -221,6 +227,9 @@ export default function Flow({ value }: { value: string }) {
           variant="default"
         >
           <Maximize />
+        </Button>
+        <Button onClick={() => openDialog(true)} size="xs" variant="default">
+          <HelpCircle />
         </Button>
       </Panel>
     </ReactFlow>
