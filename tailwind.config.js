@@ -25,6 +25,6 @@ module.exports.theme.extend.colors.otelbinDarkBlue3 = "#4F545D";
 module.exports.theme.extend.colors.otelbinLightBlue = "#293548";
 module.exports.theme.extend.colors.otelbinGrey = "#6D737D";
 module.exports.theme.extend.colors.otelbinLightGrey = "#8491A6";
-module.exports.theme.extend.colors.otelbinLighterGrey2 = "#2B3546";
+module.exports.theme.extend.colors.otelbinLightGrey2 = "#2B3546";
 module.exports.theme.extend.colors.otelbinBlackGrey = "#030816";
 module.exports.theme.extend.colors.otelbinMagenta = "#C93A76";
