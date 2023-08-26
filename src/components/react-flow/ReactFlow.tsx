@@ -5,29 +5,16 @@ import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useEditorRef } from "~/contexts/EditorContext";
-import { MaximizeIcon, MinusIcon, PlusIcon } from "lucide-react";
+import { Maximize, Minus, Plus } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
 import ProcessorsNode from "./ProcessorsNode";
 import ExportersNode from "./ExportersNode";
-import { IconButton } from "@dash0/components/ui/icon-button";
 import useConfigReader from "./useConfigReader";
 import type { editor } from "monaco-editor";
 import { ParseYaml } from "./ParseYaml";
-
-const zoomInControlButtonStyle = {
-  backgroundColor: "#293548",
-  borderBottomRightRadius: "0px",
-  borderTopRightRadius: "0px",
-};
-const zoomOutControlButtonStyle = {
-  backgroundColor: "#293548",
-  borderBottomLeftRadius: "0px",
-  borderTopLeftRadius: "0px",
-};
-const fitViewControlButtonStyle = {
-  backgroundColor: "#293548",
-};
+import { ButtonGroup } from "@dash0/components/ui/button-group";
+import { Button } from "@dash0hq/ui/src/components/ui/button";
 
 function isValidJson(jsonData: string) {
   try {
@@ -58,7 +45,6 @@ export default function Flow({ value }: { value: string }) {
   const editorRef = useEditorRef();
   const { setCenter } = useReactFlow();
   const nodeInfo = reactFlowInstance.getNodes();
-  const mouseUp = useRef<boolean>(false);
   const docPipelines = ParseYaml("pipelines");
 
   const edgeOptions = {
@@ -212,33 +198,30 @@ export default function Flow({ value }: { value: string }) {
         hideAttribution: true,
       }}
     >
-      <Panel position="bottom-left" className="flex gap-0.5">
-        <div className="flex">
-          <IconButton
+      <Panel position="bottom-left" className="flex gap-x-3">
+        <ButtonGroup size={"xs"}>
+          <Button
             onClick={() => reactFlowInstance.zoomIn()}
-            size="sm"
+            size="xs"
             variant="default"
-            style={zoomInControlButtonStyle}
           >
-            <PlusIcon color="#94A3B8" />
-          </IconButton>
-          <IconButton
+            <Plus />
+          </Button>
+          <Button
             onClick={() => reactFlowInstance.zoomOut()}
-            size="sm"
+            size="xs"
             variant="default"
-            style={zoomOutControlButtonStyle}
           >
-            <MinusIcon color="#94A3B8" />
-          </IconButton>
-        </div>
-        <IconButton
+            <Minus />
+          </Button>
+        </ButtonGroup>
+        <Button
           onClick={() => reactFlowInstance.fitView()}
-          size="sm"
+          size="xs"
           variant="default"
-          style={fitViewControlButtonStyle}
         >
-          <MaximizeIcon color="#94A3B8" />
-        </IconButton>
+          <Maximize />
+        </Button>
       </Panel>
     </ReactFlow>
   );
