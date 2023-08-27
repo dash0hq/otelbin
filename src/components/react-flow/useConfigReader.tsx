@@ -7,7 +7,7 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
   const nodesToAdd: Node[] = [];
 
   const calculateMaxHeight = (data: IPipeline1): number => {
-    const heights = Object.values(data).map(pipeline => {
+    const heights = Object.values(data).map((pipeline) => {
       const receiversLength = pipeline.receivers?.length;
       const exportersLength = pipeline.exporters?.length;
       return Math.max(receiversLength, exportersLength);
@@ -20,19 +20,19 @@ const addPipleType = (pipelines: IPipeline1): Node[] => {
       return 10;
     } else if (index > 1) {
       const actualHeight = calculateMaxHeight(pipelines);
-      return ((actualHeight / 2) + 300) * (index - 1);
+      return (actualHeight / 2 + 300) * (index - 1);
     } else {
       throw new Error("Invalid index");
     }
   };
-  
+
   if (pipelines) {
     const pipelineKeys = Object.keys(pipelines);
 
     pipelineKeys.forEach((key, index) => {
       nodesToAdd.push({
         id: key,
-        type: 'parentNodeType',
+        type: "parentNodeType",
         position: { x: 0, y: calculateHeight(index + 1) },
         data: { label: key, parentNode: key },
         draggable: false,
@@ -57,34 +57,47 @@ const calculateValue = (parentHeight: number, index: number): number => {
   }
 };
 
-const calculateExportersLocation = (processorLength: number, offsetX: number): number => {
-    if (processorLength) {
-      return processorLength * offsetX + offsetX;
-    }
-    return 1 * offsetX;
-}
+const calculateExportersLocation = (
+  processorLength: number,
+  offsetX: number
+): number => {
+  if (processorLength) {
+    return processorLength * offsetX + offsetX;
+  }
+  return 1 * offsetX;
+};
 
-const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline1) => {
+const createNode = (
+  parentLable: string,
+  parentNode: IParentNode | null,
+  pipelines: IPipeline1
+) => {
   const nodesToAdd: Node[] = [];
-  const receiversLength = parentNode!.receivers?.length
-  const exportersLength = parentNode!.exporters?.length
-  const compareLength = receiversLength > exportersLength ? receiversLength : exportersLength
+  const receiversLength = parentNode!.receivers?.length;
+  const exportersLength = parentNode!.exporters?.length;
+  const compareLength =
+    receiversLength > exportersLength ? receiversLength : exportersLength;
   const parentHeight = (compareLength * 80) / 2;
   const offsetX = 200;
   const keyTraces = Object.keys(parentNode!);
 
-  const calculateMaxHeight = (data: IPipeline1, parentLabel: string): number => {
+  const calculateMaxHeight = (
+    data: IPipeline1,
+    parentLabel: string
+  ): number => {
     const targetPipeline = data[parentLabel];
     if (!targetPipeline) {
-      throw new Error(`Pipeline with parent label "${parentLabel}" not found in data.`);
+      throw new Error(
+        `Pipeline with parent label "${parentLabel}" not found in data.`
+      );
     }
-  
+
     const receiversLength = targetPipeline.receivers?.length || 0;
     const exportersLength = targetPipeline.exporters?.length || 0;
     const maxNodes = Math.max(receiversLength, exportersLength) * 100;
-  
+
     const minMaxNodes = Math.max(maxNodes, 100);
-  
+
     return minMaxNodes;
   };
 
@@ -92,13 +105,22 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
     if (traceItem === "processors") {
       const processors = parentNode!.processors;
       processors.forEach((processor, index) => {
+        const id = `${parentLable}-Processor-processorNode-${processor}-${v4()}`;
         nodesToAdd.push({
-          id: `${parentLable}-Processor-processorNode-${processor}-${v4()}`,
+          id: id,
           parentNode: parentLable,
-          extent: 'parent',
-          type: 'processorsNode',
-          position: { x: (index + 1) * offsetX, y: calculateMaxHeight(pipelines, parentLable) / 2 }, 
-          data: { label: processor, parentNode: parentLable, type: 'processors' },
+          extent: "parent",
+          type: "processorsNode",
+          position: {
+            x: (index + 1) * offsetX,
+            y: calculateMaxHeight(pipelines, parentLable) / 2,
+          },
+          data: {
+            label: processor,
+            parentNode: parentLable,
+            type: "processors",
+            id: id,
+          },
           draggable: false,
         });
       });
@@ -106,40 +128,71 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
     if (traceItem === "receivers") {
       const plusIndex = index + 0.3;
       const receivers = parentNode!.receivers;
-      Array.isArray(receivers) && receivers.length > 0 && receivers.map((receiver, index) => {
-        nodesToAdd.push({
-          id: `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`,
-          parentNode: parentLable,
-          extent: 'parent',
-          type: 'receiversNode',
-          position: { x: 0.2 * offsetX, y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: receiver, parentNode: parentLable, type: 'receivers' },
-          draggable: false,
+      Array.isArray(receivers) &&
+        receivers.length > 0 &&
+        receivers.map((receiver, index) => {
+          const id = `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`;
+          nodesToAdd.push({
+            id: id,
+            parentNode: parentLable,
+            extent: "parent",
+            type: "receiversNode",
+            position: {
+              x: 0.2 * offsetX,
+              y: calculateValue(
+                calculateMaxHeight(pipelines, parentLable) / 2,
+                index
+              ),
+            },
+            data: {
+              label: receiver,
+              parentNode: parentLable,
+              type: "receivers",
+              id: id,
+            },
+            draggable: false,
+          });
         });
-      });
     }
     if (traceItem === "exporters") {
       const exporters = parentNode!.exporters;
       exporters?.map((exporter, index) => {
+        const id = `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`;
         nodesToAdd.push({
-          id: `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`,
+          id: id,
           parentNode: parentLable,
-          extent: 'parent',
-          type: 'exportersNode',
-          position: { x: calculateExportersLocation(parentNode!.processors?.length, offsetX), y: calculateValue(calculateMaxHeight(pipelines, parentLable) / 2, index) }, 
-          data: { label: exporter, parentNode: parentLable, type: 'exporters' },
+          extent: "parent",
+          type: "exportersNode",
+          position: {
+            x: calculateExportersLocation(
+              parentNode!.processors?.length,
+              offsetX
+            ),
+            y: calculateValue(
+              calculateMaxHeight(pipelines, parentLable) / 2,
+              index
+            ),
+          },
+          data: {
+            label: exporter,
+            parentNode: parentLable,
+            type: "exporters",
+            id: id,
+          },
           draggable: false,
         });
       });
     }
-  })
+  });
   return nodesToAdd;
-}
+};
 
-const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) => {
+const useConfigReader = (
+  value: IConfig,
+  reactFlowInstance: ReactFlowInstance
+) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
 
-  
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
     const pipelines = value?.service?.pipelines;
@@ -153,13 +206,11 @@ const useConfigReader = (value: IConfig, reactFlowInstance :ReactFlowInstance) =
 
     const nodesToAdd: Node[] = [];
 
-    
     nodesToAdd.push(...addPipleType(pipelines));
     parentNodeLabels.forEach((node) => {
       const childNodes = getArrayByName(node);
       nodesToAdd.push(...createNode(node, childNodes, pipelines));
-    })
-    
+    });
 
     setJsonDataState(nodesToAdd);
   }, [value, reactFlowInstance]);
