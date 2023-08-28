@@ -22,8 +22,6 @@ import { useRouter } from "next/router";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
-import { Button } from "@dash0hq/ui/src/components/ui/button";
-import { set } from "zod";
 
 export default function MonacoEditor({ id }: { id?: string }) {
   const editorDidMount = useEditorDidMount();

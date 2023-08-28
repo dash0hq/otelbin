@@ -11,7 +11,6 @@ import {
 } from "@dash0/components/ui/dialog";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
 import { WelcomeModalData } from "./WelcomeModalData";
-import { set } from "zod";
 
 export default function WelcomeModal({
   open,
