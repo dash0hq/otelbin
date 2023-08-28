@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ReactFlow, { Connection, ConnectionLineType, Edge, Node, Panel, Position, addEdge, useEdges, useEdgesState, useNodes, useNodesInitialized, useNodesState, useReactFlow } from "reactflow";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import ReactFlow, { Background, Connection, Edge, Node, Panel, addEdge, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
@@ -14,11 +14,6 @@ import { IconButton } from "@dash0/components/ui/icon-button";
 import useConfigReader from "./useConfigReader";
 import type { editor } from "monaco-editor";
 import { ParseYaml } from "./ParseYaml";
-import dagre from 'dagre';
-import Dagre from "@dagrejs/dagre";
-import { set } from "zod";
-import { init } from "next/dist/compiled/@vercel/og/satori";
-import { cookies } from "next/dist/client/components/headers";
 
 const zoomInControlButtonStyle = {
   backgroundColor: "#293548",
@@ -33,56 +28,6 @@ const zoomOutControlButtonStyle = {
 const fitViewControlButtonStyle = {
   backgroundColor: "#293548",
 };
-
-const nodeWidth = 80;
-const nodeHeight = 100;
-
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
-  const g = new Dagre.graphlib.Graph({compound: true}).setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: direction, marginx: 50, marginy: 10, nodesep: 150, ranksep: 70,  });
-  
-
-  edges.forEach((edge) => {
-    g.setEdge(edge.source, edge.target);
-  });
-  nodes.forEach(node => {
-      g.setNode(node.id,node);
-      g.setParent(node.id, node.parentNode!);
-  });
-  if (g.nodes().length > 0) {
-    Dagre.layout(g)
-  }
-
-
-
-  nodes.forEach((node: Node) => {
-    // debugger
-    const parent = g.parent(node.id)
-    const children = nodes.filter(child => child.parentNode === parent);
-    const minY = Math.min(...children.map(child => child.position.y));
-      const maxY = Math.max(...children.map(child => child.position.y));
-      const parentHeight = maxY - minY ;
-      console.log(parentHeight)
-
-    const { x, y } = g.node(node.id);
-    
-    
-    if (node.parentNode === parent) {
-      node.position = { x, y:   y - (parentHeight / 2)};
-      node.parentNode = parent;
-    }
-    if(node.parentNode === undefined) {
-      node.position = { x: 0, y: y - minY   };
-      node.height = 300;
-    }
-    // node.height = 0;
-    return node;
-  });
-  
-  return { nodes, edges };
-};
-
-
 
 
 function isValidJson(jsonData: string) {
@@ -110,36 +55,13 @@ export default function Flow({ value }: { value: string }) {
       parentNodeType: ParentNodeType,
     }),
     []
-  );
-
-  const editorRef = useEditorRef();
-  const { setCenter } = useReactFlow();
-  const nodeInfo = reactFlowInstance.getNodes();
-  const mouseUp = useRef<boolean>(false);
-  const docPipelines = ParseYaml("pipelines");
-  
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-    initialNodes,
-    initialEdges
-  );
-
-  useEffect(() => {
-        
-        setNodes(layoutedNodes);
-        setEdges(layoutedEdges);
-    }, [layoutedEdges, layoutedNodes]);
+    );
     
-
-  const onConnect = useCallback(
-    (params: Edge | Connection) =>
-      setEdges((eds) =>
-        addEdge({ ...params}, eds)
-      ),
-    [setEdges]
-  );
-  
+    const editorRef = useEditorRef();
+    const nodeInfo = reactFlowInstance.getNodes();
+  const { setCenter } = useReactFlow();
+  const mouseUp = useRef<boolean>(false);
+  const docPipelines = ParseYaml("pipelines"); 
   const edgeOptions = {
     animated: false,
     style: {
@@ -281,13 +203,10 @@ export default function Flow({ value }: { value: string }) {
   }
   return (
     <ReactFlow
-      nodes={nodes}
-      edges={edges}
+      nodes={initialNodes}
+      edges={initialEdges}
       defaultEdgeOptions={edgeOptions}
       nodeTypes={nodeTypes}
-      onConnect={onConnect}
-      onEdgesChange={onEdgesChange}
-      onNodesChange={onNodesChange}
       fitView
       style={{
         backgroundColor: "#000",
@@ -296,7 +215,8 @@ export default function Flow({ value }: { value: string }) {
       proOptions={{
         hideAttribution: true,
       }}
-    >
+      >
+      <Background />
       <Panel position="bottom-left" className="flex gap-0.5">
         <div className="flex">
           <IconButton
