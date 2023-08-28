@@ -14,15 +14,8 @@ const createNode = (parentLable: string, parentNode: IParentNode | null, pipelin
   const max = Math.max(receivers, exporters);
   const parentHeight = max * 100;
 
-  const calculateExportersLocation = (processorLength: number, offsetX: number): number => {
-    if (processorLength) {
-      return processorLength * offsetX + offsetX;
-    }
-    return 1 * offsetX;
-  };
-
   const calculateValue = (parentHeight: number, index: number): number => {
-    let offset = 60;
+    const offset = 60;
     let value = parentHeight / 2;
     if (index === 0) {
       return value =+ value + offset;
