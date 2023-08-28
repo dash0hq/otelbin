@@ -5,18 +5,6 @@ import { FlowClick } from "./FlowClick";
 import type { IData } from "./FlowClick";
 import ExportersIcon from "../assets/svg/exporters.svg";
 
-const customNodeStyles = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: 80,
-  height: 80,
-  background: "#30353D",
-  borderRadius: "10px",
-  fontSize: "10px",
-  paddingBottom: "6px",
-  paddingTop: "6px",
-};
 const tagstyles = {
   backgroundColor: "#4F46E5",
   borderRadius: "100%",
@@ -26,6 +14,8 @@ const tagstyles = {
 
 const radius = {
   borderRadius: "15px",
+  fontSize: "10px",
+    fontWeight: 400,
 };
 
 export default function ExportersNode({ data }: { data: IData }) {
@@ -42,7 +32,8 @@ export default function ExportersNode({ data }: { data: IData }) {
     background: hovered ? "#4F46E5" : "#30353D",
     transition: "background-color 0.3s ease-in-out",
     borderRadius: "10px",
-    fontSize: "10px",
+    fontSize: "8px",
+    fontWeight: 400,
     paddingBottom: "6px",
     paddingTop: "6px",
   };
@@ -77,7 +68,7 @@ export default function ExportersNode({ data }: { data: IData }) {
           }}
         />
         <div className="flex flex-col items-center">
-          <div className="flex items-center text-sm font-semibold text-white">
+          <div className="flex items-center text-white">
             {splitedLabel[0]}
           </div>
           <div style={tagstyles}>

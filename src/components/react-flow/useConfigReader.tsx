@@ -1,219 +1,143 @@
-import type { Node, ReactFlowInstance } from "reactflow";
-import type { IConfig, IParentNode, IPipeline1 } from "./dataType";
+import { useNodes, type Node, type ReactFlowInstance, XYPosition } from "reactflow";
+import type { IConfig, IParentNode, IPipeline } from "./dataType";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 
-const addPipleType = (pipelines: IPipeline1): Node[] => {
+
+const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline, nodes: Node[], height: number) => {
   const nodesToAdd: Node[] = [];
-
-  const calculateMaxHeight = (data: IPipeline1): number => {
-    const heights = Object.values(data).map((pipeline) => {
-      const receiversLength = pipeline.receivers?.length;
-      const exportersLength = pipeline.exporters?.length;
-      return Math.max(receiversLength, exportersLength);
-    });
-    return Math.max(...heights) * 200;
-  };
-
-  const calculateHeight = (index: number): number => {
-    if (index === 1) {
-      return 10;
-    } else if (index > 1) {
-      const actualHeight = calculateMaxHeight(pipelines);
-      return (actualHeight / 2 + 300) * (index - 1);
-    } else {
-      throw new Error("Invalid index");
-    }
-  };
-
-  if (pipelines) {
-    const pipelineKeys = Object.keys(pipelines);
-
-    pipelineKeys.forEach((key, index) => {
-      nodesToAdd.push({
-        id: key,
-        type: "parentNodeType",
-        position: { x: 0, y: calculateHeight(index + 1) },
-        data: { label: key, parentNode: key },
-        draggable: false,
-        style: {
-          padding: "4px 12px 10px 4px",
-          height: calculateMaxHeight(pipelines),
-        },
-      });
-    });
-  }
-
-  return nodesToAdd;
-};
-
-const calculateValue = (parentHeight: number, index: number): number => {
-  if (index === 0) {
-    return parentHeight;
-  } else if (index % 2 === 1) {
-    return parentHeight - 85 * index;
-  } else {
-    return parentHeight + 60 * index;
-  }
-};
-
-const calculateExportersLocation = (
-  processorLength: number,
-  offsetX: number
-): number => {
-  if (processorLength) {
-    return processorLength * offsetX + offsetX;
-  }
-  return 1 * offsetX;
-};
-
-const createNode = (
-  parentLable: string,
-  parentNode: IParentNode | null,
-  pipelines: IPipeline1
-) => {
-  const nodesToAdd: Node[] = [];
-  const receiversLength = parentNode!.receivers?.length;
-  const exportersLength = parentNode!.exporters?.length;
-  const compareLength =
-    receiversLength > exportersLength ? receiversLength : exportersLength;
-  const parentHeight = (compareLength * 80) / 2;
-  const offsetX = 200;
   const keyTraces = Object.keys(parentNode!);
 
-  const calculateMaxHeight = (
-    data: IPipeline1,
-    parentLabel: string
-  ): number => {
-    const targetPipeline = data[parentLabel];
-    if (!targetPipeline) {
-      throw new Error(
-        `Pipeline with parent label "${parentLabel}" not found in data.`
-      );
+  const calculateValue = (parentHeight: number, index: number): number => {
+    const offset = 60;
+    const value = parentHeight / 2;
+    if (index === 0) {
+      return value - offset;
     }
-
-    const receiversLength = targetPipeline.receivers?.length || 0;
-    const exportersLength = targetPipeline.exporters?.length || 0;
-    const maxNodes = Math.max(receiversLength, exportersLength) * 100;
-
-    const minMaxNodes = Math.max(maxNodes, 100);
-
-    return minMaxNodes;
+    if (index % 2 !== 0) {
+      return value + offset * index;
+    } else {
+      return value - offset * index;
+    }
   };
 
-  keyTraces.map((traceItem, index) => {
+
+  const calculateReceiverYposition = (receivers: string[], index: number, parentHeight: number) => {
+    if (receivers.length === 0) return;
+    if (receivers.length === 1 ) {
+      return parentHeight / 2;
+    } else {
+      const x = calculateValue(parentHeight, index)
+      if (x)
+      return x;
+    }
+  };
+  
+
+
+const processorPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
+  const receiverLength = receivers.length ? 250 : 0;
+  return { x: receiverLength + index * 200 , y: parentHeight / 2 };
+}
+  
+const receiverPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
+  const positionY = calculateReceiverYposition(receivers, index, parentHeight)!;
+  return { x: 50, y: positionY };
+}
+
+const exporterPosition = (index: number, parentHeight: number, exporters: string[], processors: string[]): XYPosition => {
+  const positionY = calculateReceiverYposition(exporters, index, parentHeight)!;
+  const processorLength = processors?.length * 200 + 300;
+  return { x: processorLength , y: positionY };
+}
+
+  keyTraces.map((traceItem) => {
     if (traceItem === "processors") {
       const processors = parentNode!.processors;
-      processors.forEach((processor, index) => {
+      Array.isArray(processors) && processors.length > 0 && processors.map((processor, index) => {
         const id = `${parentLable}-Processor-processorNode-${processor}-${v4()}`;
         nodesToAdd.push({
           id: id,
           parentNode: parentLable,
-          extent: "parent",
-          type: "processorsNode",
-          position: {
-            x: (index + 1) * offsetX,
-            y: calculateMaxHeight(pipelines, parentLable) / 2,
-          },
-          data: {
-            label: processor,
-            parentNode: parentLable,
-            type: "processors",
-            id: id,
-          },
+          extent: 'parent',
+          type: 'processorsNode',
+          position: processorPosition(index, height, processors), 
+          data: { label: processor, parentNode: parentLable, type: 'processors', height: 80, id: id },
           draggable: false,
         });
       });
     }
     if (traceItem === "receivers") {
-      const plusIndex = index + 0.3;
       const receivers = parentNode!.receivers;
-      Array.isArray(receivers) &&
-        receivers.length > 0 &&
-        receivers.map((receiver, index) => {
-          const id = `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`;
-          nodesToAdd.push({
-            id: id,
-            parentNode: parentLable,
-            extent: "parent",
-            type: "receiversNode",
-            position: {
-              x: 0.2 * offsetX,
-              y: calculateValue(
-                calculateMaxHeight(pipelines, parentLable) / 2,
-                index
-              ),
-            },
-            data: {
-              label: receiver,
-              parentNode: parentLable,
-              type: "receivers",
-              id: id,
-            },
-            draggable: false,
-          });
+      Array.isArray(receivers) && receivers.length > 0 && receivers.map((receiver, index) => {
+        const id = `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`;
+        nodesToAdd.push({
+          id: id,
+          parentNode: parentLable,
+          extent: 'parent',
+          type: 'receiversNode',
+          position: receiverPosition(index, height, receivers), 
+          data: { label: receiver, parentNode: parentLable, type: 'receivers', height: 80, id: id },
+          draggable: false,
         });
+      });
     }
     if (traceItem === "exporters") {
       const exporters = parentNode!.exporters;
+      const processors = parentNode!.processors;
       exporters?.map((exporter, index) => {
         const id = `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`;
         nodesToAdd.push({
           id: id,
           parentNode: parentLable,
-          extent: "parent",
-          type: "exportersNode",
-          position: {
-            x: calculateExportersLocation(
-              parentNode!.processors?.length,
-              offsetX
-            ),
-            y: calculateValue(
-              calculateMaxHeight(pipelines, parentLable) / 2,
-              index
-            ),
-          },
-          data: {
-            label: exporter,
-            parentNode: parentLable,
-            type: "exporters",
-            id: id,
-          },
+          extent: 'parent',
+          type: 'exportersNode',
+          position: exporterPosition(index, height, exporters, processors),
+          data: { label: exporter, parentNode: parentLable, type: 'exporters', height: 80, id: id },
           draggable: false,
         });
       });
     }
-  });
+  })
   return nodesToAdd;
-};
+}
 
-const useConfigReader = (
-  value: IConfig,
-  reactFlowInstance: ReactFlowInstance
-) => {
+const useConfigReader = (value: IConfig, reactFlowInstance: ReactFlowInstance) => {
   const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
+  const nodes = useNodes();
 
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
     const pipelines = value?.service?.pipelines;
-    const getArrayByName = (objectName: string): IParentNode | null => {
-      if (pipelines.hasOwnProperty(objectName)) {
-        return pipelines[objectName];
-      } else {
-        return null;
-      }
-    };
 
     const nodesToAdd: Node[] = [];
+    let yOffset = 0;
 
-    nodesToAdd.push(...addPipleType(pipelines));
-    parentNodeLabels.forEach((node) => {
-      const childNodes = getArrayByName(node);
-      nodesToAdd.push(...createNode(node, childNodes, pipelines));
+    parentNodeLabels.forEach((parentNodeLabel, index) => {
+      const receivers = nodes.filter((node) => node.parentNode === parentNodeLabel).filter((node) => node.type === 'receiversNode').length;
+      const exporters = nodes.filter((node) => node.parentNode === parentNodeLabel).filter((node) => node.type === 'exportersNode').length;
+      const max = Math.max(receivers, exporters);
+      const height = max * 100;
+      const extraSpacing = 200;
+      const parentNode = pipelines[parentNodeLabel];
+      const parentNodeId = parentNodeLabel;
+
+      nodesToAdd.push({
+        id: parentNodeId,
+        type: 'parentNodeType',
+        position: { x: 0, y: yOffset},
+        data: { label: parentNodeLabel, parentNode: parentNodeLabel },
+        draggable: false,
+        ariaLabel: parentNodeLabel,
+        expandParent: true,
+      });
+      const childNodes = createNode(parentNodeId, parentNode, pipelines, nodes, height);
+      nodesToAdd.push(...childNodes);
+      yOffset += height + extraSpacing;
     });
-
     setJsonDataState(nodesToAdd);
   }, [value, reactFlowInstance]);
+
   return jsonDataState;
 };
 

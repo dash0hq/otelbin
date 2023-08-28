@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import ReactFlow, { Panel, useReactFlow } from "reactflow";
+import React, { useMemo, useRef } from "react";
+import ReactFlow, { Background, Panel, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
@@ -15,6 +15,7 @@ import type { editor } from "monaco-editor";
 import { ParseYaml } from "./ParseYaml";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
+
 
 function isValidJson(jsonData: string) {
   try {
@@ -37,7 +38,8 @@ export default function Flow({
     () => JsYaml.load(isValidJson(value) ? value : "") as IConfig,
     [isValidJson(value) ? value : ""]
   );
-  const nodes = useConfigReader(jsonData, reactFlowInstance);
+  const initialNodes = useConfigReader(jsonData, reactFlowInstance);
+  const initialEdges = useEdgeCreator(initialNodes, reactFlowInstance);
   const nodeTypes = useMemo(
     () => ({
       processorsNode: ProcessorsNode,
@@ -46,9 +48,9 @@ export default function Flow({
       parentNodeType: ParentNodeType,
     }),
     []
-  );
-  const edges = useEdgeCreator(nodes, reactFlowInstance);
-  const editorRef = useEditorRef();
+    );
+    
+    const editorRef = useEditorRef();
   const { setCenter } = useReactFlow();
   const nodeInfo = reactFlowInstance.getNodes();
   const docPipelines = ParseYaml("pipelines");
@@ -215,10 +217,8 @@ export default function Flow({
 
   return (
     <ReactFlow
-      defaultNodes={nodes}
-      nodes={nodes}
-      defaultEdges={edges}
-      edges={edges}
+      nodes={initialNodes}
+      edges={initialEdges}
       defaultEdgeOptions={edgeOptions}
       nodeTypes={nodeTypes}
       fitView
@@ -230,6 +230,7 @@ export default function Flow({
         hideAttribution: true,
       }}
     >
+      <Background />
       <Panel position="bottom-left" className="flex gap-x-3">
         <ButtonGroup size={"xs"}>
           <Button

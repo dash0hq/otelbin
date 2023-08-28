@@ -13,6 +13,8 @@ const tagstyles = {
 };
 const radius = {
   borderRadius: "15px",
+  fontSize: "10px",
+    fontWeight: 400,
 };
 
 const ProcessorsNode = ({ data }: { data: IData }) => {
@@ -30,7 +32,8 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
     background: hovered ? "#F59E0B" : "#30353D",
     transition: "background-color 0.3s ease-in-out",
     borderRadius: "10px",
-    fontSize: "10px",
+    fontSize: "8px",
+    fontWeight: 400,
     paddingBottom: "6px",
     paddingTop: "6px",
   };
@@ -67,7 +70,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
             }}
           />
           <div className="flex flex-col items-center">
-            <div className="flex items-center text-sm font-semibold text-white">
+            <div className="flex items-center text-white">
               {splitedLabel[0]}
             </div>
             <div style={tagstyles}>

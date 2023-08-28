@@ -1,6 +1,6 @@
-import React, { memo } from "react";
-import PipelineTag from "../ui/PipelineTag";
-import { useNodes, useReactFlow } from "reactflow";
+import React, { memo } from 'react';
+import PipelineTag from '../ui/PipelineTag';
+import { useNodes, useReactFlow } from 'reactflow';
 
 interface IData {
   label: string;
@@ -9,23 +9,17 @@ const ParentNodeType = ({ data }: { data: IData }) => {
   const rectaFlowInstance = useReactFlow();
   const nodes = useNodes();
   const childNodes = nodes.filter((node) => node.parentNode === data.label);
-  const childProcessorsNodes = childNodes.filter(
-    (node) => node.type === "processorsNode"
-  );
-  const childExportersNodes = childNodes.filter(
-    (node) => node.type === "exportersNode"
-  );
-  const childReceiversNodes = childNodes.filter(
-    (node) => node.type === "receiversNode"
-  );
-  const max = Math.max(childExportersNodes.length, childReceiversNodes.length);
-  const maxWidth = childProcessorsNodes.length * 200 + 350;
-  const maxHeight = max * 60 + 150;
+  const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
+  const maxWidth = (childProcessorsNodes.length * 200) + 600;
 
-  const parentNodes = rectaFlowInstance
-    .getNodes()
-    .filter((node) => node.type === "parentNodeType")
-    .map((node) => node.data.label);
+
+
+  const children = nodes.filter(child => child.parentNode === data.label);
+      const minY = Math.min(...children.map(child => child.position.y));
+      const maxY = Math.max(...children.map(child => child.position.y));
+      const parentHeight = maxY - minY + 180;
+
+  const parentNodes = rectaFlowInstance.getNodes().filter((node) => node.type === 'parentNodeType').map((node) => node.data.label);
   const findIndex = parentNodes.findIndex((node) => node === data.label);
 
   const calculateBorderColor = (index: number): string => {
@@ -54,10 +48,9 @@ const ParentNodeType = ({ data }: { data: IData }) => {
     }
     return "f59e0b1a";
   };
-
   const customNodeStyles = {
     width: maxWidth,
-    height: maxHeight,
+    height: parentHeight ,
     padding: "4px 12px 10px 4px",
     background: calculateBackgroundColor(findIndex),
     border: calculateBorderColor(findIndex),

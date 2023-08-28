@@ -14,6 +14,8 @@ const tagstyles = {
 
 const radius = {
   borderRadius: "15px",
+  fontSize: "10px",
+    fontWeight: 400,
 };
 
 const ReceiversNode = ({ data }: { data: IData }) => {
@@ -30,7 +32,8 @@ const ReceiversNode = ({ data }: { data: IData }) => {
     background: hovered ? "#4F46E5" : "#30353D",
     transition: "background-color 0.3s ease-in-out",
     borderRadius: "10px",
-    fontSize: "10px",
+    fontSize: "8px",
+    fontWeight: 400,
     paddingBottom: "6px",
     paddingTop: "6px",
   };
@@ -55,7 +58,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
         onMouseLeave={() => setHovered(false)}
       >
         <div className="flex w-full flex-col items-center justify-center">
-          <div className="flex items-center text-sm font-semibold text-white">
+          <div className="flex items-center text-white">
             {splitedLabel[0]}
           </div>
           <div style={tagstyles}>
