@@ -1,6 +1,5 @@
 import { type MutableRefObject } from "react";
 import DeleteConfigButton from "./DeleteConfigButton";
-import { Button } from "@dash0/components/ui/button";
 
 export default function Buttons({
   editorRef,
@@ -8,8 +7,7 @@ export default function Buttons({
 }: {
   editorRef: MutableRefObject<any>;
   monacoRef: MutableRefObject<any>;
-  }) {
-
+}) {
   // function handleChangeInput(e: React.ChangeEvent<HTMLInputElement>) {
   //     setData({ name: e.target.value, config: data.config })
   // }

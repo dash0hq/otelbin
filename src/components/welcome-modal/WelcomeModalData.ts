@@ -17,6 +17,11 @@ export const WelcomeModalData: IWelcomeModal[] = [
         image: WelcomeModal1,
     },
     {
+        title: 'Visualize your configs.',
+        description: 'Transform your configurations into clear visualizations.',
+        image: WelcomeModal4,
+    },
+    {
         title: 'Write your config in the Editor with live syntax validation.',
         description: 'Craft your configuration seamlessly in the Editor with real-time syntax validation at your side.',
         image: WelcomeModal2,
@@ -26,9 +31,5 @@ export const WelcomeModalData: IWelcomeModal[] = [
         description: 'Effortlessly pinpoint and rectify configuration errors with simplicity.',
         image: WelcomeModal3,
     },
-    {
-        title: 'Visualize your configs.',
-        description: 'Transform your configurations into clear visualizations.',
-        image: WelcomeModal4,
-    },
+
 ]

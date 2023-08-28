@@ -55,13 +55,14 @@ const exporterPosition = (index: number, parentHeight: number, exporters: string
     if (traceItem === "processors") {
       const processors = parentNode!.processors;
       Array.isArray(processors) && processors.length > 0 && processors.map((processor, index) => {
+        const id = `${parentLable}-Processor-processorNode-${processor}-${v4()}`;
         nodesToAdd.push({
-          id: `${parentLable}-Processor-processorNode-${processor}-${v4()}`,
+          id: id,
           parentNode: parentLable,
           extent: 'parent',
           type: 'processorsNode',
           position: processorPosition(index, height, processors), 
-          data: { label: processor, parentNode: parentLable, type: 'processors', height: 80 },
+          data: { label: processor, parentNode: parentLable, type: 'processors', height: 80, id: id },
           draggable: false,
         });
       });
@@ -69,13 +70,14 @@ const exporterPosition = (index: number, parentHeight: number, exporters: string
     if (traceItem === "receivers") {
       const receivers = parentNode!.receivers;
       Array.isArray(receivers) && receivers.length > 0 && receivers.map((receiver, index) => {
+        const id = `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`;
         nodesToAdd.push({
-          id: `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`,
+          id: id,
           parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
           position: receiverPosition(index, height, receivers), 
-          data: { label: receiver, parentNode: parentLable, type: 'receivers', height: 80 },
+          data: { label: receiver, parentNode: parentLable, type: 'receivers', height: 80, id: id },
           draggable: false,
         });
       });
@@ -84,13 +86,14 @@ const exporterPosition = (index: number, parentHeight: number, exporters: string
       const exporters = parentNode!.exporters;
       const processors = parentNode!.processors;
       exporters?.map((exporter, index) => {
+        const id = `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`;
         nodesToAdd.push({
-          id: `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`,
+          id: id,
           parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
           position: exporterPosition(index, height, exporters, processors),
-          data: { label: exporter, parentNode: parentLable, type: 'exporters', height: 80 },
+          data: { label: exporter, parentNode: parentLable, type: 'exporters', height: 80, id: id },
           draggable: false,
         });
       });

@@ -1,33 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import ReactFlow, { Background, Connection, Edge, Node, Panel, addEdge, useEdgesState, useNodesState, useReactFlow } from "reactflow";
+import React, { useMemo, useRef } from "react";
+import ReactFlow, { Background, Panel, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
 import useEdgeCreator from "./useEdgeCreator";
-import { useEditorRef } from "~/contexts/EditorContext";
-import { MaximizeIcon, MinusIcon, PlusIcon } from "lucide-react";
+import { useEditorRef, useFocus } from "~/contexts/EditorContext";
+import { Maximize, Minus, Plus, HelpCircle } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
 import ProcessorsNode from "./ProcessorsNode";
 import ExportersNode from "./ExportersNode";
-import { IconButton } from "@dash0/components/ui/icon-button";
 import useConfigReader from "./useConfigReader";
 import type { editor } from "monaco-editor";
 import { ParseYaml } from "./ParseYaml";
-
-const zoomInControlButtonStyle = {
-  backgroundColor: "#293548",
-  borderBottomRightRadius: "0px",
-  borderTopRightRadius: "0px",
-};
-const zoomOutControlButtonStyle = {
-  backgroundColor: "#293548",
-  borderBottomLeftRadius: "0px",
-  borderTopLeftRadius: "0px",
-};
-const fitViewControlButtonStyle = {
-  backgroundColor: "#293548",
-};
+import { ButtonGroup } from "@dash0/components/ui/button-group";
+import { Button } from "@dash0hq/ui/src/components/ui/button";
 
 
 function isValidJson(jsonData: string) {
@@ -39,7 +26,13 @@ function isValidJson(jsonData: string) {
   }
 }
 
-export default function Flow({ value }: { value: string }) {
+export default function Flow({
+  value,
+  openDialog,
+}: {
+  value: string;
+  openDialog: (open: boolean) => void;
+}) {
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(
     () => JsYaml.load(isValidJson(value) ? value : "") as IConfig,
@@ -58,10 +51,11 @@ export default function Flow({ value }: { value: string }) {
     );
     
     const editorRef = useEditorRef();
-    const nodeInfo = reactFlowInstance.getNodes();
   const { setCenter } = useReactFlow();
-  const mouseUp = useRef<boolean>(false);
-  const docPipelines = ParseYaml("pipelines"); 
+  const nodeInfo = reactFlowInstance.getNodes();
+  const docPipelines = ParseYaml("pipelines");
+  const { setFocused } = useFocus();
+
   const edgeOptions = {
     animated: false,
     style: {
@@ -87,6 +81,7 @@ export default function Flow({ value }: { value: string }) {
         cursorOffset >= docPipelines.value.items[i].key.offset &&
         cursorOffset <= docPipelines.value.items[i].sep[1].offset
       ) {
+        setFocusOnParentNode(wordAtCursor.word);
         setCenter(
           getParentNodePositionX(wordAtCursor.word),
           getParentNodePositionY(wordAtCursor.word),
@@ -107,6 +102,7 @@ export default function Flow({ value }: { value: string }) {
         ) {
           const level2 = docPipelines.value.items[i].key.source;
           const level3 = docPipelines.value.items[i].value.items[j].key.source;
+          setFocusOnNode(wordAtCursor.word, level2, level3);
           setCenter(
             getNodePositionX(wordAtCursor.word, level2, level3) + 50,
             getNodePositionY(wordAtCursor.word, level2, level3) + 50,
@@ -133,6 +129,7 @@ export default function Flow({ value }: { value: string }) {
               const level2 = docPipelines.value.items[i].key.source;
               const level3 =
                 docPipelines.value.items[i].value.items[j].key.source;
+              setFocusOnNode(wordAtCursor.word, level2, level3);
               setCenter(
                 getNodePositionX(wordAtCursor.word, level2, level3) + 50,
                 getNodePositionY(wordAtCursor.word, level2, level3) + 50,
@@ -197,10 +194,27 @@ export default function Flow({ value }: { value: string }) {
     );
   }
 
-  const btn = {
-    backgroundColor: '#010101',
-    borderRadius: '5px'
+  function setFocusOnParentNode(nodeId: string) {
+    const node = nodeInfo?.find(
+      (node) => node.id === nodeId && node.type === "parentNodeType"
+    );
+    if (node) {
+      setFocused(node.id);
+    }
   }
+
+  function setFocusOnNode(nodeId: string, level2: string, level3: string) {
+    const node = nodeInfo?.find(
+      (node) =>
+        node.data.label === nodeId &&
+        node.parentNode === level2 &&
+        node.type?.includes(level3)
+    );
+    if (node) {
+      setFocused(node.id);
+    }
+  }
+
   return (
     <ReactFlow
       nodes={initialNodes}
@@ -215,35 +229,35 @@ export default function Flow({ value }: { value: string }) {
       proOptions={{
         hideAttribution: true,
       }}
-      >
+    >
       <Background />
-      <Panel position="bottom-left" className="flex gap-0.5">
-        <div className="flex">
-          <IconButton
+      <Panel position="bottom-left" className="flex gap-x-3">
+        <ButtonGroup size={"xs"}>
+          <Button
             onClick={() => reactFlowInstance.zoomIn()}
-            size="sm"
+            size="xs"
             variant="default"
-            style={zoomInControlButtonStyle}
           >
-            <PlusIcon color="#94A3B8" />
-          </IconButton>
-          <IconButton
+            <Plus />
+          </Button>
+          <Button
             onClick={() => reactFlowInstance.zoomOut()}
-            size="sm"
+            size="xs"
             variant="default"
-            style={zoomOutControlButtonStyle}
           >
-            <MinusIcon color="#94A3B8" />
-          </IconButton>
-        </div>
-        <IconButton
+            <Minus />
+          </Button>
+        </ButtonGroup>
+        <Button
           onClick={() => reactFlowInstance.fitView()}
-          size="sm"
+          size="xs"
           variant="default"
-          style={fitViewControlButtonStyle}
         >
-          <MaximizeIcon color="#94A3B8" />
-        </IconButton>
+          <Maximize />
+        </Button>
+        <Button onClick={() => openDialog(true)} size="xs" variant="default">
+          <HelpCircle />
+        </Button>
       </Panel>
     </ReactFlow>
   );

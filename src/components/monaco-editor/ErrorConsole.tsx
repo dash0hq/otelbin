@@ -61,22 +61,22 @@ export function Error({
   return (
     <>
       {error && (
-        <p className="flex items-center gap-x-1 text-xs font-normal text-otelbinMagenta">
+        <div className="flex items-center gap-x-1 text-xs font-normal text-otelbinMagenta">
           <div className="mt-[5px] self-start p-0">
             <XCircleIcon />
           </div>
           <p>{`${error.message}`}</p>
-        </p>
+        </div>
       )}
       {jsYamlError ? (
-        <p className="flex items-center gap-x-1 text-xs font-normal text-otelbinMagenta">
+        <div className="flex items-center gap-x-1 text-xs font-normal text-otelbinMagenta">
           <div className="mt-[5px] self-start p-0">
             <XCircleIcon />
           </div>
           <p>{`${jsYamlError.reason} ${
             jsYamlError.mark && `(Line ${jsYamlError.mark.line})`
           }`}</p>
-        </p>
+        </div>
       ) : (
         <></>
       )}

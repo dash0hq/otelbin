@@ -1,78 +1,86 @@
-import React, { useState } from 'react';
-import { Handle, Position } from 'reactflow';
-import { useEditorRef } from '~/contexts/EditorContext';
-import { FlowClick } from './FlowClick';
-import type { IData } from './FlowClick';
-import ExportersIcon  from '../assets/svg/exporters.svg';
+import React, { useState } from "react";
+import { Handle, Position } from "reactflow";
+import { useEditorRef, useFocus } from "~/contexts/EditorContext";
+import { FlowClick } from "./FlowClick";
+import type { IData } from "./FlowClick";
+import ExportersIcon from "../assets/svg/exporters.svg";
 
-
-const customNodeStyles = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 80,
-  height: 80,
-  background: '#30353D',
-  borderRadius: "10px",
-  fontSize: "10px",
-  paddingBottom: "6px",
-  paddingTop: "6px",
-}
 const tagstyles = {
-  backgroundColor: '#4F46E5',
+  backgroundColor: "#4F46E5",
   borderRadius: "100%",
-  padding: '8px',
-  marginTop: '4px',
-}
+  padding: "8px",
+  marginTop: "4px",
+};
 
 const radius = {
   borderRadius: "15px",
-}
+  fontSize: "10px",
+    fontWeight: 400,
+};
 
 export default function ExportersNode({ data }: { data: IData }) {
   const [hovered, setHovered] = useState(false);
   const editorRef = useEditorRef();
+  const { isFocused } = useFocus();
 
-    const customNodeStyles = {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: 80,
-      height: 80,
-      background: hovered ? "#4F46E5" : '#30353D',
-      transition: 'background-color 0.3s ease-in-out',
-      borderRadius: "10px",
-      fontSize: "10px",
-      paddingBottom: "6px",
-      paddingTop: "6px",
-    }
+  const customNodeStyles = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 80,
+    height: 80,
+    background: hovered ? "#4F46E5" : "#30353D",
+    transition: "background-color 0.3s ease-in-out",
+    borderRadius: "10px",
+    fontSize: "8px",
+    fontWeight: 400,
+    paddingBottom: "6px",
+    paddingTop: "6px",
+  };
 
-    function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-      FlowClick(event, data, editorRef);
-    }
-    const label = data.label || "";
-    const capitalizedLabel = label.toUpperCase();
-    const splitedLabel = capitalizedLabel.split("/");
-    const hasSlash = splitedLabel.length > 1
+  function handleClickNode(
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) {
+    FlowClick(event, data, editorRef);
+  }
+
+  const label = data.label || "";
+  const capitalizedLabel = label.toUpperCase();
+  const splitedLabel = capitalizedLabel.split("/");
+  const hasSlash = splitedLabel.length > 1;
   return (
-    <div className='h-20 w-20 flex flex-col items-center'>
-      <div 
-      style={customNodeStyles}
-        className='cursor-pointer flex-col'
+    <div className="flex h-20 w-20 flex-col items-center">
+      <div
+        style={customNodeStyles}
+        className={`cursor-pointer flex-col ${
+          isFocused === data.id ? "animate-focus" : ""
+        }`}
         onClick={handleClickNode}
         onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <Handle type="target" position={Position.Left} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
-        <div className='flex flex-col items-center'>
-        <div className='text-white text-sx font-normal flex items-center'>{splitedLabel[0]}</div>
+        <Handle
+          type="target"
+          position={Position.Left}
+          style={{
+            backgroundColor: "rgb(44 48 70 / 0%)",
+            borderColor: "rgb(44 48 70 / 0%)",
+          }}
+        />
+        <div className="flex flex-col items-center">
+          <div className="flex items-center text-white">
+            {splitedLabel[0]}
+          </div>
           <div style={tagstyles}>
             <ExportersIcon color="#ffffff" />
           </div>
         </div>
       </div>
       {hasSlash && (
-        <div className='bg-[#020617] text-[#9CA2AB] p-1 mb-[-57px] rounded-full mt-1' style={radius}>
+        <div
+          className="mb-[-57px] mt-1 rounded-full bg-[#020617] p-1 text-[#9CA2AB]"
+          style={radius}
+        >
           {splitedLabel[1]}
         </div>
       )}

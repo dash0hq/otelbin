@@ -5,7 +5,7 @@ import { useNodes, useReactFlow } from 'reactflow';
 interface IData {
   label: string;
 }
-const ParentNodeType = ({data}: {data:IData}) => {
+const ParentNodeType = ({ data }: { data: IData }) => {
   const rectaFlowInstance = useReactFlow();
   const nodes = useNodes();
   const childNodes = nodes.filter((node) => node.parentNode === data.label);
@@ -25,28 +25,28 @@ const ParentNodeType = ({data}: {data:IData}) => {
   const calculateBorderColor = (index: number): string => {
     switch (index) {
       case 0:
-        return '1px solid #F59E0B';
+        return "1px solid #F59E0B";
       case 1:
-        return '1px solid #0AA8FF';
+        return "1px solid #0AA8FF";
       case 2:
-        return '1px solid #40ad54';
+        return "1px solid #40ad54";
       case 3:
-        return '1px solid #911dc9';
+        return "1px solid #911dc9";
     }
-    return '#FFC542';
+    return "#FFC542";
   };
   const calculateBackgroundColor = (index: number): string => {
     switch (index) {
       case 0:
-        return '#f59e0b1a';
+        return "#f59e0b1a";
       case 1:
-        return 'rgb(153 218 254 / 10%)';
+        return "rgb(153 218 254 / 10%)";
       case 2:
-        return 'rgb(45 177 86 / 11%)';
+        return "rgb(45 177 86 / 11%)";
       case 3:
-        return 'rgb(235 98 241 / 10%)';
+        return "rgb(235 98 241 / 10%)";
     }
-    return 'f59e0b1a';
+    return "f59e0b1a";
   };
   const customNodeStyles = {
     width: maxWidth,
@@ -54,18 +54,18 @@ const ParentNodeType = ({data}: {data:IData}) => {
     padding: "4px 12px 10px 4px",
     background: calculateBackgroundColor(findIndex),
     border: calculateBorderColor(findIndex),
-    color: '#000',
+    color: "#000",
     borderRadius: "10px",
     fontSize: "10px",
     marginBottom: "10px",
-  }
+  };
 
   return (
     <>
-    <div style={customNodeStyles}>
-      <PipelineTag findIndex={findIndex} tag={data.label}/>
-    </div>
+      <div style={customNodeStyles}>
+        <PipelineTag findIndex={findIndex} tag={data.label} />
+      </div>
     </>
   );
-}
+};
 export default memo(ParentNodeType);

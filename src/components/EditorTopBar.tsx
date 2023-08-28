@@ -42,17 +42,17 @@ export default function EditorTopBar() {
     }
 
     return (
-        <div className='flex justify-end items-center shadow-none z-10 absolute top-4 right-2'>
+        <div className='flex justify-end items-center shadow-none z-10 absolute top-2 right-2'>
             <IconButton
                 onClick={handleCopy}
-                className='min-w-[97px] bg-[#1E1E1E] rounded-none'
+                className='min-w-[97px] bg-[#1E1E1E] shadow-none'
                 variant={'default'} size={'sm'} >
                 <Copy className='mr-2' />
                 Copy
             </IconButton>
             <IconButton
                 onClick={handleDownload}
-                className='min-w-[97px] bg-[#1E1E1E] rounded-none'
+                className='min-w-[97px] bg-[#1E1E1E] shadow-none'
                 variant={'default'} size={'sm'} >
                 <ArrowDownToLine className='mr-2' />
                 Download
