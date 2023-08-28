@@ -4,7 +4,7 @@ import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import JsYaml from "js-yaml";
 import useEdgeCreator from "./useEdgeCreator";
-import { useEditorRef } from "~/contexts/EditorContext";
+import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { Maximize, Minus, Plus, HelpCircle } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
@@ -52,6 +52,7 @@ export default function Flow({
   const { setCenter } = useReactFlow();
   const nodeInfo = reactFlowInstance.getNodes();
   const docPipelines = ParseYaml("pipelines");
+  const { setFocused } = useFocus();
 
   const edgeOptions = {
     animated: false,
@@ -78,6 +79,7 @@ export default function Flow({
         cursorOffset >= docPipelines.value.items[i].key.offset &&
         cursorOffset <= docPipelines.value.items[i].sep[1].offset
       ) {
+        setFocusOnParentNode(wordAtCursor.word);
         setCenter(
           getParentNodePositionX(wordAtCursor.word),
           getParentNodePositionY(wordAtCursor.word),
@@ -98,6 +100,7 @@ export default function Flow({
         ) {
           const level2 = docPipelines.value.items[i].key.source;
           const level3 = docPipelines.value.items[i].value.items[j].key.source;
+          setFocusOnNode(wordAtCursor.word, level2, level3);
           setCenter(
             getNodePositionX(wordAtCursor.word, level2, level3) + 50,
             getNodePositionY(wordAtCursor.word, level2, level3) + 50,
@@ -124,6 +127,7 @@ export default function Flow({
               const level2 = docPipelines.value.items[i].key.source;
               const level3 =
                 docPipelines.value.items[i].value.items[j].key.source;
+              setFocusOnNode(wordAtCursor.word, level2, level3);
               setCenter(
                 getNodePositionX(wordAtCursor.word, level2, level3) + 50,
                 getNodePositionY(wordAtCursor.word, level2, level3) + 50,
@@ -187,6 +191,28 @@ export default function Flow({
       ) + 100 || 0
     );
   }
+
+  function setFocusOnParentNode(nodeId: string) {
+    const node = nodeInfo?.find(
+      (node) => node.id === nodeId && node.type === "parentNodeType"
+    );
+    if (node) {
+      setFocused(node.id);
+    }
+  }
+
+  function setFocusOnNode(nodeId: string, level2: string, level3: string) {
+    const node = nodeInfo?.find(
+      (node) =>
+        node.data.label === nodeId &&
+        node.parentNode === level2 &&
+        node.type?.includes(level3)
+    );
+    if (node) {
+      setFocused(node.id);
+    }
+  }
+
   return (
     <ReactFlow
       defaultNodes={nodes}
