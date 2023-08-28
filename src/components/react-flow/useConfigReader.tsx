@@ -4,37 +4,29 @@ import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 
 
-const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline, nodes: Node[]) => {
+const createNode = (parentLable: string, parentNode: IParentNode | null, pipelines: IPipeline, nodes: Node[], height: number) => {
   const nodesToAdd: Node[] = [];
   const keyTraces = Object.keys(parentNode!);
-  
-  const children = nodes.filter(child => child.parentNode === parentLable);
-  const receivers = children.filter(child => child.type === 'receiversNode').length;
-  const exporters = children.filter(child => child.type === 'exportersNode').length;
-  const max = Math.max(receivers, exporters);
-  const parentHeight = max * 100;
 
   const calculateValue = (parentHeight: number, index: number): number => {
     const offset = 60;
-    let value = parentHeight / 2;
+    const value = parentHeight / 2;
     if (index === 0) {
-      return value =+ value + offset;
+      return value - offset;
     }
     if (index % 2 !== 0) {
-      return value =+ value - offset * index;
+      return value + offset * index;
     } else {
-      return value =+ value + offset * index;
+      return value - offset * index;
     }
   };
 
 
   const calculateReceiverYposition = (receivers: string[], index: number, parentHeight: number) => {
     if (receivers.length === 0) return;
-    if (receivers.length === 1) {
+    if (receivers.length === 1 ) {
       return parentHeight / 2;
     } else {
-      // #1 calculate parent height
-      // #2 adding correct parent height, 
       const x = calculateValue(parentHeight, index)
       if (x)
       return x;
@@ -50,12 +42,12 @@ const processorPosition = (index: number, parentHeight: number, receivers: strin
   
 const receiverPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
   const positionY = calculateReceiverYposition(receivers, index, parentHeight)!;
-  return { x: 60, y: positionY };
+  return { x: 50, y: positionY };
 }
 
 const exporterPosition = (index: number, parentHeight: number, exporters: string[], processors: string[]): XYPosition => {
   const positionY = calculateReceiverYposition(exporters, index, parentHeight)!;
-  const processorLength = processors.length * 150 + 350;
+  const processorLength = processors?.length * 200 + 300;
   return { x: processorLength , y: positionY };
 }
 
@@ -68,7 +60,7 @@ const exporterPosition = (index: number, parentHeight: number, exporters: string
           parentNode: parentLable,
           extent: 'parent',
           type: 'processorsNode',
-          position: processorPosition(index, parentHeight, processors), 
+          position: processorPosition(index, height, processors), 
           data: { label: processor, parentNode: parentLable, type: 'processors', height: 80 },
           draggable: false,
         });
@@ -82,7 +74,7 @@ const exporterPosition = (index: number, parentHeight: number, exporters: string
           parentNode: parentLable,
           extent: 'parent',
           type: 'receiversNode',
-          position: receiverPosition(index, parentHeight, receivers), 
+          position: receiverPosition(index, height, receivers), 
           data: { label: receiver, parentNode: parentLable, type: 'receivers', height: 80 },
           draggable: false,
         });
@@ -97,7 +89,7 @@ const exporterPosition = (index: number, parentHeight: number, exporters: string
           parentNode: parentLable,
           extent: 'parent',
           type: 'exportersNode',
-          position: exporterPosition(index, parentHeight, exporters, processors),
+          position: exporterPosition(index, height, exporters, processors),
           data: { label: exporter, parentNode: parentLable, type: 'exporters', height: 80 },
           draggable: false,
         });
@@ -116,22 +108,29 @@ const useConfigReader = (value: IConfig, reactFlowInstance: ReactFlowInstance) =
     const pipelines = value?.service?.pipelines;
 
     const nodesToAdd: Node[] = [];
+    let yOffset = 0;
 
     parentNodeLabels.forEach((parentNodeLabel, index) => {
+      const receivers = nodes.filter((node) => node.parentNode === parentNodeLabel).filter((node) => node.type === 'receiversNode').length;
+      const exporters = nodes.filter((node) => node.parentNode === parentNodeLabel).filter((node) => node.type === 'exportersNode').length;
+      const max = Math.max(receivers, exporters);
+      const height = max * 100;
+      const extraSpacing = 200;
       const parentNode = pipelines[parentNodeLabel];
       const parentNodeId = parentNodeLabel;
 
       nodesToAdd.push({
         id: parentNodeId,
         type: 'parentNodeType',
-        position: { x: 0, y: index * 500 },
+        position: { x: 0, y: yOffset},
         data: { label: parentNodeLabel, parentNode: parentNodeLabel },
         draggable: false,
         ariaLabel: parentNodeLabel,
         expandParent: true,
       });
-      const childNodes = createNode(parentNodeId, parentNode, pipelines, nodes);
+      const childNodes = createNode(parentNodeId, parentNode, pipelines, nodes, height);
       nodesToAdd.push(...childNodes);
+      yOffset += height + extraSpacing;
     });
     setJsonDataState(nodesToAdd);
   }, [value, reactFlowInstance]);

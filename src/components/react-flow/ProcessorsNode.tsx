@@ -34,7 +34,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
     background: hovered ? "#F59E0B" : '#30353D',
     transition: 'background-color 0.3s ease-in-out',
     borderRadius: "10px",
-    fontSize: "10px",
+    fontSize: "8px",
     paddingBottom: "6px",
     paddingTop: "6px",
   }
@@ -55,7 +55,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
       >
       <Handle type="target" position={Position.Left} style={{ backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)" }} />
           <div className='flex flex-col items-center'>
-            <div className='text-white text-sm font-semibold flex items-center'>{splitedLabel[0]}</div>
+            <div className='text-white text-sx font-normal flex items-center'>{splitedLabel[0]}</div>
             <div style={tagstyles}>
             <ProcessorsIcon color="#ffffff" />
             </div>

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import PipelineTag from '../ui/PipelineTag';
-import { NodeResizer, useNodes, useReactFlow } from 'reactflow';
+import { useNodes, useReactFlow } from 'reactflow';
 
 interface IData {
   label: string;

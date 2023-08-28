@@ -65,7 +65,7 @@ export default function ExportersNode({ data }: { data: IData }) {
       >
         <Handle type="target" position={Position.Left} style={{backgroundColor: "rgb(44 48 70 / 0%)", borderColor: "rgb(44 48 70 / 0%)"}}/>
         <div className='flex flex-col items-center'>
-        <div className='text-white text-sm font-semibold flex items-center'>{splitedLabel[0]}</div>
+        <div className='text-white text-sx font-normal flex items-center'>{splitedLabel[0]}</div>
           <div style={tagstyles}>
             <ExportersIcon color="#ffffff" />
           </div>

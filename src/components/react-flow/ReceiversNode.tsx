@@ -52,7 +52,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
       >
         <div className='w-full flex justify-center items-center flex-col'>
 
-        <div className='text-white text-sm font-semibold flex items-center'>{splitedLabel[0]}</div>
+        <div className='text-white text-sx font-normal flex items-center'>{splitedLabel[0]}</div>
             <div style={tagstyles}>
             <ReceiversIcon color="#ffffff" />
             </div>
