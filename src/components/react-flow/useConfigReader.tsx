@@ -169,18 +169,18 @@ const useConfigReader = (
 
   useEffect(() => {
     const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
+
     const pipelines = value?.service?.pipelines;
 
     const nodesToAdd: Node[] = [];
     let yOffset = 0;
 
-    parentNodeLabels.forEach((parentNodeLabel, index) => {
-      const receivers = nodes
-        .filter((node) => node.parentNode === parentNodeLabel)
-        .filter((node) => node.type === "receiversNode").length;
-      const exporters = nodes
-        .filter((node) => node.parentNode === parentNodeLabel)
-        .filter((node) => node.type === "exportersNode").length;
+    parentNodeLabels.forEach((parentNodeLabel) => {
+      const receivers =
+        value?.service?.pipelines[parentNodeLabel]?.receivers.length;
+      const exporters =
+        value?.service?.pipelines[parentNodeLabel]?.exporters.length;
+
       const max = Math.max(receivers, exporters) || 1;
       const height = max * 100;
       const extraSpacing = 200;
