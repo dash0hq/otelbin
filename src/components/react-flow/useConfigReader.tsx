@@ -19,8 +19,8 @@ const createNode = (
   const keyTraces = Object.keys(parentNode!);
 
   const calculateValue = (parentHeight: number, index: number): number => {
-    const offset = 60;
-    const offsetX = 80;
+    const offset = 50;
+    const offsetX = 75;
     const value = parentHeight / 2;
     if (index === 0) {
       return value + offset * index + 60;
@@ -183,7 +183,7 @@ const useConfigReader = (
       const exporters =
         value?.service?.pipelines[parentNodeLabel]?.exporters?.length;
 
-      const max = Math.max(receivers, exporters) || 1;
+      const max = Math.max(receivers, exporters) || receivers || exporters || 1;
       const height = max * 100;
       const extraSpacing = 200;
       const parentNode = pipelines[parentNodeLabel];
