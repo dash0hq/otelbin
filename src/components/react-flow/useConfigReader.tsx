@@ -20,14 +20,15 @@ const createNode = (
 
   const calculateValue = (parentHeight: number, index: number): number => {
     const offset = 60;
+    const offsetX = 80;
     const value = parentHeight / 2;
     if (index === 0) {
-      return value - offset;
+      return value + offset * index + 60;
     }
     if (index % 2 !== 0) {
-      return value + offset * index;
-    } else {
       return value - offset * index;
+    } else {
+      return value + offsetX * index;
     }
   };
 
@@ -78,7 +79,7 @@ const createNode = (
       index,
       parentHeight
     )!;
-    const processorLength = processors?.length ? processors?.length * 200 + 300 : 250;
+    const processorLength = processors?.length ? processors?.length * 200 + 260 : 250;
     return { x: processorLength, y: positionY };
   };
 
@@ -178,9 +179,9 @@ const useConfigReader = (
 
     parentNodeLabels.forEach((parentNodeLabel) => {
       const receivers =
-        value?.service?.pipelines[parentNodeLabel]?.receivers.length;
+        value?.service?.pipelines[parentNodeLabel]?.receivers?.length;
       const exporters =
-        value?.service?.pipelines[parentNodeLabel]?.exporters.length;
+        value?.service?.pipelines[parentNodeLabel]?.exporters?.length;
 
       const max = Math.max(receivers, exporters) || 1;
       const height = max * 100;
