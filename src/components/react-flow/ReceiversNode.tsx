@@ -15,7 +15,8 @@ const tagstyles = {
 const radius = {
   borderRadius: "15px",
   fontSize: "10px",
-    fontWeight: 400,
+  fontWeight: 400,
+  whiteSpace: "nowrap" as const,
 };
 
 const ReceiversNode = ({ data }: { data: IData }) => {
