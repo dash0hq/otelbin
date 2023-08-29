@@ -16,7 +16,6 @@ import { ParseYaml } from "./ParseYaml";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
 
-
 function isValidJson(jsonData: string) {
   try {
     JsYaml.load(jsonData);
@@ -36,7 +35,7 @@ export default function Flow({
   const reactFlowInstance = useReactFlow();
   const jsonData = useMemo(
     () => JsYaml.load(isValidJson(value) ? value : "") as IConfig,
-    [isValidJson(value) ? value : ""]
+    [value]
   );
   const initialNodes = useConfigReader(jsonData, reactFlowInstance);
   const initialEdges = useEdgeCreator(initialNodes, reactFlowInstance);
@@ -48,9 +47,9 @@ export default function Flow({
       parentNodeType: ParentNodeType,
     }),
     []
-    );
-    
-    const editorRef = useEditorRef();
+  );
+
+  const editorRef = useEditorRef();
   const { setCenter } = useReactFlow();
   const nodeInfo = reactFlowInstance.getNodes();
   const docPipelines = ParseYaml("pipelines");
