@@ -78,7 +78,7 @@ const createNode = (
       index,
       parentHeight
     )!;
-    const processorLength = processors?.length * 200 + 300;
+    const processorLength = processors?.length ? processors?.length * 200 + 300 : 250;
     return { x: processorLength, y: positionY };
   };
 
@@ -157,6 +157,7 @@ const createNode = (
       });
     }
   });
+  console.log(nodesToAdd);
   return nodesToAdd;
 };
 
