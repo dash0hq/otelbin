@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
-import { FlowClick } from "./FlowClick";
-import type { IData } from "./FlowClick";
+import { FlowClick } from "../../functions/FlowClick";
+import type { IData } from "../../functions/FlowClick";
 import ExportersIcon from "../assets/svg/exporters.svg";
 
 const tagstyles = {
@@ -69,9 +69,7 @@ export default function ExportersNode({ data }: { data: IData }) {
           }}
         />
         <div className="flex flex-col items-center">
-          <div className="flex items-center text-white">
-            {splitedLabel[0]}
-          </div>
+          <div className="flex items-center text-white">{splitedLabel[0]}</div>
           <div style={tagstyles}>
             <ExportersIcon color="#ffffff" />
           </div>

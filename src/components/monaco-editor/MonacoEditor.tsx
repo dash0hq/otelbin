@@ -2,10 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import React from "react";
 import { useConfigs } from "~/queries/config";
 import type { IAjvError, IError } from "./ErrorConsole";
-import { schema } from "./JSONSchema";
+import { schema } from "../../schemas/JSONSchema";
 import ErrorConsole from "./ErrorConsole";
 import EditorTopBar from "../EditorTopBar";
-import { DefaultConfig } from "./DefaultConfig";
+import { DefaultConfig } from "../../config/DefaultConfig";
 import {
   useEditorRef,
   useEditorDidMount,
@@ -17,7 +17,7 @@ import Ajv from "ajv";
 import type { ErrorObject } from "ajv";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
-import { useMouseDelta } from "./MouseDelta";
+import { useMouseDelta } from "../../functions/MouseDelta";
 import { useRouter } from "next/router";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";

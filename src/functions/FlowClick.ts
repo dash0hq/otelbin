@@ -1,7 +1,7 @@
 import type { editor } from "monaco-editor";
 import type { RefObject } from "react";
 import JsYaml from "js-yaml";
-import type { IConfig } from "./dataType";
+import type { IConfig } from "../components/react-flow/dataType";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
 export interface IData {

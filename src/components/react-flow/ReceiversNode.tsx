@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
-import { FlowClick } from "./FlowClick";
-import type { IData } from "./FlowClick";
+import { FlowClick } from "../../functions/FlowClick";
+import type { IData } from "../../functions/FlowClick";
 import ReceiversIcon from "../assets/svg/receivers.svg";
 
 const tagstyles = {
@@ -59,9 +59,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
         onMouseLeave={() => setHovered(false)}
       >
         <div className="flex w-full flex-col items-center justify-center">
-          <div className="flex items-center text-white">
-            {splitedLabel[0]}
-          </div>
+          <div className="flex items-center text-white">{splitedLabel[0]}</div>
           <div style={tagstyles}>
             <ReceiversIcon color="#ffffff" />
           </div>
