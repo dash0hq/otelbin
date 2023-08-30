@@ -3,9 +3,10 @@ import type { RefObject } from "react";
 import type { editor } from "monaco-editor";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
+type MonacoRefType = RefObject<any | null>;
 
 export const EditorContext = createContext<EditorRefType | null>(null);
-export const MonacoContext = createContext<any | null>(null);
+export const MonacoContext = createContext<MonacoRefType | null>(null);
 export const EditorDidMount = createContext<any | null>(null);
 export const FocusContext = createContext<{
   setFocused: (focus: string) => void;

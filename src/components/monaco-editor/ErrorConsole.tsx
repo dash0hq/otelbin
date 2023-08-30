@@ -7,9 +7,9 @@ export interface IAjvError {
 
 export interface IJsYamlError {
   mark: {
-    line: number;
+    line: number | null;
   };
-  reason: string;
+  reason: string | null;
 }
 
 export interface IError {
@@ -29,7 +29,9 @@ export default function ErrorConsole({ errors }: { errors?: IError }) {
             return <Error key={index} error={error} />;
           })}
 
-        {errors?.jsYamlError && <Error jsYamlError={errors.jsYamlError} />}
+        {errors?.jsYamlError?.mark.line !== null && (
+          <Error jsYamlError={errors && errors.jsYamlError} />
+        )}
       </div>
 
       {errors ? (
@@ -97,9 +99,9 @@ export function ErrorCount({
 
   function countErrors() {
     let errorCount = 0;
-    if (errors?.jsYamlError !== undefined) {
+    if (errors?.jsYamlError?.mark.line !== null) {
       errorCount =
-        (errors && errors.ajvErrors && errors.ajvErrors.length + 1) || 1;
+        (errors && errors.ajvErrors && errors.ajvErrors.length + 1) || 0;
       return errorCount;
     } else {
       errorCount = (errors && errors.ajvErrors && errors.ajvErrors.length) || 0;
