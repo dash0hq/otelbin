@@ -68,7 +68,6 @@ export default function MonacoEditor({ id }: { id?: string }) {
     setIsServer(true);
     if (config) {
       validate(config);
-      console.log(config);
     }
   }, [config]);
 
