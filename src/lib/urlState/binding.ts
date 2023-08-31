@@ -26,11 +26,11 @@
  *   } as const;
  */
 export interface Binding<Fallback> {
-    // The prefix will be prepended to 'name'. Useful to avoid search parameter
-    // name conflicts.
-    prefix: string;
-    name: string;
-    // Note that the fallback's type must match the type of the values persisted
-    // in the URL. Furthermore, the value must be JSON serializable.
-    fallback: Fallback;
+	// The prefix will be prepended to 'name'. Useful to avoid search parameter
+	// name conflicts.
+	prefix: string;
+	name: string;
+	// Note that the fallback's type must match the type of the values persisted
+	// in the URL. Furthermore, the value must be JSON serializable.
+	fallback: Fallback;
 }

@@ -1,24 +1,24 @@
 export interface INode {
-    id: string;
-    position: { x: number; y: number };
-    data: { label: string };
-    type?: string;
+	id: string;
+	position: { x: number; y: number };
+	data: { label: string };
+	type?: string;
 }
 
 export interface IParentNode {
-    exporters: string[];
-    processors: string[];
-    receivers: string[];
+	exporters: string[];
+	processors: string[];
+	receivers: string[];
 }
 
 export interface IPipeline {
-    [key: string]: any;
-    parentNode: IParentNode;
+	[key: string]: any;
+	parentNode: IParentNode;
 }
 interface IService {
-    pipelines: IPipeline;
+	pipelines: IPipeline;
 }
 export interface IConfig {
-    [key: string]: any;
-    service: IService;
+	[key: string]: any;
+	service: IService;
 }
