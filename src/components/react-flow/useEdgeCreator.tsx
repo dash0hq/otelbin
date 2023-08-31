@@ -33,6 +33,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
         id: edgeId,
         source: sourceNodeId!,
         target: targetNodeId,
+        type: "smoothstep",
         markerEnd: {
           type: MarkerType.Arrow,
           color: calculateColor(index),
@@ -60,6 +61,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
         id: edgeId,
         source: sourceNodeId,
         target: targetNodeId,
+        type: "smoothstep",
         markerEnd: {
           type: MarkerType.Arrow,
           color: calculateColor(index),
@@ -95,6 +97,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
             id: edgeId,
             source: sourceNodeId,
             target: targetNodeId,
+            type: "smoothstep",
             markerEnd: {
               type: MarkerType.Arrow,
               color: calculateColor(index),
@@ -121,6 +124,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
           id: edgeId,
           source: sourceNodeId,
           target: targetNodeId,
+          type: "smoothstep",
           markerEnd: {
             type: MarkerType.Arrow,
             color: calculateColor(index),
