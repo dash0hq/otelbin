@@ -2,6 +2,7 @@
 .next/**
 *.yaml
 *.json
+!/package.json
 *.md
 coverage
 .storybook/public/mockServiceWorker.js
