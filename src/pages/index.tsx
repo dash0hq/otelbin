@@ -4,7 +4,7 @@ import MonacoEditor from "~/components/monaco-editor/MonacoEditor";
 import { EditorProvider } from "~/contexts/EditorContext";
 
 export default function Home() {
-  const [locked, setLocked] = useState<boolean>(false);
+  const [locked, setLocked] = useState<boolean>(true);
   return (
     <>
       <Head>

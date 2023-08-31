@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useMemo, useRef } from "react";
+import React, { type RefObject, useEffect, useMemo } from "react";
 import ReactFlow, { Background, Panel, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
@@ -15,6 +15,11 @@ import type { editor } from "monaco-editor";
 import { ParseYaml } from "../../functions/ParseYaml";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@dash0/components/ui/tooltip";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -256,39 +261,53 @@ export default function Flow({
       <Background />
       <Panel position="bottom-left" className="flex gap-x-3">
         <ButtonGroup size={"xs"}>
-          <Button
-            onClick={() => reactFlowInstance.zoomIn()}
-            size="xs"
-            variant="default"
-          >
-            <Plus />
-          </Button>
-          <Button
-            onClick={() => reactFlowInstance.zoomOut()}
-            size="xs"
-            variant="default"
-          >
-            <Minus />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => reactFlowInstance.zoomIn()} size="xs">
+                <Plus />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom in</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => reactFlowInstance.zoomOut()} size="xs">
+                <Minus />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom out</TooltipContent>
+          </Tooltip>
         </ButtonGroup>
-        <Button
-          onClick={() => reactFlowInstance.fitView()}
-          size="xs"
-          variant="default"
-        >
-          <Maximize />
-        </Button>
-        <Button
-          className={`${locked && "bg-otelbinGrey"}`}
-          onClick={() => setLocked(!locked)}
-          size="xs"
-          variant="default"
-        >
-          <Lock />
-        </Button>
-        <Button onClick={() => openDialog(true)} size="xs" variant="default">
-          <HelpCircle />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={() => reactFlowInstance.fitView()} size="xs">
+              <Maximize />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Fit view</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className={locked ? "bg-primary" : undefined}
+              onClick={() => setLocked(!locked)}
+              size="xs"
+            >
+              <Lock className={locked ? "!text-button-icon-active" : ""} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Toggle editor/visualization synchronization on cursor change
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={() => openDialog(true)} size="xs">
+              <HelpCircle />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Show welcome dialog</TooltipContent>
+        </Tooltip>
       </Panel>
     </ReactFlow>
   );
