@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.0.2",
-    "@dash0hq/ui": "^0.0.84",
+    "@dash0hq/ui": "^0.0.92",
     "@monaco-editor/react": "^4.5.1",
     "@prisma/client": "^4.16.2",
     "@radix-ui/react-slot": "^1.0.2",
