@@ -1,37 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import React from "react";
 import { useConfigs } from "~/queries/config";
-import type { IAjvError, IError } from "./ErrorConsole";
-import { schema } from "./JSONSchema";
+import type { IError } from "./ErrorConsole";
 import ErrorConsole from "./ErrorConsole";
 import EditorTopBar from "../EditorTopBar";
-import { DefaultConfig } from "./DefaultConfig";
+import { DefaultConfig } from "../../config/DefaultConfig";
 import {
   useEditorRef,
   useEditorDidMount,
   useMonacoRef,
 } from "~/contexts/EditorContext";
 import Editor from "@monaco-editor/react";
-import JsYaml from "js-yaml";
-import Ajv from "ajv";
-import type { ErrorObject } from "ajv";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
-import { useMouseDelta } from "./MouseDelta";
+import { useMouseDelta } from "../../functions/MouseDelta";
 import { useRouter } from "next/router";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
+import { YamlValidation } from "~/functions/YamlValidation";
 
 export default function MonacoEditor({ id }: { id?: string }) {
   const editorDidMount = useEditorDidMount();
-  const editorRef = useEditorRef();
-  const monacoRef = useMonacoRef();
   const [clicked, setClicked] = useState(false);
   const [data, setData] = useState({ name: "", config: "" });
   const [errors, setErrors] = useState<IError>({});
   const { data: configs } = useConfigs();
   const editorDivRef = useRef(null);
+  const editorRef = useEditorRef();
+  const monacoRef = useMonacoRef();
   const savedWidth =
     typeof window !== "undefined" ? localStorage.getItem("width") : "";
   const width = useMouseDelta(Number(savedWidth) || 440, editorDivRef);
@@ -60,63 +57,19 @@ export default function MonacoEditor({ id }: { id?: string }) {
     [getLink, router]
   );
 
+  function validate(config: string) {
+    YamlValidation(config, editorRef, monacoRef).ajvErrors?.length > 0 ||
+    YamlValidation(config, editorRef, monacoRef).jsYamlError?.mark.line !== null
+      ? setErrors(YamlValidation(config, editorRef, monacoRef))
+      : setErrors({});
+  }
+
   useEffect(() => {
     setIsServer(true);
     if (config) {
-      handleYamlValidation(config);
+      validate(config);
     }
   }, [config]);
-
-  function handleYamlValidation(configData: string) {
-    const ajv = new Ajv({ allErrors: true });
-    const model = editorRef?.current?.getModel();
-    let ajvError: IAjvError[] = [];
-    try {
-      const jsonData = JsYaml.load(configData);
-      const valid = ajv.validate(schema, jsonData);
-      if (!valid) {
-        const errors = ajv.errors;
-
-        if (errors) {
-          const validationErrors = errors.map((error: ErrorObject) => {
-            const errorInfo = {
-              line: null as number | null,
-              column: null as number | null,
-              message: error.message || "Unknown error",
-            };
-
-            if (error instanceof JsYaml.YAMLException) {
-              errorInfo.line = error.mark.line + 1;
-              errorInfo.column = error.mark.column + 1;
-            }
-
-            return errorInfo;
-          });
-          ajvError.push(...validationErrors);
-        }
-      } else {
-        ajvError = [];
-      }
-      setErrors({ ajvErrors: ajvError });
-
-      monacoRef?.current?.editor.setModelMarkers(model, "json", []);
-    } catch (error: any) {
-      const errorLineNumber = error.mark.line;
-      const errorColumn = error.mark.column;
-      const errorMessage = error.reason;
-      const errorMarker = {
-        startLineNumber: errorLineNumber,
-        endLineNumber: errorLineNumber,
-        startColumn: errorColumn,
-        endColumn: errorColumn,
-        severity: monacoRef.current && monacoRef.current.MarkerSeverity.Error,
-        message: errorMessage,
-      };
-      monacoRef.current?.editor.setModelMarkers(model, "json", [errorMarker]);
-
-      setErrors({ jsYamlError: error });
-    }
-  }
 
   return (
     <>
@@ -173,7 +126,7 @@ export default function MonacoEditor({ id }: { id?: string }) {
                     config: value || "",
                   });
                   onChangeConfig(value || "");
-                  handleYamlValidation(value || "");
+                  validate(value || "");
                 }}
               />
               <ErrorConsole errors={errors} />

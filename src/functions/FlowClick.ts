@@ -1,6 +1,7 @@
 import type { editor } from "monaco-editor";
 import type { RefObject } from "react";
-
+import JsYaml from "js-yaml";
+import type { IConfig } from "../components/react-flow/dataType";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
 export interface IData {
@@ -12,6 +13,10 @@ export interface IData {
 
 export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null) {
     event.stopPropagation();
+
+    const configData = editorRef?.current?.getModel()?.getValue() || '';
+    const jsonData = JsYaml.load(configData) as IConfig;
+    const parents = Object.keys(jsonData?.service?.pipelines ?? {});
 
     const findMatch = (label: string) => editorRef?.current?.getModel()?.findMatches(label, true, false, false, null, true);
 
@@ -56,22 +61,11 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
         changePosition(matchLabel);
     };
 
-    switch (data.parentNode) {
-        case 'logs':
-            goToSection(data.label, getStartLineInPipeline('logs') || 0);
-            break;
 
-        case 'metrics':
-            goToSection(data.label, getStartLineInPipeline('metrics') || 0);
-            break;
-
-        case 'traces':
-            goToSection(data.label, getStartLineInPipeline('traces') || 0);
-            break;
-
-        default:
-            changePosition(pipelinePositions?.[0]);
-            break;
+    if (parents.includes(data.parentNode)) {
+        goToSection(data.label, getStartLineInPipeline(data.parentNode) || 0);
+    } else {
+        changePosition(pipelinePositions?.[0]);
     }
 
     function changePosition(position?: editor.FindMatch) {

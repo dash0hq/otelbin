@@ -12,7 +12,7 @@ import ProcessorsNode from "./ProcessorsNode";
 import ExportersNode from "./ExportersNode";
 import useConfigReader from "./useConfigReader";
 import type { editor } from "monaco-editor";
-import { ParseYaml } from "./ParseYaml";
+import { ParseYaml } from "../../functions/ParseYaml";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
 
