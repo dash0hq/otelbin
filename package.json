@@ -8,7 +8,7 @@
 		"postinstall": "prisma generate",
 		"lint": "next lint && npm run prettier:check && tsc --noEmit",
 		"start": "next start",
-		"test": "jest",
+		"test": "jest --passWithNoTests",
 		"coverage": "jest --coverage",
 		"prettier:all": "prettier . --write",
 		"prettier:check": "prettier . --check",
