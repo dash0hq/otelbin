@@ -10,7 +10,7 @@ const ParentNodeType = ({ data }: { data: IData }) => {
   const nodes = useNodes();
   const childNodes = nodes.filter((node) => node.parentNode === data.label);
   const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
-  const maxWidth = (childProcessorsNodes.length * 200) + 600;
+  const maxWidth = (childProcessorsNodes.length * 200) + 390;
 
 
 
