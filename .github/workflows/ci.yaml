@@ -26,10 +26,14 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: package-lock.json
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@dash0hq'
 
       - name: Install dependencies
         shell: bash
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.READ_PACKAGES }}
 
       - name: Lint
         shell: bash
