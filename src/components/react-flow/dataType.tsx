@@ -3,22 +3,22 @@ export interface INode {
     position: { x: number; y: number };
     data: { label: string };
     type?: string;
-  }
-  
-  export interface IParentNode {
-      exporters: string[];
-      processors: string[];
-      receivers: string[];
-  }
+}
 
-  export  interface IPipeline {
+export interface IParentNode {
+    exporters: string[];
+    processors: string[];
+    receivers: string[];
+}
+
+export interface IPipeline {
     [key: string]: any;
     parentNode: IParentNode;
-  }
-  interface IService {
+}
+interface IService {
     pipelines: IPipeline;
-  }
- export interface IConfig {
+}
+export interface IConfig {
     [key: string]: any;
-  service: IService; 
-  }
+    service: IService;
+}

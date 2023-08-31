@@ -20,32 +20,37 @@ import { useCallback, useMemo } from "react";
  * console.log(getLink({from: 'now-20m'}) // /something?from=now-20m&to=now
  */
 export function useUrlState<T extends Binding<any>[]>(
-  binds: T
+    binds: T
 ): [
-  Bindings<T>,
-  (newUrlState: Partial<Bindings<T>>, pathName?: string) => string
+    Bindings<T>,
+    (newUrlState: Partial<Bindings<T>>, pathName?: string) => string
 ] {
-  const searchParams = useSearchParams();
-  const pathName = usePathname();
+    const searchParams = useSearchParams();
+    const pathName = usePathname();
 
-  const urlState = useMemo(
-    () => parseUrlState(searchParams, binds),
-    [searchParams, binds]
-  );
+    const urlState = useMemo(
+        () => parseUrlState(searchParams, binds),
+        [searchParams, binds]
+    );
 
-  const getLink = useCallback(
-    function getLink(
-      newUrlState: Partial<Bindings<T>>,
-      newPathName?: string
-    ): string {
-      return serializeUrlState(binds, newPathName ?? pathName, searchParams, {
-        // @ts-expect-error TypeScript is confused
-        ...urlState,
-        ...newUrlState,
-      });
-    },
-    [searchParams, binds, pathName, urlState]
-  );
+    const getLink = useCallback(
+        function getLink(
+            newUrlState: Partial<Bindings<T>>,
+            newPathName?: string
+        ): string {
+            return serializeUrlState(
+                binds,
+                newPathName ?? pathName,
+                searchParams,
+                {
+                    // @ts-expect-error TypeScript is confused
+                    ...urlState,
+                    ...newUrlState,
+                }
+            );
+        },
+        [searchParams, binds, pathName, urlState]
+    );
 
-  return [urlState, getLink];
+    return [urlState, getLink];
 }

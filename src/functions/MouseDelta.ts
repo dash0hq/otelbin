@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export const useMouseDelta = (initialWidth: number, div: React.RefObject<HTMLElement>
+export const useMouseDelta = (
+    initialWidth: number,
+    div: React.RefObject<HTMLElement>
 ) => {
     const [result, setResult] = useState(initialWidth);
     const dragging = useRef(false);
     const previousClientX = useRef(0);
 
     const saveLocalStorage = (width: number) => {
-        localStorage.setItem('width', width.toString());
-    }
+        localStorage.setItem("width", width.toString());
+    };
 
-    const handleMouseMove = useCallback((e: MouseEvent
-
-    ) => {
+    const handleMouseMove = useCallback((e: MouseEvent) => {
         if (!dragging.current) {
             return;
         }
@@ -25,18 +25,20 @@ export const useMouseDelta = (initialWidth: number, div: React.RefObject<HTMLEle
         });
     }, []);
 
-    const handleMouseDown = useCallback((e: MouseEvent
-    ) => {
-        if (e.button === 0) {
-            if (div.current) {
-                const rightEdge = div.current.getBoundingClientRect().right;
-                if (e.clientX >= rightEdge - 8) {
-                    previousClientX.current = e.clientX;
-                    dragging.current = true;
+    const handleMouseDown = useCallback(
+        (e: MouseEvent) => {
+            if (e.button === 0) {
+                if (div.current) {
+                    const rightEdge = div.current.getBoundingClientRect().right;
+                    if (e.clientX >= rightEdge - 8) {
+                        previousClientX.current = e.clientX;
+                        dragging.current = true;
+                    }
                 }
             }
-        }
-    }, [div]);
+        },
+        [div]
+    );
 
     const handleMouseUp = useCallback(() => {
         dragging.current = false;

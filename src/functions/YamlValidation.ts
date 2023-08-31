@@ -1,5 +1,8 @@
 import { schema } from "../schemas/JSONSchema";
-import type { IAjvError, IJsYamlError } from "../components/monaco-editor/ErrorConsole";
+import type {
+    IAjvError,
+    IJsYamlError,
+} from "../components/monaco-editor/ErrorConsole";
 import JsYaml from "js-yaml";
 import Ajv from "ajv";
 import type { ErrorObject } from "ajv";
@@ -9,12 +12,15 @@ import type { editor } from "monaco-editor";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<any | null>;
 
-export function YamlValidation(configData: string, editorRef: EditorRefType | null, monacoRef: MonacoRefType | null) {
-
+export function YamlValidation(
+    configData: string,
+    editorRef: EditorRefType | null,
+    monacoRef: MonacoRefType | null
+) {
     const ajv = new Ajv({ allErrors: true });
     const model = editorRef?.current?.getModel();
     let ajvError: IAjvError[] = [];
-    const jsYamlError: IJsYamlError = { mark: { line: null }, reason: null }
+    const jsYamlError: IJsYamlError = { mark: { line: null }, reason: null };
     const totalErrors = { ajvErrors: ajvError, jsYamlError: jsYamlError };
     try {
         const jsonData = JsYaml.load(configData);
@@ -38,12 +44,10 @@ export function YamlValidation(configData: string, editorRef: EditorRefType | nu
                     return errorInfo;
                 });
                 ajvError.push(...validationErrors);
-
             }
         } else {
             ajvError = [];
         }
-
 
         monacoRef?.current?.editor.setModelMarkers(model, "json", []);
     } catch (error: any) {
@@ -55,10 +59,13 @@ export function YamlValidation(configData: string, editorRef: EditorRefType | nu
             endLineNumber: errorLineNumber,
             startColumn: errorColumn,
             endColumn: errorColumn,
-            severity: monacoRef?.current && monacoRef.current.MarkerSeverity.Error,
+            severity:
+                monacoRef?.current && monacoRef.current.MarkerSeverity.Error,
             message: errorMessage,
         };
-        monacoRef?.current?.editor.setModelMarkers(model, "json", [errorMarker]);
+        monacoRef?.current?.editor.setModelMarkers(model, "json", [
+            errorMarker,
+        ]);
 
         totalErrors.jsYamlError = error;
     }

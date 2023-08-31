@@ -1,0 +1,7 @@
+*.gen.d.ts
+.next/**
+*.yaml
+*.json
+*.md
+coverage
+.storybook/public/mockServiceWorker.js

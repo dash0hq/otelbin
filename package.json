@@ -10,6 +10,8 @@
     "start": "next start",
     "test": "jest --watch",
     "coverage": "jest --coverage",
+    "prettier:all": "prettier . --write",
+    "prettier:check": "prettier . --check",
     "licenses": "npx license-report --output=csv --fields=name --fields=installedVersion --fields=licenseType > licenses.csv"
   },
   "prisma": {
