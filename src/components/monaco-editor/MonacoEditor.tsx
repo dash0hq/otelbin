@@ -20,7 +20,15 @@ import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
 import { YamlValidation } from "~/functions/YamlValidation";
 
-export default function MonacoEditor({ id }: { id?: string }) {
+export default function MonacoEditor({
+  id,
+  locked,
+  setLocked,
+}: {
+  id?: string;
+  locked: boolean;
+  setLocked: (locked: boolean) => void;
+}) {
   const editorDidMount = useEditorDidMount();
   const [clicked, setClicked] = useState(false);
   const [data, setData] = useState({ name: "", config: "" });
@@ -135,20 +143,25 @@ export default function MonacoEditor({ id }: { id?: string }) {
             <></>
           )}
           <div className="z-0 flex-grow-[3]" style={{ height: "94.5vh" }}>
-            <ReactFlowProvider>
-              <Flow
-                value={
-                  (errors?.jsYamlError === undefined &&
-                    errors.ajvErrors?.length === 0 &&
-                    configs &&
-                    configs?.length > 0 &&
-                    config) ||
-                  config ||
-                  DefaultConfig
-                }
-                openDialog={setOpenDialog}
-              />
-            </ReactFlowProvider>
+            {editorRef?.current && (
+              <ReactFlowProvider>
+                <Flow
+                  value={
+                    (errors?.jsYamlError === undefined &&
+                      errors.ajvErrors?.length === 0 &&
+                      configs &&
+                      configs?.length > 0 &&
+                      config) ||
+                    config ||
+                    DefaultConfig
+                  }
+                  openDialog={setOpenDialog}
+                  locked={locked}
+                  setLocked={setLocked}
+                  editorRef={editorRef}
+                />
+              </ReactFlowProvider>
+            )}
           </div>
         </div>
       </div>
