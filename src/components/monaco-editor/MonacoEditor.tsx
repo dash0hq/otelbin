@@ -8,7 +8,7 @@ import Editor from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
 import { useMouseDelta } from "~/components/monaco-editor/MouseDelta";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
@@ -31,7 +31,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 
 	const onChangeConfig = useCallback(
 		(newConfig: string) => {
-			router.replace(getLink({ config: newConfig })).catch((e) => console.error("Failed to update URL", e));
+			router.replace(getLink({ config: newConfig }));
 		},
 		[getLink, router]
 	);
