@@ -7,11 +7,11 @@ import { stringify } from "./jsurl2";
 
 export function serializeUrlState<T extends Binding<any>[]>(
 	bindings: T,
-	pathName: string,
-	currentURLSearchParams: URLSearchParams | ReadonlyURLSearchParams,
+	pathName: string | null,
+	currentURLSearchParams: URLSearchParams | ReadonlyURLSearchParams | null,
 	urlState: Partial<Bindings<T>>
 ): string {
-	const usp = new URLSearchParams(currentURLSearchParams.toString());
+	const usp = new URLSearchParams(currentURLSearchParams?.toString());
 
 	for (const binding of bindings) {
 		const searchParamName = binding.prefix + binding.name;
