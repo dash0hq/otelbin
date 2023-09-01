@@ -1,5 +1,15 @@
-import { ClientPage } from "~/app/page_client";
+"use client";
+
+import { useState } from "react";
+import { EditorProvider } from "~/contexts/EditorContext";
+import MonacoEditor from "~/components/monaco-editor/MonacoEditor";
 
 export default function Page() {
-	return <ClientPage />;
+	const [locked, setLocked] = useState<boolean>(true);
+
+	return (
+		<EditorProvider>
+			<MonacoEditor locked={locked} setLocked={setLocked} />
+		</EditorProvider>
+	);
 }
