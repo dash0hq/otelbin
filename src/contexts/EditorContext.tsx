@@ -1,13 +1,14 @@
 import React, { createContext, useRef, useState } from "react";
 import type { RefObject } from "react";
 import type { editor } from "monaco-editor";
+import { Monaco, OnMount } from "@monaco-editor/react";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
-type MonacoRefType = RefObject<any | null>;
+type MonacoRefType = RefObject<Monaco | null>;
 
 export const EditorContext = createContext<EditorRefType | null>(null);
 export const MonacoContext = createContext<MonacoRefType | null>(null);
-export const EditorDidMount = createContext<any | null>(null);
+export const EditorDidMount = createContext<OnMount | undefined>(undefined);
 export const FocusContext = createContext<{
 	setFocused: (focus: string) => void;
 	isFocused: string;
@@ -37,14 +38,12 @@ export function useFocus() {
 export const EditorProvider = ({ children }: { children: any }) => {
 	const [focused, setFocused] = useState("");
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-	const monacoRef = useRef<any>(null);
-	const [monacoInstance, setMonacoInstance] = React.useState<editor.IStandaloneCodeEditor | null>(null);
+	const monacoRef = useRef<Monaco | null>(null);
 
-	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: any) {
+	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
 		monacoRef.current = monaco;
-		setMonacoInstance(editor);
-		monacoRef.current.languages.setLanguageConfiguration("yaml", {
+		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\w+\/\w+|\w+/,
 		});
 	}
