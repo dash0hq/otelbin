@@ -1,7 +1,17 @@
 import type { JSONSchemaType } from "ajv";
 
+interface IPipeline {
+	receivers: any[];
+	processors?: any[];
+	exporters: any[];
+}
+
+interface IPipelines {
+	[name: string]: IPipeline;
+}
+
 interface IService {
-	pipelines: object;
+	pipelines: IPipelines;
 }
 
 interface IOtelConfig {
@@ -13,6 +23,7 @@ interface IOtelConfig {
 	connectors: object;
 }
 
+// @ts-expect-error TypeScript cannot correctly correlate the schema with the TypeScript types.
 export const schema: JSONSchemaType<IOtelConfig> = {
 	$schema: "http://json-schema.org/draft-07/schema#",
 	$id: "https://dash0.com/otelcollector.json",
@@ -42,7 +53,23 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 			properties: {
 				pipelines: {
 					type: "object",
-					additionalProperties: true,
+					additionalProperties: {
+						type: "object",
+						properties: {
+							receivers: {
+								type: "array",
+								minItems: 1,
+							},
+							processors: {
+								type: "array",
+							},
+							exporters: {
+								type: "array",
+								minItems: 1,
+							},
+						},
+						required: ["receivers", "exporters"],
+					},
 				},
 			},
 			required: ["pipelines"],
@@ -52,5 +79,5 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 			additionalProperties: true,
 		},
 	},
-	required: ["service", "exporters"],
+	required: ["service"],
 };

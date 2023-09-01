@@ -1,41 +1,33 @@
 import { IconButton } from "@dash0hq/ui/src/components/ui/icon-button";
 import { useToast } from "@dash0hq/ui/src/components/ui/use-toast";
 import { ArrowDownToLine, Copy } from "lucide-react";
-import { useEditorRef } from "~/contexts/EditorContext";
 
-export default function EditorTopBar() {
+export default function EditorTopBar({ config }: { config: string }) {
 	const { toast } = useToast();
-	const editorRef = useEditorRef();
 
 	function handleDownload() {
-		const downloadConfig = editorRef?.current?.getValue() || "";
-
-		if (downloadConfig.length > 0) {
-			const blob = new Blob([downloadConfig], { type: "text/plain" });
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement("a");
-			link.download = "config.yaml";
-			link.href = url;
-			link.click();
-		} else {
-			toast({
-				description: "There is no config to download",
-			});
-		}
+		const blob = new Blob([config], { type: "text/plain" });
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.download = "config.yaml";
+		link.href = url;
+		link.click();
 	}
 
 	function handleCopy() {
-		const allText = editorRef?.current?.getValue() || "";
-		if (allText.length > 0) {
-			navigator.clipboard.writeText(allText);
-			toast({
-				description: "Config copied to clipboard.",
+		navigator.clipboard
+			.writeText(config)
+			.then(() => {
+				toast({
+					description: "Config copied to clipboard.",
+				});
+			})
+			.catch((e) => {
+				console.error("Failed to copy to clipboard", e);
+				toast({
+					description: "Failed to copy to clipboard",
+				});
 			});
-		} else {
-			toast({
-				description: "There is no config to copy",
-			});
-		}
 	}
 
 	return (

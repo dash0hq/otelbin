@@ -64,7 +64,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 								cursor: activeView === "both" ? "col-resize" : "default",
 							}}
 						>
-							<EditorTopBar />
+							<EditorTopBar config={config} />
 							<Editor
 								defaultValue={config}
 								value={config}
@@ -88,17 +88,15 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 					)}
 
 					<div className="z-0 flex-grow-[3]" style={{ height: "94.5vh" }}>
-						{editorRef?.current && (
-							<ReactFlowProvider>
-								<Flow
-									value={(isClient && isValidConfig && config) || "{}"}
-									openDialog={setOpenDialog}
-									locked={locked}
-									setLocked={setLocked}
-									editorRef={editorRef}
-								/>
-							</ReactFlowProvider>
-						)}
+						<ReactFlowProvider>
+							<Flow
+								value={(isClient && isValidConfig && config) || "{}"}
+								openDialog={setOpenDialog}
+								locked={locked}
+								setLocked={setLocked}
+								editorRef={editorRef}
+							/>
+						</ReactFlowProvider>
 					</div>
 				</div>
 			</div>

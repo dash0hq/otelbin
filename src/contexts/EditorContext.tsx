@@ -1,7 +1,7 @@
 import React, { createContext, useRef, useState } from "react";
 import type { RefObject } from "react";
 import type { editor } from "monaco-editor";
-import { Monaco, OnMount } from "@monaco-editor/react";
+import { type Monaco, type OnMount } from "@monaco-editor/react";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;

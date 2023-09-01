@@ -1,17 +1,11 @@
-import { useNodes, type Node, type ReactFlowInstance, type XYPosition } from "reactflow";
-import type { IConfig, IParentNode, IPipeline } from "./dataType";
-import { useEffect, useState } from "react";
+import { type Node, type XYPosition } from "reactflow";
+import type { IConfig, IPipeline } from "./dataType";
+import { useMemo } from "react";
 import { v4 } from "uuid";
 
-const createNode = (
-	parentLable: string,
-	parentNode: IParentNode | null,
-	pipelines: IPipeline,
-	nodes: Node[],
-	height: number
-) => {
+const createNode = (pipelineName: string, parentNode: IPipeline, height: number) => {
 	const nodesToAdd: Node[] = [];
-	const keyTraces = Object.keys(parentNode!);
+	const keyTraces = Object.keys(parentNode);
 
 	const calculateValue = (parentHeight: number, index: number): number => {
 		const offset = 50;
@@ -60,20 +54,20 @@ const createNode = (
 
 	keyTraces.map((traceItem) => {
 		if (traceItem === "processors") {
-			const processors = parentNode!.processors;
+			const processors = parentNode.processors;
 			Array.isArray(processors) &&
 				processors.length > 0 &&
 				processors.map((processor, index) => {
-					const id = `${parentLable}-Processor-processorNode-${processor}-${v4()}`;
+					const id = `${pipelineName}-Processor-processorNode-${processor}-${v4()}`;
 					nodesToAdd.push({
 						id: id,
-						parentNode: parentLable,
+						parentNode: pipelineName,
 						extent: "parent",
 						type: "processorsNode",
 						position: processorPosition(index, height || 100, processors),
 						data: {
 							label: processor,
-							parentNode: parentLable,
+							parentNode: pipelineName,
 							type: "processors",
 							height: 80,
 							id: id,
@@ -83,20 +77,20 @@ const createNode = (
 				});
 		}
 		if (traceItem === "receivers") {
-			const receivers = parentNode!.receivers;
+			const receivers = parentNode.receivers;
 			Array.isArray(receivers) &&
 				receivers.length > 0 &&
 				receivers.map((receiver, index) => {
-					const id = `${parentLable}-Receiver-receiverNode-${receiver}-${v4()}`;
+					const id = `${pipelineName}-Receiver-receiverNode-${receiver}-${v4()}`;
 					nodesToAdd.push({
 						id: id,
-						parentNode: parentLable,
+						parentNode: pipelineName,
 						extent: "parent",
 						type: "receiversNode",
 						position: receiverPosition(index, height || 100, receivers),
 						data: {
 							label: receiver,
-							parentNode: parentLable,
+							parentNode: pipelineName,
 							type: "receivers",
 							height: 80,
 							id: id,
@@ -106,19 +100,19 @@ const createNode = (
 				});
 		}
 		if (traceItem === "exporters") {
-			const exporters = parentNode!.exporters;
-			const processors = parentNode!.processors;
+			const exporters = parentNode.exporters;
+			const processors = parentNode.processors;
 			exporters?.map((exporter, index) => {
-				const id = `${parentLable}-exporter-exporterNode-${exporter}-${v4()}`;
+				const id = `${pipelineName}-exporter-exporterNode-${exporter}-${v4()}`;
 				nodesToAdd.push({
 					id: id,
-					parentNode: parentLable,
+					parentNode: pipelineName,
 					extent: "parent",
 					type: "exportersNode",
-					position: exporterPosition(index, height || 100, exporters, processors),
+					position: exporterPosition(index, height || 100, exporters, processors ?? []),
 					data: {
 						label: exporter,
-						parentNode: parentLable,
+						parentNode: pipelineName,
 						type: "exporters",
 						height: 80,
 						id: id,
@@ -131,48 +125,38 @@ const createNode = (
 	return nodesToAdd;
 };
 
-const useConfigReader = (value: IConfig, reactFlowInstance: ReactFlowInstance) => {
-	const [jsonDataState, setJsonDataState] = useState<Node[]>([]);
-	const nodes = useNodes();
-
-	useEffect(() => {
+export const useNodes = (value: IConfig) => {
+	return useMemo(() => {
 		const pipelines = value.service?.pipelines;
 		if (pipelines == null) {
-			setJsonDataState([]);
-			return;
+			return [];
 		}
 
 		const nodesToAdd: Node[] = [];
 		let yOffset = 0;
 
-		for (const parentNodeLabel of Object.keys(pipelines)) {
-			const receivers = pipelines[parentNodeLabel]?.receivers?.length;
-			const exporters = pipelines[parentNodeLabel]?.exporters?.length;
+		for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
+			const receivers = pipeline.receivers?.length ?? 0;
+			const exporters = pipeline.exporters?.length ?? 0;
 
-			const max = Math.max(receivers, exporters) || receivers || exporters || 1;
-			const height = max * 100;
+			const maxNumberOfVerticalElements = Math.max(receivers, exporters) || 1;
+			const height = maxNumberOfVerticalElements * 100;
 			const extraSpacing = 200;
-			const parentNode = pipelines[parentNodeLabel];
-			const parentNodeId = parentNodeLabel;
 
 			nodesToAdd.push({
-				id: parentNodeId,
+				id: pipelineName,
 				type: "parentNodeType",
 				position: { x: 0, y: yOffset },
-				data: { label: parentNodeLabel, parentNode: parentNodeLabel },
+				data: { label: pipelineName, parentNode: pipelineName },
 				draggable: false,
-				ariaLabel: parentNodeLabel,
+				ariaLabel: pipelineName,
 				expandParent: true,
 			});
 			yOffset += height + extraSpacing;
 
-			const childNodes = createNode(parentNodeId, parentNode, pipelines, nodes, height);
+			const childNodes = createNode(pipelineName, pipeline, height);
 			nodesToAdd.push(...childNodes);
 		}
-		setJsonDataState(nodesToAdd);
-	}, [value, reactFlowInstance]);
-
-	return jsonDataState;
+		return nodesToAdd;
+	}, [value]);
 };
-
-export default useConfigReader;

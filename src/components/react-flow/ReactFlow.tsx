@@ -10,7 +10,7 @@ import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
 import ProcessorsNode from "./ProcessorsNode";
 import ExportersNode from "./ExportersNode";
-import useConfigReader from "./useConfigReader";
+import { useNodes } from "./useNodes";
 import type { editor } from "monaco-editor";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
@@ -40,8 +40,8 @@ export default function Flow({
 		const docService = docItems.find((item: any) => item.key.source === "service");
 		return docService?.value.items.find((item: any) => item.key.source === "pipelines");
 	}, [value]);
-	const initialNodes = useConfigReader(jsonData, reactFlowInstance);
-	const initialEdges = useEdgeCreator(initialNodes, reactFlowInstance);
+	const nodes = useNodes(jsonData);
+	const initialEdges = useEdgeCreator(nodes);
 	const nodeTypes = useMemo(
 		() => ({
 			processorsNode: ProcessorsNode,
@@ -70,123 +70,123 @@ export default function Flow({
 				cursorChangeEventListener.dispose();
 			};
 		}
-	}, [handleCursorPositionChange, locked, editorRef, nodeInfo]);
 
-	function handleCursorPositionChange(e: editor.ICursorPositionChangedEvent) {
-		if (!locked && editorRef?.current) {
-			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) || 0;
+		function handleCursorPositionChange(e: editor.ICursorPositionChangedEvent) {
+			if (!locked && editorRef?.current) {
+				const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) || 0;
 
-			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || {
-				word: "",
-				startColumn: 0,
-				endColumn: 0,
-			};
+				const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || {
+					word: "",
+					startColumn: 0,
+					endColumn: 0,
+				};
 
-			for (let i = 0; pipelines.value.items.length > i; i++) {
-				if (
-					cursorOffset >= pipelines.value.items[i].key.offset &&
-					cursorOffset <= pipelines.value.items[i].sep[1].offset
-				) {
-					setFocusOnParentNode(wordAtCursor.word);
-					setCenter(getParentNodePositionX(wordAtCursor.word), getParentNodePositionY(wordAtCursor.word), {
-						zoom: 1.2,
-						duration: 400,
-					});
-				}
-				for (let j = 0; pipelines.value.items[i].value.items.length > j; j++) {
+				for (let i = 0; pipelines.value.items.length > i; i++) {
 					if (
-						pipelines.value.items[i].value.items[j].value.items.length === 1 &&
-						cursorOffset >= pipelines.value.items[i].value.items[j].value.items[0].value.offset &&
-						cursorOffset <=
-							pipelines.value.items[i].value.items[j].value.items[0].value.offset +
-								pipelines.value.items[i].value.items[j].value.items[0].value.source.length
+						cursorOffset >= pipelines.value.items[i].key.offset &&
+						cursorOffset <= pipelines.value.items[i].sep[1].offset
 					) {
-						const level2 = pipelines.value.items[i].key.source;
-						const level3 = pipelines.value.items[i].value.items[j].key.source;
-						setFocusOnNode(wordAtCursor.word, level2, level3);
-						setCenter(
-							getNodePositionX(wordAtCursor.word, level2, level3) + 50,
-							getNodePositionY(wordAtCursor.word, level2, level3) + 50,
-							{ zoom: 2, duration: 400 }
-						);
-					} else if (pipelines.value.items[i].value.items[j].value.items.length > 1) {
-						for (let k = 0; pipelines.value.items[i].value.items[j].value.items.length > k; k++) {
-							if (
-								cursorOffset >= pipelines.value.items[i].value.items[j].value.items[k].value.offset &&
-								cursorOffset <=
-									pipelines.value.items[i].value.items[j].value.items[k].value.offset +
-										pipelines.value.items[i].value.items[j].value.items[k].value.source.length
-							) {
-								const level2 = pipelines.value.items[i].key.source;
-								const level3 = pipelines.value.items[i].value.items[j].key.source;
-								setFocusOnNode(wordAtCursor.word, level2, level3);
-								setCenter(
-									getNodePositionX(wordAtCursor.word, level2, level3) + 50,
-									getNodePositionY(wordAtCursor.word, level2, level3) + 50,
-									{ zoom: 2, duration: 400 }
-								);
+						setFocusOnParentNode(wordAtCursor.word);
+						setCenter(getParentNodePositionX(wordAtCursor.word), getParentNodePositionY(wordAtCursor.word), {
+							zoom: 1.2,
+							duration: 400,
+						});
+					}
+					for (let j = 0; pipelines.value.items[i].value.items.length > j; j++) {
+						if (
+							pipelines.value.items[i].value.items[j].value.items.length === 1 &&
+							cursorOffset >= pipelines.value.items[i].value.items[j].value.items[0].value.offset &&
+							cursorOffset <=
+								pipelines.value.items[i].value.items[j].value.items[0].value.offset +
+									pipelines.value.items[i].value.items[j].value.items[0].value.source.length
+						) {
+							const level2 = pipelines.value.items[i].key.source;
+							const level3 = pipelines.value.items[i].value.items[j].key.source;
+							setFocusOnNode(wordAtCursor.word, level2, level3);
+							setCenter(
+								getNodePositionX(wordAtCursor.word, level2, level3) + 50,
+								getNodePositionY(wordAtCursor.word, level2, level3) + 50,
+								{ zoom: 2, duration: 400 }
+							);
+						} else if (pipelines.value.items[i].value.items[j].value.items.length > 1) {
+							for (let k = 0; pipelines.value.items[i].value.items[j].value.items.length > k; k++) {
+								if (
+									cursorOffset >= pipelines.value.items[i].value.items[j].value.items[k].value.offset &&
+									cursorOffset <=
+										pipelines.value.items[i].value.items[j].value.items[k].value.offset +
+											pipelines.value.items[i].value.items[j].value.items[k].value.source.length
+								) {
+									const level2 = pipelines.value.items[i].key.source;
+									const level3 = pipelines.value.items[i].value.items[j].key.source;
+									setFocusOnNode(wordAtCursor.word, level2, level3);
+									setCenter(
+										getNodePositionX(wordAtCursor.word, level2, level3) + 50,
+										getNodePositionY(wordAtCursor.word, level2, level3) + 50,
+										{ zoom: 2, duration: 400 }
+									);
+								}
 							}
 						}
 					}
 				}
+				if (cursorOffset > pipelines.key.offset && cursorOffset < pipelines.sep[1].offset) {
+					reactFlowInstance.fitView();
+				}
 			}
-			if (cursorOffset > pipelines.key.offset && cursorOffset < pipelines.sep[1].offset) {
-				reactFlowInstance.fitView();
+		}
+
+		function getNodePositionX(nodeId: string, level2: string, level3: string) {
+			return (
+				Number(
+					nodeInfo?.find(
+						(node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3)
+					)?.position?.x
+				) || 0
+			);
+		}
+
+		function getNodePositionY(nodeId: string, level2: string, level3: string) {
+			return (
+				Number(
+					nodeInfo?.find(
+						(node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3)
+					)?.positionAbsolute?.y
+				) || 0
+			);
+		}
+
+		function getParentNodePositionX(nodeId: string) {
+			return (
+				Number(nodeInfo?.find((node) => node.id === nodeId && node.type === "parentNodeType")?.position?.x) + 350 || 0
+			);
+		}
+
+		function getParentNodePositionY(nodeId: string) {
+			return (
+				Number(nodeInfo?.find((node) => node.id === nodeId && node.type === "parentNodeType")?.position?.y) + 100 || 0
+			);
+		}
+
+		function setFocusOnParentNode(nodeId: string) {
+			const node = nodeInfo?.find((node) => node.id === nodeId && node.type === "parentNodeType");
+			if (node) {
+				setFocused(node.id);
 			}
 		}
-	}
 
-	function getNodePositionX(nodeId: string, level2: string, level3: string) {
-		return (
-			Number(
-				nodeInfo?.find(
-					(node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3)
-				)?.position?.x
-			) || 0
-		);
-	}
-
-	function getNodePositionY(nodeId: string, level2: string, level3: string) {
-		return (
-			Number(
-				nodeInfo?.find(
-					(node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3)
-				)?.positionAbsolute?.y
-			) || 0
-		);
-	}
-
-	function getParentNodePositionX(nodeId: string) {
-		return (
-			Number(nodeInfo?.find((node) => node.id === nodeId && node.type === "parentNodeType")?.position?.x) + 350 || 0
-		);
-	}
-
-	function getParentNodePositionY(nodeId: string) {
-		return (
-			Number(nodeInfo?.find((node) => node.id === nodeId && node.type === "parentNodeType")?.position?.y) + 100 || 0
-		);
-	}
-
-	function setFocusOnParentNode(nodeId: string) {
-		const node = nodeInfo?.find((node) => node.id === nodeId && node.type === "parentNodeType");
-		if (node) {
-			setFocused(node.id);
+		function setFocusOnNode(nodeId: string, level2: string, level3: string) {
+			const node = nodeInfo?.find(
+				(node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3)
+			);
+			if (node) {
+				setFocused(node.id);
+			}
 		}
-	}
-
-	function setFocusOnNode(nodeId: string, level2: string, level3: string) {
-		const node = nodeInfo?.find(
-			(node) => node.data.label === nodeId && node.parentNode === level2 && node.type?.includes(level3)
-		);
-		if (node) {
-			setFocused(node.id);
-		}
-	}
+	}, [reactFlowInstance, setCenter, setFocused, pipelines, locked, editorRef, nodeInfo]);
 
 	return (
 		<ReactFlow
-			nodes={initialNodes}
+			nodes={nodes}
 			edges={initialEdges}
 			defaultEdgeOptions={edgeOptions}
 			nodeTypes={nodeTypes}

@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
-import { MarkerType, type Edge, type Node, type ReactFlowInstance } from "reactflow";
+import { useEffect, useMemo, useState } from "react";
+import { MarkerType, type Edge, type Node } from "reactflow";
 
-function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstance) {
-	const [edgeList, setEdgeList] = useState<Edge[]>([]);
-	useEffect(() => {
-		const edgesToAdd: Edge[] = [];
+function useEdgeCreator(nodeIdsArray: Node[]) {
+	return useMemo(() => {
+		const edges: Edge[] = [];
 
 		const calculateColor = (index: number): string => {
 			switch (index) {
@@ -44,7 +43,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
 						stroke: calculateColor(index),
 					},
 				};
-				edgesToAdd.push(edge);
+				edges.push(edge);
 			});
 		};
 		const calculateProcessorsNode = (processorsNodes: Node[], index: number) => {
@@ -72,7 +71,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
 						stroke: calculateColor(index),
 					},
 				};
-				edgesToAdd.push(edge);
+				edges.push(edge);
 			}
 		};
 
@@ -113,7 +112,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
 								stroke: calculateColor(index),
 							},
 						};
-						edgesToAdd.push(edge);
+						edges.push(edge);
 					});
 				});
 			} else {
@@ -140,7 +139,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
 							stroke: calculateColor(index),
 						},
 					};
-					edgesToAdd.push(edge);
+					edges.push(edge);
 				});
 			}
 		};
@@ -158,8 +157,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
 		};
 
 		const childNodes = (parentNode: string) => {
-			const eachParentNode = nodeIdsArray.filter((node) => node.parentNode === parentNode);
-			return eachParentNode;
+			return nodeIdsArray.filter((node) => node.parentNode === parentNode);
 		};
 
 		const parentNodes = nodeIdsArray.filter((node) => node.type === "parentNodeType").map((node) => node.data.label);
@@ -173,10 +171,8 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
 			addEdgesToNodes(childNode, index);
 		});
 
-		setEdgeList(edgesToAdd);
-	}, [nodeIdsArray, reactFlowInstance]);
-
-	return edgeList;
+		return edges;
+	}, [nodeIdsArray]);
 }
 
 export default useEdgeCreator;
