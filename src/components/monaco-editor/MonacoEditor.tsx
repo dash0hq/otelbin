@@ -77,7 +77,6 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 								defaultLanguage="yaml"
 								theme="vs-dark"
 								options={{
-									quickSuggestions: { other: true, strings: true },
 									automaticLayout: true,
 									minimap: { enabled: false },
 									scrollbar: { verticalScrollbarSize: 5 },
