@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import React from "react";
 import type { IError } from "./ErrorConsole";
@@ -31,7 +33,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 
 	const onChangeConfig = useCallback(
 		(newConfig: string) => {
-			router.replace(getLink({ config: newConfig }));
+			router.replace(getLink({ config: newConfig }), { scroll: false });
 		},
 		[getLink, router]
 	);
