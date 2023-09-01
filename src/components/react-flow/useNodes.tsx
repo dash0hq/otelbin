@@ -1,7 +1,6 @@
 import { type Node, type XYPosition } from "reactflow";
 import type { IConfig, IPipeline } from "./dataType";
 import { useMemo } from "react";
-import { v4 } from "uuid";
 
 const createNode = (pipelineName: string, parentNode: IPipeline, height: number) => {
 	const nodesToAdd: Node[] = [];
@@ -58,7 +57,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 			Array.isArray(processors) &&
 				processors.length > 0 &&
 				processors.map((processor, index) => {
-					const id = `${pipelineName}-Processor-processorNode-${processor}-${v4()}`;
+					const id = `${pipelineName}-Processor-processorNode-${processor}`;
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
@@ -81,7 +80,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 			Array.isArray(receivers) &&
 				receivers.length > 0 &&
 				receivers.map((receiver, index) => {
-					const id = `${pipelineName}-Receiver-receiverNode-${receiver}-${v4()}`;
+					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
@@ -103,7 +102,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 			const exporters = parentNode.exporters;
 			const processors = parentNode.processors;
 			exporters?.map((exporter, index) => {
-				const id = `${pipelineName}-exporter-exporterNode-${exporter}-${v4()}`;
+				const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 				nodesToAdd.push({
 					id: id,
 					parentNode: pipelineName,
