@@ -6,13 +6,13 @@ import type { ReadonlyURLSearchParams } from "next/navigation";
 import { parse } from "./jsurl2";
 
 export function parseUrlState<T extends Binding<any>[]>(
-	usp: ReadonlyURLSearchParams | URLSearchParams,
+	usp: ReadonlyURLSearchParams | URLSearchParams | null,
 	bindings: T
 ): Bindings<T> {
 	const result: Record<string, any> = {};
 	for (const binding of bindings) {
 		const searchParamName = binding.prefix + binding.name;
-		const searchParamValue = usp.get(searchParamName);
+		const searchParamValue = usp && usp.get(searchParamName);
 		let value = binding.fallback;
 		if (searchParamValue != null) {
 			try {
