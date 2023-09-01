@@ -10,13 +10,13 @@ import {
 	DialogDescription,
 } from "@dash0/components/ui/dialog";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
-import { WelcomeModalData } from "./WelcomeModalData";
+import { welcomeModalData } from "./WelcomeModalData";
 
 export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
 	const [step, setStep] = useState(0);
 
 	function handleNext() {
-		if (step <= WelcomeModalData.length - 2) {
+		if (step <= welcomeModalData.length - 2) {
 			setStep(step + 1);
 		} else {
 			closeAndStore();
@@ -47,17 +47,15 @@ export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen
 							</a>
 						</DialogTitle>
 					</DialogHeader>
-					<Image src={WelcomeModalData[step]?.image || ""} alt="Welcome Modal Slide Image" />
+					<Image src={welcomeModalData[step]?.image || ""} alt="Welcome Modal Slide Image" />
 					<div className="flex flex-col gap-y-2">
-						<DialogTitle className="text-center">{WelcomeModalData[step]?.title}</DialogTitle>
-						<DialogDescription className="text-center">
-							{WelcomeModalData[step]?.description}
-						</DialogDescription>
+						<DialogTitle className="text-center">{welcomeModalData[step]?.title}</DialogTitle>
+						<DialogDescription className="text-center">{welcomeModalData[step]?.description}</DialogDescription>
 					</div>
 				</div>
 				<div className="absolute bottom-6 left-8">
 					<div className="flex items-center gap-x-1">
-						{Array.from({ length: WelcomeModalData.length }, (_, index) => (
+						{Array.from({ length: welcomeModalData.length }, (_, index) => (
 							<StepDiv
 								key={index}
 								activeStep={index === step}
@@ -68,21 +66,15 @@ export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen
 					</div>
 				</div>
 				<DialogFooter>
-					{step <= WelcomeModalData.length - 2 ? (
+					{step <= welcomeModalData.length - 2 ? (
 						<Button onClick={handleSkip} variant={"default"} size={"sm"}>
 							Skip
 						</Button>
 					) : (
 						<></>
 					)}
-					<Button
-						autoFocus={true}
-						onClick={handleNext}
-						variant={"default"}
-						size={"sm"}
-						className="bg-otelbinPurple"
-					>
-						{step <= WelcomeModalData.length - 2 ? "Next" : "Done"}
+					<Button autoFocus={true} onClick={handleNext} variant={"default"} size={"sm"} className="bg-otelbinPurple">
+						{step <= welcomeModalData.length - 2 ? "Next" : "Done"}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

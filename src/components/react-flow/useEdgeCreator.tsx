@@ -162,9 +162,7 @@ function useEdgeCreator(nodeIdsArray: Node[], reactFlowInstance: ReactFlowInstan
 			return eachParentNode;
 		};
 
-		const parentNodes = nodeIdsArray
-			.filter((node) => node.type === "parentNodeType")
-			.map((node) => node.data.label);
+		const parentNodes = nodeIdsArray.filter((node) => node.type === "parentNodeType").map((node) => node.data.label);
 		// think about here < 2?
 		if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2) {
 			return;

@@ -4,26 +4,26 @@ import WelcomeModal2 from "../../components/assets/png/welcome-modal-slide-2.png
 import WelcomeModal3 from "../../components/assets/png/welcome-modal-slide-3.png";
 import WelcomeModal4 from "../../components/assets/png/welcome-modal-slide-4.png";
 
-interface IWelcomeModal {
+interface WelcomeModal {
 	title: string;
 	description: string;
 	image: StaticImageData;
 }
 
-export const WelcomeModalData: IWelcomeModal[] = [
+export const welcomeModalData: WelcomeModal[] = [
 	{
 		title: "Welcome to OTelBin!",
-		description: "A simple tool to visualize your OpenTelemetry configs",
+		description: "A simple tool to visualize your OpenTelemetry collector configurations",
 		image: WelcomeModal1,
 	},
 	{
 		title: "Visualize your configs.",
-		description: "Transform your configurations into clear visualizations.",
+		description: "Visualize your collector configuration to understand its pipelines",
 		image: WelcomeModal4,
 	},
 	{
-		title: "Write your config in the Editor with live syntax validation.",
-		description: "Craft your configuration seamlessly in the Editor with real-time syntax validation at your side.",
+		title: "Write your config in the editor with live syntax validation.",
+		description: "Craft your configuration seamlessly in the editor with real-time syntax and schema validation!",
 		image: WelcomeModal2,
 	},
 	{

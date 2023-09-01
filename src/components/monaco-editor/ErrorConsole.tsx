@@ -32,11 +32,7 @@ export default function ErrorConsole({ errors }: { errors?: IError }) {
 				{errors?.jsYamlError?.mark.line !== null && <Error jsYamlError={errors && errors.jsYamlError} />}
 			</div>
 
-			{errors ? (
-				<ErrorCount errors={errors} isOpen={isOpenErrorConsole} setOpen={setIsOpenErrorConsole} />
-			) : (
-				<> </>
-			)}
+			{errors ? <ErrorCount errors={errors} isOpen={isOpenErrorConsole} setOpen={setIsOpenErrorConsole} /> : <> </>}
 		</div>
 	) : (
 		<ErrorCount errors={errors} isOpen={isOpenErrorConsole} setOpen={setIsOpenErrorConsole} />
@@ -77,30 +73,11 @@ export function ErrorCount({
 	isOpen: boolean;
 	setOpen: (open: boolean) => void;
 }) {
-	const [errorCount, setErrorCount] = useState(0);
-
-	function countErrors() {
-		let errorCount = 0;
-		if (errors?.jsYamlError?.mark.line !== null) {
-			errorCount = (errors && errors.ajvErrors && errors.ajvErrors.length + 1) || 0;
-			return errorCount;
-		} else {
-			errorCount = (errors && errors.ajvErrors && errors.ajvErrors.length) || 0;
-			return errorCount;
-		}
-	}
-
-	function handleClick() {
-		setOpen(!isOpen);
-	}
-
-	useEffect(() => {
-		setErrorCount(countErrors());
-	}, [errors]);
+	const errorCount = (errors?.ajvErrors?.length ?? 0) + (errors?.jsYamlError != null ? 1 : 0);
 
 	return (
 		<div
-			onClick={handleClick}
+			onClick={() => setOpen(!isOpen)}
 			className={`${errorCount ? `text-otelbinMagenta` : `text-otelbinLightGrey`} ${
 				!isOpen && "h-[26px] justify-center rounded-md bg-otelbinBlackGrey px-2"
 			} absolute bottom-3 right-2 flex cursor-pointer items-center gap-x-1`}

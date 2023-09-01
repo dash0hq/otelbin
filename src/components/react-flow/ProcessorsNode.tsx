@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
-import { FlowClick } from "../../functions/FlowClick";
-import type { IData } from "../../functions/FlowClick";
+import { FlowClick } from "./FlowClick";
+import type { IData } from "./FlowClick";
 import ProcessorsIcon from "../assets/svg/processors.svg";
 
 const tagstyles = {

@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import PipelineTag from "../ui/PipelineTag";
+import PipelineTag from "./PipelineTag";
 import { useNodes, useReactFlow } from "reactflow";
 
 interface IData {

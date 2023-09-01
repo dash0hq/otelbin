@@ -1,7 +1,7 @@
 import type { editor } from "monaco-editor";
 import type { RefObject } from "react";
 import JsYaml from "js-yaml";
-import type { IConfig } from "../components/react-flow/dataType";
+import type { IConfig } from "./dataType";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
 export interface IData {
@@ -54,8 +54,7 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 	const getStartPositionOffset = () => {
 		const parentPosition = getStartPositionInPipeline(data.parentNode)[0];
 		const childPosition = getStartPositionInPipeline(data.type || "").filter(
-			(position) =>
-				position.range.startLineNumber >= ((parentPosition && parentPosition.range.startLineNumber) || 0)
+			(position) => position.range.startLineNumber >= ((parentPosition && parentPosition.range.startLineNumber) || 0)
 		)[0];
 		return (
 			editorRef?.current?.getModel()?.getOffsetAt({

@@ -1,4 +1,4 @@
-import { useNodes, type Node, type ReactFlowInstance, XYPosition } from "reactflow";
+import { useNodes, type Node, type ReactFlowInstance, type XYPosition } from "reactflow";
 import type { IConfig, IParentNode, IPipeline } from "./dataType";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
@@ -136,16 +136,18 @@ const useConfigReader = (value: IConfig, reactFlowInstance: ReactFlowInstance) =
 	const nodes = useNodes();
 
 	useEffect(() => {
-		const parentNodeLabels = Object.keys(value?.service?.pipelines ?? {});
-
-		const pipelines = value?.service?.pipelines;
+		const pipelines = value.service?.pipelines;
+		if (pipelines == null) {
+			setJsonDataState([]);
+			return;
+		}
 
 		const nodesToAdd: Node[] = [];
 		let yOffset = 0;
 
-		parentNodeLabels.forEach((parentNodeLabel) => {
-			const receivers = value?.service?.pipelines[parentNodeLabel]?.receivers?.length;
-			const exporters = value?.service?.pipelines[parentNodeLabel]?.exporters?.length;
+		for (const parentNodeLabel of Object.keys(pipelines)) {
+			const receivers = pipelines[parentNodeLabel]?.receivers?.length;
+			const exporters = pipelines[parentNodeLabel]?.exporters?.length;
 
 			const max = Math.max(receivers, exporters) || receivers || exporters || 1;
 			const height = max * 100;
@@ -166,7 +168,7 @@ const useConfigReader = (value: IConfig, reactFlowInstance: ReactFlowInstance) =
 
 			const childNodes = createNode(parentNodeId, parentNode, pipelines, nodes, height);
 			nodesToAdd.push(...childNodes);
-		});
+		}
 		setJsonDataState(nodesToAdd);
 	}, [value, reactFlowInstance]);
 

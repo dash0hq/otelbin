@@ -16,9 +16,9 @@ export interface IPipeline {
 	parentNode: IParentNode;
 }
 interface IService {
-	pipelines: IPipeline;
+	pipelines?: IPipeline;
 }
 export interface IConfig {
 	[key: string]: any;
-	service: IService;
+	service?: IService;
 }
