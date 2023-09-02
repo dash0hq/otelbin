@@ -1,12 +1,11 @@
 import Logo from "./assets/svg/otelbin-logo-full.svg";
-import { ButtonGroup, ButtonGroupItem, ButtonGroupLinkItem } from "@dash0/components/ui/button-group";
-import { IconButton } from "@dash0hq/ui/src/components/ui/icon-button";
-import { Columns, Code2, Share2 } from "lucide-react";
+import { ButtonGroup, ButtonGroupItem } from "@dash0/components/ui/button-group";
+import { Columns, Code2, LogIn } from "lucide-react";
 import { ServiceMapIcon } from "@dash0/icons";
-import { useToast } from "@dash0hq/ui/src/components/ui/use-toast";
-import { Button } from "@dash0hq/ui/src/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0/components/ui/tooltip";
-import { link } from "d3-shape";
+import { Share } from "~/components/share/Share";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { Button } from "@dash0/components/ui/button";
 
 const viewModes = [
 	{
@@ -27,15 +26,6 @@ const viewModes = [
 ];
 
 export default function AppHeader({ activeView, setView }: { activeView: string; setView: (view: string) => void }) {
-	const { toast } = useToast();
-
-	async function handleShare() {
-		await navigator.clipboard.writeText(window.location.href);
-		toast({
-			description: "URL copied to clipboard.",
-		});
-	}
-
 	return (
 		<div className="flex items-center justify-between border-b-1 bg-default px-4 py-3">
 			<a href="https://www.dash0.com?utm_source=otelbin&utm_medium=logo&utm_campaign=otelbin" target="_blank">
@@ -57,16 +47,29 @@ export default function AppHeader({ activeView, setView }: { activeView: string;
 						</Tooltip>
 					))}
 				</ButtonGroup>
-				<Button
-					onClick={handleShare}
-					className={`${activeView === "code" && "bg-otelbinGrey"}  bg-otelbinPurple`}
-					variant="cta"
-					size="xs"
-				>
-					<Share2 className="-ml-1" />
-					Share
-				</Button>
+
+				<Share />
+
+				<SignedIn>
+					<UserButton
+						afterSignOutUrl="/"
+						appearance={{
+							elements: {
+								avatarBox: "w-6 h-6",
+							},
+						}}
+					/>
+				</SignedIn>
+				<SignedOut>
+					<SignInButton mode="modal">
+						<Button size="xs">
+							<LogIn />
+						</Button>
+					</SignInButton>
+				</SignedOut>
 			</div>
 		</div>
 	);
 }
+
+//
