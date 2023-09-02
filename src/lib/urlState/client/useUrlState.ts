@@ -19,7 +19,7 @@ import { useCallback, useMemo } from "react";
  * console.log(state);                    // {from: 'now-10m', to: 'now'}
  * console.log(getLink({from: 'now-20m'}) // /something?from=now-20m&to=now
  */
-export function useUrlState<T extends Binding<any>[]>(
+export function useUrlState<T extends Binding<unknown>[]>(
 	binds: T
 ): [Bindings<T>, (newUrlState: Partial<Bindings<T>>, pathName?: string) => string] {
 	const searchParams = useSearchParams();

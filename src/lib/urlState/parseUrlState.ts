@@ -5,11 +5,11 @@ import type { Bindings } from "~/lib/urlState/typeMapping";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 import { parse } from "./jsurl2";
 
-export function parseUrlState<T extends Binding<any>[]>(
+export function parseUrlState<T extends Binding<unknown>[]>(
 	usp: ReadonlyURLSearchParams | URLSearchParams,
 	bindings: T
 ): Bindings<T> {
-	const result: Record<string, any> = {};
+	const result: Record<string, unknown> = {};
 	for (const binding of bindings) {
 		const searchParamName = binding.prefix + binding.name;
 		const searchParamValue = usp.get(searchParamName);

@@ -8,10 +8,6 @@ import path from "path";
 /** @type {import("next").NextConfig} */
 const config = {
 	reactStrictMode: true,
-	i18n: {
-		locales: ["en"],
-		defaultLocale: "en",
-	},
 	transpilePackages: ["@dash0hq/ui"],
 	webpack(config) {
 		config.module.rules.push({
