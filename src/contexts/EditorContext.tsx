@@ -5,13 +5,10 @@ import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/vs-code-otel-schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
-import { type WorkerGetter } from "monaco-worker-manager";
-import { type YAMLWorker } from "../components/monaco-editor/interface-yaml.worker";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
-export type WorkerAccessor = WorkerGetter<YAMLWorker>;
 
 export const EditorContext = createContext<EditorRefType | null>(null);
 export const MonacoContext = createContext<MonacoRefType | null>(null);
