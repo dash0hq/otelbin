@@ -3,9 +3,7 @@ import type { Bindings } from "~/lib/urlState/typeMapping";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 import { stringify } from "./jsurl2";
 
-// TODO remove unnecessary url state when generating new links
-
-export function serializeUrlState<T extends Binding<any>[]>(
+export function serializeUrlState<T extends Binding<unknown>[]>(
 	bindings: T,
 	pathName: string | null,
 	currentURLSearchParams: URLSearchParams | ReadonlyURLSearchParams | null,
@@ -21,7 +19,7 @@ export function serializeUrlState<T extends Binding<any>[]>(
 			continue;
 		}
 
-		const searchParamValue = (urlState as any)[binding.name];
+		const searchParamValue = (urlState as never)[binding.name];
 		try {
 			usp.set(searchParamName, stringify(searchParamValue));
 		} catch (e) {
