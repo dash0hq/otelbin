@@ -19,3 +19,8 @@ npm install
 npm run dev
 ```
 
+## Using the JSON Schema
+
+This repository uses JSON schema from VS-Code's extension [OTEL Validator](https://github.com/nimbushq/otel-validator) in order to provide validation for the configuration file.  
+
+For getting the latest version of the schema, either clone the repository and copy the schema from `assets/schema.json` or directly copy the file from [here](https://github.com/nimbushq/otel-validator/blob/main/assets/schema.json).  
