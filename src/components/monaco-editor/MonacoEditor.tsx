@@ -16,6 +16,7 @@ import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
+import { AppFooter } from "~/components/AppFooter";
 
 export default function MonacoEditor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
 	const editorDidMount = useEditorDidMount();
@@ -55,7 +56,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 			{isClient ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} /> : <></>}
 			<div className="flex h-full max-h-screen min-h-screen flex-col">
 				<AppHeader activeView={activeView} setView={setActiveView} />
-				<div className="flex h-full w-full grow">
+				<div className="flex h-full w-full shrink grow">
 					{isClient && (
 						<div
 							ref={editorDivRef}
@@ -102,6 +103,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 						</ReactFlowProvider>
 					</div>
 				</div>
+				<AppFooter />
 			</div>
 		</>
 	);

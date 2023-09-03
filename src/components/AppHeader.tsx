@@ -27,7 +27,7 @@ const viewModes = [
 
 export default function AppHeader({ activeView, setView }: { activeView: string; setView: (view: string) => void }) {
 	return (
-		<div className="flex items-center justify-between border-b-1 bg-default px-4 py-3">
+		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
 			<a href="https://www.dash0.com?utm_source=otelbin&utm_medium=logo&utm_campaign=otelbin" target="_blank">
 				<Logo height="26" />
 			</a>
