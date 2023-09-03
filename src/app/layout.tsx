@@ -25,9 +25,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
 			}}
 		>
 			<html lang="en" className="dark">
-				<body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
+				<body className={cn("max-h-screen min-h-screen bg-background font-sans antialiased", inter.className)}>
 					<TooltipProvider>
-						<main className="min-h-screen">{children}</main>
+						<main className="max-h-screen min-h-screen">{children}</main>
 						<Toaster />
 					</TooltipProvider>
 				</body>

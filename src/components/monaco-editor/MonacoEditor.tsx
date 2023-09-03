@@ -53,13 +53,13 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	return (
 		<>
 			{isClient ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} /> : <></>}
-			<div className="flex h-full flex-col">
+			<div className="flex h-full max-h-screen min-h-screen flex-col">
 				<AppHeader activeView={activeView} setView={setActiveView} />
-				<div className="flex">
+				<div className="flex h-full w-full grow">
 					{isClient && (
 						<div
 							ref={editorDivRef}
-							className={`relative flex select-none flex-col border-otelbinDarkBlue2 hover:border-otelbinDarkBlue3
+							className={`relative flex shrink-0 select-none flex-col border-otelbinDarkBlue2 hover:border-otelbinDarkBlue3
               ${activeView === "both" ? "border-r-[8px]" : "border-r-[0px]"}`}
 							style={{
 								width: activeView === "code" ? "100%" : activeView === "pipeline" ? "0px" : `${width}px`,
@@ -71,7 +71,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 								defaultValue={config}
 								value={config}
 								onMount={editorDidMount}
-								height="94.5vh"
+								height="100%"
 								width={"100%"}
 								defaultLanguage="yaml"
 								theme="vs-dark"
@@ -90,7 +90,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 						</div>
 					)}
 
-					<div className="z-0 flex-grow-[3]" style={{ height: "94.5vh" }}>
+					<div className="z-0 min-h-full w-full shrink grow">
 						<ReactFlowProvider>
 							<Flow
 								value={(isClient && isValidConfig && config) || "{}"}
