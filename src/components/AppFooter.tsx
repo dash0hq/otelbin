@@ -7,6 +7,7 @@ export function AppFooter() {
 			<div />
 			<a
 				href="https://www.dash0.com/?utm_source=otelbin&utm_medium=footer&utm_campaign=otelbin"
+				target="_blank"
 				className="flex whitespace-nowrap text-xs font-normal text-default"
 			>
 				Crafted by
