@@ -1,5 +1,5 @@
 import React, { type RefObject, useEffect, useMemo } from "react";
-import ReactFlow, { Background, Panel, useReactFlow, ReactFlowInstance } from "reactflow";
+import ReactFlow, { Background, Panel, useReactFlow, type ReactFlowInstance } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
@@ -15,6 +15,7 @@ import type { editor } from "monaco-editor";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0/components/ui/tooltip";
+import { set } from "yaml/dist/schema/yaml-1.1/set";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -54,8 +55,13 @@ export default function Flow({
 
 	const { setCenter } = useReactFlow();
 	const nodeInfo = reactFlowInstance.getNodes();
-	const onInit = (reactFlowInstance: ReactFlowInstance) => reactFlowInstance.fitView();
 	const { setFocused } = useFocus();
+
+	const onInit = (reactFlowInstance: ReactFlowInstance) => {
+		setTimeout(() => {
+			reactFlowInstance.fitView();
+		}, 100);
+	};
 
 	const edgeOptions = {
 		animated: false,
