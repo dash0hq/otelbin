@@ -2,6 +2,10 @@ import React, { createContext, useRef, useState } from "react";
 import type { RefObject } from "react";
 import type { editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
+import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
+import schema from "../components/monaco-editor/vs-code-otel-schema.json";
+import { fromPosition, toCompletionList } from "monaco-languageserver-types";
+import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
@@ -39,12 +43,38 @@ export const EditorProvider = ({ children }: { children: any }) => {
 	const [focused, setFocused] = useState("");
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
+	const monacoYamlRef = useRef<any | null>(null);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
+		window.MonacoEnvironment = {
+			getWorker(_, label) {
+				switch (label) {
+					case "editorWorkerService":
+						return new Worker(new URL("monaco-editor/esm/vs/editor/editor.worker", import.meta.url));
+					case "yaml":
+						return new Worker(new URL("monaco-yaml/yaml.worker", import.meta.url));
+					default:
+						throw new Error(`Unknown label ${label}`);
+				}
+			},
+		};
+
+		const defaultSchema: SchemasSettings = {
+			uri: "https://github.com/remcohaszing/monaco-yaml/blob/HEAD/examples/demo/src/schema.json",
+			// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
+			schema,
+			fileMatch: ["*"],
+		};
+
 		editorRef.current = editor;
 		monacoRef.current = monaco;
 		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\w+\/\w+|\w+/,
+		});
+
+		monacoYamlRef.current = configureMonacoYaml(monaco, {
+			enableSchemaRequest: true,
+			schemas: [defaultSchema],
 		});
 	}
 
@@ -52,6 +82,38 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		setFocused: setFocused,
 		isFocused: focused,
 	};
+
+	function createCompletionItemProvider(getWorker: any): languages.CompletionItemProvider {
+		return {
+			triggerCharacters: [" ", ":"],
+
+			async provideCompletionItems(model, position) {
+				const resource = model.uri;
+
+				const worker = await getWorker(resource);
+				const info = await worker.doComplete(String(resource), fromPosition(position));
+				if (!info) {
+					return;
+				}
+
+				const wordInfo = model.getWordUntilPosition(position);
+
+				return toCompletionList(info, {
+					range: {
+						startLineNumber: position.lineNumber,
+						startColumn: wordInfo.startColumn,
+						endLineNumber: position.lineNumber,
+						endColumn: wordInfo.endColumn,
+					},
+				});
+			},
+		};
+	}
+
+	monacoRef?.current?.languages.registerCompletionItemProvider(
+		"yaml",
+		createCompletionItemProvider(new Worker(new URL("monaco-yaml/yaml.worker", import.meta.url)))
+	);
 
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>
