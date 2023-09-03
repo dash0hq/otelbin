@@ -52,10 +52,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 	}
 
 	const uuid = crypto.randomUUID();
-	await redis.set(getShortLinkPersistenceKey(uuid), longURL, {
-		// five years
-		ex: 60 * 60 * 24 * 365 * 5,
-	});
+	await redis.set(getShortLinkPersistenceKey(uuid), longURL);
 
 	const shortURL = `${process.env.DEPLOYMENT_ORIGIN}/s/${uuid}`;
 	return NextResponse.json(
