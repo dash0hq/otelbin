@@ -12,7 +12,7 @@ export function parseUrlState<T extends Binding<unknown>[]>(
 	const result: Record<string, unknown> = {};
 	for (const binding of bindings) {
 		const searchParamName = binding.prefix + binding.name;
-		const searchParamValue = usp && usp.get(searchParamName);
+		const searchParamValue = usp.get(searchParamName);
 		let value = binding.fallback;
 		if (searchParamValue != null) {
 			try {
