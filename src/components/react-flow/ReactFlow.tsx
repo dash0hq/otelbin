@@ -1,5 +1,5 @@
 import React, { type RefObject, useEffect, useMemo } from "react";
-import ReactFlow, { Background, Panel, useReactFlow } from "reactflow";
+import ReactFlow, { Background, Panel, useReactFlow, ReactFlowInstance } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
@@ -54,6 +54,7 @@ export default function Flow({
 
 	const { setCenter } = useReactFlow();
 	const nodeInfo = reactFlowInstance.getNodes();
+	const onInit = (reactFlowInstance: ReactFlowInstance) => reactFlowInstance.fitView();
 	const { setFocused } = useFocus();
 
 	const edgeOptions = {
@@ -186,6 +187,7 @@ export default function Flow({
 
 	return (
 		<ReactFlow
+			onInit={onInit}
 			nodes={nodes}
 			edges={initialEdges}
 			defaultEdgeOptions={edgeOptions}
