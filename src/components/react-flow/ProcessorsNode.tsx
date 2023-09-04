@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "./FlowClick";
@@ -90,4 +90,4 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 		</>
 	);
 };
-export default ProcessorsNode;
+export default memo(ProcessorsNode);

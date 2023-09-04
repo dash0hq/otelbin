@@ -1,5 +1,5 @@
 import React, { type RefObject, useEffect, useMemo, useLayoutEffect } from "react";
-import ReactFlow, { Background, Panel, useReactFlow, useNodesState } from "reactflow";
+import ReactFlow, { Background, Panel, useReactFlow, useNodesState, useEdgesState } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
@@ -44,12 +44,15 @@ export default function Flow({
 
 	const initNodes = useNodes(jsonData);
 	const [nodes, setNodes] = useNodesState(initNodes);
+	const initEdges = useEdgeCreator(nodes);
+	const [edges, setEdges] = useEdgesState(initEdges);
 
 	useEffect(() => {
+		setEdges(initEdges);
 		setNodes(initNodes);
-	}, [initNodes]);
+		if (value) reactFlowInstance.fitView();
+	}, [initNodes, initEdges, value]);
 
-	const initialEdges = useEdgeCreator(nodes);
 	const nodeTypes = useMemo(
 		() => ({
 			processorsNode: ProcessorsNode,
@@ -204,7 +207,7 @@ export default function Flow({
 	return (
 		<ReactFlow
 			nodes={nodes}
-			edges={initialEdges}
+			edges={edges}
 			defaultEdgeOptions={edgeOptions}
 			nodeTypes={nodeTypes}
 			fitView

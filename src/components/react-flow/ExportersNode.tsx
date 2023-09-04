@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "./FlowClick";
@@ -19,7 +19,7 @@ const radius = {
 	whiteSpace: "nowrap" as const,
 };
 
-export default function ExportersNode({ data }: { data: IData }) {
+const ExportersNode = ({ data }: { data: IData }) => {
 	const [hovered, setHovered] = useState(false);
 	const editorRef = useEditorRef();
 	const { isFocused } = useFocus();
@@ -78,4 +78,6 @@ export default function ExportersNode({ data }: { data: IData }) {
 			)}
 		</div>
 	);
-}
+};
+
+export default memo(ExportersNode);

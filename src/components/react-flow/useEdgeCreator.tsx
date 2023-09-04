@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { MarkerType, type Edge, type Node } from "reactflow";
 
 function useEdgeCreator(nodeIdsArray: Node[]) {
@@ -163,7 +163,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 		const parentNodes = nodeIdsArray.filter((node) => node.type === "parentNodeType").map((node) => node.data.label);
 		// think about here < 2?
 		if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2) {
-			return;
+			return [];
 		}
 
 		parentNodes.forEach((parentNode, index) => {

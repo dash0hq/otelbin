@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "./FlowClick";
@@ -77,4 +77,4 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 		</div>
 	);
 };
-export default ReceiversNode;
+export default memo(ReceiversNode);
