@@ -4,7 +4,7 @@ import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
 import useEdgeCreator from "./useEdgeCreator";
-import { useFocus } from "~/contexts/EditorContext";
+import { useFocus, useViewMode } from "~/contexts/EditorContext";
 import { Maximize, Minus, Plus, HelpCircle, Lock } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
@@ -56,12 +56,23 @@ export default function Flow({
 	const { setCenter } = useReactFlow();
 	const nodeInfo = reactFlowInstance.getNodes();
 	const { setFocused } = useFocus();
+	const { viewMode } = useViewMode();
 
-	const onInit = (reactFlowInstance: ReactFlowInstance) => {
+	function FlowFitView() {
 		setTimeout(() => {
 			reactFlowInstance.fitView();
 		}, 100);
+	}
+
+	const onInit = () => {
+		FlowFitView();
 	};
+
+	useEffect(() => {
+		if (viewMode !== "code") {
+			FlowFitView();
+		}
+	}, [viewMode]);
 
 	const edgeOptions = {
 		animated: false,

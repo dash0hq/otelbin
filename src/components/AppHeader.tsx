@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0/components/ui/to
 import { Share } from "~/components/share/Share";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@dash0/components/ui/button";
+import { useViewMode } from "~/contexts/EditorContext";
 
 const viewModes = [
 	{
@@ -25,7 +26,8 @@ const viewModes = [
 	},
 ];
 
-export default function AppHeader({ activeView, setView }: { activeView: string; setView: (view: string) => void }) {
+export default function AppHeader({ activeView }: { activeView: string }) {
+	const { setViewMode } = useViewMode();
 	return (
 		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
 			<a href="https://www.dash0.com?utm_source=otelbin&utm_medium=logo&utm_campaign=otelbin" target="_blank">
@@ -37,7 +39,7 @@ export default function AppHeader({ activeView, setView }: { activeView: string;
 						<Tooltip key={type}>
 							<TooltipTrigger asChild>
 								<ButtonGroupItem
-									onClick={() => setView(type)}
+									onClick={() => setViewMode(type)}
 									className={`${activeView === type ? "!rounded-[6px] bg-primary" : ""}`}
 								>
 									<Icon className={activeView === type ? "!text-button-icon-active" : ""} />

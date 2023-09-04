@@ -5,7 +5,7 @@ import React from "react";
 import type { IError } from "./ErrorConsole";
 import ErrorConsole from "./ErrorConsole";
 import EditorTopBar from "../EditorTopBar";
-import { useEditorRef, useEditorDidMount, useMonacoRef } from "~/contexts/EditorContext";
+import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
 import Editor from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
@@ -27,7 +27,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	const width = useMouseDelta(Number(savedWidth) || 440, editorDivRef);
 	const [isClient, setIsClient] = useState<boolean>(false);
 	const router = useRouter();
-	const [activeView, setActiveView] = useState("both");
+	const { viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 	const [{ config }, getLink] = useUrlState([editorBinding]);
@@ -55,16 +55,16 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 		<>
 			{isClient ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} /> : <></>}
 			<div className="flex h-full max-h-screen min-h-screen flex-col">
-				<AppHeader activeView={activeView} setView={setActiveView} />
+				<AppHeader activeView={viewMode} />
 				<div className="flex h-full w-full shrink grow">
 					{isClient && (
 						<div
 							ref={editorDivRef}
 							className={`relative flex shrink-0 select-none flex-col border-otelbinDarkBlue2 hover:border-otelbinDarkBlue3
-              ${activeView === "both" ? "border-r-[8px]" : "border-r-[0px]"}`}
+              ${viewMode === "both" ? "border-r-[8px]" : "border-r-[0px]"}`}
 							style={{
-								width: activeView === "code" ? "100%" : activeView === "pipeline" ? "0px" : `${width}px`,
-								cursor: activeView === "both" ? "col-resize" : "default",
+								width: viewMode === "code" ? "100%" : viewMode === "pipeline" ? "0px" : `${width}px`,
+								cursor: viewMode === "both" ? "col-resize" : "default",
 							}}
 						>
 							<EditorTopBar config={config} />

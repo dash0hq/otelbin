@@ -13,6 +13,7 @@ type MonacoRefType = RefObject<Monaco | null>;
 export const EditorContext = createContext<EditorRefType | null>(null);
 export const MonacoContext = createContext<MonacoRefType | null>(null);
 export const EditorDidMount = createContext<OnMount | undefined>(undefined);
+
 export const FocusContext = createContext<{
 	setFocused: (focus: string) => void;
 	isFocused: string;
@@ -21,6 +22,16 @@ export const FocusContext = createContext<{
 		return;
 	},
 	isFocused: "",
+});
+
+export const ViewModeContext = createContext<{
+	viewMode: string;
+	setViewMode: (viewMode: string) => void;
+}>({
+	viewMode: "both",
+	setViewMode: () => {
+		return;
+	},
 });
 
 export function useEditorRef() {
@@ -39,11 +50,16 @@ export function useFocus() {
 	return React.useContext(FocusContext);
 }
 
+export function useViewMode() {
+	return React.useContext(ViewModeContext);
+}
+
 export const EditorProvider = ({ children }: { children: any }) => {
-	const [focused, setFocused] = useState("");
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
 	const monacoYamlRef = useRef<any | null>(null);
+	const [focused, setFocused] = useState("");
+	const [viewMode, setViewMode] = useState("both");
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		window.MonacoEnvironment = {
@@ -83,6 +99,11 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		isFocused: focused,
 	};
 
+	const viewModeContext = {
+		setViewMode: setViewMode,
+		viewMode: viewMode,
+	};
+
 	function createCompletionItemProvider(getWorker: any): languages.CompletionItemProvider {
 		return {
 			triggerCharacters: [" ", ":"],
@@ -119,7 +140,9 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		<EditorDidMount.Provider value={editorDidMount}>
 			<EditorContext.Provider value={editorRef}>
 				<MonacoContext.Provider value={monacoRef}>
-					<FocusContext.Provider value={focusContext}>{children}</FocusContext.Provider>
+					<FocusContext.Provider value={focusContext}>
+						<ViewModeContext.Provider value={viewModeContext}>{children}</ViewModeContext.Provider>
+					</FocusContext.Provider>
 				</MonacoContext.Provider>
 			</EditorContext.Provider>
 		</EditorDidMount.Provider>
