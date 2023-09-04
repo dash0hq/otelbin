@@ -1,5 +1,5 @@
-import React, { type RefObject, useEffect, useMemo } from "react";
-import ReactFlow, { Background, Panel, useReactFlow, type ReactFlowInstance } from "reactflow";
+import React, { type RefObject, useEffect, useMemo, useLayoutEffect } from "react";
+import ReactFlow, { Background, Panel, useReactFlow, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
@@ -41,7 +41,14 @@ export default function Flow({
 		const docService = docItems.find((item: any) => item.key.source === "service");
 		return docService?.value.items.find((item: any) => item.key.source === "pipelines");
 	}, [value]);
-	const nodes = useNodes(jsonData);
+
+	const initNodes = useNodes(jsonData);
+	const [nodes, setNodes] = useNodesState(initNodes);
+
+	useEffect(() => {
+		setNodes(initNodes);
+	}, [initNodes]);
+
 	const initialEdges = useEdgeCreator(nodes);
 	const nodeTypes = useMemo(
 		() => ({
@@ -58,19 +65,11 @@ export default function Flow({
 	const { setFocused } = useFocus();
 	const { viewMode } = useViewMode();
 
-	function FlowFitView() {
-		setTimeout(() => {
-			reactFlowInstance.fitView();
-		}, 100);
-	}
-
-	const onInit = () => {
-		FlowFitView();
-	};
-
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (viewMode !== "code") {
-			FlowFitView();
+			setTimeout(() => {
+				reactFlowInstance.fitView();
+			});
 		}
 	}, [viewMode]);
 
@@ -204,7 +203,6 @@ export default function Flow({
 
 	return (
 		<ReactFlow
-			onInit={onInit}
 			nodes={nodes}
 			edges={initialEdges}
 			defaultEdgeOptions={edgeOptions}
