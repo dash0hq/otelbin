@@ -10,24 +10,18 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 		const offset = 50;
 		const offsetX = 75;
 		const value = parentHeight / 2;
-		if (index === 0) {
-			return value + offset * index + 60;
-		}
-		if (index % 2 !== 0) {
-			return value - offset * index;
-		} else {
-			return value + offsetX * index;
-		}
+
+		return index === 0
+			? value + offset * index + 60
+			: index % 2 !== 0
+			? value - offset * index
+			: value + offsetX * index;
 	};
 
-	const calculateReceiverYposition = (receivers: string[], index: number, parentHeight: number) => {
+	const calculateReceiverYposition = (receivers: string[], index: number, parentHeight: number): number | undefined => {
 		if (receivers.length === 0) return;
-		if (receivers.length === 1) {
-			return parentHeight / 2;
-		} else {
-			const x = calculateValue(parentHeight, index);
-			if (x) return x;
-		}
+
+		return receivers.length === 1 ? parentHeight / 2 : calculateValue(parentHeight, index);
 	};
 
 	const processorPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
@@ -36,8 +30,8 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 	};
 
 	const receiverPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
-		const positionY = calculateReceiverYposition(receivers, index, parentHeight)!;
-		return { x: 50, y: positionY };
+		const positionY = calculateReceiverYposition(receivers, index, parentHeight);
+		return { x: 50, y: positionY !== undefined ? positionY : parentHeight / 2 };
 	};
 
 	const exporterPosition = (
@@ -46,9 +40,9 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 		exporters: string[],
 		processors: string[]
 	): XYPosition => {
-		const positionY = calculateReceiverYposition(exporters, index, parentHeight)!;
-		const processorLength = processors?.length ? processors?.length * 200 + 260 : 250;
-		return { x: processorLength, y: positionY };
+		const positionY = calculateReceiverYposition(exporters, index, parentHeight);
+		const processorLength = (processors?.length ?? 0) * 200 + 260;
+		return { x: processorLength, y: positionY !== undefined ? positionY : parentHeight / 2 };
 	};
 
 	keyTraces.map((traceItem) => {
