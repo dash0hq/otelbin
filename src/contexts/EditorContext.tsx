@@ -1,6 +1,6 @@
 import React, { createContext, useRef, useState } from "react";
 import type { RefObject } from "react";
-import type { editor } from "monaco-editor";
+import { editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/vs-code-otel-schema.json";
@@ -76,7 +76,7 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		};
 
 		const defaultSchema: SchemasSettings = {
-			uri: "https://github.com/remcohaszing/monaco-yaml/blob/HEAD/examples/demo/src/schema.json",
+			uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/vs-code-otel-schema.json",
 			// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
 			schema,
 			fileMatch: ["*"],
