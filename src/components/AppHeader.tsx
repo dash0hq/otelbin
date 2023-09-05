@@ -7,6 +7,8 @@ import { Share } from "~/components/share/Share";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@dash0/components/ui/button";
 import { useViewMode } from "~/contexts/EditorContext";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { editorBinding } from "~/components/monaco-editor/editorBinding";
 
 const viewModes = [
 	{
@@ -28,6 +30,10 @@ const viewModes = [
 
 export default function AppHeader({ activeView }: { activeView: string }) {
 	const { setViewMode } = useViewMode();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const [_, getLink] = useUrlState([editorBinding]);
+	const fullURL = window.location.origin + getLink({});
+
 	return (
 		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
 			<a href="https://www.dash0.com?utm_source=otelbin&utm_medium=logo&utm_campaign=otelbin" target="_blank">
@@ -63,7 +69,7 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 					/>
 				</SignedIn>
 				<SignedOut>
-					<SignInButton mode="modal">
+					<SignInButton mode="modal" afterSignInUrl={fullURL}>
 						<Button size="xs">
 							<LogIn />
 						</Button>
