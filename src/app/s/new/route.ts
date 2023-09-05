@@ -3,8 +3,9 @@ import * as crypto from "crypto";
 import { Ratelimit } from "@upstash/ratelimit";
 import { type NextRequest, NextResponse } from "next/server";
 import * as process from "process";
+import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 
-export const redis = Redis.fromEnv();
+const redis = Redis.fromEnv();
 
 const rateLimit = new Ratelimit({
 	redis,
@@ -65,8 +66,4 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			},
 		}
 	);
-}
-
-export function getShortLinkPersistenceKey(uuid: string): string {
-	return `sl_${uuid}`;
 }

@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { getShortLinkPersistenceKey, redis } from "~/app/s/new/route";
+import { getShortLinkPersistenceKey } from "~/lib/shortLink";
+import { Redis } from "@upstash/redis";
+
+const redis = Redis.fromEnv();
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
 	const shortLink = await redis.get<string>(getShortLinkPersistenceKey(params.id));
