@@ -6,7 +6,7 @@ import type { IError } from "./ErrorConsole";
 import ErrorConsole from "./ErrorConsole";
 import EditorTopBar from "../EditorTopBar";
 import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
-import Editor from "@monaco-editor/react";
+import Editor, { OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
 import { useMouseDelta } from "~/components/monaco-editor/MouseDelta";
@@ -31,6 +31,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 	const [{ config }, getLink] = useUrlState([editorBinding]);
+	const [currentConfig, setCurrentConfig] = useState<string>(config);
 
 	const onChangeConfig = useCallback(
 		(newConfig: string) => {
@@ -50,6 +51,16 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	}, [config, editorRef, monacoRef, isClient]);
 
 	const isValidConfig = errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0;
+
+	const handleEditorChange: OnChange = (value) => {
+		setCurrentConfig(value || "");
+	};
+
+	useEffect(() => {
+		if (currentConfig !== config) {
+			onChangeConfig(currentConfig);
+		}
+	}, [currentConfig]);
 
 	return (
 		<>
@@ -83,9 +94,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 									scrollbar: { verticalScrollbarSize: 5 },
 									padding: { top: 10 },
 								}}
-								onChange={(value) => {
-									onChangeConfig(value || "");
-								}}
+								onChange={handleEditorChange}
 							/>
 							<ErrorConsole errors={errors} />
 						</div>
