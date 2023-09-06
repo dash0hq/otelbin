@@ -18,7 +18,7 @@ const config = {
 	parserOptions: {
 		// project: path.join(__dirname, "tsconfig.json"),
 	},
-	plugins: ["@typescript-eslint"],
+	plugins: ["@typescript-eslint", "header"],
 	extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
 	rules: {
 		"@typescript-eslint/consistent-type-imports": [
@@ -29,6 +29,18 @@ const config = {
 			},
 		],
 		"@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+		"header/header": [
+			2,
+			"line",
+			[
+				{
+					pattern: " SPDX-FileCopyrightText: \\d{4} Dash0 Inc\\.",
+					template: ` SPDX-FileCopyrightText: ${new Date().getFullYear()} Dash0 Inc.`,
+				},
+				" SPDX-License-Identifier: Apache-2.0",
+			],
+			2,
+		],
 	},
 };
 

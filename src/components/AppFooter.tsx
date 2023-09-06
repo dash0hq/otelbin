@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import Dash0 from "~/components/assets/svg/dash0.svg";
 
 export function AppFooter() {

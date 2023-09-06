@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import { Input } from "@dash0/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0/components/ui/tooltip";
 import { IconButton } from "@dash0/components/ui/icon-button";

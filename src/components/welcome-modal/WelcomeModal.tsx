@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import { useState } from "react";
 import Logo from "../assets/svg/otelbin-logo-full.svg";
 import Image from "next/image";

@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import React, { createContext, useRef, useState } from "react";
 import type { RefObject } from "react";
-import { editor } from "monaco-editor";
+import { type editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 const calculateColor = (index: number): string => {
 	switch (index) {
 		case 0:
