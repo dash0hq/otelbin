@@ -57,6 +57,10 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	};
 
 	useEffect(() => {
+		// This useEffect is used to detect changes in the "currentConfig" state
+		// and trigger the "onChangeConfig" function when it differs from the "config"
+		// to prevent the conflict with monaco editor's "onChange" event that makes sudden
+		// movements of the cursor
 		if (currentConfig !== config) {
 			onChangeConfig(currentConfig);
 		}
