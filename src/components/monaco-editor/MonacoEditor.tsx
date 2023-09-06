@@ -17,6 +17,7 @@ import WelcomeModal from "../welcome-modal/WelcomeModal";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { AppFooter } from "~/components/AppFooter";
+import { useAuth } from "@clerk/nextjs";
 
 export default function MonacoEditor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
 	const editorDidMount = useEditorDidMount();
@@ -40,7 +41,11 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 		[getLink, router]
 	);
 
-	useEffect(() => setIsClient(true), []);
+	// Only load the Monaco editor once Clerk has finished loading. Otherwise,
+	// Clerk may fail to load.
+	// https://github.com/clerkinc/javascript/issues/1643
+	const authResult = useAuth();
+	useEffect(() => setIsClient(authResult.isLoaded), [authResult.isLoaded]);
 
 	const errors = useMemo((): IError => {
 		if (isClient) {
