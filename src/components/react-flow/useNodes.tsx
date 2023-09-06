@@ -9,22 +9,21 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 	const nodesToAdd: Node[] = [];
 	const keyTraces = Object.keys(parentNode);
 
-	const calculateValue = (parentHeight: number, index: number): number => {
+	const calculateValue = (parentHeight: number, index: number, receiverLength: number): number => {
 		const offset = 50;
-		const offsetX = 75;
-		const value = parentHeight / 2;
-
-		return index === 0
-			? value + offset * index + 60
-			: index % 2 !== 0
-			? value - offset * index
-			: value + offsetX * index;
+		const value = parentHeight / receiverLength + 20;
+		return index * value + offset;
 	};
 
-	const calculateReceiverYposition = (receivers: string[], index: number, parentHeight: number): number | undefined => {
-		if (receivers.length === 0) return;
-
-		return receivers.length === 1 ? parentHeight / 2 : calculateValue(parentHeight, index);
+	const calcYPosition = (nodes: string[], index: number, parentHeight: number): number | undefined => {
+		switch (nodes.length) {
+			case 0:
+				return;
+			case 1:
+				return parentHeight / 2;
+			default:
+				return calculateValue(parentHeight, index, nodes.length);
+		}
 	};
 
 	const processorPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
@@ -33,7 +32,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 	};
 
 	const receiverPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
-		const positionY = calculateReceiverYposition(receivers, index, parentHeight);
+		const positionY = calcYPosition(receivers, index, parentHeight);
 		return { x: 50, y: positionY !== undefined ? positionY : parentHeight / 2 };
 	};
 
@@ -43,7 +42,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 		exporters: string[],
 		processors: string[]
 	): XYPosition => {
-		const positionY = calculateReceiverYposition(exporters, index, parentHeight);
+		const positionY = calcYPosition(exporters, index, parentHeight);
 		const processorLength = (processors?.length ?? 0) * 200 + 260;
 		return { x: processorLength, y: positionY !== undefined ? positionY : parentHeight / 2 };
 	};
@@ -55,6 +54,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 				processors.length > 0 &&
 				processors.map((processor, index) => {
 					const id = `${pipelineName}-Processor-processorNode-${processor}`;
+
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
@@ -78,6 +78,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 				receivers.length > 0 &&
 				receivers.map((receiver, index) => {
 					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
+
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
@@ -137,7 +138,7 @@ export const useNodes = (value: IConfig) => {
 
 			const maxNumberOfVerticalElements = Math.max(receivers, exporters) || 1;
 			const height = maxNumberOfVerticalElements * 100;
-			const extraSpacing = 200;
+			const extraSpacing = Math.max(receivers, exporters) + 200;
 
 			nodesToAdd.push({
 				id: pipelineName,
