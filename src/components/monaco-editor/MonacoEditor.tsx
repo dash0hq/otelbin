@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -6,7 +9,7 @@ import type { IError } from "./ErrorConsole";
 import ErrorConsole from "./ErrorConsole";
 import EditorTopBar from "../EditorTopBar";
 import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
-import Editor from "@monaco-editor/react";
+import Editor, { type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
 import { useMouseDelta } from "~/components/monaco-editor/MouseDelta";
@@ -17,6 +20,7 @@ import WelcomeModal from "../welcome-modal/WelcomeModal";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { AppFooter } from "~/components/AppFooter";
+import { useAuth } from "@clerk/nextjs";
 
 export default function MonacoEditor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
 	const editorDidMount = useEditorDidMount();
@@ -31,6 +35,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 	const [{ config }, getLink] = useUrlState([editorBinding]);
+	const [currentConfig, setCurrentConfig] = useState<string>(config);
 
 	const onChangeConfig = useCallback(
 		(newConfig: string) => {
@@ -39,7 +44,11 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 		[getLink, router]
 	);
 
-	useEffect(() => setIsClient(true), []);
+	// Only load the Monaco editor once Clerk has finished loading. Otherwise,
+	// Clerk may fail to load.
+	// https://github.com/clerkinc/javascript/issues/1643
+	const authResult = useAuth();
+	useEffect(() => setIsClient(authResult.isLoaded), [authResult.isLoaded]);
 
 	const errors = useMemo((): IError => {
 		if (isClient) {
@@ -50,6 +59,20 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	}, [config, editorRef, monacoRef, isClient]);
 
 	const isValidConfig = errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0;
+
+	const handleEditorChange: OnChange = (value) => {
+		setCurrentConfig(value || "");
+	};
+
+	useEffect(() => {
+		// This useEffect is used to detect changes in the "currentConfig" state
+		// and trigger the "onChangeConfig" function when it differs from the "config"
+		// to prevent the conflict with monaco editor's "onChange" event that makes sudden
+		// movements of the cursor
+		if (currentConfig !== config) {
+			onChangeConfig(currentConfig);
+		}
+	}, [currentConfig]);
 
 	return (
 		<>
@@ -83,9 +106,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 									scrollbar: { verticalScrollbarSize: 5 },
 									padding: { top: 10 },
 								}}
-								onChange={(value) => {
-									onChangeConfig(value || "");
-								}}
+								onChange={handleEditorChange}
 							/>
 							<ErrorConsole errors={errors} />
 						</div>

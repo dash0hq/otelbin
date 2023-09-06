@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import React, { type RefObject, useEffect, useMemo, useLayoutEffect } from "react";
 import ReactFlow, { Background, Panel, useReactFlow, useNodesState, useEdgesState } from "reactflow";
 import "reactflow/dist/style.css";

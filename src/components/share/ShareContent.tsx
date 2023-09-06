@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
 import { ArrowDownToLine, LogIn } from "lucide-react";

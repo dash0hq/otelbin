@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import Logo from "./assets/svg/otelbin-logo-full.svg";
 import { ButtonGroup, ButtonGroupItem } from "@dash0/components/ui/button-group";
 import { Columns, Code2, LogIn } from "lucide-react";
@@ -32,7 +35,6 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 	const { setViewMode } = useViewMode();
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, getLink] = useUrlState([editorBinding]);
-	const fullURL = window.location.origin + getLink({});
 
 	return (
 		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
@@ -69,7 +71,7 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 					/>
 				</SignedIn>
 				<SignedOut>
-					<SignInButton mode="modal" afterSignInUrl={fullURL}>
+					<SignInButton mode="modal" afterSignInUrl={getLink({})}>
 						<Button size="xs">
 							<LogIn />
 						</Button>

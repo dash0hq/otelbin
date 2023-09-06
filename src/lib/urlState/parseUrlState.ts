@@ -1,4 +1,5 @@
-// SPDX-FileCopyrightText: Copyright 2023 Dash0 Inc.
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
 
 import type { Binding } from "~/lib/urlState/binding";
 import type { Bindings } from "~/lib/urlState/typeMapping";

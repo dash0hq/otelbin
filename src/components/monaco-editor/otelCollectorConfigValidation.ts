@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import { schema } from "./JSONSchema";
 import type { IAjvError, IError, IJsYamlError } from "./ErrorConsole";
 import JsYaml from "js-yaml";

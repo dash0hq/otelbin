@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Dash0 Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 import useSWR from "swr";
 import { UrlCopy } from "~/components/share/UrlCopy";
 
