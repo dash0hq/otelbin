@@ -6,7 +6,7 @@ import type { IError } from "./ErrorConsole";
 import ErrorConsole from "./ErrorConsole";
 import EditorTopBar from "../EditorTopBar";
 import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
-import Editor, { OnChange } from "@monaco-editor/react";
+import Editor, { type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
 import { useMouseDelta } from "~/components/monaco-editor/MouseDelta";
