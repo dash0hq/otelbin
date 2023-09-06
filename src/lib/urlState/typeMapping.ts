@@ -11,7 +11,7 @@ type ToObjectsArray<T> = {
 	[I in keyof T]: ToObject<T[I]>;
 };
 
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
 export type Bindings<ArrayBindings> = UnionToIntersection<
 	// @ts-expect-error This actually works, but somehow the TypeScript compiler doesn't think so.
