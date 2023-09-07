@@ -1,4 +1,5 @@
 name: "CLA Assistant"
+
 on:
   issue_comment:
     types:
@@ -8,6 +9,12 @@ on:
      - opened
      - closed
      - synchronize
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+  statuses: write
 
 jobs:
   call-workflow:
