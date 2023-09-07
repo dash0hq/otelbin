@@ -34,25 +34,16 @@ export default function EditorTopBar({ config }: { config: string }) {
 	}
 
 	return (
-		<div className="absolute right-2 top-2 z-10 flex items-center justify-end shadow-none">
-			<IconButton
-				onClick={handleCopy}
-				className="min-w-[97px] bg-[#1E1E1E] shadow-none"
-				variant={"default"}
-				size={"sm"}
-			>
-				<Copy className="mr-2" />
-				Copy
-			</IconButton>
-			<IconButton
-				onClick={handleDownload}
-				className="min-w-[97px] bg-[#1E1E1E] shadow-none"
-				variant={"default"}
-				size={"sm"}
-			>
-				<ArrowDownToLine className="mr-2" />
-				Download
-			</IconButton>
+		<div className="flex shrink-0 items-center justify-between bg-default p-1 shadow-none">
+			<div>TODO path</div>
+			<div>
+				<IconButton onClick={handleCopy} variant={"transparent"} size={"xs"}>
+					<Copy />
+				</IconButton>
+				<IconButton onClick={handleDownload} variant={"transparent"} size={"xs"}>
+					<ArrowDownToLine />
+				</IconButton>
+			</div>
 		</div>
 	);
 }

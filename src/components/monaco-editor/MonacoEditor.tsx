@@ -21,6 +21,7 @@ import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/mo
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { AppFooter } from "~/components/AppFooter";
 import { useAuth } from "@clerk/nextjs";
+import { AutoSizer } from "~/components/AutoSizer";
 
 export default function MonacoEditor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
 	const editorDidMount = useEditorDidMount();
@@ -98,36 +99,48 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 							}}
 						>
 							<EditorTopBar config={config} />
-							<Editor
-								defaultValue={config}
-								value={config}
-								onMount={editorDidMount}
-								height="100%"
-								width={"100%"}
-								defaultLanguage="yaml"
-								theme="vs-dark"
-								options={{
-									quickSuggestions: { other: true, strings: true },
-									automaticLayout: true,
-									minimap: { enabled: false },
-									scrollbar: { verticalScrollbarSize: 5 },
-									padding: { top: 10 },
-								}}
-								onChange={handleEditorChange}
-							/>
+							<div className="h-full w-full shrink grow">
+								<AutoSizer>
+									{({ width, height }) => (
+										<Editor
+											defaultValue={config}
+											value={config}
+											onMount={editorDidMount}
+											width={width}
+											height={height}
+											defaultLanguage="yaml"
+											theme="vs-dark"
+											options={{
+												quickSuggestions: { other: true, strings: true },
+												automaticLayout: true,
+												minimap: { enabled: false },
+												scrollbar: { verticalScrollbarSize: 5 },
+												padding: { top: 5 },
+											}}
+											onChange={handleEditorChange}
+										/>
+									)}
+								</AutoSizer>
+							</div>
 							<ErrorConsole errors={errors} />
 						</div>
 					)}
 
 					<div className="z-0 min-h-full w-full shrink grow">
 						<ReactFlowProvider>
-							<Flow
-								value={(isClient && isValidConfig && config) || "{}"}
-								openDialog={setOpenDialog}
-								locked={locked}
-								setLocked={setLocked}
-								editorRef={editorRef}
-							/>
+							<AutoSizer>
+								{({ width, height }) => (
+									<div style={{ width: `${width}px`, height: `${height}px` }}>
+										<Flow
+											value={(isClient && isValidConfig && config) || "{}"}
+											openDialog={setOpenDialog}
+											locked={locked}
+											setLocked={setLocked}
+											editorRef={editorRef}
+										/>
+									</div>
+								)}
+							</AutoSizer>
 						</ReactFlowProvider>
 					</div>
 				</div>

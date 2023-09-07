@@ -27,7 +27,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				baseTheme: dark,
 			}}
 		>
-			<html lang="en" className="dark">
+			<html lang="en" className="dark overflow-hidden">
 				<body className={cn("max-h-screen min-h-screen bg-background font-sans antialiased", inter.className)}>
 					<TooltipProvider>
 						<main className="max-h-screen min-h-screen">{children}</main>
