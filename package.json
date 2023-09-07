@@ -18,7 +18,7 @@
 		"@clerk/nextjs": "^4.23.5",
 		"@clerk/themes": "^1.7.5",
 		"@dash0hq/ui": "^0.0.92",
-		"@monaco-editor/react": "^4.5.1",
+		"@monaco-editor/react": "^4.5.2",
 		"@radix-ui/react-slot": "^1.0.2",
 		"@reactflow/controls": "^11.1.15",
 		"@reactflow/node-resizer": "^2.1.3",
