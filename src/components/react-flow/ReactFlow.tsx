@@ -222,7 +222,9 @@ export default function Flow({
 			<Panel
 				position="top-left"
 				className="from-default-background !pointer-events-none !z-[4] !m-0 h-14 w-full bg-gradient-to-b"
-			></Panel>
+			>
+				<div />
+			</Panel>
 			<Panel position="bottom-left" className="flex gap-x-3">
 				<ButtonGroup size={"xs"}>
 					<Tooltip>
