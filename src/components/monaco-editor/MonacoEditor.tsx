@@ -22,6 +22,13 @@ import { AppFooter } from "~/components/AppFooter";
 import { useAuth } from "@clerk/nextjs";
 import { AutoSizer } from "~/components/AutoSizer";
 import { ResizeBar } from "~/components/monaco-editor/ResizeBar";
+import { Fira_Code } from "next/font/google";
+
+const firaCode = Fira_Code({
+	display: "swap",
+	adjustFontFallback: false,
+	subsets: ["latin"],
+});
 
 export default function MonacoEditor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
 	const editorDidMount = useEditorDidMount();
@@ -87,7 +94,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 						}}
 					>
 						<EditorTopBar config={config} />
-						<div className="h-full w-full shrink grow">
+						<div className={`h-full w-full shrink grow ${firaCode.className}`}>
 							<AutoSizer>
 								{({ width, height }) => (
 									<Editor
@@ -106,13 +113,14 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 											padding: { top: 5 },
 											fontSize: 13,
 											fontWeight: "400",
+											fontFamily: firaCode.style.fontFamily,
 										}}
 										onChange={handleEditorChange}
 									/>
 								)}
 							</AutoSizer>
 						</div>
-						<ErrorConsole errors={errors} />
+						<ErrorConsole errors={errors} font={firaCode} />
 						{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 					</div>
 
