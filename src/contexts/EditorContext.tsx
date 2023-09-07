@@ -4,7 +4,7 @@
 import React, { createContext, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { type editor } from "monaco-editor";
-import { type Monaco, type OnMount } from "@monaco-editor/react";
+import { loader, type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
@@ -138,6 +138,33 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		"yaml",
 		createCompletionItemProvider(new Worker(new URL("monaco-yaml/yaml.worker", import.meta.url)))
 	);
+
+	if (typeof window !== "undefined") {
+		loader.init().then((monaco) => {
+			monaco.editor.defineTheme("OTelBin", {
+				base: "vs-dark",
+				inherit: true,
+				rules: [
+					{ token: "", fontStyle: "" },
+					{ token: "comment", foreground: "#6D737D" },
+					{ token: "string.yaml", foreground: "#38BDF8" },
+					{ token: "number.yaml", foreground: "#38BDF8" },
+					{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
+				],
+				colors: {
+					"editor.background": "#151721",
+					"editorLineNumber.foreground": "#6D737D",
+					"editorLineNumber.activeForeground": "#F9FAFB",
+					"editorCursor.foreground": "#F9FAFB",
+					"editor.selectionBackground": "#30353D",
+					"editor.selectionHighlightBackground": "#30353D",
+					"editor.hoverHighlightBackground": "#30353D",
+					"editor.lineHighlightBackground": "#30353D",
+					"editor.lineHighlightBorder": "#30353D",
+				},
+			});
+		});
+	}
 
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>

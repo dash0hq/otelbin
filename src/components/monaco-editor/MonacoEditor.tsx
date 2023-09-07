@@ -97,13 +97,15 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 										width={width}
 										height={height}
 										defaultLanguage="yaml"
-										theme="vs-dark"
+										theme="OTelBin"
 										options={{
 											quickSuggestions: { other: true, strings: true },
 											automaticLayout: true,
 											minimap: { enabled: false },
 											scrollbar: { verticalScrollbarSize: 5 },
 											padding: { top: 5 },
+											fontSize: 13,
+											fontWeight: "400",
 										}}
 										onChange={handleEditorChange}
 									/>
