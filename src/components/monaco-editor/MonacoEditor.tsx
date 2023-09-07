@@ -102,7 +102,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 											quickSuggestions: { other: true, strings: true },
 											automaticLayout: true,
 											minimap: { enabled: false },
-											scrollbar: { verticalScrollbarSize: 5 },
+											scrollbar: { verticalScrollbarSize: 8 },
 											padding: { top: 5 },
 											fontSize: 13,
 											fontWeight: "400",
