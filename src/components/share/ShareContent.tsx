@@ -23,7 +23,7 @@ export function ShareContent() {
 			<SignedOut>
 				<UrlCopy url={fullURL} />
 
-				<SignInButton mode="modal" afterSignInUrl={fullURL}>
+				<SignInButton mode="modal" afterSignInUrl="/restore">
 					<Button size="xs" variant="cta" className="mx-4 mt-3">
 						<LogIn className="mr-1" />
 						Sign in to create short URL

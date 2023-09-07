@@ -65,6 +65,13 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	};
 
 	useEffect(() => {
+		// This is done to support config restoration when signing in. See the
+		// /restore page. Without this we ran into return URL problems with GitHub
+		// and Google as our return URL can be **very** long.
+		localStorage.setItem("config-restore", config);
+	}, [config]);
+
+	useEffect(() => {
 		// This useEffect is used to detect changes in the "currentConfig" state
 		// and trigger the "onChangeConfig" function when it differs from the "config"
 		// to prevent the conflict with monaco editor's "onChange" event that makes sudden
@@ -72,7 +79,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 		if (currentConfig !== config) {
 			onChangeConfig(currentConfig);
 		}
-	}, [currentConfig]);
+	}, [onChangeConfig, currentConfig, config]);
 
 	return (
 		<>

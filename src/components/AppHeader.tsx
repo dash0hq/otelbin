@@ -33,8 +33,6 @@ const viewModes = [
 
 export default function AppHeader({ activeView }: { activeView: string }) {
 	const { setViewMode } = useViewMode();
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [_, getLink] = useUrlState([editorBinding]);
 
 	return (
 		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
@@ -62,7 +60,7 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 
 				<SignedIn>
 					<UserButton
-						afterSignOutUrl="/"
+						afterSignOutUrl="/restore"
 						appearance={{
 							elements: {
 								avatarBox: "w-6 h-6",
@@ -71,7 +69,7 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 					/>
 				</SignedIn>
 				<SignedOut>
-					<SignInButton mode="modal" afterSignInUrl={getLink({})}>
+					<SignInButton mode="modal" afterSignInUrl="/restore">
 						<Button size="xs">
 							<LogIn />
 						</Button>
