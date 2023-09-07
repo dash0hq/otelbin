@@ -22,7 +22,6 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 
 	const processorPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
 		const receiverLength = receivers.length ? 250 : 0;
-		console.log(parentHeight);
 		return { x: receiverLength + index * 200, y: parentHeight / 2 + parentHeight / 10 };
 	};
 
