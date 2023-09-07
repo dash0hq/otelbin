@@ -25,7 +25,7 @@ module.exports.theme.extend.colors.otelbinGrey = "#6D737D";
 module.exports.theme.extend.colors.otelbinLightGrey = "#8491A6";
 module.exports.theme.extend.colors.otelbinLightGrey2 = "#2B3546";
 module.exports.theme.extend.colors.otelbinBlackGrey = "#030816";
-module.exports.theme.extend.colors.otelbinMagenta = "#C93A76";
+module.exports.theme.extend.colors.otelbinRed = "#EE3030";
 module.exports.theme.extend.keyframes = {
 	focus: {
 		"0%": {
