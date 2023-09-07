@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useState } from "react";
-import Logo from "../assets/svg/otelbin-logo-full.svg";
+import Logo from "../assets/svg/otelbin-logo-new.svg";
 import Image from "next/image";
 import {
 	Dialog,
@@ -46,7 +46,10 @@ export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen
 								href="https://www.dash0.com?utm_source=otelbin&utm_medium=welcome&utm_campaign=otelbin"
 								target="_blank"
 							>
-								<Logo height="40" />
+								<div className="flex items-center gap-x-2">
+									<Logo height="40" />
+									<p className="text-2xl font-semibold">OTelBin</p>
+								</div>
 							</a>
 						</DialogTitle>
 					</DialogHeader>
