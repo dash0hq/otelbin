@@ -61,7 +61,6 @@ const ParentNodeType = ({ data }: { data: IData }) => {
 		color: "#000",
 		borderRadius: "10px",
 		fontSize: "10px",
-		marginBottom: "10px",
 	};
 
 	return (

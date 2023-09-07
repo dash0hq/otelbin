@@ -9,38 +9,25 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 	const nodesToAdd: Node[] = [];
 	const keyTraces = Object.keys(parentNode);
 
-	const calculateValue = (parentHeight: number, index: number): number => {
-		const offset = 50;
-		const offsetX = 75;
-		const value = parentHeight / 2;
-		if (index === 0) {
-			return value + offset * index + 60;
-		}
-		if (index % 2 !== 0) {
-			return value - offset * index;
-		} else {
-			return value + offsetX * index;
-		}
-	};
-
-	const calculateReceiverYposition = (receivers: string[], index: number, parentHeight: number) => {
-		if (receivers.length === 0) return;
-		if (receivers.length === 1) {
-			return parentHeight / 2;
-		} else {
-			const x = calculateValue(parentHeight, index);
-			if (x) return x;
+	const calcYPosition = (nodes: string[], index: number, parentHeight: number): number | undefined => {
+		switch (nodes.length) {
+			case 0:
+				return;
+			case 1:
+				return parentHeight / 2 + parentHeight / 10;
+			default:
+				return parentHeight / (nodes.length + 1) + 130 * index - nodes.length / 0.2;
 		}
 	};
 
 	const processorPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
 		const receiverLength = receivers.length ? 250 : 0;
-		return { x: receiverLength + index * 200, y: parentHeight / 2 };
+		return { x: receiverLength + index * 200, y: parentHeight / 2 + parentHeight / 10 };
 	};
 
 	const receiverPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
-		const positionY = calculateReceiverYposition(receivers, index, parentHeight)!;
-		return { x: 50, y: positionY };
+		const positionY = calcYPosition(receivers, index, parentHeight);
+		return { x: 50, y: positionY !== undefined ? positionY : parentHeight / 2 + parentHeight / 10 };
 	};
 
 	const exporterPosition = (
@@ -49,9 +36,9 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 		exporters: string[],
 		processors: string[]
 	): XYPosition => {
-		const positionY = calculateReceiverYposition(exporters, index, parentHeight)!;
-		const processorLength = processors?.length ? processors?.length * 200 + 260 : 250;
-		return { x: processorLength, y: positionY };
+		const positionY = calcYPosition(exporters, index, parentHeight);
+		const processorLength = (processors?.length ?? 0) * 200 + 260;
+		return { x: processorLength, y: positionY !== undefined ? positionY : parentHeight / 2 + parentHeight / 10 };
 	};
 
 	keyTraces.map((traceItem) => {
@@ -61,6 +48,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 				processors.length > 0 &&
 				processors.map((processor, index) => {
 					const id = `${pipelineName}-Processor-processorNode-${processor}`;
+
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
@@ -84,6 +72,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 				receivers.length > 0 &&
 				receivers.map((receiver, index) => {
 					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
+
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
@@ -140,10 +129,9 @@ export const useNodes = (value: IConfig) => {
 		for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
 			const receivers = pipeline.receivers?.length ?? 0;
 			const exporters = pipeline.exporters?.length ?? 0;
-
-			const maxNumberOfVerticalElements = Math.max(receivers, exporters) || 1;
-			const height = maxNumberOfVerticalElements * 100;
-			const extraSpacing = 200;
+			const maxNodes = Math.max(receivers, exporters) || 1;
+			const height = maxNodes * 100;
+			const extraSpacing = maxNodes * 50 + 150;
 
 			nodesToAdd.push({
 				id: pipelineName,
@@ -155,7 +143,6 @@ export const useNodes = (value: IConfig) => {
 				expandParent: true,
 			});
 			yOffset += height + extraSpacing;
-
 			const childNodes = createNode(pipelineName, pipeline, height);
 			nodesToAdd.push(...childNodes);
 		}

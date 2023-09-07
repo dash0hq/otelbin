@@ -18,7 +18,6 @@ import type { editor } from "monaco-editor";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
 import { Button } from "@dash0hq/ui/src/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0/components/ui/tooltip";
-import { set } from "yaml/dist/schema/yaml-1.1/set";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
