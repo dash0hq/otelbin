@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
 import type { IError } from "./ErrorConsole";
 import ErrorConsole from "./ErrorConsole";
@@ -12,7 +12,6 @@ import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/co
 import Editor, { type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
-import { useMouseDelta } from "~/components/monaco-editor/MouseDelta";
 import { useRouter } from "next/navigation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
@@ -22,21 +21,24 @@ import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { AppFooter } from "~/components/AppFooter";
 import { useAuth } from "@clerk/nextjs";
 import { AutoSizer } from "~/components/AutoSizer";
+import { ResizeBar } from "~/components/monaco-editor/ResizeBar";
 
 export default function MonacoEditor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
 	const editorDidMount = useEditorDidMount();
-	const editorDivRef = useRef(null);
 	const editorRef = useEditorRef();
 	const monacoRef = useMonacoRef();
-	const savedWidth = typeof window !== "undefined" ? localStorage.getItem("width") : "";
-	const width = useMouseDelta(Number(savedWidth) || 440, editorDivRef);
-	const [isClient, setIsClient] = useState<boolean>(false);
+	const [width, setWidth] = useState(Number(localStorage.getItem("width") || 440));
 	const router = useRouter();
 	const { viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 	const [{ config }, getLink] = useUrlState([editorBinding]);
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
+
+	const onWidthChange = useCallback((newWidth: number) => {
+		localStorage.setItem("width", String(newWidth));
+		setWidth(newWidth);
+	}, []);
 
 	const onChangeConfig = useCallback(
 		(newConfig: string) => {
@@ -45,19 +47,9 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 		[getLink, router]
 	);
 
-	// Only load the Monaco editor once Clerk has finished loading. Otherwise,
-	// Clerk may fail to load.
-	// https://github.com/clerkinc/javascript/issues/1643
-	const authResult = useAuth();
-	useEffect(() => setIsClient(authResult.isLoaded), [authResult.isLoaded]);
-
 	const errors = useMemo((): IError => {
-		if (isClient) {
-			return validateOtelCollectorConfigurationAndSetMarkers(config, editorRef, monacoRef);
-		} else {
-			return {};
-		}
-	}, [config, editorRef, monacoRef, isClient]);
+		return validateOtelCollectorConfigurationAndSetMarkers(config, editorRef, monacoRef);
+	}, [config, editorRef, monacoRef]);
 
 	const isValidConfig = errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0;
 
@@ -84,47 +76,43 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 
 	return (
 		<>
-			{isClient ? <WelcomeModal open={openDialog} setOpen={setOpenDialog} /> : <></>}
+			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
 			<div className="flex h-full max-h-screen min-h-screen flex-col">
 				<AppHeader activeView={viewMode} />
 				<div className="flex h-full w-full shrink grow">
-					{isClient && (
-						<div
-							ref={editorDivRef}
-							className={`relative flex shrink-0 select-none flex-col border-otelbinDarkBlue2 hover:border-otelbinDarkBlue3
-              ${viewMode === "both" ? "border-r-[8px]" : "border-r-[0px]"}`}
-							style={{
-								width: viewMode === "code" ? "100%" : viewMode === "pipeline" ? "0px" : `${width}px`,
-								cursor: viewMode === "both" ? "col-resize" : "default",
-							}}
-						>
-							<EditorTopBar config={config} />
-							<div className="h-full w-full shrink grow">
-								<AutoSizer>
-									{({ width, height }) => (
-										<Editor
-											defaultValue={config}
-											value={config}
-											onMount={editorDidMount}
-											width={width}
-											height={height}
-											defaultLanguage="yaml"
-											theme="vs-dark"
-											options={{
-												quickSuggestions: { other: true, strings: true },
-												automaticLayout: true,
-												minimap: { enabled: false },
-												scrollbar: { verticalScrollbarSize: 5 },
-												padding: { top: 5 },
-											}}
-											onChange={handleEditorChange}
-										/>
-									)}
-								</AutoSizer>
-							</div>
-							<ErrorConsole errors={errors} />
+					<div
+						className={`relative flex shrink-0 select-none flex-col`}
+						style={{
+							width: viewMode === "code" ? "100%" : viewMode === "pipeline" ? "0px" : `${width}px`,
+						}}
+					>
+						<EditorTopBar config={config} />
+						<div className="h-full w-full shrink grow">
+							<AutoSizer>
+								{({ width, height }) => (
+									<Editor
+										defaultValue={config}
+										value={config}
+										onMount={editorDidMount}
+										width={width}
+										height={height}
+										defaultLanguage="yaml"
+										theme="vs-dark"
+										options={{
+											quickSuggestions: { other: true, strings: true },
+											automaticLayout: true,
+											minimap: { enabled: false },
+											scrollbar: { verticalScrollbarSize: 5 },
+											padding: { top: 5 },
+										}}
+										onChange={handleEditorChange}
+									/>
+								)}
+							</AutoSizer>
 						</div>
-					)}
+						<ErrorConsole errors={errors} />
+						{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
+					</div>
 
 					<div className="z-0 min-h-full w-full shrink grow">
 						<ReactFlowProvider>
@@ -132,7 +120,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 								{({ width, height }) => (
 									<div style={{ width: `${width}px`, height: `${height}px` }}>
 										<Flow
-											value={(isClient && isValidConfig && config) || "{}"}
+											value={(isValidConfig && config) || "{}"}
 											openDialog={setOpenDialog}
 											locked={locked}
 											setLocked={setLocked}

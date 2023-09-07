@@ -213,15 +213,16 @@ export default function Flow({
 			defaultEdgeOptions={edgeOptions}
 			nodeTypes={nodeTypes}
 			fitView
-			style={{
-				backgroundColor: "#000",
-			}}
-			className="disable-attribution"
+			className="disable-attribution bg-default"
 			proOptions={{
 				hideAttribution: true,
 			}}
 		>
 			<Background />
+			<Panel
+				position="top-left"
+				className="from-default-background !pointer-events-none !z-[4] !m-0 h-14 w-full bg-gradient-to-b"
+			></Panel>
 			<Panel position="bottom-left" className="flex gap-x-3">
 				<ButtonGroup size={"xs"}>
 					<Tooltip>
