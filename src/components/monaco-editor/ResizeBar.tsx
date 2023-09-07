@@ -38,12 +38,14 @@ export function ResizeBar({ onWidthChange }: ResizeBarProps) {
 
 	return (
 		<div
-			className="absolute -right-[8px] bottom-0 top-0 z-10 w-[8px] cursor-col-resize border-r-[7px] border-neutral-100 bg-divider-subtle"
+			className="absolute -right-[10px] bottom-0 top-0 z-10 w-[10px] cursor-col-resize"
 			onMouseDown={(e) => {
 				if (e.button === 0) {
 					state.current.dragging = true;
 				}
 			}}
-		/>
+		>
+			<div className="absolute bottom-0 left-0 top-0 w-px bg-divider-subtle" />
+		</div>
 	);
 }
