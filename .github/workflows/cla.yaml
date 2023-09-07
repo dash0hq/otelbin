@@ -11,6 +11,6 @@ on:
 
 jobs:
   call-workflow:
-    uses: dash0hq/.github/workflows/cla.yml@main
+    uses: dash0hq/.github/.github/workflows/cla.yml@main
     secrets:
       PERSONAL_ACCESS_TOKEN: ${{ secrets.CLA_PAT }}
