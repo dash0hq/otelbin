@@ -8,7 +8,7 @@ import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useFocus, useViewMode } from "~/contexts/EditorContext";
-import { Maximize, Minus, Plus, HelpCircle, Lock } from "lucide-react";
+import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
 import ProcessorsNode from "./ProcessorsNode";
@@ -218,7 +218,7 @@ export default function Flow({
 				hideAttribution: true,
 			}}
 		>
-			<Background />
+			<Background className="bg-default" />
 			<Panel
 				position="top-left"
 				className="from-default-background !pointer-events-none !z-[4] !m-0 h-14 w-full bg-gradient-to-b"
@@ -229,25 +229,25 @@ export default function Flow({
 				<ButtonGroup size={"xs"}>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button onClick={() => reactFlowInstance.zoomIn()} size="xs">
-								<Plus />
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>Zoom in</TooltipContent>
-					</Tooltip>
-					<Tooltip>
-						<TooltipTrigger asChild>
 							<Button onClick={() => reactFlowInstance.zoomOut()} size="xs">
 								<Minus />
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent>Zoom out</TooltipContent>
 					</Tooltip>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button onClick={() => reactFlowInstance.zoomIn()} size="xs">
+								<Plus />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>Zoom in</TooltipContent>
+					</Tooltip>
 				</ButtonGroup>
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button onClick={() => reactFlowInstance.fitView()} size="xs">
-							<Maximize />
+							<Minimize2 />
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>Fit view</TooltipContent>
