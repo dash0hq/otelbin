@@ -25,6 +25,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
 		<ClerkProvider
 			appearance={{
 				baseTheme: dark,
+				variables: {
+					colorPrimary: "#6366f1",
+				},
 			}}
 		>
 			<html lang="en" className="dark overflow-hidden">
