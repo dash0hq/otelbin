@@ -49,7 +49,9 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 
 	const onChangeConfig = useCallback(
 		(newConfig: string) => {
-			router.replace(getLink({ config: newConfig }), { scroll: false });
+			if (typeof window !== "undefined") {
+				window.history.pushState(null, "", getLink({ config: newConfig }));
+			}
 		},
 		[getLink, router]
 	);
