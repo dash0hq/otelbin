@@ -132,7 +132,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 								{({ width, height }) => (
 									<div style={{ width: `${width}px`, height: `${height}px` }}>
 										<Flow
-											value={(isValidConfig && config) || "{}"}
+											value={(isValidConfig && currentConfig) || "{}"}
 											openDialog={setOpenDialog}
 											locked={locked}
 											setLocked={setLocked}
