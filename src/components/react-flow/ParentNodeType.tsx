@@ -13,7 +13,7 @@ const ParentNodeType = ({ data }: { data: IData }) => {
 	const nodes = useNodes();
 	const childNodes = nodes.filter((node) => node.parentNode === data.label);
 	const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
-	const maxWidth = childProcessorsNodes.length * 200 + 390;
+	const maxWidth = childProcessorsNodes.length * 200 + 430;
 
 	const children = nodes.filter((child) => child.parentNode === data.label);
 	const minY = Math.min(...children.map((child) => child.position.y));
@@ -49,9 +49,10 @@ const ParentNodeType = ({ data }: { data: IData }) => {
 		<>
 			{parentColors
 				.filter((_, idx) => idx === findIndex)
-				.map((node) => {
+				.map((node, idx) => {
 					return (
 						<div
+							key={idx}
 							style={{
 								backgroundColor: node.backgroundColor,
 								border: node.borderColor,

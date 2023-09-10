@@ -27,11 +27,12 @@ export default function PipelineTag({ findIndex, tag }: { findIndex: number; tag
 		<>
 			{parentNodeStyle
 				.filter((_, idx) => idx === findIndex)
-				.map((node) => {
+				.map((node, idx) => {
 					return (
 						<div
+							key={idx}
 							style={{ backgroundColor: node.backgroundColor, borderRadius: "4px 0px 4px 0px" }}
-							className="flex w-fit items-center gap-x-1 px-2 py-1 text-xs font-semibold text-black"
+							className="flex w-fit items-center gap-x-1 px-2 py-1 text-xs font-semibold text-black -ml-[1px] -mt-[1px]"
 						>
 							{node.icon}
 							<p>{tag.charAt(0).toUpperCase() + tag.slice(1)}</p>
