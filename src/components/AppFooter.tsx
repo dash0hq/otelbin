@@ -8,7 +8,7 @@ import React from "react";
 
 export function AppFooter() {
 	return (
-		<div className="flex shrink-0 items-center justify-between border-t-1 border-subtle bg-neutral-150 px-4 py-2 text-xs font-normal text-subtl">
+		<div className="flex shrink-0 items-center justify-between border-t-1 border-subtle bg-neutral-150 pr-4 pl-[22px] py-2 text-xs font-normal text-subtl">
 			<div className="flex gap-4">
 				<a
 					className="flex cursor-pointer items-center gap-1 transition-colors hover:text-default"

@@ -6,38 +6,26 @@ import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "./FlowClick";
 import type { IData } from "./FlowClick";
-import ProcessorsIcon from "../assets/svg/processors.svg";
-
-const tagstyles = {
-	backgroundColor: "#F59E0B",
-	borderRadius: "100%",
-	padding: "8px",
-	marginTop: "4px",
-};
-const radius = {
-	borderRadius: "15px",
-	fontSize: "10px",
-	fontWeight: 400,
-	whiteSpace: "nowrap" as const,
-};
+import { FileCog } from "lucide-react";
 
 const ProcessorsNode = ({ data }: { data: IData }) => {
 	const [hovered, setHovered] = useState(false);
 	const editorRef = useEditorRef();
 	const { isFocused } = useFocus();
 
+	const customNodeHeaderStyle = {
+		borderRadius: "8px 8px 0px 0px",
+	};
+
 	const customNodeStyles = {
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-		gap: "4px",
-		width: 80,
-		height: 80,
-		background: hovered ? "#F59E0B" : "#30353D",
+		width: "100%",
+		height: "100%",
+		background: hovered ? "#4F46E5" : "#30353D",
 		transition: "background-color 0.3s ease-in-out",
-		borderRadius: "10px",
-		fontSize: "8px",
-		fontWeight: 400,
+		borderRadius: "0px 0px 8px 8px",
 		paddingBottom: "6px",
 		paddingTop: "6px",
 	};
@@ -47,15 +35,21 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 	}
 
 	const label = data.label || "";
-	const capitalizedLabel = label.toUpperCase();
-	const splitedLabel = typeof capitalizedLabel === "string" ? capitalizedLabel.split("/") : [];
-	const hasSlash = splitedLabel?.length > 1;
+
+	const splitLabel = typeof label === "string" ? label.split("/") : [];
+	const hasSlash = splitLabel.length > 1;
 	return (
 		<>
-			<div className="flex h-20 w-20 flex-col items-center">
+			<div className="flex h-20 w-[120px] flex-col items-center rounded-lg">
+				<div
+					style={customNodeHeaderStyle}
+					className="px-3 bg-[#6366F1] text-center text-xs font-medium h-[26px] overflow-hidden whitespace-nowrap overflow-ellipsis w-full"
+				>
+					{splitLabel[0]}
+				</div>
 				<div
 					style={customNodeStyles}
-					className={`cursor-pointer flex-col ${isFocused === data.id ? "animate-processorFocus" : ""}`}
+					className={`cursor-pointer flex-col ${isFocused === data.id ? "animate-focus" : ""}`}
 					onClick={handleClickNode}
 					onMouseEnter={() => setHovered(true)}
 					onMouseLeave={() => setHovered(false)}
@@ -68,11 +62,13 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 							borderColor: "rgb(44 48 70 / 0%)",
 						}}
 					/>
-					<div className="flex flex-col items-center">
-						<div className="flex items-center text-white">{splitedLabel[0]}</div>
-						<div style={tagstyles}>
-							<ProcessorsIcon color="#ffffff" />
-						</div>
+					<div className="flex w-full flex-col items-center justify-center gap-y-1 px-2">
+						<FileCog color="#9CA2AB" width={17} />
+						{hasSlash && (
+							<div className="text-[#9CA2AB] text-xs font-normal  overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[90%]">
+								{splitLabel[1]}
+							</div>
+						)}
 					</div>
 					<Handle
 						type="source"
@@ -84,11 +80,6 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 						}}
 					/>
 				</div>
-				{hasSlash && (
-					<div className="mb-[-57px] mt-1 bg-[#020617] p-1 text-[#9CA2AB]" style={radius}>
-						{splitedLabel[1]}
-					</div>
-				)}
 			</div>
 		</>
 	);

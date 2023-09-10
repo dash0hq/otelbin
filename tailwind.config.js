@@ -43,8 +43,19 @@ module.exports.theme.extend.keyframes = {
 			border: "none",
 		},
 	},
+	transitionY: {
+		"0%": {
+			opacity: 0,
+		},
+
+		"100%": {
+			opacity: 1,
+		},
+	},
 };
+
 module.exports.theme.extend.animation = {
 	focus: "focus 2s ease-out",
 	processorFocus: "processorFocus 2s ease-out",
+	transitionY: "transitionY 0.5s",
 };

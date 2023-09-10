@@ -28,17 +28,19 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 	useEffect(() => {
 		if (errorCount === 0) {
 			setIsOpenErrorConsole(false);
+		} else {
+			setIsOpenErrorConsole(true);
 		}
 	}, [errorCount]);
 
 	return isOpenErrorConsole ? (
-		<div className="absolute bottom-0 left-0 z-10 h-[15vh] w-full border-t-1 border-subtle bg-default px-3 pb-1 pt-1">
+		<div className="absolute bottom-0 left-0 z-10 h-[15vh] w-full border-t-1 border-subtle bg-default px-3 pb-1 pt-1 animate-transitionY">
 			{errors ? (
 				<ErrorCount errorsCount={errorCount} isOpen={isOpenErrorConsole} setOpen={setIsOpenErrorConsole} />
 			) : (
 				<> </>
 			)}
-			<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-1">
+			<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-3">
 				{errors?.ajvErrors &&
 					errors.ajvErrors?.length > 0 &&
 					errors.ajvErrors.map((error: any, index: any) => {
@@ -89,8 +91,8 @@ export function ErrorCount({
 				}
 			}}
 			className={`${errorsCount ? `cursor-pointer text-otelbinRed` : `text-subtl`} ${
-				!isOpen && "absolute h-[32px] w-full border-t-1 border-subtle bg-default px-[11px] py-2"
-			}  bottom-0 right-0 z-50 flex items-center gap-x-[1px]`}
+				!isOpen && "absolute h-[32px] w-full border-t-1 border-subtle bg-default px-[18px] py-2"
+			}  bottom-0 right-0 z-50 flex items-center gap-x-[1px] px-2 animate-transitionY`}
 		>
 			<XCircle height={14.67} />
 			<div className="flex w-full items-center justify-between">
