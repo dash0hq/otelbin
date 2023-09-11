@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { type RefObject, useEffect, useMemo, useLayoutEffect } from "react";
-import ReactFlow, { Background, Panel, useReactFlow, useNodesState, useEdgesState } from "reactflow";
+import React, { type RefObject, useEffect, useMemo } from "react";
+import ReactFlow, { Background, Panel, useReactFlow, useNodesState, useEdgesState, useStore } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
@@ -44,11 +44,16 @@ export default function Flow({
 		const docService = docItems.find((item: any) => item.key.source === "service");
 		return docService?.value.items.find((item: any) => item.key.source === "pipelines");
 	}, [value]);
-
 	const initNodes = useNodes(jsonData);
 	const [nodes, setNodes] = useNodesState(initNodes);
 	const initEdges = useEdgeCreator(nodes);
 	const [edges, setEdges] = useEdgesState(initEdges);
+	const widthSelector = (state: { width: any }) => state.width;
+	const reactFlowWidth = useStore(widthSelector);
+
+	useEffect(() => {
+		reactFlowInstance.fitView();
+	}, [reactFlowWidth, reactFlowInstance]);
 
 	useEffect(() => {
 		if (jsonData) {
@@ -76,14 +81,6 @@ export default function Flow({
 	const nodeInfo = reactFlowInstance.getNodes();
 	const { setFocused } = useFocus();
 	const { viewMode } = useViewMode();
-
-	useLayoutEffect(() => {
-		if (viewMode !== "code") {
-			setTimeout(() => {
-				reactFlowInstance.fitView();
-			});
-		}
-	}, [viewMode]);
 
 	const edgeOptions = {
 		animated: false,
