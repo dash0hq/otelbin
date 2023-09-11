@@ -122,7 +122,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 								)}
 							</AutoSizer>
 						</div>
-						<ErrorConsole errors={errors} font={firaCode} />
+						{viewMode !== "pipeline" && <ErrorConsole errors={errors} font={firaCode} />}
 						{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 					</div>
 
