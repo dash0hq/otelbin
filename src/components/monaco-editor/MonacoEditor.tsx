@@ -57,8 +57,8 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 	);
 
 	const errors = useMemo((): IError => {
-		return validateOtelCollectorConfigurationAndSetMarkers(config, editorRef, monacoRef);
-	}, [config, editorRef, monacoRef]);
+		return validateOtelCollectorConfigurationAndSetMarkers(currentConfig, editorRef, monacoRef);
+	}, [currentConfig, editorRef, monacoRef]);
 
 	const isValidConfig = errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0;
 
@@ -111,7 +111,7 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 											quickSuggestions: { other: true, strings: true },
 											automaticLayout: true,
 											minimap: { enabled: false },
-											scrollbar: { verticalScrollbarSize: 8 },
+											scrollbar: { verticalScrollbarSize: 8, horizontal: "hidden" },
 											padding: { top: 5 },
 											fontSize: 13,
 											fontWeight: "400",
