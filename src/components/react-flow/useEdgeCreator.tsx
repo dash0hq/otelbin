@@ -24,8 +24,8 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 					markerEnd: {
 						type: MarkerType.Arrow,
 						color: "#9CA2AB",
-						width: 30,
-						height: 30,
+						width: 20,
+						height: 25,
 					},
 					style: {
 						stroke: "#9CA2AB",
@@ -52,8 +52,8 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 					markerEnd: {
 						type: MarkerType.Arrow,
 						color: "#9CA2AB",
-						width: 30,
-						height: 30,
+						width: 20,
+						height: 25,
 					},
 					style: {
 						stroke: "#9CA2AB",
@@ -92,8 +92,8 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 							markerEnd: {
 								type: MarkerType.Arrow,
 								color: "#9CA2AB",
-								width: 30,
-								height: 30,
+								width: 20,
+								height: 25,
 							},
 							style: {
 								stroke: "#9CA2AB",
@@ -119,8 +119,8 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 						markerEnd: {
 							type: MarkerType.Arrow,
 							color: "#9CA2AB",
-							width: 30,
-							height: 30,
+							width: 20,
+							height: 25,
 						},
 						style: {
 							stroke: "#9CA2AB",

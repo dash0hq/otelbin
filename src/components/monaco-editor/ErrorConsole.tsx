@@ -28,30 +28,32 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 	useEffect(() => {
 		if (errorCount === 0) {
 			setIsOpenErrorConsole(false);
-		} else {
-			setIsOpenErrorConsole(true);
 		}
 	}, [errorCount]);
 
-	return isOpenErrorConsole ? (
-		<div className="absolute bottom-0 left-0 z-10 h-[15vh] w-full border-t-1 border-subtle bg-default px-3 pb-1 pt-1 animate-transitionY">
-			{errors ? (
+	return (
+		<div
+			className={`absolute bottom-0 left-0 z-10 ${
+				isOpenErrorConsole ? "h-[120px]" : "h-[37px]"
+			} w-full border-t-1 border-subtle bg-default pb-1 pt-1 transition-all`}
+		>
+			<div className="flex flex-col h-full">
 				<ErrorCount errorsCount={errorCount} isOpen={isOpenErrorConsole} setOpen={setIsOpenErrorConsole} />
-			) : (
-				<> </>
-			)}
-			<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-3">
-				{errors?.ajvErrors &&
-					errors.ajvErrors?.length > 0 &&
-					errors.ajvErrors.map((error: any, index: any) => {
-						return <Error key={index} error={error} font={font} />;
-					})}
+				{isOpenErrorConsole && (
+					<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-[25px]">
+						{errors?.ajvErrors &&
+							errors.ajvErrors?.length > 0 &&
+							errors.ajvErrors.map((error: any, index: any) => {
+								return <Error key={index} error={error} font={font} />;
+							})}
 
-				{errors?.jsYamlError?.mark.line !== null && <Error jsYamlError={errors && errors.jsYamlError} font={font} />}
+						{errors?.jsYamlError?.mark.line !== null && (
+							<Error jsYamlError={errors && errors.jsYamlError} font={font} />
+						)}
+					</div>
+				)}
 			</div>
 		</div>
-	) : (
-		<ErrorCount errorsCount={errorCount} isOpen={isOpenErrorConsole} setOpen={setIsOpenErrorConsole} />
 	);
 }
 
@@ -90,9 +92,9 @@ export function ErrorCount({
 					setOpen(!isOpen);
 				}
 			}}
-			className={`${errorsCount ? `cursor-pointer text-otelbinRed` : `text-subtl`} ${
-				!isOpen && "absolute h-[32px] w-full border-t-1 border-subtle bg-default px-[18px] py-2"
-			}  bottom-0 right-0 z-50 flex items-center gap-x-[1px] px-2 animate-transitionY`}
+			className={`${
+				errorsCount ? `cursor-pointer text-otelbinRed` : `text-subtl`
+			} min-h-[32px] w-full bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
 		>
 			<XCircle height={14.67} />
 			<div className="flex w-full items-center justify-between">
