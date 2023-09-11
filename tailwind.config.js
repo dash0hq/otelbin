@@ -26,6 +26,9 @@ module.exports.theme.extend.colors.otelbinLightGrey = "#8491A6";
 module.exports.theme.extend.colors.otelbinLightGrey2 = "#2B3546";
 module.exports.theme.extend.colors.otelbinBlackGrey = "#030816";
 module.exports.theme.extend.colors.otelbinRed = "#EE3030";
+module.exports.theme.extend.boxShadow = {
+	node: "0 3px 3px 3px rgba(7, 8, 16, 0.1)",
+};
 module.exports.theme.extend.keyframes = {
 	focus: {
 		"0%": {

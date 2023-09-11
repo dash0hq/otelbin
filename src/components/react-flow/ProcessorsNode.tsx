@@ -22,8 +22,8 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 		alignItems: "center",
 		justifyContent: "center",
 		width: "100%",
-		height: "100%",
-		background: hovered ? "#4F46E5" : "#30353D",
+		height: "65%",
+		background: hovered ? "#6366F1" : "#40454E",
 		transition: "background-color 0.3s ease-in-out",
 		borderRadius: "0px 0px 8px 8px",
 		paddingBottom: "6px",
@@ -40,10 +40,10 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 	const hasSlash = splitLabel.length > 1;
 	return (
 		<>
-			<div className="flex h-20 w-[120px] flex-col items-center rounded-lg">
+			<div className="flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node">
 				<div
 					style={customNodeHeaderStyle}
-					className="px-3 bg-[#6366F1] text-center text-xs font-medium h-[26px] overflow-hidden whitespace-nowrap overflow-ellipsis w-full"
+					className="px-3 bg-[#6366F1] text-center text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center"
 				>
 					{splitLabel[0]}
 				</div>

@@ -8,22 +8,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 	return useMemo(() => {
 		const edges: Edge[] = [];
 
-		const calculateColor = (index: number): string => {
-			switch (index) {
-				case 0:
-					return "#F59E0B";
-				case 1:
-					return "#0AA8FF";
-				case 2:
-					return "#40ad54";
-				case 3:
-					return "#911dc9";
-			}
-			return "#FFC542";
-		};
-
 		const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node, index: number) => {
-			// if (exportersNodes.length === 0) return;
 			exportersNodes.forEach((targetNode) => {
 				if (!processorsNode || !targetNode) {
 					return;
@@ -35,15 +20,15 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 					id: edgeId,
 					source: sourceNodeId!,
 					target: targetNodeId,
-					type: "smoothstep",
+					type: "default",
 					markerEnd: {
 						type: MarkerType.Arrow,
-						color: calculateColor(index),
+						color: "#9CA2AB",
 						width: 30,
 						height: 30,
 					},
 					style: {
-						stroke: calculateColor(index),
+						stroke: "#9CA2AB",
 					},
 				};
 				edges.push(edge);
@@ -63,15 +48,15 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 					id: edgeId,
 					source: sourceNodeId,
 					target: targetNodeId,
-					type: "smoothstep",
+					type: "default",
 					markerEnd: {
 						type: MarkerType.Arrow,
-						color: calculateColor(index),
+						color: "#9CA2AB",
 						width: 30,
 						height: 30,
 					},
 					style: {
-						stroke: calculateColor(index),
+						stroke: "#9CA2AB",
 					},
 				};
 				edges.push(edge);
@@ -84,7 +69,6 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 			exportersNodes: Node[],
 			index: number
 		) => {
-			// if (receiversNodes.length === 0) return;
 			if (!firstprocessorsNode) {
 				receiversNodes.forEach((sourceNode) => {
 					if (!sourceNode) {
@@ -104,15 +88,15 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 							id: edgeId,
 							source: sourceNodeId,
 							target: targetNodeId,
-							type: "smoothstep",
+							type: "default",
 							markerEnd: {
 								type: MarkerType.Arrow,
-								color: calculateColor(index),
+								color: "#9CA2AB",
 								width: 30,
 								height: 30,
 							},
 							style: {
-								stroke: calculateColor(index),
+								stroke: "#9CA2AB",
 							},
 						};
 						edges.push(edge);
@@ -131,15 +115,15 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 						id: edgeId,
 						source: sourceNodeId,
 						target: targetNodeId,
-						type: "smoothstep",
+						type: "default",
 						markerEnd: {
 							type: MarkerType.Arrow,
-							color: calculateColor(index),
+							color: "#9CA2AB",
 							width: 30,
 							height: 30,
 						},
 						style: {
-							stroke: calculateColor(index),
+							stroke: "#9CA2AB",
 						},
 					};
 					edges.push(edge);
@@ -164,7 +148,6 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 		};
 
 		const parentNodes = nodeIdsArray.filter((node) => node.type === "parentNodeType").map((node) => node.data.label);
-		// think about here < 2?
 		if (!Array.isArray(nodeIdsArray) || nodeIdsArray.length < 2) {
 			return [];
 		}
