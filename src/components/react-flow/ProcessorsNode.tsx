@@ -23,11 +23,14 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 		justifyContent: "center",
 		width: "100%",
 		height: "65%",
-		background: hovered ? "#6366F1" : "#40454E",
+		background: hovered ? "#40454E" : "#30353D",
 		transition: "background-color 0.3s ease-in-out",
 		borderRadius: "0px 0px 8px 8px",
 		paddingBottom: "6px",
 		paddingTop: "6px",
+		borderLeft: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
+		borderRight: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
+		borderBottom: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
 	};
 
 	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -62,10 +65,18 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 							borderColor: "rgb(44 48 70 / 0%)",
 						}}
 					/>
-					<div className="flex w-full flex-col items-center justify-center gap-y-1 px-2">
-						<FileCog color="#9CA2AB" width={17} />
+					<div
+						className={`flex w-full flex-col items-center justify-center gap-y-1 px-2 ${
+							splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
+						}`}
+					>
+						<FileCog color={hovered ? "#F3F5F6" : "#9CA2AB"} width={20} />
 						{hasSlash && (
-							<div className="text-[#9CA2AB] text-xs font-normal  overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[90%]">
+							<div
+								className={`${
+									hovered ? "text-[#F3F5F6]" : "text-[#9CA2AB]"
+								} text-[10px] font-normal  overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[90%]`}
+							>
 								{splitLabel[1]}
 							</div>
 						)}
