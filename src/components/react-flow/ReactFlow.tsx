@@ -13,6 +13,7 @@ import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
 import ProcessorsNode from "./ProcessorsNode";
 import ExportersNode from "./ExportersNode";
+import EmptyStateNode, { EmptyStateNodeData } from "./EmptyStateNode";
 import { useNodes } from "./useNodes";
 import type { editor } from "monaco-editor";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
@@ -50,9 +51,15 @@ export default function Flow({
 	const [edges, setEdges] = useEdgesState(initEdges);
 
 	useEffect(() => {
-		setEdges(initEdges);
-		setNodes(initNodes);
-		if (value) reactFlowInstance.fitView();
+		if (jsonData) {
+			setEdges(initEdges);
+			setNodes(initNodes);
+			reactFlowInstance.fitView();
+		} else {
+			setNodes(EmptyStateNodeData);
+			setEdges([]);
+			reactFlowInstance.fitView();
+		}
 	}, [initNodes, initEdges, value]);
 
 	const nodeTypes = useMemo(
@@ -64,7 +71,7 @@ export default function Flow({
 		}),
 		[]
 	);
-
+	const EmptyStateNodeType = useMemo(() => ({ emptyState: EmptyStateNode }), []);
 	const { setCenter } = useReactFlow();
 	const nodeInfo = reactFlowInstance.getNodes();
 	const { setFocused } = useFocus();
@@ -208,15 +215,16 @@ export default function Flow({
 
 	return (
 		<ReactFlow
-			nodes={nodes}
+			nodes={jsonData.service ? nodes : EmptyStateNodeData}
 			edges={edges}
 			defaultEdgeOptions={edgeOptions}
-			nodeTypes={nodeTypes}
+			nodeTypes={jsonData.service ? nodeTypes : EmptyStateNodeType}
 			fitView
 			className="disable-attribution bg-default"
 			proOptions={{
 				hideAttribution: true,
 			}}
+			maxZoom={!jsonData.service ? 1 : undefined}
 		>
 			<Background className="bg-default" />
 			<Panel
