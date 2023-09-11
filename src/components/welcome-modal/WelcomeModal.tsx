@@ -79,7 +79,7 @@ export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen
 					) : (
 						<></>
 					)}
-					<Button autoFocus={true} onClick={handleNext} variant={"default"} size={"sm"} className="bg-otelbinPurple">
+					<Button autoFocus={true} onClick={handleNext} variant={"default"} size={"sm"} className="bg-blue-500">
 						{step <= welcomeModalData.length - 2 ? "Next" : "Done"}
 					</Button>
 				</DialogFooter>

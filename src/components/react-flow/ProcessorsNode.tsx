@@ -46,7 +46,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 			<div className="flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node">
 				<div
 					style={customNodeHeaderStyle}
-					className="px-3 bg-[#6366F1] text-center text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center"
+					className="px-3 bg-blue-500 text-center text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center"
 				>
 					{splitLabel[0]}
 				</div>
@@ -74,7 +74,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 						{hasSlash && (
 							<div
 								className={`${
-									hovered ? "text-[#F3F5F6]" : "text-[#9CA2AB]"
+									hovered ? "text-neutral-900" : "text-neutral-600"
 								} text-[10px] font-normal  overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[90%]`}
 							>
 								{splitLabel[1]}
