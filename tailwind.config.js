@@ -15,7 +15,6 @@ module.exports = {
 	],
 };
 
-module.exports.theme.extend.colors.otelbinPurple = "#6366F1";
 module.exports.theme.extend.colors.otelbinDarkPurple = "#1D2029";
 module.exports.theme.extend.colors.otelbinDarkBlue = "#0F172A";
 module.exports.theme.extend.colors.otelbinDarkBlue2 = "#40454E";
