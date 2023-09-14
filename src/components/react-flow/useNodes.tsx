@@ -5,16 +5,18 @@ import { type Node, type XYPosition } from "reactflow";
 import type { IConfig, IPipeline } from "./dataType";
 import { useMemo } from "react";
 
+const childNodesHeight = 80;
+
 const createNode = (pipelineName: string, parentNode: IPipeline, height: number) => {
 	const nodesToAdd: Node[] = [];
 	const keyTraces = Object.keys(parentNode);
 
 	const calcYPosition = (index: number, parentHeight: number, nodes: string[]): number | undefined => {
 		const childNodePositions = [];
-		const spaceBetweenNodes = (parentHeight - nodes.length * 80) / (nodes.length + 1);
+		const spaceBetweenNodes = (parentHeight - nodes.length * childNodesHeight) / (nodes.length + 1);
 
 		for (let i = 0; i < nodes.length; i++) {
-			const yPosition = spaceBetweenNodes + i * (80 + spaceBetweenNodes);
+			const yPosition = spaceBetweenNodes + i * (childNodesHeight + spaceBetweenNodes);
 
 			childNodePositions.push(yPosition);
 		}
@@ -22,7 +24,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 			case 0:
 				return;
 			case 1:
-				return (parentHeight - 40) / 2 - 40;
+				return (parentHeight - 40) / 2 - 20;
 			default:
 				return childNodePositions[index];
 		}
@@ -30,7 +32,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 
 	const processorPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
 		const receiverLength = receivers.length ? 250 : 0;
-		return { x: receiverLength + index * 200, y: (parentHeight - 40) / 2 - 40 };
+		return { x: receiverLength + index * 200, y: (parentHeight - 40) / 2 - 20 };
 	};
 
 	const receiverPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
@@ -67,7 +69,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 							label: processor,
 							parentNode: pipelineName,
 							type: "processors",
-							height: 80,
+							height: childNodesHeight,
 							id: id,
 						},
 						draggable: false,
@@ -91,7 +93,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 							label: receiver,
 							parentNode: pipelineName,
 							type: "receivers",
-							height: 80,
+							height: childNodesHeight,
 							id: id,
 						},
 						draggable: false,
@@ -113,7 +115,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 						label: exporter,
 						parentNode: pipelineName,
 						type: "exporters",
-						height: 80,
+						height: childNodesHeight,
 						id: id,
 					},
 					draggable: false,
@@ -141,7 +143,7 @@ export const useNodes = (value: IConfig) => {
 			const spaceBetweenParents = 40;
 			const spaceBetweenNodes = 90;
 			const totalSpacing = maxNodes * spaceBetweenNodes;
-			const parentHeight = totalSpacing + maxNodes * 80;
+			const parentHeight = totalSpacing + maxNodes * childNodesHeight;
 
 			nodesToAdd.push({
 				id: pipelineName,
