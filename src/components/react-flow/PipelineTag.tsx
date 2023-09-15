@@ -28,8 +28,7 @@ export default function PipelineTag({ findIndex, tag }: { findIndex: number; tag
 		let resultString = [""];
 		if (tagName.includes("/")) {
 			resultString = tagName.split("/");
-			resultString = resultString.map((str) => capitalize(str));
-			return resultString.join(" / ");
+			return capitalize(resultString.join(" / "));
 		} else {
 			return capitalize(tagName);
 		}

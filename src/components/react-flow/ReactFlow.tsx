@@ -7,7 +7,7 @@ import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
 import { parse as parseYaml, Parser } from "yaml";
 import useEdgeCreator from "./useEdgeCreator";
-import { useFocus, useViewMode } from "~/contexts/EditorContext";
+import { useFocus } from "~/contexts/EditorContext";
 import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
 import ParentNodeType from "./ParentNodeType";
 import ReceiversNode from "./ReceiversNode";
@@ -80,7 +80,6 @@ export default function Flow({
 	const { setCenter } = useReactFlow();
 	const nodeInfo = reactFlowInstance.getNodes();
 	const { setFocused } = useFocus();
-	const { viewMode } = useViewMode();
 
 	const edgeOptions = {
 		animated: false,
