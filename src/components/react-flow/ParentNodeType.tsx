@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import PipelineTag from "./PipelineTag";
 import { useNodes, useReactFlow } from "reactflow";
 
 interface IData {
 	label: string;
+	height: number;
 }
 const ParentNodeType = ({ data }: { data: IData }) => {
 	const rectaFlowInstance = useReactFlow();
@@ -14,11 +15,6 @@ const ParentNodeType = ({ data }: { data: IData }) => {
 	const childNodes = nodes.filter((node) => node.parentNode === data.label);
 	const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
 	const maxWidth = childProcessorsNodes.length * 200 + 430;
-
-	const children = nodes.filter((child) => child.parentNode === data.label);
-	const minY = Math.min(...children.map((child) => child.position.y));
-	const maxY = Math.max(...children.map((child) => child.position.y));
-	const parentHeight = maxY - minY + 180;
 
 	const parentNodes = rectaFlowInstance
 		.getNodes()
@@ -52,11 +48,12 @@ const ParentNodeType = ({ data }: { data: IData }) => {
 				.map((node, idx) => {
 					return (
 						<div
+							id={"parentNode"}
 							key={idx}
 							style={{
 								backgroundColor: node.backgroundColor,
 								border: node.borderColor,
-								height: parentHeight,
+								height: data.height,
 								width: maxWidth,
 							}}
 							className="rounded-[4px] text-[10px] text-black"

@@ -39,8 +39,7 @@ const ExportersNode = ({ data }: { data: IData }) => {
 
 	const label = data.label || "";
 
-	const splitLabel = label.split("/");
-	const hasSlash = splitLabel.length > 1;
+	const splitLabel = label.includes("/") ? label.split("/") : [label];
 	return (
 		<div className="flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node">
 			<div
@@ -62,7 +61,7 @@ const ExportersNode = ({ data }: { data: IData }) => {
 					}`}
 				>
 					<Upload color={hovered ? "#F3F5F6" : "#9CA2AB"} width={20} />
-					{hasSlash && (
+					{splitLabel.length > 1 && (
 						<div
 							className={`${
 								hovered ? "text-neutral-900" : "text-neutral-600"
