@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { createContext, useRef, useState } from "react";
+import React, { createContext, useCallback, useMemo, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { type editor } from "monaco-editor";
 import { loader, type Monaco, type OnMount } from "@monaco-editor/react";
@@ -9,7 +9,8 @@ import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
-
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
+import { Parser } from "yaml";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
 
@@ -37,6 +38,16 @@ export const ViewModeContext = createContext<{
 	},
 });
 
+export const BreadcrumbsContext = createContext<{
+	path: string;
+	setPath: (path: string) => void;
+}>({
+	path: "",
+	setPath: () => {
+		return;
+	},
+});
+
 export function useEditorRef() {
 	return React.useContext(EditorContext);
 }
@@ -57,14 +68,32 @@ export function useViewMode() {
 	return React.useContext(ViewModeContext);
 }
 
+export function useBreadcrumbs() {
+	return React.useContext(BreadcrumbsContext);
+}
+
 export const EditorProvider = ({ children }: { children: any }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
 	const monacoYamlRef = useRef<any | null>(null);
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState("both");
+	const [path, setPath] = useState("");
+
+	const getValue = useCallback(
+		(editorValue: string) => {
+			const value = editorValue;
+			const parsedYaml = Array.from(new Parser().parse(value));
+			const doc = parsedYaml.find((token) => token.type === "document") as any;
+			const docObject = doc?.value?.items ?? [];
+			return docObject;
+		},
+		[editorRef]
+	);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
+		editorRef.current = editor;
+
 		window.MonacoEnvironment = {
 			getWorker(_, label) {
 				switch (label) {
@@ -85,7 +114,6 @@ export const EditorProvider = ({ children }: { children: any }) => {
 			fileMatch: ["*"],
 		};
 
-		editorRef.current = editor;
 		monacoRef.current = monaco;
 		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\w+\/\w+|\w+/,
@@ -94,6 +122,75 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		monacoYamlRef.current = configureMonacoYaml(monaco, {
 			enableSchemaRequest: true,
 			schemas: [defaultSchema],
+		});
+
+		let value = editorRef.current?.getValue() ?? "";
+		let docObject = getValue(value);
+
+		editorRef.current?.onDidChangeModelContent((e) => {
+			value = editorRef.current?.getValue() ?? "";
+			docObject = getValue(value);
+		});
+
+		function correctKey(value: string, key: string, key2?: string) {
+			if (key2 != undefined) value += " > " + key2;
+			if (key != undefined) value += " > " + key;
+			return value;
+		}
+
+		function findSymbols(yamlItems: any[], currentPath: string, searchFilter: string, cursorOffset: number) {
+			if (yamlItems.length === 0) return;
+			else if (Array.isArray(yamlItems)) {
+				for (let i = 0; i < yamlItems.length; i++) {
+					const item = yamlItems[i];
+
+					if (item.key && item.key.source.includes(searchFilter)) {
+						const keyOffset = item.key.offset;
+						const keyLength = item.key.source.length;
+
+						if (cursorOffset >= keyOffset && cursorOffset <= keyOffset + keyLength) {
+							setPath(correctKey(currentPath, item.key.source));
+							return;
+						}
+					}
+					if (item.value) {
+						if (item.value.source && item.value.source.includes(searchFilter)) {
+							const valueOffset = item.value.offset;
+							const valueLength = item.value.source.length;
+
+							if (cursorOffset >= valueOffset && cursorOffset <= valueOffset + valueLength) {
+								setPath(correctKey(currentPath, item.value.source, item.key ? item.key.source : undefined));
+								return;
+							}
+						}
+						if (Array.isArray(item.value.items)) {
+							if (item.key) {
+								findSymbols(
+									item.value.items,
+									correctKey(currentPath, item.value.source, item.key.source),
+									searchFilter,
+									cursorOffset
+								);
+							} else {
+								findSymbols(item.value.items, correctKey(currentPath, item.value.source), searchFilter, cursorOffset);
+							}
+						}
+					}
+				}
+			}
+			if (searchFilter === "") {
+				setPath("");
+			}
+		}
+
+		editorRef.current.onDidChangeCursorPosition((e) => {
+			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) || 0;
+			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || {
+				word: "",
+				startColumn: 0,
+				endColumn: 0,
+			};
+			findSymbols(docObject, "", wordAtCursor.word, cursorOffset);
 		});
 	}
 
@@ -105,6 +202,11 @@ export const EditorProvider = ({ children }: { children: any }) => {
 	const viewModeContext = {
 		setViewMode: setViewMode,
 		viewMode: viewMode,
+	};
+
+	const breadcrumbsContext = {
+		setPath: setPath,
+		path: path,
 	};
 
 	function createCompletionItemProvider(getWorker: any): languages.CompletionItemProvider {
@@ -140,28 +242,32 @@ export const EditorProvider = ({ children }: { children: any }) => {
 	);
 
 	if (typeof window !== "undefined") {
-		loader.init().then((monaco) => {
-			monaco.editor.defineTheme("OTelBin", {
-				base: "vs-dark",
-				inherit: true,
-				rules: [
-					{ token: "", fontStyle: "" },
-					{ token: "comment", foreground: "#6D737D" },
-					{ token: "string.yaml", foreground: "#38BDF8" },
-					{ token: "number.yaml", foreground: "#38BDF8" },
-					{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
-				],
-				colors: {
-					"editor.background": "#151721",
-					"editorLineNumber.foreground": "#6D737D",
-					"editorLineNumber.activeForeground": "#F9FAFB",
-					"editorCursor.foreground": "#F9FAFB",
-					"editor.selectionBackground": "#30353D",
-					"editor.selectionHighlightBackground": "#30353D",
-					"editor.hoverHighlightBackground": "#30353D",
-					"editor.lineHighlightBackground": "#30353D",
-					"editor.lineHighlightBorder": "#30353D",
-				},
+		new Promise((res) => {
+			Promise.all([loader.init()]).then(([monaco]) => {
+				monaco.editor.defineTheme("OTelBin", {
+					base: "vs-dark",
+					inherit: true,
+					rules: [
+						{ token: "", fontStyle: "" },
+						{ token: "comment", foreground: "#6D737D" },
+						{ token: "string.yaml", foreground: "#38BDF8" },
+						{ token: "number.yaml", foreground: "#38BDF8" },
+						{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
+					],
+					colors: {
+						"editor.background": "#151721",
+						"editorLineNumber.foreground": "#6D737D",
+						"editorLineNumber.activeForeground": "#F9FAFB",
+						"editorCursor.foreground": "#F9FAFB",
+						"editor.selectionBackground": "#30353D",
+						"editor.selectionHighlightBackground": "#30353D",
+						"editor.hoverHighlightBackground": "#30353D",
+						"editor.lineHighlightBackground": "#30353D",
+						"editor.lineHighlightBorder": "#30353D",
+					},
+				});
+				monaco.editor.setTheme("OTelBin");
+				res(monaco);
 			});
 		});
 	}
@@ -171,7 +277,9 @@ export const EditorProvider = ({ children }: { children: any }) => {
 			<EditorContext.Provider value={editorRef}>
 				<MonacoContext.Provider value={monacoRef}>
 					<FocusContext.Provider value={focusContext}>
-						<ViewModeContext.Provider value={viewModeContext}>{children}</ViewModeContext.Provider>
+						<ViewModeContext.Provider value={viewModeContext}>
+							<BreadcrumbsContext.Provider value={breadcrumbsContext}>{children}</BreadcrumbsContext.Provider>
+						</ViewModeContext.Provider>
 					</FocusContext.Provider>
 				</MonacoContext.Provider>
 			</EditorContext.Provider>
