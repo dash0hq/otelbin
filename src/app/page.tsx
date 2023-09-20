@@ -5,12 +5,12 @@
 
 import { useEffect, useState } from "react";
 import { EditorProvider } from "~/contexts/EditorContext";
-import MonacoEditor from "~/components/monaco-editor/MonacoEditor";
+import Editor from "~/components/monaco-editor/Editor";
 
 export default function Page() {
 	const [locked, setLocked] = useState<boolean>(true);
 	const [isClient, setIsClient] = useState<boolean>(false);
 	useEffect(() => setIsClient(true), []);
 
-	return <EditorProvider>{isClient && <MonacoEditor locked={locked} setLocked={setLocked} />}</EditorProvider>;
+	return <EditorProvider>{isClient && <Editor locked={locked} setLocked={setLocked} />}</EditorProvider>;
 }
