@@ -9,7 +9,7 @@ import type { IError } from "./ErrorConsole";
 import ErrorConsole from "./ErrorConsole";
 import EditorTopBar from "../EditorTopBar";
 import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
-import Editor, { type OnChange } from "@monaco-editor/react";
+import MonacoEditor, { type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ const firaCode = Fira_Code({
 	subsets: ["latin"],
 });
 
-export default function MonacoEditor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
+export default function Editor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
 	const editorDidMount = useEditorDidMount();
 	const editorRef = useEditorRef();
 	const monacoRef = useMonacoRef();
@@ -95,11 +95,11 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 							width: viewMode === "code" ? "100%" : viewMode === "pipeline" ? "0px" : `${width}px`,
 						}}
 					>
-						<EditorTopBar config={config} />
+						<EditorTopBar config={config} font={firaCode} />
 						<div className={`h-full w-full shrink grow ${firaCode.className}`}>
 							<AutoSizer>
 								{({ width, height }) => (
-									<Editor
+									<MonacoEditor
 										defaultValue={config}
 										value={config}
 										onMount={editorDidMount}
@@ -125,7 +125,6 @@ export default function MonacoEditor({ locked, setLocked }: { locked: boolean; s
 						{viewMode !== "pipeline" && <ErrorConsole errors={errors} font={firaCode} />}
 						{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 					</div>
-
 					<div className="z-0 min-h-full w-full shrink grow">
 						<ReactFlowProvider>
 							<AutoSizer>
