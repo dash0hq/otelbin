@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { createContext, useCallback, useMemo, useRef, useState } from "react";
+import React, { createContext, useCallback, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { type editor } from "monaco-editor";
 import { loader, type Monaco, type OnMount } from "@monaco-editor/react";
@@ -9,7 +9,6 @@ import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
 import { Parser } from "yaml";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
