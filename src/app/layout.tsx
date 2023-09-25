@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import "@dash0/app/globals.css";
-import "../components/react-flow/styles.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { type PropsWithChildren } from "react";
