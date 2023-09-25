@@ -19,7 +19,6 @@ import WelcomeModal from "../welcome-modal/WelcomeModal";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { AppFooter } from "~/components/AppFooter";
-import { useAuth } from "@clerk/nextjs";
 import { AutoSizer } from "~/components/AutoSizer";
 import { ResizeBar } from "~/components/monaco-editor/ResizeBar";
 import { Fira_Code } from "next/font/google";

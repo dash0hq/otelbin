@@ -10,8 +10,6 @@ import { Share } from "~/components/share/Share";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@dash0/components/ui/button";
 import { useViewMode } from "~/contexts/EditorContext";
-import { useUrlState } from "~/lib/urlState/client/useUrlState";
-import { editorBinding } from "~/components/monaco-editor/editorBinding";
 
 const viewModes = [
 	{
