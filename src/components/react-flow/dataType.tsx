@@ -13,7 +13,9 @@ export interface IPipelines {
 interface IService {
 	pipelines?: IPipelines;
 }
+
 export interface IConfig {
 	[key: string]: any;
+	connectors: object;
 	service?: IService;
 }

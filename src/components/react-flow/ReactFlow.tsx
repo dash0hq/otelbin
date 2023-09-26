@@ -9,11 +9,11 @@ import { parse as parseYaml, Parser } from "yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useFocus } from "~/contexts/EditorContext";
 import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
-import ParentNodeType from "./ParentNodeType";
-import ReceiversNode from "./ReceiversNode";
-import ProcessorsNode from "./ProcessorsNode";
-import ExportersNode from "./ExportersNode";
-import EmptyStateNode, { EmptyStateNodeData } from "./EmptyStateNode";
+import ParentsNode from "./node-types/ParentsNode";
+import ReceiversNode from "./node-types/ReceiversNode";
+import ProcessorsNode from "./node-types/ProcessorsNode";
+import ExportersNode from "./node-types/ExportersNode";
+import EmptyStateNode, { EmptyStateNodeData } from "./node-types/EmptyStateNode";
 import { useNodes } from "./useNodes";
 import type { editor } from "monaco-editor";
 import { ButtonGroup } from "@dash0/components/ui/button-group";
@@ -45,7 +45,7 @@ export default function Flow({
 		return docService?.value.items.find((item: any) => item.key.source === "pipelines");
 	}, [value]);
 	const initNodes = useNodes(jsonData);
-	const [nodes, setNodes] = useNodesState(initNodes);
+	const [nodes, setNodes] = useNodesState(initNodes !== undefined ? initNodes : []);
 	const initEdges = useEdgeCreator(nodes);
 	const [edges, setEdges] = useEdgesState(initEdges);
 	const widthSelector = (state: { width: any }) => state.width;
@@ -58,7 +58,7 @@ export default function Flow({
 	useEffect(() => {
 		if (jsonData) {
 			setEdges(initEdges);
-			setNodes(initNodes);
+			setNodes(initNodes !== undefined ? initNodes : []);
 			reactFlowInstance.fitView();
 		} else {
 			setNodes(EmptyStateNodeData);
@@ -72,7 +72,7 @@ export default function Flow({
 			processorsNode: ProcessorsNode,
 			receiversNode: ReceiversNode,
 			exportersNode: ExportersNode,
-			parentNodeType: ParentNodeType,
+			parentNodeType: ParentsNode,
 		}),
 		[]
 	);

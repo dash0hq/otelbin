@@ -4,8 +4,8 @@
 import React, { memo, useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
-import { FlowClick } from "./FlowClick";
-import type { IData } from "./FlowClick";
+import { FlowClick } from "../FlowClick";
+import type { IData } from "../FlowClick";
 import { FileCog } from "lucide-react";
 
 const ProcessorsNode = ({ data }: { data: IData }) => {
@@ -43,7 +43,11 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 	const hasSlash = splitLabel.length > 1;
 	return (
 		<>
-			<div className="flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node">
+			<div
+				className={`flex h-20 max-h-[81px] max-w-[121px] w-[120px] flex-col items-center rounded-lg shadow-node ${
+					isFocused === data.id ? "animate-processorFocus" : ""
+				}`}
+			>
 				<div
 					style={customNodeHeaderStyle}
 					className="px-3 bg-blue-500 text-center text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center"
@@ -52,7 +56,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 				</div>
 				<div
 					style={customNodeStyles}
-					className={`cursor-pointer flex-col ${isFocused === data.id ? "animate-focus" : ""}`}
+					className="cursor-pointer flex-col"
 					onClick={handleClickNode}
 					onMouseEnter={() => setHovered(true)}
 					onMouseLeave={() => setHovered(false)}

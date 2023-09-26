@@ -7,7 +7,7 @@ import { useMemo } from "react";
 
 const childNodesHeight = 80;
 
-const createNode = (pipelineName: string, parentNode: IPipeline, height: number) => {
+const createNode = (pipelineName: string, parentNode: IPipeline, height: number, connectors?: object) => {
 	const nodesToAdd: Node[] = [];
 	const keyTraces = Object.keys(parentNode);
 
@@ -78,9 +78,14 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 		}
 		if (traceItem === "receivers") {
 			const receivers = parentNode.receivers;
+			let isConnector = false;
+
 			Array.isArray(receivers) &&
 				receivers.length > 0 &&
 				receivers.map((receiver, index) => {
+					if (connectors && Object.keys(connectors).includes(receiver)) {
+						isConnector = true;
+					}
 					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
 
 					nodesToAdd.push({
@@ -92,7 +97,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 						data: {
 							label: receiver,
 							parentNode: pipelineName,
-							type: "receivers",
+							type: isConnector ? "connectors" : "receivers",
 							height: childNodesHeight,
 							id: id,
 						},
@@ -103,7 +108,11 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 		if (traceItem === "exporters") {
 			const exporters = parentNode.exporters;
 			const processors = parentNode.processors;
+			let isConnector = false;
 			exporters?.map((exporter, index) => {
+				if (connectors && Object.keys(connectors).includes(exporter)) {
+					isConnector = true;
+				}
 				const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 				nodesToAdd.push({
 					id: id,
@@ -114,7 +123,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 					data: {
 						label: exporter,
 						parentNode: pipelineName,
-						type: "exporters",
+						type: isConnector ? "connectors" : "receivers",
 						height: childNodesHeight,
 						id: id,
 					},
@@ -129,8 +138,9 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number)
 export const useNodes = (value: IConfig) => {
 	return useMemo(() => {
 		const pipelines = value.service?.pipelines;
+		const connectors = value.connectors;
 		if (pipelines == null) {
-			return [];
+			return;
 		}
 
 		const nodesToAdd: Node[] = [];
@@ -160,7 +170,7 @@ export const useNodes = (value: IConfig) => {
 			});
 			const heights = nodesToAdd.filter((node) => node.type === "parentNodeType").map((node) => node.data.height);
 			yOffset += heights[heights.length - 1] + spaceBetweenParents;
-			const childNodes = createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents);
+			const childNodes = createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors);
 			nodesToAdd.push(...childNodes);
 		}
 		return nodesToAdd;
