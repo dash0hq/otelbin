@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { memo } from "react";
-import PipelineTag from "./PipelineTag";
+import PipelineTag from "../PipelineTag";
 import { useNodes, useReactFlow } from "reactflow";
 
 interface IData {
 	label: string;
 	height: number;
 }
-const ParentNodeType = ({ data }: { data: IData }) => {
+const ParentsNode = ({ data }: { data: IData }) => {
 	const rectaFlowInstance = useReactFlow();
 	const nodes = useNodes();
 	const childNodes = nodes.filter((node) => node.parentNode === data.label);
@@ -65,4 +65,4 @@ const ParentNodeType = ({ data }: { data: IData }) => {
 		</>
 	);
 };
-export default memo(ParentNodeType);
+export default memo(ParentsNode);

@@ -4,11 +4,11 @@
 import React, { memo, useState } from "react";
 import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
-import { FlowClick } from "./FlowClick";
-import type { IData } from "./FlowClick";
-import { Download } from "lucide-react";
+import { FlowClick } from "../FlowClick";
+import type { IData } from "../FlowClick";
+import { Upload, Unplug } from "lucide-react";
 
-const ReceiversNode = ({ data }: { data: IData }) => {
+const ExportersNode = ({ data }: { data: IData }) => {
 	const [hovered, setHovered] = useState(false);
 	const editorRef = useEditorRef();
 	const { isFocused } = useFocus();
@@ -36,19 +36,28 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		FlowClick(event, data, editorRef);
 	}
+
 	const label = data.label || "";
 	const splitLabel = label.includes("/") ? label.split("/") : [label];
+	const iconColor = hovered ? "#F3F5F6" : "#9CA2AB";
+	const isConnector = data.type === "connectors";
 	return (
-		<div className="flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node">
+		<div
+			className={`flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node ${
+				isFocused === data.id ? (isConnector ? "animate-connectorFocus" : "animate-focus") : ""
+			}`}
+		>
 			<div
 				style={customNodeHeaderStyle}
-				className="px-3 bg-violet-500 text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center"
+				className={`px-3 ${
+					isConnector ? "bg-otelbinGreen text-otelbinDarkGreen" : "bg-violet-500"
+				} text-center text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center`}
 			>
 				{splitLabel[0]}
 			</div>
 			<div
 				style={customNodeStyles}
-				className={`cursor-pointer flex-col ${isFocused === data.id ? "animate-focus" : ""}`}
+				className="cursor-pointer flex-col"
 				onClick={handleClickNode}
 				onMouseEnter={() => setHovered(true)}
 				onMouseLeave={() => setHovered(false)}
@@ -58,7 +67,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 						splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
 					}`}
 				>
-					<Download color={hovered ? "#F3F5F6" : "#9CA2AB"} width={20} />
+					{isConnector ? <Unplug color={iconColor} width={20} /> : <Upload color={iconColor} width={20} />}
 					{splitLabel.length > 1 && (
 						<div
 							className={`${
@@ -70,8 +79,8 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 					)}
 				</div>
 				<Handle
-					type="source"
-					position={Position.Right}
+					type="target"
+					position={Position.Left}
 					style={{
 						backgroundColor: "rgb(44 48 70 / 0%)",
 						borderColor: "rgb(44 48 70 / 0%)",
@@ -81,4 +90,5 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 		</div>
 	);
 };
-export default memo(ReceiversNode);
+
+export default memo(ExportersNode);
