@@ -146,9 +146,12 @@ export const EditorProvider = ({ children }: { children: any }) => {
 					if (item.key && item.key.source.includes(searchFilter)) {
 						const keyOffset = item.key.offset;
 						const keyLength = item.key.source.length;
+						const sepNewLineOffset = item.sep[1].offset ? item.sep[1].offset : keyLength + keyOffset;
 
-						if (cursorOffset >= keyOffset && cursorOffset <= keyOffset + keyLength) {
-							setPath(correctKey(currentPath, item.key.source));
+						if (cursorOffset >= keyOffset && cursorOffset <= sepNewLineOffset) {
+							setTimeout(() => {
+								setPath(correctKey(currentPath, item.key.source) as string);
+							}, 10);
 							return;
 						}
 					}
@@ -156,9 +159,15 @@ export const EditorProvider = ({ children }: { children: any }) => {
 						if (item.value.source && item.value.source.includes(searchFilter)) {
 							const valueOffset = item.value.offset;
 							const valueLength = item.value.source.length;
+							const valueEndOffset =
+								item.value.end.length > 0 && item.value.end[0].offset
+									? item.value.end[0].offset
+									: valueLength + valueOffset;
 
-							if (cursorOffset >= valueOffset && cursorOffset <= valueOffset + valueLength) {
-								setPath(correctKey(currentPath, item.value.source, item.key ? item.key.source : undefined));
+							if (cursorOffset >= valueOffset && cursorOffset <= valueEndOffset) {
+								setTimeout(() => {
+									setPath(correctKey(currentPath, item.value.source, item.key ? item.key.source : undefined));
+								}, 10);
 								return;
 							}
 						}
