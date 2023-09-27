@@ -34,13 +34,10 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 
 	return (
 		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
-			<a href="https://www.dash0.com?utm_source=otelbin&utm_medium=logo&utm_campaign=otelbin" target="_blank">
-				<div className="flex items-center gap-x-2">
-					<Logo height={26} />
-
-					<p className="text-sm font-semibold">OTelBin</p>
-				</div>
-			</a>
+			<div className="flex items-center gap-x-2">
+				<Logo height={26} />
+				<p className="text-sm font-semibold">OTelBin</p>
+			</div>
 			<div className="flex gap-x-2">
 				<ButtonGroup size="xs" variant="default" className="!gap-0 bg-button">
 					{viewModes.map(({ type, Icon, tooltip }) => (
@@ -81,5 +78,3 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 		</div>
 	);
 }
-
-//
