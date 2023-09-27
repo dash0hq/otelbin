@@ -249,37 +249,6 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		createCompletionItemProvider(new Worker(new URL("monaco-yaml/yaml.worker", import.meta.url)))
 	);
 
-	if (typeof window !== "undefined") {
-		new Promise((res) => {
-			Promise.all([loader.init()]).then(([monaco]) => {
-				monaco.editor.defineTheme("OTelBin", {
-					base: "vs-dark",
-					inherit: true,
-					rules: [
-						{ token: "", fontStyle: "" },
-						{ token: "comment", foreground: "#6D737D" },
-						{ token: "string.yaml", foreground: "#38BDF8" },
-						{ token: "number.yaml", foreground: "#38BDF8" },
-						{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
-					],
-					colors: {
-						"editor.background": "#151721",
-						"editorLineNumber.foreground": "#6D737D",
-						"editorLineNumber.activeForeground": "#F9FAFB",
-						"editorCursor.foreground": "#F9FAFB",
-						"editor.selectionBackground": "#30353D",
-						"editor.selectionHighlightBackground": "#30353D",
-						"editor.hoverHighlightBackground": "#30353D",
-						"editor.lineHighlightBackground": "#30353D",
-						"editor.lineHighlightBorder": "#30353D",
-					},
-				});
-				monaco.editor.setTheme("OTelBin");
-				res(monaco);
-			});
-		});
-	}
-
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>
 			<EditorContext.Provider value={editorRef}>
