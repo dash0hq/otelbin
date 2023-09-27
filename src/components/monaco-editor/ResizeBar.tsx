@@ -22,8 +22,10 @@ export function ResizeBar({ onWidthChange }: ResizeBarProps) {
 		};
 
 		const onMouseMove = (e: MouseEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
 			if (state.current.dragging) {
-				onWidthChange(e.screenX);
+				onWidthChange(e.pageX);
 			}
 		};
 
