@@ -5,6 +5,8 @@ import type { editor } from "monaco-editor";
 import type { RefObject } from "react";
 import JsYaml from "js-yaml";
 import type { IConfig } from "./dataType";
+import "./decorationStyles.css"
+
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
 export interface IData {
@@ -14,9 +16,11 @@ export interface IData {
 	id: string;
 }
 
+let oldDecoration: string[] = [];
+
 export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null) {
 	event.stopPropagation();
-
+	editorRef?.current?.getModel()?.deltaDecorations(oldDecoration, []);
 	const configData = editorRef?.current?.getModel()?.getValue() || "";
 	const jsonData = JsYaml.load(configData) as IConfig;
 	const parents = Object.keys(jsonData?.service?.pipelines ?? {});
@@ -86,6 +90,23 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 				}) || 0) >= getStartPositionOffset()
 		)[0];
 		changePosition(matchLabel);
+
+		const highlightDecoration: editor.IModelDeltaDecoration = {
+			range: {
+				startLineNumber: matchLabel?.range.startLineNumber || 0,
+				startColumn: matchLabel?.range.startColumn || 0,
+				endLineNumber: matchLabel?.range.endLineNumber || 0,
+				endColumn: matchLabel?.range.endColumn || 0,
+			},
+			options: {
+				isWholeLine: true,
+				className: "myLineDecoration",
+				inlineClassName: "myLineDecoration",
+			},
+		}
+
+		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) || ['']
+		oldDecoration = newDecorations;
 	};
 
 	if (parents.includes(data.parentNode)) {
