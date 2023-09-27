@@ -10,6 +10,7 @@ import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import { Parser } from "yaml";
+import { set } from "yaml/dist/schema/yaml-1.1/set";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
 
@@ -149,7 +150,9 @@ export const EditorProvider = ({ children }: { children: any }) => {
 						const sepNewLineOffset = item.sep[1].offset ? item.sep[1].offset : keyLength + keyOffset;
 
 						if (cursorOffset >= keyOffset && cursorOffset <= sepNewLineOffset) {
-							setPath(correctKey(currentPath, item.key.source) as string);
+							setTimeout(() => {
+								setPath(correctKey(currentPath, item.key.source) as string);
+							}, 10);
 							return;
 						}
 					}
@@ -163,7 +166,9 @@ export const EditorProvider = ({ children }: { children: any }) => {
 									: valueLength + valueOffset;
 
 							if (cursorOffset >= valueOffset && cursorOffset <= valueEndOffset) {
-								setPath(correctKey(currentPath, item.value.source, item.key ? item.key.source : undefined));
+								setTimeout(() => {
+									setPath(correctKey(currentPath, item.value.source, item.key ? item.key.source : undefined));
+								}, 10);
 								return;
 							}
 						}
