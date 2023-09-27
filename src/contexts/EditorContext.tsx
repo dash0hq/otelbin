@@ -149,9 +149,7 @@ export const EditorProvider = ({ children }: { children: any }) => {
 						const sepNewLineOffset = item.sep[1].offset ? item.sep[1].offset : keyLength + keyOffset;
 
 						if (cursorOffset >= keyOffset && cursorOffset <= sepNewLineOffset) {
-							setTimeout(() => {
-								setPath(correctKey(currentPath, item.key.source) as string);
-							}, 10);
+							setPath(correctKey(currentPath, item.key.source) as string);
 							return;
 						}
 					}
@@ -165,9 +163,7 @@ export const EditorProvider = ({ children }: { children: any }) => {
 									: valueLength + valueOffset;
 
 							if (cursorOffset >= valueOffset && cursorOffset <= valueEndOffset) {
-								setTimeout(() => {
-									setPath(correctKey(currentPath, item.value.source, item.key ? item.key.source : undefined));
-								}, 10);
+								setPath(correctKey(currentPath, item.value.source, item.key ? item.key.source : undefined));
 								return;
 							}
 						}
