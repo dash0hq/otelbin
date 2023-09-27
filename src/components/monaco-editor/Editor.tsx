@@ -91,7 +91,6 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 					base: "vs-dark",
 					inherit: true,
 					rules: [
-						{ token: "", fontStyle: "" },
 						{ token: "comment", foreground: "#6D737D" },
 						{ token: "string.yaml", foreground: "#38BDF8" },
 						{ token: "number.yaml", foreground: "#38BDF8" },
