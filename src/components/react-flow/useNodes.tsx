@@ -78,11 +78,10 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 		}
 		if (traceItem === "receivers") {
 			const receivers = parentNode.receivers;
-			let isConnector = false;
-
 			Array.isArray(receivers) &&
 				receivers.length > 0 &&
 				receivers.map((receiver, index) => {
+					let isConnector = false;
 					if (connectors && Object.keys(connectors).includes(receiver)) {
 						isConnector = true;
 					}
@@ -108,11 +107,12 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 		if (traceItem === "exporters") {
 			const exporters = parentNode.exporters;
 			const processors = parentNode.processors;
-			let isConnector = false;
 			exporters?.map((exporter, index) => {
+				let isConnector = false;
 				if (connectors && Object.keys(connectors).includes(exporter)) {
 					isConnector = true;
 				}
+
 				const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 				nodesToAdd.push({
 					id: id,
@@ -123,7 +123,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 					data: {
 						label: exporter,
 						parentNode: pipelineName,
-						type: isConnector ? "connectors" : "receivers",
+						type: isConnector ? "connectors" : "exporters",
 						height: childNodesHeight,
 						id: id,
 					},
