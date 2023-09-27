@@ -26,6 +26,10 @@ This repository uses a JSON schema from the VS Code's extension [OTEL Validator]
 
 To get the latest schema version, either clone the repository and copy the schema from `assets/schema.json` or directly download the file from [the repository](https://github.com/nimbushq/otel-validator/blob/main/assets/schema.json).
 
+### Updated Schema
+
+We've recently updated the JSON schema to include support for `service.telemetry` and `connectors`.
+
 ## License
 
 Licensed under the Apache License, Version 2.0 (the "License");
