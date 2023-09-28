@@ -5,7 +5,7 @@ import type { editor } from "monaco-editor";
 import type { RefObject } from "react";
 import JsYaml from "js-yaml";
 import type { IConfig } from "./dataType";
-import "./decorationStyles.css"
+import "./decorationStyles.css";
 import { set } from "yaml/dist/schema/yaml-1.1/set";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
@@ -104,14 +104,13 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 				className: "lineDecoration",
 				inlineClassName: "lineDecoration",
 			},
-		}
+		};
 
-		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) || ['']
+		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) || [""];
 		oldDecoration = newDecorations;
 		setTimeout(() => {
 			editorRef?.current?.getModel()?.deltaDecorations(oldDecoration, []);
-		}
-			, 550);
+		}, 550);
 	};
 
 	if (parents.includes(data.parentNode)) {
