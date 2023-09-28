@@ -6,6 +6,7 @@ import type { RefObject } from "react";
 import JsYaml from "js-yaml";
 import type { IConfig } from "./dataType";
 import "./decorationStyles.css"
+import { set } from "yaml/dist/schema/yaml-1.1/set";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -16,11 +17,9 @@ export interface IData {
 	id: string;
 }
 
-let oldDecoration: string[] = [];
-
 export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null) {
 	event.stopPropagation();
-	editorRef?.current?.getModel()?.deltaDecorations(oldDecoration, []);
+
 	const configData = editorRef?.current?.getModel()?.getValue() || "";
 	const jsonData = JsYaml.load(configData) as IConfig;
 	const parents = Object.keys(jsonData?.service?.pipelines ?? {});
@@ -91,6 +90,8 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 		)[0];
 		changePosition(matchLabel);
 
+		let oldDecoration: string[] = [];
+
 		const highlightDecoration: editor.IModelDeltaDecoration = {
 			range: {
 				startLineNumber: matchLabel?.range.startLineNumber || 0,
@@ -100,13 +101,17 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 			},
 			options: {
 				isWholeLine: true,
-				className: "myLineDecoration",
-				inlineClassName: "myLineDecoration",
+				className: "lineDecoration",
+				inlineClassName: "lineDecoration",
 			},
 		}
 
 		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) || ['']
 		oldDecoration = newDecorations;
+		setTimeout(() => {
+			editorRef?.current?.getModel()?.deltaDecorations(oldDecoration, []);
+		}
+			, 550);
 	};
 
 	if (parents.includes(data.parentNode)) {
