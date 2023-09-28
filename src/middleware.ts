@@ -3,7 +3,9 @@
 
 import { authMiddleware } from "@clerk/nextjs";
 
-export default authMiddleware({});
+export default authMiddleware({
+	apiRoutes: ["/s/new"],
+});
 
 export const config = {
 	matcher: ["/s/new"],
