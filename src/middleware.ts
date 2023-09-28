@@ -4,7 +4,6 @@
 import { authMiddleware } from "@clerk/nextjs";
 
 export default authMiddleware({
-	debug: true,
 	apiRoutes: ["/s/new"],
 });
 
