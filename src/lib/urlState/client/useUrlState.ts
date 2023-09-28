@@ -9,6 +9,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { parseUrlState } from "~/lib/urlState/parseUrlState";
 import { serializeUrlState } from "~/lib/urlState/serializeUrlState";
 import { useCallback, useMemo } from "react";
+import { useHashSearchParams } from "~/lib/urlState/client/useHashSearchParams";
 
 /**
  * A hook similar to useState that can be used to read&store state within the
@@ -23,20 +24,21 @@ import { useCallback, useMemo } from "react";
 export function useUrlState<T extends Binding<unknown>[]>(
 	binds: T
 ): [Bindings<T>, (newUrlState: Partial<Bindings<T>>, pathName?: string) => string] {
-	const searchParams = useSearchParams();
 	const pathName = usePathname();
+	const searchParams = useSearchParams();
+	const hashSearchParams = useHashSearchParams();
 
-	const urlState = useMemo(() => parseUrlState(searchParams, binds), [searchParams, binds]);
+	const urlState = useMemo(() => parseUrlState(hashSearchParams, binds), [hashSearchParams, binds]);
 
 	const getLink = useCallback(
 		function getLink(newUrlState: Partial<Bindings<T>>, newPathName?: string): string {
-			return serializeUrlState(binds, newPathName ?? pathName, searchParams, {
+			return serializeUrlState(binds, newPathName ?? pathName, searchParams, hashSearchParams, {
 				// @ts-expect-error TypeScript is confused
 				...urlState,
 				...newUrlState,
 			});
 		},
-		[searchParams, binds, pathName, urlState]
+		[hashSearchParams, searchParams, binds, pathName, urlState]
 	);
 
 	return [urlState, getLink];

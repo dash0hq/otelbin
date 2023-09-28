@@ -9,10 +9,11 @@ import { stringify } from "./jsurl2";
 export function serializeUrlState<T extends Binding<unknown>[]>(
 	bindings: T,
 	pathName: string,
-	currentURLSearchParams: URLSearchParams | ReadonlyURLSearchParams,
+	searchParams: URLSearchParams | ReadonlyURLSearchParams,
+	currentHashSearchParams: URLSearchParams | ReadonlyURLSearchParams,
 	urlState: Partial<Bindings<T>>
 ): string {
-	const usp = new URLSearchParams(currentURLSearchParams.toString());
+	const usp = new URLSearchParams(currentHashSearchParams.toString());
 
 	for (const binding of bindings) {
 		const searchParamName = binding.prefix + binding.name;
@@ -30,5 +31,5 @@ export function serializeUrlState<T extends Binding<unknown>[]>(
 		}
 	}
 
-	return pathName + "?" + usp.toString();
+	return pathName + "?" + searchParams.toString() + "#" + usp.toString();
 }
