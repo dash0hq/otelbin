@@ -4,13 +4,30 @@
 import useSWR from "swr";
 import { UrlCopy } from "~/components/share/UrlCopy";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+interface FetcherArgs {
+	url: string;
+	method: string;
+	body?: string;
+}
+
+const fetcher = (args: FetcherArgs) =>
+	fetch(args.url, {
+		method: args.method,
+		body: args.body,
+	}).then((res) => res.json());
 
 export interface SignedInUrlSharingProps {
 	fullURL: string;
 }
 
 export function SignedInUrlSharing({ fullURL }: SignedInUrlSharingProps) {
-	const { data } = useSWR<{ shortLink: string }>(`/s/new?url=${encodeURIComponent(fullURL)}`, fetcher);
+	const { data } = useSWR<{ shortLink: string }>(
+		{
+			url: `/s/new`,
+			method: "POST",
+			body: fullURL,
+		},
+		fetcher
+	);
 	return <UrlCopy url={data?.shortLink ?? fullURL} />;
 }

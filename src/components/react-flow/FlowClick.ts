@@ -103,14 +103,13 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 				className: "lineDecoration",
 				inlineClassName: "lineDecoration",
 			},
-		}
+		};
 
-		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) || ['']
+		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) || [""];
 		oldDecoration = newDecorations;
 		setTimeout(() => {
 			editorRef?.current?.getModel()?.deltaDecorations(oldDecoration, []);
-		}
-			, 550);
+		}, 550);
 	};
 
 	if (parents.includes(data.parentNode)) {

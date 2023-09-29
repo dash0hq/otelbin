@@ -17,8 +17,8 @@ const rateLimit = new Ratelimit({
 	prefix: "rate-limit-short-links",
 });
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
-	const longURL = request.nextUrl.searchParams.get("url");
+export async function POST(request: NextRequest): Promise<NextResponse> {
+	const longURL = await request.text();
 	if (!longURL) {
 		return NextResponse.json(
 			{
