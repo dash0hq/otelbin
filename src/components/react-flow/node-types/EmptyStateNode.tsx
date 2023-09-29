@@ -17,19 +17,19 @@ const EmptyStateNode = () => {
 			</p>
 			<div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
 				<a href="https://slack.cncf.io/" target="_blank" rel="noreferrer noopener">
-					<Button className="text-[13px] font-medium text-default">
+					<Button className="text-[13px] font-medium text-default" size="sm">
 						<Slack width={16} />
 						Join the CNCF Slack
 					</Button>
 				</a>
 				<a href="https://slack.cncf.io/" target="_blank" rel="noreferrer noopener">
-					<Button className="text-[13px] font-medium text-default">
+					<Button className="text-[13px] font-medium text-default" size="sm">
 						<Slack width={16} />
 						Join the Dash0 Slack
 					</Button>
 				</a>
 				<a href="https://github.com/dash0hq/otelbin/issues/new" target="_blank" rel="noreferrer noopener">
-					<Button className="text-[13px] font-medium text-default">
+					<Button className="text-[13px] font-medium text-default" size="sm">
 						<Github width={16} />
 						Report an OTelBin issue
 					</Button>
