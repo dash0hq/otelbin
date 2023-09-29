@@ -15,7 +15,7 @@ interface IService {
 }
 
 export interface IConfig {
-	[key: string]: any;
+	[key: string]: unknown;
 	connectors: object;
 	service?: IService;
 }

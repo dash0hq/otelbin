@@ -4,9 +4,9 @@
 import type { JSONSchemaType } from "ajv";
 
 interface IPipeline {
-	receivers: any[];
-	processors?: any[];
-	exporters: any[];
+	receivers: string[];
+	processors?: string[];
+	exporters: string[];
 }
 
 interface IPipelines {

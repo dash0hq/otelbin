@@ -4,7 +4,7 @@
 import React, { createContext, useCallback, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { type editor } from "monaco-editor";
-import { loader, type Monaco, type OnMount } from "@monaco-editor/react";
+import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";

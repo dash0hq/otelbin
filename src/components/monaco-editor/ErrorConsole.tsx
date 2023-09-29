@@ -43,7 +43,7 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 					<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-[25px]">
 						{errors?.ajvErrors &&
 							errors.ajvErrors?.length > 0 &&
-							errors.ajvErrors.map((error: any, index: any) => {
+							errors.ajvErrors.map((error: IAjvError, index: number) => {
 								return <Error key={index} error={error} font={font} />;
 							})}
 

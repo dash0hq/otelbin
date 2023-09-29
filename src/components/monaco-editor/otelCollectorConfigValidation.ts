@@ -2,23 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { schema } from "./JSONSchema";
-import type { IAjvError, IError } from "./ErrorConsole";
+import type { IAjvError, IError, IJsYamlError } from "./ErrorConsole";
 import JsYaml from "js-yaml";
 import Ajv from "ajv";
 import type { ErrorObject } from "ajv";
 import type { RefObject } from "react";
 import type { editor } from "monaco-editor";
-
+import { type Monaco } from "@monaco-editor/react";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
-type MonacoRefType = RefObject<any | null>;
+type MonacoRefType = RefObject<Monaco | null>;
 
 export function validateOtelCollectorConfigurationAndSetMarkers(
 	configData: string,
-	editorRef: EditorRefType | null,
-	monacoRef: MonacoRefType | null
+	editorRef: EditorRefType,
+	monacoRef: MonacoRefType
 ) {
 	const ajv = new Ajv({ allErrors: true });
-	const model = editorRef?.current?.getModel();
+	const model = editorRef.current?.getModel();
 	const ajvError: IAjvError[] = [];
 	const totalErrors: IError = { ajvErrors: ajvError };
 	try {
@@ -46,22 +46,23 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			}
 		}
 
-		monacoRef?.current?.editor.setModelMarkers(model, "json", []);
-	} catch (error: any) {
-		const errorLineNumber = error.mark.line;
-		const errorColumn = error.mark.column;
-		const errorMessage = error.reason;
+		model && monacoRef?.current?.editor.setModelMarkers(model, "json", []);
+	} catch (error: unknown) {
+		const knownError = error as IJsYamlError;
+		const errorLineNumber = knownError.mark.line;
+		// const errorColumn = knownError.mark;
+		const errorMessage = knownError.reason || "Unknown error";
 		const errorMarker = {
-			startLineNumber: errorLineNumber,
-			endLineNumber: errorLineNumber,
-			startColumn: errorColumn,
-			endColumn: errorColumn,
-			severity: monacoRef?.current?.MarkerSeverity.Error,
+			startLineNumber: errorLineNumber || 0,
+			endLineNumber: errorLineNumber || 0,
+			startColumn: 0,
+			endColumn: 0,
+			severity: monacoRef?.current?.MarkerSeverity.Error || 1,
 			message: errorMessage,
 		};
-		monacoRef?.current?.editor.setModelMarkers(model, "json", [errorMarker]);
+		model && monacoRef?.current?.editor.setModelMarkers(model, "json", [errorMarker]);
 
-		totalErrors.jsYamlError = error;
+		totalErrors.jsYamlError = knownError;
 	}
 
 	return totalErrors;

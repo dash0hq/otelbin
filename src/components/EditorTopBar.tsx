@@ -5,7 +5,7 @@ import { IconButton } from "@dash0hq/ui/src/components/ui/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0hq/ui/src/components/ui/tooltip";
 import { useToast } from "@dash0hq/ui/src/components/ui/use-toast";
 import { ArrowDownToLine, Copy } from "lucide-react";
-import { NextFont } from "next/dist/compiled/@next/font";
+import { type NextFont } from "next/dist/compiled/@next/font";
 import { useBreadcrumbs } from "~/contexts/EditorContext";
 
 export default function EditorTopBar({ config, font }: { config: string; font: NextFont }) {

@@ -6,7 +6,6 @@ import type { RefObject } from "react";
 import JsYaml from "js-yaml";
 import type { IConfig } from "./dataType";
 import "./decorationStyles.css"
-import { set } from "yaml/dist/schema/yaml-1.1/set";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 

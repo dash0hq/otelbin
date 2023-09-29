@@ -12,7 +12,6 @@ import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/co
 import MonacoEditor, { loader, type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
-import { useRouter } from "next/navigation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
@@ -35,7 +34,6 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const editorRef = useEditorRef();
 	const monacoRef = useMonacoRef();
 	const [width, setWidth] = useState(Number(localStorage.getItem("width") || 440));
-	const router = useRouter();
 	const { viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
@@ -54,11 +52,15 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 				window.history.pushState(null, "", getLink({ config: newConfig }));
 			}
 		},
-		[getLink, router]
+		[getLink]
 	);
 
 	const errors = useMemo((): IError => {
-		return validateOtelCollectorConfigurationAndSetMarkers(currentConfig, editorRef, monacoRef);
+		if (editorRef && monacoRef) {
+			return validateOtelCollectorConfigurationAndSetMarkers(currentConfig, editorRef, monacoRef);
+		} else {
+			return {};
+		}
 	}, [currentConfig, editorRef, monacoRef]);
 
 	const isValidConfig = errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0;
