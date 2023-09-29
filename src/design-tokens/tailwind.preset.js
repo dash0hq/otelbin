@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-/** @type {import('tailwindcss').Config} */
+/** @type {import("tailwindcss").Config} */
 module.exports = {
 	theme: {
 		extend: {
@@ -182,26 +182,10 @@ module.exports = {
 					"icon-hover": "var(--button-cta-color-icon-hover)",
 					"icon-active": "var(--button-cta-color-icon-active)",
 				},
-				progress: {
-					fg: "var(--progress-color-fg)",
-				},
-				slider: {
-					fg: "var(--slider-color-fg)",
-				},
 				"button-destructive": {
 					icon: "var(--button-destructive-color-icon)",
 					"icon-hover": "var(--button-destructive-color-icon-hover)",
 					"icon-active": "var(--button-destructive-color-icon-active)",
-				},
-				"dropdown-menu-item": {
-					icon: "var(--dropdown-menu-item-color-icon)",
-					"icon-hover": "var(--dropdown-menu-item-color-icon-hover)",
-					"icon-active": "var(--dropdown-menu-item-color-icon-active)",
-					destructive: {
-						icon: "var(--dropdown-menu-item-destructive-color-icon)",
-						"icon-active": "var(--dropdown-menu-item-destructive-color-icon-active)",
-						"icon-hover": "var(--dropdown-menu-item-destructive-color-icon-hover)",
-					},
 				},
 				"button-outline": {
 					icon: "var(--button-outline-color-icon)",
@@ -212,27 +196,6 @@ module.exports = {
 					icon: "var(--button-transparent-color-icon)",
 					"icon-hover": "var(--button-transparent-color-icon-hover)",
 					"icon-active": "var(--button-transparent-color-icon-active)",
-				},
-				checkbox: {
-					icon: "var(--checkbox-color-icon)",
-				},
-				"sidebar-menu-item": {
-					icon: "var(--sidebar-menu-item-color-icon)",
-					"icon-active": "var(--sidebar-menu-item-color-icon-active)",
-					"icon-hover": "var(--sidebar-menu-item-color-icon-hover)",
-				},
-				"filter-nav-bar-item": {
-					icon: "var(--filter-nav-bar-item-color-icon)",
-					"icon-active": "var(--filter-nav-bar-item-color-icon-active)",
-					"icon-hover": "var(--filter-nav-bar-item-color-icon-hover)",
-					outline: {
-						icon: "var(--filter-nav-bar-item-outline-color-icon)",
-						"icon-active": "var(--filter-nav-bar-item-outline-color-icon-active)",
-						"icon-hover": "var(--filter-nav-bar-item-outline-color-icon-hover)",
-					},
-				},
-				switch: {
-					icon: "var(--switch-color-icon)",
 				},
 				severe: {
 					active: "var(--color-severe-active)",
@@ -321,40 +284,15 @@ module.exports = {
 					hover: "var(--color-text-attention-hover)",
 					active: "var(--color-text-attention-active)",
 				},
-				"sidebar-menu-item": {
-					DEFAULT: "var(--sidebar-menu-item-color-text)",
-					active: "var(--sidebar-menu-item-color-text-active)",
-					hover: "var(--sidebar-menu-item-color-text-hover)",
-				},
-				"filter-nav-bar-item": {
-					DEFAULT: "var(--filter-nav-bar-item-color-text)",
-					active: "var(--filter-nav-bar-item-color-text-active)",
-					hover: "var(--filter-nav-bar-item-color-text-hover)",
-					outline: {
-						DEFAULT: "var(--filter-nav-bar-item-outline-color-text)",
-						active: "var(--filter-nav-bar-item-outline-color-text-active)",
-						hover: "var(--filter-nav-bar-item-outline-color-text-hover)",
-					},
-				},
-				avatar: "var(--avatar-text)",
-				toast: {
-					DEFAULT: "var(--toast-color-text)",
-					destructive: "var(--toast-destructive-color-text)",
-				},
-				severe: {
-					active: "var(--color-text-severe-active)",
-					hover: "var(--color-text-severe-hover)",
-					DEFAULT: "var(--color-text-severe-default)",
-				},
-				map: {
-					node: {
-						label: {
-							DEFAULT: "var(--map-node-label-color-text)",
-							hover: "var(--map-node-label-color-text-hover)",
-							selected: "var(--map-node-label-color-text-selected)",
-						},
-					},
-				},
+			},
+			toast: {
+				DEFAULT: "var(--toast-color-text)",
+				destructive: "var(--toast-destructive-color-text)",
+			},
+			severe: {
+				active: "var(--color-text-severe-active)",
+				hover: "var(--color-text-severe-hover)",
+				DEFAULT: "var(--color-text-severe-default)",
 			},
 			backgroundColor: {
 				default: "var(--color-bg-default)",
@@ -389,8 +327,6 @@ module.exports = {
 				},
 				"dropdown-menu": "var(--dropdown-menu-color-bg)",
 				progress: "var(--progress-color-bg)",
-				slider: "var(--slider-color-bg)",
-				"slider-indicator": "var(--slider-indicator-color-bg)",
 				"button-destructive": {
 					DEFAULT: "var(--button-destructive-color-bg)",
 					active: "var(--button-destructive-color-bg-active)",
@@ -424,33 +360,6 @@ module.exports = {
 					hover: "var(--button-transparent-color-bg-hover)",
 					active: "var(--button-transparent-color-bg-active)",
 				},
-				card: {
-					DEFAULT: "var(--card-color-bg)",
-					subdued: "var(--card-subdued-color-bg)",
-				},
-				"sidebar-menu": "var(--sidebar-menu-color-bg)",
-				"sidebar-menu-item": {
-					DEFAULT: "var(--sidebar-menu-item-color-bg)",
-					active: "var(--sidebar-menu-item-color-bg-active)",
-					hover: "var(--sidebar-menu-item-color-bg-hover)",
-				},
-				table: {
-					row: {
-						DEFAULT: "var(--table-row-color-bg)",
-						hover: "var(--table-row-color-bg-hover)",
-						active: "var(--table-row-color-bg-active)",
-						selected: "var(--table-row-color-bg-selected)",
-						"selected-hover": "var(--table-row-color-bg-selected-hover)",
-						"selected-active": "var(--table-row-color-bg-selected-active)",
-					},
-					DEFAULT: "var(--table-color-bg)",
-					"row-nested": {
-						active: "var(--table-row-nested-color-bg-active)",
-						hover: "var(--table-row-nested-color-bg-hover)",
-						DEFAULT: "var(--table-row-nested-color-bg)",
-					},
-				},
-				"hover-card": "var(--hover-card-color-bg)",
 				"filter-nav-bar-item": {
 					DEFAULT: "var(--filter-nav-bar-item-color-bg)",
 					active: "var(--filter-nav-bar-item-color-bg-active)",
@@ -461,17 +370,10 @@ module.exports = {
 						hover: "var(--filter-nav-bar-item-outline-color-bg-hover)",
 					},
 				},
-				avatar: "var(--avatar-bg)",
-				switch: {
-					DEFAULT: "var(--switch-color-bg)",
-					hover: "var(--switch-color-bg-hover)",
-					active: "var(--switch-color-bg-active)",
-				},
 				toast: {
 					DEFAULT: "var(--toast-color-bg)",
 					destructive: "var(--toast-destructive-color-bg)",
 				},
-				sheet: "var(--sheet-color-bg)",
 				inset: "var(--color-bg-inset)",
 				alert: {
 					DEFAULT: "var(--alert-color-bg)",
@@ -533,37 +435,10 @@ module.exports = {
 					hover: "var(--button-transparent-color-border-hover)",
 					active: "var(--button-transparent-color-border-active)",
 				},
-				card: {
-					DEFAULT: "var(--card-color-border)",
-					subdued: "var(--card-subdued-color-border)",
-				},
-				"sidebar-menu": "var(--sidebar-menu-color-border)",
-				table: {
-					row: "var(--table-row-color-border)",
-					DEFAULT: "var(--table-color-border)",
-				},
-				"hover-card": "var(--hover-card-color-border)",
-				"filter-nav-bar-item": {
-					DEFAULT: "var(--filter-nav-bar-item-color-border)",
-					active: "var(--filter-nav-bar-item-color-border-active)",
-					hover: "var(--filter-nav-bar-item-color-border-hover)",
-					outline: {
-						DEFAULT: "var(--filter-nav-bar-item-outline-color-border)",
-						hover: "var(--filter-nav-bar-item-outline-color-border-hover)",
-						active: "var(--filter-nav-bar-item-outline-color-border-active)",
-					},
-				},
-				avatar: "var(--avatar-border)",
-				switch: {
-					DEFAULT: "var(--switch-color-border)",
-					hover: "var(--switch-color-border-hover)",
-					active: "var(--switch-color-border-active)",
-				},
 				toast: {
 					DEFAULT: "var(--toast-color-border)",
 					destructive: "var(--toast-destructive-color-border)",
 				},
-				sheet: "var(--sheet-color-border)",
 				critical: "var(--color-border-critical)",
 				success: "var(--color-border-success)",
 				attention: "var(--color-border-attention)",
@@ -631,13 +506,8 @@ module.exports = {
 				popover: "var(--popover-border-radius)",
 				modal: "var(--modal-border-radius)",
 				"sidebar-menu-item": "var(--sidebar-menu-item-border-radius)",
-				"hover-card": "var(--hover-card-border-radius)",
 				"filter-nav-bar-item": "var(--filter-nav-bar-item-border-radius)",
-				"avatar-personal": "var(--avatar-personal-border-radius)",
-				switch: "var(--switch-border-radius)",
 				toast: "var(--toast-border-radius)",
-				"avatar-organization": "var(--avatar-organization-border-radius)",
-				card: "var(--card-border-radius)",
 				checkbox: "var(--checkbox-border-radius)",
 				"radio-button": "var(--radio-button-border-radius)",
 				badge: "var(--badge-border-radius)",
@@ -653,15 +523,10 @@ module.exports = {
 				button: "var(--button-border-width)",
 				tag: "var(--tag-border-width)",
 				"filter-nav-bar-item": "var(--filter-nav-bar-item-border-width)",
-				avatar: "var(--avatar-border-width)",
-				switch: "var(--switch-border-width)",
 				"dropdown-menu": "var(--dropdown-menu-border-width)",
 				toast: "var(--toast-border-width)",
-				"hover-card": "var(--hover-card-border-width)",
 				input: "var(--input-border-width)",
-				checkbox: "var(--checkbox-border-width)",
 				"radio-button": "var(--radio-button-border-width)",
-				card: "var(--card-border-width)",
 				badge: "var(--badge-border-width)",
 				alert: "var(--alert-border-width)",
 				modal: "var(--modal-border-width)",
