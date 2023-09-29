@@ -30,7 +30,12 @@ export default function RootLayout({ children }: PropsWithChildren) {
 			}}
 		>
 			<html lang="en" className="dark overflow-hidden">
-				<body className={cn("max-h-screen min-h-screen bg-background font-sans antialiased", inter.className)}>
+				<head>
+					<meta name="viewport" content="initial-scale=1" />
+				</head>
+				<body
+					className={cn("max-h-screen min-h-screen min-w-[64rem] bg-background font-sans antialiased", inter.className)}
+				>
 					<TooltipProvider>
 						<main className="max-h-screen min-h-screen">{children}</main>
 						<Toaster />
