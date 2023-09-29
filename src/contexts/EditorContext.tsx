@@ -10,6 +10,7 @@ import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import { Parser } from "yaml";
+import type { Document, IItem } from "../components/monaco-editor/yamlParserTypes";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
@@ -83,8 +84,8 @@ export const EditorProvider = ({ children }: { children: any }) => {
 	const getValue = useCallback((editorValue: string) => {
 		const value = editorValue;
 		const parsedYaml = Array.from(new Parser().parse(value));
-		const doc = parsedYaml.find((token) => token.type === "document") as any;
-		const docObject = doc?.value?.items ?? [];
+		const doc = parsedYaml.find((token) => token.type === "document") as Document;
+		const docObject: IItem[] = doc?.value?.items ?? [];
 		return docObject;
 	}, []);
 
@@ -123,28 +124,27 @@ export const EditorProvider = ({ children }: { children: any }) => {
 
 		let value = editorRef.current?.getValue() ?? "";
 		let docObject = getValue(value);
-
 		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
 			docObject = getValue(value);
 		});
 
-		function correctKey(value: string, key: string, key2?: string) {
+		function correctKey(value: string, key?: string, key2?: string) {
 			if (key2 != undefined) value += " > " + key2;
 			if (key != undefined) value += " > " + key;
 			return value;
 		}
 
-		function findSymbols(yamlItems: any[], currentPath: string, searchFilter: string, cursorOffset: number) {
+		function findSymbols(yamlItems: IItem[], currentPath: string, searchFilter: string, cursorOffset: number) {
 			if (yamlItems.length === 0) return;
 			else if (Array.isArray(yamlItems)) {
 				for (let i = 0; i < yamlItems.length; i++) {
 					const item = yamlItems[i];
 
-					if (item.key && item.key.source.includes(searchFilter)) {
+					if (item?.key && item.key.source.includes(searchFilter)) {
 						const keyOffset = item.key.offset;
 						const keyLength = item.key.source.length;
-						const sepNewLineOffset = item.sep[1].offset ? item.sep[1].offset : keyLength + keyOffset;
+						const sepNewLineOffset = item?.sep[1]?.offset ? item.sep[1].offset : keyLength + keyOffset;
 
 						if (cursorOffset >= keyOffset && cursorOffset <= sepNewLineOffset) {
 							setTimeout(() => {
@@ -153,12 +153,12 @@ export const EditorProvider = ({ children }: { children: any }) => {
 							return;
 						}
 					}
-					if (item.value) {
+					if (item?.value) {
 						if (item.value.source && item.value.source.includes(searchFilter)) {
 							const valueOffset = item.value.offset;
 							const valueLength = item.value.source.length;
 							const valueEndOffset =
-								item.value.end.length > 0 && item.value.end[0].offset
+								item.value.end && item.value.end.length > 0 && item.value.end[0] && item.value.end[0].offset
 									? item.value.end[0].offset
 									: valueLength + valueOffset;
 
