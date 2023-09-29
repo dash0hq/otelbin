@@ -4,15 +4,8 @@
 import { useState } from "react";
 import Logo from "../assets/svg/otelbin-logo-new.svg";
 import Image from "next/image";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogFooter,
-	DialogTitle,
-	DialogDescription,
-} from "@dash0/components/ui/dialog";
-import { Button } from "@dash0hq/ui/src/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "~/components/dialog";
+import { Button } from "~/components/button";
 import { welcomeModalData } from "./WelcomeModalData";
 
 export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {

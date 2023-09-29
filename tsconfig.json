@@ -25,9 +25,6 @@
       "~/*": [
         "./src/*"
       ],
-      "@dash0/*": [
-        "./node_modules/@dash0hq/ui/src/*"
-      ]
     },
     "plugins": [
       {

@@ -16,9 +16,9 @@ import ExportersNode from "./node-types/ExportersNode";
 import EmptyStateNode, { EmptyStateNodeData } from "./node-types/EmptyStateNode";
 import { useNodes } from "./useNodes";
 import type { editor } from "monaco-editor";
-import { ButtonGroup } from "@dash0/components/ui/button-group";
-import { Button } from "@dash0hq/ui/src/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0/components/ui/tooltip";
+import { ButtonGroup } from "~/components/button-group";
+import { Button } from "~/components/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 

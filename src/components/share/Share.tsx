@@ -4,21 +4,11 @@
 "use client";
 
 import { Share2 } from "lucide-react";
-import { Button } from "@dash0/components/ui/button";
-// import { useToast } from "@dash0/components/ui/use-toast";
-import { Popover, PopoverContent, PopoverTrigger } from "@dash0/components/ui/popover";
+import { Button } from "~/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/popover";
 import { ShareContent } from "~/components/share/ShareContent";
 
 export function Share() {
-	// const { toast } = useToast();
-
-	// async function handleShare() {
-	// 	await navigator.clipboard.writeText(window.location.href);
-	// 	toast({
-	// 		description: "URL copied to clipboard.",
-	// 	});
-	// }
-
 	return (
 		<Popover>
 			<PopoverTrigger asChild>

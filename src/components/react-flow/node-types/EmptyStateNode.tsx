@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Button } from "@dash0hq/ui/src/components/ui/button";
+import { Button } from "~/components/button";
 import { Github, Slack } from "lucide-react";
 import React, { memo } from "react";
 import { type Node } from "reactflow";
