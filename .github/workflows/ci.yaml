@@ -24,20 +24,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@dash0hq'
 
       - name: Install dependencies
         shell: bash
         run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.READ_PACKAGES }}
 
       - name: Lint
         shell: bash
         run: npm run lint
-        env:
-          DATABASE_URL: "mysql://unused"
 
       - name: Test
         shell: bash

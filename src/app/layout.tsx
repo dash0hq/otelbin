@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import "@dash0/app/globals.css";
+import "./globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { type PropsWithChildren } from "react";
 import { type Metadata } from "next";
-import { TooltipProvider } from "@dash0/components/ui/tooltip";
-import { Toaster } from "@dash0/components/ui/toaster";
+import { TooltipProvider } from "~/components/tooltip";
+import { Toaster } from "~/components/toaster";
 import { dark } from "@clerk/themes";
 import { Inter } from "next/font/google";
 import { cn } from "~/lib/utils";

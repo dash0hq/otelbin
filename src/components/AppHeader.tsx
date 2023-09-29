@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logo from "./assets/svg/otelbin-logo-new.svg";
-import { ButtonGroup, ButtonGroupItem } from "@dash0/components/ui/button-group";
+import { ButtonGroup, ButtonGroupItem } from "~/components/button-group";
 import { Columns, Code2, LogIn } from "lucide-react";
-import { ServiceMapIcon } from "@dash0/icons";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { Share } from "~/components/share/Share";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Button } from "@dash0/components/ui/button";
+import { Button } from "~/components/button";
 import { useViewMode } from "~/contexts/EditorContext";
+import { MapIcon } from "~/icons/map";
 
 const viewModes = [
 	{
@@ -24,7 +24,7 @@ const viewModes = [
 	},
 	{
 		type: "pipeline",
-		Icon: ServiceMapIcon,
+		Icon: MapIcon,
 		tooltip: "Only show the pipeline visualization",
 	},
 ];

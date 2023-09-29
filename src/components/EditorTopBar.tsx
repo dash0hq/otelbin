@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { IconButton } from "@dash0hq/ui/src/components/ui/icon-button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@dash0hq/ui/src/components/ui/tooltip";
-import { useToast } from "@dash0hq/ui/src/components/ui/use-toast";
+import { IconButton } from "~/components/icon-button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
+import { useToast } from "~/components/use-toast";
 import { ArrowDownToLine, Copy } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
 import { useBreadcrumbs } from "~/contexts/EditorContext";

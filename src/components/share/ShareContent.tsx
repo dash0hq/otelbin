@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { Button } from "@dash0hq/ui/src/components/ui/button";
+import { Button } from "~/components/button";
 import { ArrowDownToLine, LogIn } from "lucide-react";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
