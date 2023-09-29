@@ -5,7 +5,7 @@ import type { editor } from "monaco-editor";
 import type { RefObject } from "react";
 import JsYaml from "js-yaml";
 import type { IConfig } from "./dataType";
-import "./decorationStyles.css"
+import "./decorationStyles.css";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
