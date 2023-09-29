@@ -8,7 +8,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 	return useMemo(() => {
 		const edges: Edge[] = [];
 
-		const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node, index: number) => {
+		const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node) => {
 			exportersNodes.forEach((targetNode) => {
 				if (!processorsNode || !targetNode) {
 					return;
@@ -18,7 +18,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 				const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
 				const edge: Edge = {
 					id: edgeId,
-					source: sourceNodeId!,
+					source: sourceNodeId,
 					target: targetNodeId,
 					type: "default",
 					markerEnd: {
@@ -34,7 +34,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 				edges.push(edge);
 			});
 		};
-		const calculateProcessorsNode = (processorsNodes: Node[], index: number) => {
+		const calculateProcessorsNode = (processorsNodes: Node[]) => {
 			for (let i = 0; i < processorsNodes.length; i++) {
 				const sourceNode = processorsNodes[i];
 				const targetNode = processorsNodes[i + 1];
@@ -65,11 +65,10 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 
 		const calculateReceiversNode = (
 			receiversNodes: Node[],
-			firstprocessorsNode: Node | undefined,
-			exportersNodes: Node[],
-			index: number
+			firstProcessorsNode: Node | undefined,
+			exportersNodes: Node[]
 		) => {
-			if (!firstprocessorsNode) {
+			if (!firstProcessorsNode) {
 				receiversNodes.forEach((sourceNode) => {
 					if (!sourceNode) {
 						return;
@@ -109,7 +108,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 					}
 
 					const sourceNodeId = sourceNode.id;
-					const targetNodeId = firstprocessorsNode.id;
+					const targetNodeId = firstProcessorsNode.id;
 					const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
 					const edge: Edge = {
 						id: edgeId,
@@ -131,16 +130,16 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 			}
 		};
 
-		const addEdgesToNodes = (nodes: Node[], index: number) => {
+		const addEdgesToNodes = (nodes: Node[]) => {
 			const exportersNodes = nodes.filter((node) => node.type === "exportersNode");
 			const processorsNodes = nodes.filter((node) => node.type === "processorsNode");
 			const receiversNodes = nodes.filter((node) => node.type === "receiversNode");
-			const firstprocessorsNode = processorsNodes[0] as Node;
-			const lastprocessorsNode = processorsNodes[processorsNodes.length - 1] as Node;
+			const firstProcessorsNode = processorsNodes[0] as Node;
+			const lastProcessorsNode = processorsNodes[processorsNodes.length - 1] as Node;
 
-			calculateExportersNode(exportersNodes, lastprocessorsNode, index);
-			calculateProcessorsNode(processorsNodes, index);
-			calculateReceiversNode(receiversNodes, firstprocessorsNode, exportersNodes, index);
+			calculateExportersNode(exportersNodes, lastProcessorsNode);
+			calculateProcessorsNode(processorsNodes);
+			calculateReceiversNode(receiversNodes, firstProcessorsNode, exportersNodes);
 		};
 
 		const childNodes = (parentNode: string) => {
@@ -152,9 +151,9 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 			return [];
 		}
 
-		parentNodes.forEach((parentNode, index) => {
+		parentNodes.forEach((parentNode) => {
 			const childNode = childNodes(parentNode);
-			addEdgesToNodes(childNode, index);
+			addEdgesToNodes(childNode);
 		});
 
 		return edges;

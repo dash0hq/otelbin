@@ -10,7 +10,7 @@ import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import { Parser } from "yaml";
-import { set } from "yaml/dist/schema/yaml-1.1/set";
+
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
 
@@ -75,21 +75,18 @@ export function useBreadcrumbs() {
 export const EditorProvider = ({ children }: { children: any }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
-	const monacoYamlRef = useRef<any | null>(null);
+	const monacoYamlRef = useRef<unknown | null>(null);
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState("both");
 	const [path, setPath] = useState("");
 
-	const getValue = useCallback(
-		(editorValue: string) => {
-			const value = editorValue;
-			const parsedYaml = Array.from(new Parser().parse(value));
-			const doc = parsedYaml.find((token) => token.type === "document") as any;
-			const docObject = doc?.value?.items ?? [];
-			return docObject;
-		},
-		[editorRef]
-	);
+	const getValue = useCallback((editorValue: string) => {
+		const value = editorValue;
+		const parsedYaml = Array.from(new Parser().parse(value));
+		const doc = parsedYaml.find((token) => token.type === "document") as any;
+		const docObject = doc?.value?.items ?? [];
+		return docObject;
+	}, []);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -127,7 +124,7 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		let value = editorRef.current?.getValue() ?? "";
 		let docObject = getValue(value);
 
-		editorRef.current?.onDidChangeModelContent((e) => {
+		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
 			docObject = getValue(value);
 		});

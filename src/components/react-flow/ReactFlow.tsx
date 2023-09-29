@@ -48,7 +48,7 @@ export default function Flow({
 	const [nodes, setNodes] = useNodesState(initNodes !== undefined ? initNodes : []);
 	const initEdges = useEdgeCreator(nodes);
 	const [edges, setEdges] = useEdgesState(initEdges);
-	const widthSelector = (state: { width: any }) => state.width;
+	const widthSelector = (state: { width: number }) => state.width;
 	const reactFlowWidth = useStore(widthSelector);
 
 	useEffect(() => {
@@ -65,7 +65,7 @@ export default function Flow({
 			setEdges([]);
 			reactFlowInstance.fitView();
 		}
-	}, [initNodes, initEdges, value]);
+	}, [initNodes, initEdges, value, jsonData, setEdges, setNodes, reactFlowInstance]);
 
 	const nodeTypes = useMemo(
 		() => ({
