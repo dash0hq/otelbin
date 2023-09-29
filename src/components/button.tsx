@@ -15,7 +15,6 @@ export const buttonVariants = cva(
 	"group/button inline-flex border items-center shrink-0 justify-center rounded-button text-sm font-medium ring-offset-background transition-colors [&>svg]:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
 	{
 		variants: {
-			// TODO remove unused
 			variant: {
 				default:
 					"bg-button text-button hover:text-button-hover active:text-button-active border-button hover:bg-button-hover active:bg-button-active disabled:opacity-50 shadow-sm [&>svg]:text-button-icon [&:hover>svg]:text-button-icon-hover [&:active>svg]:text-button-icon-active data-[state=open]:bg-button-hover data-[state=open]:text-button-hover [&[data-state=open]>svg]:text-button-icon-hover",
@@ -27,7 +26,6 @@ export const buttonVariants = cva(
 				transparent:
 					"bg-button-transparent text-button-transparent hover:text-button-hover active:text-button-active border-button hover:bg-button-hover active:bg-button-active disabled:opacity-50 [&>svg]:text-button-icon [&:hover>svg]:text-button-icon-hover [&:active>svg]:text-button-icon-active data-[state=open]:bg-button-transparent-hover data-[state=open]:text-button-transparent-hover [&[data-state=open]>svg]:text-button-transparent-icon-hover",
 			},
-			// TODO remove unused
 			size: {
 				xs: "h-6 gap-[0.375rem] px-2 text-xs [&>svg]:h-[0.875rem] [&>svg]:w-[0.875rem]",
 				sm: "h-8 gap-[0.375rem] px-3 text-sm [&>svg]:h-4 [&>svg]:w-4",
