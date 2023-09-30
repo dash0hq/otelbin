@@ -5,24 +5,28 @@ import { BarChart4, ListTree, Workflow } from "lucide-react";
 
 const parentNodeStyle = [
 	{
+		parentNode: "traces",
 		backgroundColor: "#FBBF24",
 		icon: <Workflow width={12} />,
 	},
 	{
+		parentNode: "metrics",
 		backgroundColor: "#38BDF8",
 		icon: <BarChart4 width={12} />,
 	},
 	{
+		parentNode: "logs",
 		backgroundColor: "#34D399",
 		icon: <ListTree width={12} />,
 	},
 	{
+		parentNode: "spans",
 		backgroundColor: "#911dc9",
 		icon: <Workflow width={12} />,
 	},
 ];
 
-export default function PipelineTag({ findIndex, tag }: { findIndex: number; tag: string }) {
+export default function ParentNodeTag({ tag }: { findIndex: number; tag: string }) {
 	function FormatTag(tagName: string) {
 		const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 		let resultString = [""];
@@ -37,7 +41,7 @@ export default function PipelineTag({ findIndex, tag }: { findIndex: number; tag
 	return (
 		<>
 			{parentNodeStyle
-				.filter((_, idx) => idx === findIndex)
+				.filter((style) => tag.includes(style.parentNode))
 				.map((node, idx) => {
 					return (
 						<div

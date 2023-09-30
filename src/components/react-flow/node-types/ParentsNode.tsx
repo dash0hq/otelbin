@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { memo } from "react";
-import PipelineTag from "../PipelineTag";
+import ParentNodeTag from "./ParentNodeTag";
 import { useNodes, useReactFlow } from "reactflow";
 
 interface IData {
@@ -22,20 +22,24 @@ const ParentsNode = ({ data }: { data: IData }) => {
 		.map((node) => node.data.label);
 	const findIndex = parentNodes.findIndex((node) => node === data.label);
 
-	const parentColors = [
+	const parentNodeStyles = [
 		{
+			parentNode: "traces",
 			backgroundColor: "rgba(251, 191, 36, 0.05)",
 			borderColor: "1px dashed #F59E0B",
 		},
 		{
+			parentNode: "metrics",
 			backgroundColor: "rgba(56, 189, 248, 0.05)",
 			borderColor: "1px dashed #0AA8FF",
 		},
 		{
+			parentNode: "logs",
 			backgroundColor: "rgba(52, 211, 153, 0.05)",
 			borderColor: "1px dashed #40ad54",
 		},
 		{
+			parentNode: "spans",
 			backgroundColor: "rgba(145, 29, 201, 0.05)",
 			borderColor: "1px dashed #911dc9",
 		},
@@ -43,8 +47,8 @@ const ParentsNode = ({ data }: { data: IData }) => {
 
 	return (
 		<>
-			{parentColors
-				.filter((_, idx) => idx === findIndex)
+			{parentNodeStyles
+				.filter((style) => data.label.includes(style.parentNode))
 				.map((node, idx) => {
 					return (
 						<div
@@ -58,7 +62,7 @@ const ParentsNode = ({ data }: { data: IData }) => {
 							}}
 							className="rounded-[4px] text-[10px] text-black"
 						>
-							<PipelineTag findIndex={findIndex} tag={data.label} />
+							<ParentNodeTag findIndex={findIndex} tag={data.label} />
 						</div>
 					);
 				})}
