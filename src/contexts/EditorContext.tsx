@@ -122,7 +122,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		});
 
 		const createData: MonacoYamlOptions = {
-			enableSchemaRequest: false,
+			enableSchemaRequest: true,
 			schemas: [defaultSchema],
 			validate: true,
 		};
