@@ -11,10 +11,13 @@ import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import { Parser } from "yaml";
 import type { Document, IItem } from "../components/monaco-editor/yamlParserTypes";
-import { type YAMLWorker } from "~/components/monaco-editor/yamlWorker";
 import { type WorkerGetter } from "monaco-worker-manager";
 import { createWorkerManager } from "monaco-worker-manager";
+import { type CompletionList, type Position } from "vscode-languageserver-types";
 
+interface YAMLWorker {
+	doComplete: (uri: string, position: Position) => CompletionList | undefined;
+}
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
 export type WorkerAccessor = WorkerGetter<YAMLWorker>;
