@@ -4,11 +4,48 @@
 import React, { memo } from "react";
 import ParentNodeTag from "./ParentNodeTag";
 import { useNodes, useReactFlow } from "reactflow";
+import { BarChart4, ListTree, Workflow } from "lucide-react";
 
 interface IData {
 	label: string;
 	height: number;
 }
+
+export const parentNodesConfig = [
+	{
+		type: "traces",
+		typeRegex: /^traces(\/.*)?$/i,
+		backgroundColor: "rgba(251, 191, 36, 0.05)",
+		tagBackgroundColor: "#FBBF24",
+		borderColor: "1px dashed #F59E0B",
+		icon: <Workflow width={12} />,
+	},
+	{
+		type: "metrics",
+		typeRegex: /^metrics(\/.*)?$/i,
+		backgroundColor: "rgba(56, 189, 248, 0.05)",
+		tagBackgroundColor: "#38BDF8",
+		borderColor: "1px dashed #0AA8FF",
+		icon: <BarChart4 width={12} />,
+	},
+	{
+		type: "logs",
+		typeRegex: /^logs(\/.*)?$/i,
+		backgroundColor: "rgba(52, 211, 153, 0.05)",
+		tagBackgroundColor: "#34D399",
+		borderColor: "1px dashed #40ad54",
+		icon: <ListTree width={12} />,
+	},
+	{
+		type: "spans",
+		typeRegex: /^spans(\/.*)?$/i,
+		backgroundColor: "rgba(145, 29, 201, 0.05)",
+		tagBackgroundColor: "#911dc9",
+		borderColor: "1px dashed #911dc9",
+		icon: <Workflow width={12} />,
+	},
+];
+
 const ParentsNode = ({ data }: { data: IData }) => {
 	const rectaFlowInstance = useReactFlow();
 	const nodes = useNodes();
@@ -22,33 +59,10 @@ const ParentsNode = ({ data }: { data: IData }) => {
 		.map((node) => node.data.label);
 	const findIndex = parentNodes.findIndex((node) => node === data.label);
 
-	const parentNodeStyles = [
-		{
-			parentNode: "traces",
-			backgroundColor: "rgba(251, 191, 36, 0.05)",
-			borderColor: "1px dashed #F59E0B",
-		},
-		{
-			parentNode: "metrics",
-			backgroundColor: "rgba(56, 189, 248, 0.05)",
-			borderColor: "1px dashed #0AA8FF",
-		},
-		{
-			parentNode: "logs",
-			backgroundColor: "rgba(52, 211, 153, 0.05)",
-			borderColor: "1px dashed #40ad54",
-		},
-		{
-			parentNode: "spans",
-			backgroundColor: "rgba(145, 29, 201, 0.05)",
-			borderColor: "1px dashed #911dc9",
-		},
-	];
-
 	return (
 		<>
-			{parentNodeStyles
-				.filter((style) => data.label.includes(style.parentNode))
+			{parentNodesConfig
+				.filter((config) => data.label.match(config.typeRegex))
 				.map((node, idx) => {
 					return (
 						<div
