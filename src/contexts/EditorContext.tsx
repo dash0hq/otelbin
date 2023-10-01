@@ -2,18 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { createContext, useCallback, useRef, useState } from "react";
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import { type editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
-import { configureMonacoYaml, type SchemasSettings } from "monaco-yaml";
+import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import { Parser } from "yaml";
 import type { Document, IItem } from "../components/monaco-editor/yamlParserTypes";
+import { type YAMLWorker } from "~/components/monaco-editor/yamlWorker";
+import { type WorkerGetter } from "monaco-worker-manager";
+import { createWorkerManager } from "monaco-worker-manager";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
+export type WorkerAccessor = WorkerGetter<YAMLWorker>;
 
 export const EditorContext = createContext<EditorRefType | null>(null);
 export const MonacoContext = createContext<MonacoRefType | null>(null);
@@ -73,8 +77,7 @@ export function useBreadcrumbs() {
 	return React.useContext(BreadcrumbsContext);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const EditorProvider = ({ children }: { children: any }) => {
+export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
 	const monacoYamlRef = useRef<unknown | null>(null);
@@ -118,10 +121,51 @@ export const EditorProvider = ({ children }: { children: any }) => {
 			wordPattern: /\w+\/\w+|\w+/,
 		});
 
-		monacoYamlRef.current = configureMonacoYaml(monaco, {
-			enableSchemaRequest: true,
+		const createData: MonacoYamlOptions = {
+			enableSchemaRequest: false,
 			schemas: [defaultSchema],
+			validate: true,
+		};
+
+		monacoYamlRef.current = configureMonacoYaml(monaco, createData);
+
+		const worker = createWorkerManager<YAMLWorker, MonacoYamlOptions>(monaco, {
+			label: "yaml",
+			moduleId: "monaco-yaml/yaml.worker",
+			createData,
 		});
+
+		function createCompletionItemProvider(getWorker: WorkerAccessor): languages.CompletionItemProvider {
+			return {
+				triggerCharacters: [" ", ":"],
+
+				async provideCompletionItems(model, position) {
+					const resource = model.uri;
+
+					const worker = await getWorker(resource);
+					const info = await worker.doComplete(String(resource), fromPosition(position));
+					if (!info) {
+						return;
+					}
+
+					const wordInfo = model.getWordUntilPosition(position);
+
+					return toCompletionList(info, {
+						range: {
+							startLineNumber: position.lineNumber,
+							startColumn: wordInfo.startColumn,
+							endLineNumber: position.lineNumber,
+							endColumn: wordInfo.endColumn,
+						},
+					});
+				},
+			};
+		}
+
+		monacoRef?.current?.languages.registerCompletionItemProvider(
+			"yaml",
+			createCompletionItemProvider(worker.getWorker)
+		);
 
 		let value = editorRef.current?.getValue() ?? "";
 		let docObject = getValue(value);
@@ -215,39 +259,6 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		setPath: setPath,
 		path: path,
 	};
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function createCompletionItemProvider(getWorker: any): languages.CompletionItemProvider {
-		return {
-			triggerCharacters: [" ", ":"],
-
-			async provideCompletionItems(model, position) {
-				const resource = model.uri;
-
-				const worker = await getWorker(resource);
-				const info = await worker.doComplete(String(resource), fromPosition(position));
-				if (!info) {
-					return;
-				}
-
-				const wordInfo = model.getWordUntilPosition(position);
-
-				return toCompletionList(info, {
-					range: {
-						startLineNumber: position.lineNumber,
-						startColumn: wordInfo.startColumn,
-						endLineNumber: position.lineNumber,
-						endColumn: wordInfo.endColumn,
-					},
-				});
-			},
-		};
-	}
-
-	monacoRef?.current?.languages.registerCompletionItemProvider(
-		"yaml",
-		createCompletionItemProvider(new Worker(new URL("monaco-yaml/yaml.worker", import.meta.url)))
-	);
 
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>
