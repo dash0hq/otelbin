@@ -49,7 +49,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 			<div
 				style={customNodeHeaderStyle}
 				className={`px-3 ${
-					isConnector ? "bg-otelbinGreen text-otelbinDarkGreen" : "bg-violet-500"
+					isConnector ? "bg-green-500 text-green-950" : "bg-violet-500"
 				} text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center`}
 			>
 				{splitLabel[0]}

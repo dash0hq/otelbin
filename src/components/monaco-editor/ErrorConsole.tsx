@@ -61,12 +61,12 @@ export function Error({ error, jsYamlError, font }: { error?: IAjvError; jsYamlE
 	return (
 		<>
 			{error && (
-				<div className={`${font.className} flex items-center gap-x-1 text-xs font-normal text-otelbinRed`}>
+				<div className={`${font.className} flex items-center gap-x-1 text-xs font-normal text-red-600`}>
 					<p>{`${error.message}`}</p>
 				</div>
 			)}
 			{jsYamlError ? (
-				<div className={`${font.className} flex items-center gap-x-1 text-xs font-normal text-otelbinRed`}>
+				<div className={`${font.className} flex items-center gap-x-1 text-xs font-normal text-red-600`}>
 					<p>{`${jsYamlError.reason} ${jsYamlError.mark && `(Line ${jsYamlError.mark.line})`}`}</p>
 				</div>
 			) : (
@@ -93,7 +93,7 @@ export function ErrorCount({
 				}
 			}}
 			className={`${
-				errorsCount ? `cursor-pointer text-otelbinRed` : `text-subtl`
+				errorsCount ? `cursor-pointer text-red-600` : `text-subtl`
 			} min-h-[32px] w-full bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
 		>
 			<XCircle height={14.67} />

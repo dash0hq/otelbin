@@ -43,7 +43,7 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 				<TooltipTrigger asChild>
 					<div
 						style={{ direction: "rtl" }}
-						className={`overflow-hidden text-left whitespace-nowrap overflow-ellipsis w-[80%] text-otelbinGrey font-normal text-[12px] ${font.className}`}
+						className={`overflow-hidden text-left whitespace-nowrap overflow-ellipsis w-[80%] text-neutral-500 font-normal text-[12px] ${font.className}`}
 					>
 						{path.slice(2)}
 					</div>

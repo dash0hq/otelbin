@@ -26,20 +26,7 @@ module.exports = {
 				ring: "hsl(var(--ring))",
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
-				otelbinDarkPurple: "#1D2029",
-				otelbinDarkBlue: "#0F172A",
-				otelbinDarkBlue2: "#40454E",
-				otelbinDarkBlue3: "#4F545D",
-				otelbinLightBlue: "#293548",
-				otelbinGrey: "#6D737D",
-				otelbinLightGrey: "#8491A6",
-				otelbinLightGrey2: "#2B3546",
-				otelbinBlackGrey: "#030816",
-				otelbinRed: "#EE3030",
-				otelbinGreen: "#45C175",
-				otelbinDarkGreen: "#082313",
 				primary: {
-					// DEFAULT: "hsl(var(--primary))", /* Defined in our design tokens */
 					foreground: "hsl(var(--primary-foreground))",
 				},
 				secondary: {
