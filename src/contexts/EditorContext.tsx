@@ -73,6 +73,7 @@ export function useBreadcrumbs() {
 	return React.useContext(BreadcrumbsContext);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const EditorProvider = ({ children }: { children: any }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
@@ -215,6 +216,7 @@ export const EditorProvider = ({ children }: { children: any }) => {
 		path: path,
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function createCompletionItemProvider(getWorker: any): languages.CompletionItemProvider {
 		return {
 			triggerCharacters: [" ", ":"],
