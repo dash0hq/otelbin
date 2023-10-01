@@ -31,7 +31,7 @@ export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen
 
 	return (
 		<Dialog open={open} onOpenChange={handleSkip}>
-			<DialogContent className="flex min-h-[550px] flex-col justify-between bg-otelbinDarkPurple p-4">
+			<DialogContent className="flex min-h-[550px] flex-col justify-between bg-neutral-150 p-4">
 				<div className="relative mb-4 flex flex-col gap-y-7 px-4 pt-4">
 					<DialogHeader className="mx-auto">
 						<DialogTitle>
@@ -95,10 +95,8 @@ function StepDiv({
 			<div
 				className={`h-[10px] rounded-full ${
 					activeStep
-						? "w-[30px] bg-otelbinLightGrey"
-						: `w-[10px] bg-otelbinLightGrey2 ${
-								isClickable ? "cursor-pointer hover:bg-otelbinDarkBlue3" : "cursor-default"
-						  }`
+						? "w-[30px] bg-neutral-500"
+						: `w-[10px] bg-neutral-350 ${isClickable ? "cursor-pointer hover:bg-neutral-400" : "cursor-default"}`
 				} `}
 				onClick={isClickable ? handleClick : undefined}
 			/>
