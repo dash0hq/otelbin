@@ -19,6 +19,7 @@ import type { editor } from "monaco-editor";
 import { ButtonGroup } from "~/components/button-group";
 import { Button } from "~/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
+import type { IItem, Document } from "../monaco-editor/yamlParserTypes";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -39,10 +40,10 @@ export default function Flow({
 	const jsonData = useMemo(() => parseYaml(value) as IConfig, [value]);
 	const pipelines = useMemo(() => {
 		const parsedYaml = Array.from(new Parser().parse(value));
-		const doc = parsedYaml.find((token) => token.type === "document") as any;
+		const doc = parsedYaml.find((token) => token.type === "document") as Document;
 		const docItems = doc?.value?.items ?? [];
-		const docService = docItems.find((item: any) => item.key.source === "service");
-		return docService?.value.items.find((item: any) => item.key.source === "pipelines");
+		const docService = docItems.find((item: IItem) => item.key.source === "service");
+		return docService?.value.items.find((item: IItem) => item.key.source === "pipelines");
 	}, [value]);
 	const initNodes = useNodes(jsonData);
 	const [nodes, setNodes] = useNodesState(initNodes !== undefined ? initNodes : []);
@@ -105,57 +106,61 @@ export default function Flow({
 					startColumn: 0,
 					endColumn: 0,
 				};
-
-				for (let i = 0; pipelines.value.items.length > i; i++) {
-					if (
-						cursorOffset >= pipelines.value.items[i].key.offset &&
-						cursorOffset <= pipelines.value.items[i].sep[1].offset
-					) {
-						setFocusOnParentNode(wordAtCursor.word);
-						setCenter(getParentNodePositionX(wordAtCursor.word), getParentNodePositionY(wordAtCursor.word), {
-							zoom: 1.2,
-							duration: 400,
-						});
-					}
-					for (let j = 0; pipelines.value.items[i].value.items.length > j; j++) {
+				if (pipelines) {
+					for (let i = 0; (pipelines?.value.items.length || 0) > i; i++) {
 						if (
-							pipelines.value.items[i].value.items[j].value.items.length === 1 &&
-							cursorOffset >= pipelines.value.items[i].value.items[j].value.items[0].value.offset &&
-							cursorOffset <=
-								pipelines.value.items[i].value.items[j].value.items[0].value.offset +
-									pipelines.value.items[i].value.items[j].value.items[0].value.source.length
+							cursorOffset >= (pipelines.value.items[i]?.key.offset || 0) &&
+							cursorOffset <= (pipelines.value.items[i]?.sep[1]?.offset || 0)
 						) {
-							const level2 = pipelines.value.items[i].key.source;
-							const level3 = pipelines.value.items[i].value.items[j].key.source;
-							setFocusOnNode(wordAtCursor.word, level2, level3);
-							setCenter(
-								getNodePositionX(wordAtCursor.word, level2, level3) + 50,
-								getNodePositionY(wordAtCursor.word, level2, level3) + 50,
-								{ zoom: 2, duration: 400 }
-							);
-						} else if (pipelines.value.items[i].value.items[j].value.items.length > 1) {
-							for (let k = 0; pipelines.value.items[i].value.items[j].value.items.length > k; k++) {
+							setFocusOnParentNode(wordAtCursor.word);
+							setCenter(getParentNodePositionX(wordAtCursor.word), getParentNodePositionY(wordAtCursor.word), {
+								zoom: 1.2,
+								duration: 400,
+							});
+						}
+						if (pipelines.value.items) {
+							for (let j = 0; (pipelines.value.items[i]?.value.items.length || 0) > j; j++) {
 								if (
-									cursorOffset >= pipelines.value.items[i].value.items[j].value.items[k].value.offset &&
+									(pipelines.value.items[i]?.value.items[j]?.value.items.length || 0) === 1 &&
+									cursorOffset >= (pipelines.value.items[i]?.value.items[j]?.value.items[0]?.value.offset || 0) &&
 									cursorOffset <=
-										pipelines.value.items[i].value.items[j].value.items[k].value.offset +
-											pipelines.value.items[i].value.items[j].value.items[k].value.source.length
+										(pipelines.value.items[i]?.value.items[j]?.value.items[0]?.value.offset || 0) +
+											(pipelines.value.items[i]?.value.items[j]?.value.items[0]?.value.source?.length || 0)
 								) {
-									const level2 = pipelines.value.items[i].key.source;
-									const level3 = pipelines.value.items[i].value.items[j].key.source;
+									const level2 = pipelines.value.items[i]?.key.source || "";
+									const level3 = pipelines.value.items[i]?.value.items[j]?.key.source || "";
 									setFocusOnNode(wordAtCursor.word, level2, level3);
 									setCenter(
 										getNodePositionX(wordAtCursor.word, level2, level3) + 50,
 										getNodePositionY(wordAtCursor.word, level2, level3) + 50,
 										{ zoom: 2, duration: 400 }
 									);
+								} else if ((pipelines.value.items[i]?.value.items[j]?.value.items.length || 0) > 1) {
+									for (let k = 0; (pipelines.value.items[i]?.value.items[j]?.value.items.length || 0) > k; k++) {
+										if (
+											cursorOffset >= (pipelines.value.items[i]?.value.items[j]?.value.items[k]?.value.offset || 0) &&
+											cursorOffset <=
+												(pipelines.value.items[i]?.value.items[j]?.value.items[k]?.value.offset || 0) +
+													(pipelines.value.items[i]?.value.items[j]?.value.items[k]?.value.source?.length || 0)
+										) {
+											const level2 = pipelines.value.items[i]?.key.source || "";
+											const level3 = pipelines.value.items[i]?.value.items[j]?.key.source || "";
+											setFocusOnNode(wordAtCursor.word, level2, level3);
+											setCenter(
+												getNodePositionX(wordAtCursor.word, level2, level3) + 50,
+												getNodePositionY(wordAtCursor.word, level2, level3) + 50,
+												{ zoom: 2, duration: 400 }
+											);
+										}
+									}
 								}
 							}
 						}
 					}
-				}
-				if (cursorOffset > pipelines.key.offset && cursorOffset < pipelines.sep[1].offset) {
-					reactFlowInstance.fitView();
+
+					if (cursorOffset > pipelines.key.offset && cursorOffset < (pipelines.sep[1]?.offset || 0)) {
+						reactFlowInstance.fitView();
+					}
 				}
 			}
 		}
