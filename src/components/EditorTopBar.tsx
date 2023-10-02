@@ -38,7 +38,7 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 	}
 
 	return (
-		<div className="flex shrink-0 items-center justify-between bg-default pl-16 pr-1 shadow-none">
+		<div className="flex shrink-0 items-center justify-between bg-default pl-4 pr-1 shadow-none">
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<div
