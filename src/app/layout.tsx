@@ -24,6 +24,28 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: PropsWithChildren) {
 	let content = (
+		<html lang="en" className="dark overflow-hidden">
+			<head>
+				<meta name="viewport" content="initial-scale=1" />
+			</head>
+			<body
+				className={cn("max-h-screen min-h-screen min-w-[64rem] bg-background font-sans antialiased", inter.className)}
+			>
+				<TooltipProvider>
+					<main className="max-h-screen min-h-screen">{children}</main>
+					<Toaster />
+				</TooltipProvider>
+				<Analytics />
+			</body>
+		</html>
+	);
+
+	const cookiesAccepted = cookies().get("otelbin-cookies-accepted")?.value === "true";
+	if (cookiesAccepted) {
+		content = <PostHogProvider>{content}</PostHogProvider>;
+	}
+
+	content = (
 		<ClerkProvider
 			appearance={{
 				baseTheme: dark,
@@ -32,27 +54,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				},
 			}}
 		>
-			<html lang="en" className="dark overflow-hidden">
-				<head>
-					<meta name="viewport" content="initial-scale=1" />
-				</head>
-				<body
-					className={cn("max-h-screen min-h-screen min-w-[64rem] bg-background font-sans antialiased", inter.className)}
-				>
-					<TooltipProvider>
-						<main className="max-h-screen min-h-screen">{children}</main>
-						<Toaster />
-					</TooltipProvider>
-					<Analytics />
-				</body>
-			</html>
+			{content}
 		</ClerkProvider>
 	);
-
-	const cookiesAccepted = cookies().get("otelbin-cookies-accepted")?.value === "true";
-	if (cookiesAccepted) {
-		content = <PostHogProvider>{content}</PostHogProvider>;
-	}
 
 	return content;
 }
