@@ -3,6 +3,7 @@
 
 import "./globals.css";
 
+import { Analytics } from "@vercel/analytics/react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { type PropsWithChildren } from "react";
 import { type Metadata } from "next";
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 						<main className="max-h-screen min-h-screen">{children}</main>
 						<Toaster />
 					</TooltipProvider>
+					<Analytics />
 				</body>
 			</html>
 		</ClerkProvider>
