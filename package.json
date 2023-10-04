@@ -41,7 +41,7 @@
 		"posthog-js": "^1.81.2",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"reactflow": "^11.8.3",
+		"reactflow": "^11.9.2",
 		"swr": "^2.2.2",
 		"tailwind-merge": "^1.13.2",
 		"tailwindcss-animate": "^1.0.6",
