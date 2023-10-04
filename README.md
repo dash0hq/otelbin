@@ -1,61 +1,61 @@
-# OTelBin
+<a href="https://www.otelbin.io">
+  <!--<img alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/28986134/8f70a87f-4f13-426a-9785-a47f77433edd"> -->
+  <h1 align="center">OTelBin</h1>
+</a>
 
-OTelBin is a configuration tool for OpenTelemetry collectors. See https://opentelemetry.io/docs/collector/ for more information.
+<p align="center">
+  OTelBin is a configuration tool for OpenTelemetry collector pipelines.
+</p>
 
+<p align="center">
+  <a href="https://twitter.com/dash0hq">
+    <img src="https://img.shields.io/twitter/follow/dash0hq?style=flat&label=%40dash0hq&logo=twitter&color=0bf&logoColor=fff" alt="Twitter" />
+  </a>
+  <a href="https://github.com/dash0hq/otelbin/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/dash0hq/otelbin?label=license&logo=github&color=f80&logoColor=fff" alt="License" />
+  </a>
+</p>
 
-## Deployment
+<p align="center">
+  <a href="#introduction"><strong>Introduction</strong></a> ·
+  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
+  <a href="#contributing"><strong>Contributing</strong></a> ·
+  <a href="#license"><strong>License</strong></a>
+</p>
+<br/>
 
- - [Development](https://otelbin.vercel.app)
- - [Production](https://www.otelbin.com)
+## Introduction
 
-## Getting Started
+OTelBin is a configuration tool for [OpenTelemetry collector pipelines](https://opentelemetry.io/docs/collector).
 
-```sh
-git clone git@github.com:dash0hq/opentelemetry-collector-web.git
-cd opentelemetry-collector-web
-cp .env.example .env
-# Ask a colleague for the contents of .env, especially for DATABASE_URL as it contains secrets. Do
-# not update the .env.example file
-npm install
-npm run dev
-```
+## Features
 
-## Using the JSON Schema
+- Edit OpenTelemetry collector configuration files and share them with colleagues and friends!
+- Validate the configuration.
+- Learn about supported receivers, processors, exporters and connectors.
 
-This repository uses a JSON schema from the VS Code's extension [OTEL Validator](https://github.com/nimbushq/otel-validator) in order to provide validation for the collector configuration file.
+## Tech Stack
 
-To get the latest schema version, either clone the repository and copy the schema from `assets/schema.json` or directly download the file from [the repository](https://github.com/nimbushq/otel-validator/blob/main/assets/schema.json).
+- [Next.js](https://nextjs.org/) – framework
+- [Typescript](https://www.typescriptlang.org/) – language
+- [Tailwind](https://tailwindcss.com/) – CSS
+- [Upstash](https://upstash.com/) – redis
+- [Clerk](https://clerk.com/) – auth
+- [Vercel](https://vercel.com/) – hosting
+- [Posthog](https://posthog.com/) – analytics
 
-### Updated Schema
+## Contributing
 
-We've recently updated the JSON schema to include support for `service.telemetry` and `connectors`.
+We love our contributors! Here's how you can contribute:
 
-To update the JSON schema for this project, follow these steps:  
+- [Learn how to develop locally.](https://github.com/dash0hq/otelbin/blob/main/CONTRIBUTING.md)
+- [Open an issue](https://github.com/dash0hq/otelbin/issues) if you believe you've encountered a bug.
+- Make a [pull request](https://github.com/dash0hq/otelbin/pull) to add new features/make quality-of-life improvements/fix bugs.
 
-1. __Familiarize Yourself with JSON Schema:__  
-* Read through the [official JSON Schema documentation](https://json-schema.org/) to understand its structure and rules.  
-
-2. __Review the Upstream Repository:__  
-* Visit the [OpenTelemetry official website](https://opentelemetry.io/), [OpenTelemetry Collector github repository](https://github.com/open-telemetry/opentelemetry-collector/tree/main) and [OpenTelemetry Contrib GitHub repository](https://github.com/open-telemetry/opentelemetry-collector-contrib) to explore the latest changes and properties that need to be reflected in the JSON schema.  
-
-3. __Identify Missing Properties:__  
-* Examine the Go files, READMEs, or other relevant sources in the mentioned sources to identify properties and configurations that are not yet included in the JSON schema.  
-
-4. __Update the Schema:__  
-* Make changes to the JSON schema file in your forked repository based on the properties and configurations you've identified. You can use a JSON schema editor or a text editor to make these updates.  
-
-5. __Test Your Changes:__
-* Ensure that your updated JSON schema is valid by using JSON schema validation tools. This will help catch any syntax or structural issues in your schema.  
-
-6. __Commit and Push:__
-* Commit your changes to the JSON schema file in your forked repository.  
-
-7. __Create a Pull Request:__  
-* Visit your forked repository on GitHub and create a pull request (PR) to merge your changes into the main repository's JSON schema.  
-
-8. __Review and Collaboration:__  
-
-* Collaborate with other contributors and maintainers during the PR review process. Address any feedback or comments to ensure the schema aligns with the project's needs.
+<a href="https://github.com/dash0hq/otelbin/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=dash0hq/otelbin" />
+</a>
 
 ## License
 
@@ -70,5 +70,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-
