@@ -33,7 +33,7 @@
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
 		"js-yaml": "^4.1.0",
-		"lucide-react": "^0.279.0",
+		"lucide-react": "^0.284.0",
 		"monaco-editor": "^0.43.0",
 		"monaco-languageserver-types": "^0.2.3",
 		"monaco-yaml": "^5.1.0",
