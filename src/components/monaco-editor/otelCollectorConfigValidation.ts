@@ -31,6 +31,9 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	const model = editorRef.current?.getModel();
 	const ajvError: IAjvError[] = [];
 	const totalErrors: IError = { ajvErrors: ajvError, customErrors: [], customWarnings: [] };
+	const errorMarkers: editor.IMarkerData[] = [];
+	const mainItemsInfo: IValidateItem = {};
+	const serviceItemsInfo: IValidateItem = {};
 	try {
 		const jsonData = JsYaml.load(configData);
 		const valid = ajv.validate(schema, jsonData);
@@ -49,14 +52,14 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 						errorInfo.line = error.mark.line + 1;
 						errorInfo.column = error.mark.column + 1;
 					}
-
 					return errorInfo;
 				});
 				ajvError.push(...validationErrors);
 			}
 		}
+		customValidate(mainItemsInfo, serviceItemsInfo, errorMarkers, totalErrors, configData, monacoRef);
 
-		model && monacoRef?.current?.editor.setModelMarkers(model, "json", []);
+		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	} catch (error: unknown) {
 		const knownError = error as IJsYamlError;
 		const errorLineNumber = knownError.mark.line;
@@ -73,14 +76,19 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 
 		totalErrors.jsYamlError = knownError;
 	}
+	return totalErrors;
+}
 
-	const errorMarkers: editor.IMarkerData[] = [];
-	const mainItemsInfo: IValidateItem = {};
-	const serviceItemsInfo: IValidateItem = {};
-
+function customValidate(
+	mainItemsInfo: IValidateItem,
+	serviceItemsInfo: IValidateItem,
+	errorMarkers: editor.IMarkerData[],
+	totalErrors: IError,
+	configData: string,
+	monacoRef?: MonacoRefType
+) {
 	if (!totalErrors.jsYamlError) {
-		const value = editorRef?.current?.getValue() ?? "";
-		const docObject = getParsedValue(value);
+		const docObject = getParsedValue(configData);
 		const mainKeys = docObject
 			.filter((item: IItem) => item.key.source !== "service")
 			.map((item: IItem) => item.key.source);
@@ -100,9 +108,6 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			else if (Array.isArray(yamlItems)) {
 				for (let i = 0; i < yamlItems.length; i++) {
 					const item = yamlItems[i];
-					// if (item && item.key?.source && parent) {
-
-					// }
 					if (item?.value) {
 						if (item.value.source && parent) {
 							const source = item.value.source;
@@ -118,8 +123,6 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 						} else if (Array.isArray(item.value.items)) {
 							if (item.key) {
 								findLeafs(item.value.items, item);
-							} else {
-								findLeafs(item.value.items, item);
 							}
 						}
 					}
@@ -127,10 +130,8 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			}
 		}
 		if (!mainItemsInfo) return totalErrors;
-
-		validateSections(mainItemsInfo, serviceItemsInfo, value, errorMarkers, totalErrors, monacoRef, editorRef);
+		validateSections(mainItemsInfo, serviceItemsInfo, configData, errorMarkers, totalErrors, monacoRef);
 	}
-	return totalErrors;
 }
 
 function validateSections(
@@ -139,8 +140,7 @@ function validateSections(
 	value: string,
 	errorMarkers: editor.IMarkerData[],
 	totalErrors: IError,
-	monacoRef?: MonacoRefType,
-	editorRef?: EditorRefType
+	monacoRef?: MonacoRefType
 ) {
 	for (const key of Object.keys(mainInfo)) {
 		const mainItems = mainInfo[key];
@@ -166,9 +166,6 @@ function validateSections(
 					message: errorMessage,
 				};
 				errorMarkers.push(errorMarker);
-
-				const model = editorRef?.current?.getModel();
-				model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 				totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
 			}
 		});
@@ -188,16 +185,14 @@ function validateSections(
 				};
 				errorMarkers.push(errorMarker);
 
-				const model = editorRef?.current?.getModel();
-				model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 				totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
 			}
 		});
 	}
 }
 
-function findLineAndColumn(yamlString: string, targetOffset?: number) {
-	const lines = yamlString.length > 0 ? yamlString.split("\n") : [];
+function findLineAndColumn(config: string, targetOffset?: number) {
+	const lines = config.length > 0 ? config.split("\n") : [];
 
 	let currentOffset = 0;
 	let lineIndex = 0;
