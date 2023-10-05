@@ -5,7 +5,7 @@ import React, { type RefObject, useEffect, useMemo } from "react";
 import ReactFlow, { Background, Panel, useReactFlow, useNodesState, useEdgesState, useStore } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
-import { parse as parseYaml, Parser } from "yaml";
+import { parse, Parser } from "yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useFocus } from "~/contexts/EditorContext";
 import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
@@ -19,7 +19,7 @@ import type { editor } from "monaco-editor";
 import { ButtonGroup } from "~/components/button-group";
 import { Button } from "~/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
-import type { IItem, Document } from "../monaco-editor/yamlParserTypes";
+import type { IItem, Document } from "../monaco-editor/parseYaml";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -37,7 +37,7 @@ export default function Flow({
 	editorRef: EditorRefType | null;
 }) {
 	const reactFlowInstance = useReactFlow();
-	const jsonData = useMemo(() => parseYaml(value) as IConfig, [value]);
+	const jsonData = useMemo(() => parse(value) as IConfig, [value]);
 	const pipelines = useMemo(() => {
 		const parsedYaml = Array.from(new Parser().parse(value));
 		const doc = parsedYaml.find((token) => token.type === "document") as Document;
