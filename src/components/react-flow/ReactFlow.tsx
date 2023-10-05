@@ -223,7 +223,7 @@ export default function Flow({
 			fitView
 			className="disable-attribution bg-default"
 			proOptions={{
-				hideAttribution: true,
+				hideAttribution: process.env.NEXT_PUBLIC_HIDE_REACT_FLOW_ATTRIBUTION === "true",
 			}}
 			maxZoom={!jsonData.service ? 1 : undefined}
 		>
