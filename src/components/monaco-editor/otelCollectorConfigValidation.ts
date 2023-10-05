@@ -153,7 +153,7 @@ function validateSections(
 				!mainItems?.some((mainItem) => mainItem.source === item.source) &&
 				!mainInfo["connectors"]?.some((mainItem) => mainItem.source === item.source)
 			) {
-				const errorMessage = `The ${item.source} is not present in the ${key} section`;
+				const errorMessage = `${capitalize(key)} "${item.source}" is not defined.`;
 				const { line, column } = findLineAndColumn(value, item.offset);
 				const endColumn = column + (item.source?.length || 0);
 
@@ -171,7 +171,7 @@ function validateSections(
 		});
 		mainItems?.forEach((item) => {
 			if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
-				const errorMessage = `The ${item.source} is not present in the service/pipelines ${key} section`;
+				const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
 				const { line, column } = findLineAndColumn(value, item.offset);
 				const endColumn = column + (item.source?.length || 0);
 
@@ -216,4 +216,17 @@ function findLineAndColumn(config: string, targetOffset?: number) {
 	}
 
 	return { line: lineIndex, column };
+}
+
+function capitalize(input: string): string {
+	if (!input) {
+		return input;
+	}
+	const capitalized = input.charAt(0).toUpperCase() + input.slice(1);
+
+	if (capitalized.endsWith("s")) {
+		return capitalized.slice(0, -1);
+	}
+
+	return capitalized;
 }
