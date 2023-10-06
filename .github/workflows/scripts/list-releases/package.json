@@ -1,0 +1,27 @@
+{
+  "name": "list-releases",
+  "version": "1.0.0",
+  "description": "Utility to list GitHub releases for OpenTelemetry collector distros",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dash0hq/otelbin.git"
+  },
+  "author": "",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/dash0hq/otelbin/issues"
+  },
+  "homepage": "https://github.com/dash0hq/otelbin#readme",
+  "devDependencies": {
+    "esbuild": "^0.19.4"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2"
+  }
+}
