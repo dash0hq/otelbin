@@ -22,6 +22,9 @@ import { AutoSizer } from "~/components/AutoSizer";
 import { ResizeBar } from "~/components/monaco-editor/ResizeBar";
 import { Fira_Code } from "next/font/google";
 import { useClerk } from "@clerk/nextjs";
+import { useToast } from "~/components/use-toast";
+import { ToastAction } from "../toast";
+import Cookies from "js-cookie";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -40,6 +43,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [{ config }, getLink] = useUrlState([editorBinding]);
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
+	const [isLoaded, setIsLoaded] = useState<boolean>(false);
+	const { toast } = useToast();
 
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
@@ -114,6 +119,47 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 			});
 		}
 	}, [clerk.loaded]);
+
+	useEffect(() => {
+		if (editorRef && monacoRef) {
+			setIsLoaded(true);
+		}
+	}, [editorRef, monacoRef]);
+
+	useEffect(() => {
+		const cookie = Cookies.get("otelbin-cookies-accepted");
+
+		if (isLoaded && !cookie) {
+			setTimeout(() => {
+				toast({
+					title: "Cookie Settings",
+					description: "We use cookies to improve your experience.",
+					duration: 20000,
+
+					action: (
+						<div className="flex items-center gap-x-2 min-w-[130px] justify-end">
+							<p className="text-xs flex-nowrap underline cursor-pointer" onClick={handleOptOut}>
+								{"Opt-out"}
+							</p>
+							<ToastAction onClick={handleSetCookie} altText="Accept">
+								Accept
+							</ToastAction>
+						</div>
+					),
+				});
+			}, 2000);
+		}
+	}, [isLoaded, toast]);
+
+	function handleSetCookie() {
+		Cookies.set("otelbin-cookies-accepted", "true");
+		window.location.reload();
+	}
+
+	function handleOptOut() {
+		Cookies.set("otelbin-cookies-accepted", "false");
+		window.location.reload();
+	}
 
 	return (
 		<>
