@@ -13,7 +13,7 @@ const redis = Redis.fromEnv();
 
 const rateLimit = new Ratelimit({
 	redis,
-	limiter: Ratelimit.slidingWindow(30, "1 m"),
+	limiter: Ratelimit.slidingWindow(40, "1 m"),
 	analytics: true,
 	prefix: "rate-limit-validate",
 });

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import Logo from "./assets/svg/otelbin-logo-new.svg";
+import Logo from "~/components/assets/svg/otelbin-logo-new.svg";
 import { ButtonGroup, ButtonGroupItem } from "~/components/button-group";
 import { Columns, Code2, LogIn } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";

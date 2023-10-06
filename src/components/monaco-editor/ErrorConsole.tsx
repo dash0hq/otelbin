@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, XCircle } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
+import { useServerSideValidation } from "../validation/useServerSideValidation";
 
 export interface IAjvError {
 	message: string;
@@ -24,6 +25,9 @@ export interface IError {
 export default function ErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
 	const errorCount = (errors?.ajvErrors?.length ?? 0) + (errors?.jsYamlError != null ? 1 : 0);
 	const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false);
+
+	const serverSideValidationResult = useServerSideValidation();
+	console.log({ serverSideValidationResult });
 
 	useEffect(() => {
 		if (errorCount === 0) {

@@ -17,3 +17,7 @@ export interface Release {
 	version: string;
 	artifact: string;
 }
+
+export interface ServerSideValidationResult {
+	message: string;
+}

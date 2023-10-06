@@ -3,18 +3,7 @@
 
 import useSWR from "swr";
 import { UrlCopy } from "~/components/share/UrlCopy";
-
-interface FetcherArgs {
-	url: string;
-	method: string;
-	body?: string;
-}
-
-const fetcher = (args: FetcherArgs) =>
-	fetch(args.url, {
-		method: args.method,
-		body: args.body,
-	}).then((res) => res.json());
+import { fetcher } from "~/lib/fetcher";
 
 export interface SignedInUrlSharingProps {
 	fullURL: string;

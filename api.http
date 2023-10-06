@@ -1,6 +1,6 @@
 ###
 # Call supported-distribtions
-GET http://localhost:3000/validation/supported-distribtions
+GET http://localhost:3000/validation/supported-distributions
 
 ###
 # Call verification endpoint
@@ -29,7 +29,7 @@ service:
   extensions: [health_check, pprof, zpages]
   pipelines:
     traces:
-      receivers: [otlp]
+      receivers: [otlp, foobar]
       processors: [batch]
       exporters: [otlp]
     metrics:
