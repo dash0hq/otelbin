@@ -16,6 +16,9 @@ const config = {
 		});
 		return config;
 	},
+	experimental: {
+		serverActions: true,
+	},
 	async headers() {
 		const headers = [
 			{
