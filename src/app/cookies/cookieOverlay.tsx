@@ -16,22 +16,23 @@ export const CookieOverlay = (): JSX.Element => {
 			if (!cookieValue) {
 				setTimeout(() => {
 					toast({
+						className: "text-[10px] p-3",
 						title: "Cookie Settings",
 						description: "We use cookies to improve OTelBin.",
 						duration: 20000,
 						action: (
-							<div className="flex items-center gap-x-2 min-w-[130px] justify-end z-40">
+							<div className="flex items-center justify-end">
 								<form action={setOptOutCookie}>
 									<ToastAction
 										type="submit"
-										className="text-xs flex-nowrap underline cursor-pointer border-none min-w-max"
+										className="text-[10px] flex-nowrap underline border-none min-w-max"
 										altText="OptOut"
 									>
 										Opt-out
 									</ToastAction>
 								</form>
 								<form action={setCookie}>
-									<ToastAction type="submit" altText="Accept">
+									<ToastAction type="submit" altText="Accept" className="text-[10px]">
 										Accept
 									</ToastAction>
 								</form>
