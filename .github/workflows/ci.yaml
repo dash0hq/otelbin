@@ -21,7 +21,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
 
@@ -36,3 +37,109 @@ jobs:
       - name: Test
         shell: bash
         run: npm run test
+
+  prep-itests:
+    name: Deploy validation backend
+    needs: ['verify']
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      test_matrix: ${{ steps.prepare_test_matrix.outputs.test_matrix }}
+      validation_api_apigateway_name: ${{ steps.parse_cdk_output.outputs.api_gateway_name }}
+      validation_api_apigateway_url: ${{ steps.parse_cdk_output.outputs.api_gateway_url }}\
+      validation_api_apigateway_key_id: ${{ steps.parse_cdk_output.outputs.api_gateway_key_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install CDK dependencies
+        shell: bash
+        working-directory: validation-src
+        run: |
+          npm ci
+          npm i -g aws-cli
+
+      - name: Install scripts dependencies
+        shell: bash
+        working-directory: validation-src
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Deploy validation backend
+        shell: bash
+        working-directory: validation-src
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'eu-central-1' 
+          CDK_DEPLOY_ACCOUNT: ${{ github.ref == 'refs/heads/main' && '462608073829' || '622203989445' }}
+          CDK_DEPLOY_REGION: 'eu-central-1'
+          GH_TOKEN: ${{ github.token }}
+          # We are using dev for historic purposes (name of first test env bootstrapped)
+          TEST_ENVIRONMENT_NAME: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref.name }}
+        run: |
+          npx projen deploy --require-approval never --outputs-file ./cdk-outputs.json
+
+      - name: Read API Gateway URL
+        id: parse_cdk_output
+        shell: bash
+        working-directory: validation-src
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref.name }}
+        run: |
+          echo api_gateway_name=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apiname" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
+          echo api_gateway_url=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apiurl" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
+          echo api_gateway_key_id=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apikeyid" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
+
+      - name: Prepare test matrix
+        id: prepare_test_matrix
+        shell: bash
+        working-directory: validation-src
+        run: |
+          echo test_matrix=$(jq -r '. | [to_entries[] | {distribution: .key, release: .value.releases[].version} | "\(.distribution)/\(.release)"]' < ./src/assets/supported-distributions.json) >> ${GITHUB_OUTPUT}
+
+  run-itests:
+    name: ITest
+    needs: ['prep-itests']
+    strategy:
+      matrix:
+        test_matrix: ${{ fromJson(needs.prep-itests.outputs.test_matrix )}}
+      fail-fast: false # We want to run all the tests, to prevent one failure from hiding another
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install CDK dependencies
+        shell: bash
+        working-directory: validation-src
+        run: |
+          npm ci
+
+      - name: Retrieve API Key for Validation API
+        shell: bash
+        working-directory: validation-src
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'eu-central-1' 
+          API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
+          API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
+          RELEASE_UNDER_TEST: ${{ matrix.test_matrix }}
+        run: |
+          VALIDATION_API_KEY=$(aws apigateway get-api-key --api-key ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }} --include-value | jq -r '.value') npm run test

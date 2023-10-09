@@ -1,4 +1,6 @@
-import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { ApiKeySourceType, AwsIntegration, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -6,21 +8,20 @@ import { Architecture, DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
-import { join } from 'path';
 
 declare global {
   namespace NodeJS {
-      interface ProcessEnv {
-          TEST_ENVIRONMENT_NAME: string;
-      }
+    interface ProcessEnv {
+      TEST_ENVIRONMENT_NAME: string;
+    }
   }
 }
 
-interface Distributions {
-  [id: string]: Distribution;
+export interface Distributions {
+  [key: string]: Distribution;
 }
 
-interface Distribution {
+export interface Distribution {
   provider: string;
   description: string;
   website: string;
@@ -28,7 +29,7 @@ interface Distribution {
   releases: Release[];
 }
 
-interface Release {
+export interface Release {
   version: string;
   artifact: string;
 }
@@ -77,9 +78,7 @@ export class OTelBinValidationStack extends Stack {
     });
 
     new BucketDeployment(this, 'deploy-supported-distributions-list', {
-      sources: [
-        Source.asset(supportedDistributionsPath),
-      ],
+      sources: [Source.asset(supportedDistributionsPath)],
       destinationBucket: supportedDistributionsListBucket,
     });
 
@@ -89,13 +88,9 @@ export class OTelBinValidationStack extends Stack {
     });
     credentialsRole.addToPolicy(
       new PolicyStatement({
-        resources: [
-          supportedDistributionsListBucket.bucketArn
-        ],
-        actions: [
-          's3:Get'
-        ],
-      })
+        resources: [supportedDistributionsListBucket.bucketArn],
+        actions: ['s3:Get'],
+      }),
     );
 
     supportedDistributionsListBucket.grantRead(credentialsRole);
@@ -138,28 +133,34 @@ export class OTelBinValidationStack extends Stack {
       },
     });
 
-    const supportedDistributions = require(join(__dirname, 'assets', 'supported-distributions')) as Distributions;
-    for (let [id, distribution] of Object.entries(supportedDistributions)) {
-      const distributionResource = validation.addResource(id);
+    const supportedDistributions = JSON.parse(
+      (readFileSync(join(__dirname, 'assets', 'supported-distributions.json'))).toString(),
+	  ) as Distributions;
+
+    for (let [distributionName, distribution] of Object.entries(supportedDistributions)) {
+      const distributionResource = validation.addResource(distributionName);
 
       for (let release of distribution.releases) {
-        const releaseLambda = new DockerImageFunction(this, `${id}-${release.version}`, {
+        const releaseLambda = new DockerImageFunction(this, `${distributionName}-${release.version}`, {
           architecture: Architecture.X86_64,
           code: DockerImageCode.fromImageAsset(join(__dirname, 'images', 'otelcol-validator'), {
             platform: Platform.LINUX_AMD64,
             buildArgs: {
-              DISTRO_NAME: id,
+              DISTRO_NAME: distributionName,
               GH_TOKEN: props.githubToken,
               GH_REPOSITORY: distribution.repository,
               GH_RELEASE: release.version,
               GH_ARTIFACT: release.artifact,
             },
           }),
+          environment: {
+            DISTRO_NAME: distributionName,
+          },
           /*
-           * The default 128 cause the OtelCol process to swap a lot, and that increased
-           * latency by a couple seconds in cold start and normal validations when testing
-           * with the Otelcol Contrib v0.85.1.
-           */
+					 * The default 128 cause the OtelCol process to swap a lot, and that increased
+					 * latency by a couple seconds in cold start and normal validations when testing
+					 * with the Otelcol Contrib v0.85.1.
+					 */
           memorySize: 1024,
           timeout: Duration.seconds(15),
         });
@@ -170,6 +171,21 @@ export class OTelBinValidationStack extends Stack {
         });
       }
     }
+
+    new CfnOutput(this, 'api-name', {
+      exportName: 'api-name',
+      value: api.restApiName,
+    });
+
+    new CfnOutput(this, 'api-url', {
+      exportName: 'api-url',
+      value: api.url,
+    });
+
+    new CfnOutput(this, 'api-key-id', {
+      exportName: 'api-key-id',
+      value: apiKey.keyId,
+    });
   }
 }
 
