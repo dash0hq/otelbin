@@ -13,14 +13,15 @@ import { type IItem, getParsedValue } from "./parseYaml";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
-interface ILeaf {
+export interface ILeaf {
 	source?: string;
 	offset: number;
 }
-
-interface IValidateItem {
+export interface IValidateItem {
 	[key: string]: ILeaf[];
 }
+
+let serviceItemsData: IValidateItem | undefined = {};
 
 export function validateOtelCollectorConfigurationAndSetMarkers(
 	configData: string,
@@ -32,8 +33,12 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	const ajvError: IAjvError[] = [];
 	const totalErrors: IError = { ajvErrors: ajvError, customErrors: [], customWarnings: [] };
 	const errorMarkers: editor.IMarkerData[] = [];
-	const mainItemsInfo: IValidateItem = {};
-	const serviceItemsInfo: IValidateItem = {};
+	const docObject = getParsedValue(configData);
+	const mainItemsData: IValidateItem = extractMainItemsData(docObject);
+	serviceItemsData = {};
+	const serviceItems: IItem[] | undefined = extractServiceItems(docObject);
+	serviceItemsData = findLeafs(serviceItems, docObject.filter((item: IItem) => item.key.source === "service")[0]);
+
 	try {
 		const jsonData = JsYaml.load(configData);
 		const valid = ajv.validate(schema, jsonData);
@@ -57,8 +62,8 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 				ajvError.push(...validationErrors);
 			}
 		}
-		customValidate(mainItemsInfo, serviceItemsInfo, errorMarkers, totalErrors, configData, monacoRef);
 
+		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData, monacoRef);
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	} catch (error: unknown) {
 		const knownError = error as IJsYamlError;
@@ -80,125 +85,125 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 }
 
 function customValidate(
-	mainItemsInfo: IValidateItem,
-	serviceItemsInfo: IValidateItem,
+	mainItemsData: IValidateItem,
+	serviceItemsData: IValidateItem | undefined,
 	errorMarkers: editor.IMarkerData[],
 	totalErrors: IError,
 	configData: string,
 	monacoRef?: MonacoRefType
 ) {
 	if (!totalErrors.jsYamlError) {
-		const docObject = getParsedValue(configData);
-		const mainKeys = docObject
-			.filter((item: IItem) => item.key.source !== "service")
-			.map((item: IItem) => item.key.source);
-		const serviceItems = docObject.filter((item: IItem) => item.key.source === "service")[0]?.value.items;
-		mainKeys.forEach((key: string) => {
-			mainItemsInfo[key] =
-				docObject
-					.filter((item: IItem) => item.key.source === key)[0]
-					?.value?.items?.map((item: IItem) => {
-						return { source: item.key.source, offset: item.key.offset };
-					}) || [];
-		});
-		findLeafs(serviceItems, docObject.filter((item: IItem) => item.key.source === "service")[0]);
+		if (!mainItemsData) return totalErrors;
+		for (const key of Object.keys(mainItemsData)) {
+			const mainItems = mainItemsData[key];
+			const serviceItems = serviceItemsData && serviceItemsData[key];
 
-		function findLeafs(yamlItems?: IItem[], parent?: IItem) {
-			if (yamlItems?.length === 0) return;
-			else if (Array.isArray(yamlItems)) {
-				for (let i = 0; i < yamlItems.length; i++) {
-					const item = yamlItems[i];
-					if (item?.value) {
-						if (item.value.source && parent) {
-							const source = item.value.source;
-							const offset = item.value.offset;
-							const parentKey = parent.key.source;
+			if (!serviceItems) continue;
 
-							if (!serviceItemsInfo[parentKey]) {
-								serviceItemsInfo[parentKey] = [];
-							}
-							if (!serviceItemsInfo[parentKey]?.some((item: ILeaf) => item.source === source)) {
-								serviceItemsInfo[parentKey]?.push({ source, offset });
-							}
-						} else if (Array.isArray(item.value.items)) {
-							if (item.key) {
-								findLeafs(item.value.items, item);
-							}
-						}
+			serviceItems.forEach((item) => {
+				if (
+					!mainItems?.some((mainItem) => mainItem.source === item.source) &&
+					!mainItemsData["connectors"]?.some((mainItem) => mainItem.source === item.source)
+				) {
+					const errorMessage = `${capitalize(key)} "${item.source}" is not defined.`;
+					const { line, column } = findLineAndColumn(configData, item.offset);
+					const endColumn = column + (item.source?.length || 0);
+
+					const errorMarker = {
+						startLineNumber: line || 0,
+						endLineNumber: 0,
+						startColumn: column || 0,
+						endColumn: endColumn,
+						severity: monacoRef?.current?.MarkerSeverity.Error || 1,
+						message: errorMessage,
+					};
+					errorMarkers.push(errorMarker);
+					totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
+				}
+			});
+			mainItems?.forEach((item) => {
+				if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
+					const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
+					const { line, column } = findLineAndColumn(configData, item.offset);
+					const endColumn = column + (item.source?.length || 0);
+
+					const errorMarker = {
+						startLineNumber: line || 0,
+						endLineNumber: 0,
+						startColumn: column || 0,
+						endColumn: endColumn,
+						severity: monacoRef?.current?.MarkerSeverity.Warning || 1,
+						message: errorMessage,
+					};
+					errorMarkers.push(errorMarker);
+
+					totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
+				}
+			});
+		}
+	}
+}
+
+export function extractMainItemsData(docObject: IItem[]) {
+	const mainItemsData: IValidateItem = {};
+
+	const mainKeys = docObject
+		.filter((item: IItem) => item.key.source !== "service")
+		.map((item: IItem) => item.key.source);
+
+	mainKeys.forEach((key: string) => {
+		mainItemsData[key] =
+			docObject
+				.filter((item: IItem) => item.key.source === key)[0]
+				?.value?.items?.map((item: IItem) => {
+					return { source: item.key.source, offset: item.key.offset };
+				}) || [];
+	});
+	return mainItemsData;
+}
+
+export function extractServiceItems(docObject: IItem[]) {
+	const serviceItems = docObject.filter((item: IItem) => item.key.source === "service")[0]?.value.items;
+	return serviceItems;
+}
+
+export function findLeafs(yamlItems?: IItem[], parent?: IItem) {
+	if (yamlItems?.length === 0) return;
+	else if (Array.isArray(yamlItems)) {
+		for (let i = 0; i < yamlItems.length; i++) {
+			const item = yamlItems[i];
+			if (item?.value) {
+				if (item.value.source && parent) {
+					const source = item.value.source;
+					const offset = item.value.offset;
+					const parentKey = parent.key.source;
+
+					if (!serviceItemsData) return;
+					if (!serviceItemsData[parentKey]) {
+						serviceItemsData[parentKey] = [];
+					}
+					if (!serviceItemsData[parentKey]?.some((item: ILeaf) => item.source === source)) {
+						serviceItemsData[parentKey]?.push({ source, offset });
+					}
+				} else if (Array.isArray(item.value.items)) {
+					if (item.key) {
+						findLeafs(item.value.items, item);
 					}
 				}
 			}
 		}
-		if (!mainItemsInfo) return totalErrors;
-		validateSections(mainItemsInfo, serviceItemsInfo, configData, errorMarkers, totalErrors, monacoRef);
 	}
+	return serviceItemsData;
 }
 
-function validateSections(
-	mainInfo: IValidateItem,
-	serviceInfo: IValidateItem,
-	value: string,
-	errorMarkers: editor.IMarkerData[],
-	totalErrors: IError,
-	monacoRef?: MonacoRefType
-) {
-	for (const key of Object.keys(mainInfo)) {
-		const mainItems = mainInfo[key];
-		const serviceItems = serviceInfo[key];
-
-		if (!serviceItems) continue;
-
-		serviceItems.forEach((item) => {
-			if (
-				!mainItems?.some((mainItem) => mainItem.source === item.source) &&
-				!mainInfo["connectors"]?.some((mainItem) => mainItem.source === item.source)
-			) {
-				const errorMessage = `${capitalize(key)} "${item.source}" is not defined.`;
-				const { line, column } = findLineAndColumn(value, item.offset);
-				const endColumn = column + (item.source?.length || 0);
-
-				const errorMarker = {
-					startLineNumber: line || 0,
-					endLineNumber: 0,
-					startColumn: column || 0,
-					endColumn: endColumn,
-					severity: monacoRef?.current?.MarkerSeverity.Error || 1,
-					message: errorMessage,
-				};
-				errorMarkers.push(errorMarker);
-				totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
-			}
-		});
-		mainItems?.forEach((item) => {
-			if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
-				const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
-				const { line, column } = findLineAndColumn(value, item.offset);
-				const endColumn = column + (item.source?.length || 0);
-
-				const errorMarker = {
-					startLineNumber: line || 0,
-					endLineNumber: 0,
-					startColumn: column || 0,
-					endColumn: endColumn,
-					severity: monacoRef?.current?.MarkerSeverity.Warning || 1,
-					message: errorMessage,
-				};
-				errorMarkers.push(errorMarker);
-
-				totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
-			}
-		});
-	}
-}
-
-function findLineAndColumn(config: string, targetOffset?: number) {
+export function findLineAndColumn(config: string, targetOffset?: number) {
 	const lines = config.length > 0 ? config.split("\n") : [];
 
 	let currentOffset = 0;
 	let lineIndex = 0;
 	let column = 0;
 
-	if (lines.length === 0) {
+	if (lines.length === 0 || (targetOffset && targetOffset < 0 && config.length)) {
 		return { line: 0, column: 0 };
 	}
 
@@ -218,7 +223,7 @@ function findLineAndColumn(config: string, targetOffset?: number) {
 	return { line: lineIndex, column };
 }
 
-function capitalize(input: string): string {
+export function capitalize(input: string): string {
 	if (!input) {
 		return input;
 	}
