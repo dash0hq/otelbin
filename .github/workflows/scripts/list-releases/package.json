@@ -22,6 +22,7 @@
     "esbuild": "^0.19.4"
   },
   "dependencies": {
-    "@octokit/rest": "^20.0.2"
+    "@octokit/rest": "^20.0.2",
+    "semver": "^7.5.4"
   }
 }

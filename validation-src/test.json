@@ -1,0 +1,4178 @@
+👾 [37m[4mtest[24m | jest --passWithNoTests --updateSnapshot[39m
+👾 [37m[4mtest[24m | jest --passWithNoTests --updateSnapshot[39m
+ts-jest[ts-jest-transformer] (WARN) Define `ts-jest` config under `globals` is deprecated. Please do
+transform: {
+    <transform_regex>: ['ts-jest', { /* ts-jest config goes here in Jest */ }],
+},
+ts-jest[ts-jest-transformer] (WARN) Define `ts-jest` config under `globals` is deprecated. Please do
+transform: {
+    <transform_regex>: ['ts-jest', { /* ts-jest config goes here in Jest */ }],
+},
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2mtest/[22m[1mmain.test.ts[22m
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2mtest/[22m[1mmain.test.ts[22m
+  Validation API
+  Validation API
+    POST validation/otelcol-core/v0.86.0
+    POST validation/otelcol-core/v0.86.0
+      [31m✕[39m [2mrejects unauthenticated requests (24 ms)[22m
+      [31m✕[39m [2mrejects unauthenticated requests (24 ms)[22m
+      [31m✕[39m [2maccepts valid configuration (1 ms)[22m
+      [31m✕[39m [2maccepts valid configuration (1 ms)[22m
+      [31m✕[39m [2mrejects empty configuration[22m
+      [31m✕[39m [2mrejects configuration without declared receivers[22m
+      [31m✕[39m [2mrejects empty configuration[22m
+      [31m✕[39m [2mrejects configuration without declared receivers[22m
+      [31m✕[39m [2mrejects configuration with undeclared receiver[22m
+      [31m✕[39m [2mrejects configuration with undeclared receiver[22m
+      [31m✕[39m [2mrejects configuration with undeclared extension[22m
+      [31m✕[39m [2mrejects configuration with undeclared extension[22m
+
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects unauthenticated requests[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoThrow[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected asymmetric matcher: [32mObjectContaining {"status": 403}[39m
+
+    Received function did not throw
+[2m[22m
+[2m    [0m [90m 72 |[39m[0m[22m
+[2m    [0m [90m 73 |[39m       expect([36masync[39m () [33m=>[39m axios[33m.[39mpost(validationUrl[33m,[39m otelcolConfigValid))[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 74 |[39m         [33m.[39mtoThrow(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m    |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 75 |[39m           status[33m:[39m [35m403[39m[33m,[39m[0m[22m
+[2m    [0m [90m 76 |[39m         }))[33m;[39m[0m[22m
+[2m    [0m [90m 77 |[39m     }[33m,[39m defaultTimeout)[33m;[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:74:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › accepts valid configuration[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"message": "Configuration is valid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 87 |[39m           }[33m,[39m[0m[22m
+[2m    [0m [90m 88 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 89 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m    |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 90 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 91 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 92 |[39m             message[33m:[39m [32m'Configuration is valid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:89:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects empty configuration[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: no receiver configuration specified in config", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 105 |[39m           }[33m,[39m[0m[22m
+[2m    [0m [90m 106 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 107 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 108 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 109 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 110 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:107:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects configuration without declared receivers[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: no receiver configuration specified in config", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 121 |[39m           headers[33m,[39m[0m[22m
+[2m    [0m [90m 122 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 123 |[39m       })[33[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects unauthenticated requests[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoThrow[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected asymmetric matcher: [32mObjectContaining {"status": 403}[39m
+
+    Received function did not throw
+[2m[22m
+[2m    [0m [90m 72 |[39m[0m[22m
+[2m    [0m [90m 73 |[39m       expect([36masync[39m () [33m=>[39m axios[33m.[39mpost(validationUrl[33m,[39m otelcolConfigValid))[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 74 |[39m         [33m.[39mtoThrow(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m    |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 75 |[39m           status[33m:[39m [35m403[39m[33m,[39m[0m[22m
+[2m    [0m [90m 76 |[39m         }))[33m;[39m[0m[22m
+[2m    [0m [90m 77 |[39m     }[33m,[39m defaultTimeout)[33m;[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:74:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › accepts valid configuration[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"message": "Configuration is valid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 87 |[39m           }[33m,[39m[0m[22m
+[2m    [0m [90m 88 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 89 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m    |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 90 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 91 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 92 |[39m             message[33m:[39m [32m'Configuration is valid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:89:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects empty configuration[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: no receiver configuration specified in config", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 105 |[39m           }[33m,[39m[0m[22m
+[2m    [0m [90m 106 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 107 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 108 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 109 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 110 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:107:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects configuration without declared receivers[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: no receiver configuration specified in config", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 121 |[39m           headers[33m,[39m[0m[22m
+[2m    [0m [90m 122 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 123 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 124 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 125 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 126 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:123:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects configuration with undeclared receiver[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: service::pipelines::traces: references receiver \"jaeger\" which is not configured", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 137 |[39m           headers[33m,[39m[0m[22m
+[2m    [0m [90m 138 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 139 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 140 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 141 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 142 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:139:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects configuration with undeclared extension[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: service::extensions: references extension \"health_check\" which is not configured", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 153 |[39m           headers[33m,[39m[0m[22m
+[2m    [0m [90m 154 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 155 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 156 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 157 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 158 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:155:10)[22m[2m[22m
+
+m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 124 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 125 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 126 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:123:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects configuration with undeclared receiver[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: service::pipelines::traces: references receiver \"jaeger\" which is not configured", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 137 |[39m           headers[33m,[39m[0m[22m
+[2m    [0m [90m 138 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 139 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 140 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 141 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 142 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:139:10)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mValidation API › POST validation/otelcol-core/v0.86.0 › rejects configuration with undeclared extension[39m[22m
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    Expected: [32mObjectContaining {"data": {"error": "Error: service::extensions: references extension \"health_check\" which is not configured", "message": "The provided configuration is invalid"}, "status": 200}[39m
+    Received: [31m[Function anonymous][39m
+[2m[22m
+[2m    [0m [90m 153 |[39m           headers[33m,[39m[0m[22m
+[2m    [0m [90m 154 |[39m         })[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 155 |[39m       })[33m.[39mtoEqual(expect[33m.[39mobjectContaining({[0m[22m
+[2m    [0m [90m     |[39m          [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 156 |[39m         status[33m:[39m [35m200[39m[33m,[39m[0m[22m
+[2m    [0m [90m 157 |[39m           data[33m:[39m {[0m[22m
+[2m    [0m [90m 158 |[39m             message[33m:[39m [32m'The provided configuration is invalid'[39m[33m,[39m[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtest/main.test.ts[39m[0m[2m:155:10)[22m[2m[22m
+
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 total
+[1mTests:       [22m[1m[31m6 failed[39m[22m, 6 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        1.661 s, estimated 2 s
+[2mRan all test suites[22m[2m.[22m
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 total
+[1mTests:       [22m[1m[31m6 failed[39m[22m, 6 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        1.661 s, estimated 2 s
+[2mRan all test suites[22m[2m.[22m
+
+/Users/mmanciop/git/otelbin/validation-src/node_modules/axios/dist/node/axios.cjs:1913
+    reject(new AxiosError(
+           ^
+
+/Users/mmanciop/git/otelbin/validation-src/node_modules/axios/dist/node/axios.cjs:1913
+    reject(new AxiosError(
+           ^
+AxiosError {
+  message: 'Request failed with status code 403',
+  name: 'AxiosError',
+  code: 'ERR_BAD_REQUEST',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false
+    },
+    adapter: [ 'xhr', 'http' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: {
+      FormData: [Function: FormData] {
+        LINE_BREAK: '\r\n',
+        DEFAULT_CONTENT_TYPE: 'application/octet-stream'
+      },
+      Blob: [class Blob]
+    },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': 'axios/1.5.1',
+      'Content-Length': '593',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    baseURL: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+    method: 'post',
+    url: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+    data: '# Learn more about the OpenTelemetry Collector via\n' +
+      '# https://opentelemetry.io/docs/collector/\n' +
+      '\n' +
+      'receivers:\n' +
+      '  otlp:\n' +
+      '    protocols:\n' +
+      '      grpc:\n' +
+      '      http:\n' +
+      '\n' +
+      'processors:\n' +
+      '  batch:\n' +
+      '\n' +
+      'exporters:\n' +
+      '  otlp:\n' +
+      '    endpoint: otelcol:4317\n' +
+      '\n' +
+      'extensions:\n' +
+      '  health_check:\n' +
+      '  pprof:\n' +
+      '  zpages:\n' +
+      '\n' +
+      'service:\n' +
+      '  extensions: [health_check, pprof, zpages]\n' +
+      '  pipelines:\n' +
+      '    traces:\n' +
+      '      receivers: [otlp]\n' +
+      '      processors: [batch]\n' +
+      '      exporters: [otlp]\n' +
+      '    metrics:\n' +
+      '      receivers: [otlp]\n' +
+      '      processors: [batch]\n' +
+      '      exporters: [otlp]\n' +
+      '    logs:\n' +
+      '      receivers: [otlp]\n' +
+      '      processors: [batch]\n' +
+      '      exporters: [otlp]'
+  },
+  request: <ref *3> ClientRequest {
+    _events: [Object: null prototype] {
+      abort: [Function (anonymous)],
+      aborted: [Function (anonymous)],
+      connect: [Function (anonymous)],
+      error: [Function (anonymous)],
+      socket: [Function (anonymous)],
+      timeout: [Function (anonymous)],
+      finish: [Function: requestOnFinish]
+    },
+    _eventsCount: 7,
+    _maxListeners: undefined,
+    outputData: [],
+    outputSize: 0,
+    writable: true,
+    destroyed: true,
+    _last: false,
+    chunkedEncoding: false,
+    shouldKeepAlive: true,
+    maxRequestsOnConnectionReached: false,
+    _defaultKeepAlive: true,
+    useChunkedEncodingByDefault: true,
+    sendDate: false,
+    _removedConnection: false,
+    _removedContLen: false,
+    _removedTE: false,
+    strictContentLength: false,
+    _contentLength: '593',
+    _hasBody: true,
+    _trailer: '',
+    finished: true,
+    _headerSent: true,
+    _closed: true,
+    socket: <ref *1> TLSSocket {
+      _tlsOptions: {
+        allowHalfOpen: undefined,
+        pipe: false,
+        secureContext: SecureContext { context: SecureContext {} },
+        isServer: false,
+        requestCert: true,
+        rejectUnauthorized: true,
+        session: undefined,
+        ALPNProtocols: undefined,
+        requestOCSP: undefined,
+        enableTrace: undefined,
+        pskCallback: undefined,
+        highWaterMark: undefined,
+        onread: undefined,
+        signal: undefined
+      },
+      _secureEstablished: true,
+      _securePending: false,
+      _newSessionPending: false,
+      _controlReleased: true,
+      secureConnecting: false,
+      _SNICallback: null,
+      servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+      alpnProtocol: false,
+      authorized: true,
+      authorizationError: null,
+      encrypteAxiosError {
+  message: 'Request failed with status code 403',
+  name: 'AxiosError',
+  code: 'ERR_BAD_REQUEST',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false
+    },
+    adapter: [ 'xhr', 'http' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: {
+      FormData: [Function: FormData] {
+        LINE_BREAK: '\r\n',
+        DEFAULT_CONTENT_TYPE: 'application/octet-stream'
+      },
+      Blob: [class Blob]
+    },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': 'axios/1.5.1',
+      'Content-Length': '593',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    baseURL: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+    method: 'post',
+    url: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+    data: '# Learn more about the OpenTelemetry Collector via\n' +
+      '# https://opentelemetry.io/docs/collector/\n' +
+      '\n' +
+      'receivers:\n' +
+      '  otlp:\n' +
+      '    protocols:\n' +
+      '      grpc:\n' +
+      '      http:\n' +
+      '\n' +
+      'processors:\n' +
+      '  batch:\n' +
+      '\n' +
+      'exporters:\n' +
+      '  otlp:\n' +
+      '    endpoint: otelcol:4317\n' +
+      '\n' +
+      'extensions:\n' +
+      '  health_check:\n' +
+      '  pprof:\n' +
+      '  zpages:\n' +
+      '\n' +
+      'service:\n' +
+      '  extensions: [health_check, pprof, zpages]\n' +
+      '  pipelines:\n' +
+      '    traces:\n' +
+      '      receivers: [otlp]\n' +
+      '      processors: [batch]\n' +
+      '      exporters: [otlp]\n' +
+      '    metrics:\n' +
+      '      receivers: [otlp]\n' +
+      '      processors: [batch]\n' +
+      '      exporters: [otlp]\n' +
+      '    logs:\n' +
+      '      receivers: [otlp]\n' +
+      '      processors: [batch]\n' +
+      '      exporters: [otlp]'
+  },
+  request: <ref *3> ClientRequest {
+    _events: [Object: null prototype] {
+      abort: [Function (anonymous)],
+      aborted: [Function (anonymous)],
+      connect: [Function (anonymous)],
+      error: [Function (anonymous)],
+      socket: [Function (anonymous)],
+      timeout: [Function (anonymous)],
+      finish: [Function: requestOnFinish]
+    },
+    _eventsCount: 7,
+    _maxListeners: undefined,
+    outputData: [],
+    outputSize: 0,
+    writable: true,
+    destroyed: true,
+    _last: false,
+    chunkedEncoding: false,
+    shouldKeepAlive: true,
+    maxRequestsOnConnectionReached: false,
+    _defaultKeepAlive: true,
+    useChunkedEncodingByDefault: true,
+    sendDate: false,
+    _removedConnection: false,
+    _removedContLen: false,
+    _removedTE: false,
+    strictContentLength: false,
+    _contentLength: '593',
+    _hasBody: true,
+    _trailer: '',
+    finished: true,
+    _headerSent: true,
+    _closed: true,
+    socket: <ref *1> TLSSocket {
+      _tlsOptions: {
+        allowHalfOpen: undefined,
+        pipe: false,
+        secureContext: SecureContext { context: SecureContext {} },
+        isServer: false,
+        requestCert: true,
+        rejectUnauthorized: true,
+        session: undefined,
+        ALPNProtocols: undefined,
+        requestOCSP: undefined,
+        enableTrace: undefined,
+        pskCallback: undefined,
+        highWaterMark: undefined,
+        onread: undefined,
+        signal: undefined
+      },
+      _secureEstablished: true,
+      _securePending: false,
+      _newSessionPending: false,
+      _controlReleased: true,
+      secureConnecting: false,
+      _SNICallback: null,
+      servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+      alpnProtocol: false,
+      authorized: true,
+      authorizationError: null,
+      encrypted: true,
+      _events: [Object: null prototype] {
+        close: [
+          [Function: onSocketCloseDestroySSL],
+          [Function: bound onceWrapper] {
+            listener: [Function (anonymous)]
+          },
+          [Function: onClose]
+        ],
+        end: [Function: onReadableStreamEnd],
+        newListener: [Function: keylogNewListener],
+        secure: [Function: onConnectSecure],
+        session: [Function (anonymous)],
+        free: [Function: onFree],
+        timeout: [Function: onTimeout],
+        agentRemove: [Function: onRemove],
+        error: [Function: bound onceWrapper] {
+          listener: [Function: freeSocketErrorListener]
+        }
+      },
+      _eventsCount: 9,
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+      _closeAfterHandlingError: false,
+      _readableState: ReadableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        buffer: BufferList { head: null, tail: null, length: 0 },
+        length: 0,
+        pipes: [],
+        flowing: true,
+        ended: false,
+        endEmitted: false,
+        reading: true,
+        constructed: true,
+        sync: false,
+        needReadable: true,
+        emittedReadable: false,
+        readableListening: false,
+        resumeScheduled: false,
+        errorEmitted: false,
+        emitClose: false,
+        autoDestroy: true,
+        destroyed: false,
+        errored: null,
+        closed: false,
+        closeEmitted: false,
+        defaultEncoding: 'utf8',
+        awaitDrainWriters: null,
+        multiAwaitDrain: false,
+        readingMore: false,
+        dataEmitted: true,
+        decoder: null,
+        encoding: null,
+        [Symbol(kPaused)]: false
+      },
+      _maxListeners: undefined,
+      _writableState: WritableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        finalCalled: false,
+        needDrain: false,
+        ending: false,
+        ended: false,
+        finished: false,
+        destroyed: false,
+        decodeStrings: false,
+        defaultEncoding: 'utf8',
+        length: 0,
+        writing: false,
+        corked: 0,
+        sync: false,
+        bufferProcessing: false,
+        onwrite: [Function: bound onwrite],
+        writecb: null,
+        writelen: 0,
+        afterWriteTickInfo: null,
+        buffered: [],
+        bufferedIndex: 0,
+        allBuffers: true,
+        allNoop: true,
+        pendingcb: 0,
+        constructed: true,
+        prefinished: false,
+        errorEmitted: false,
+        emitClose: false,
+        autoDestroy: true,
+        errored: null,
+        closed: false,
+        closeEmitted: false,
+        [Symbol(kOnFinished)]: []
+      },
+      allowHalfOpen: false,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: undefined,
+      _server: null,
+      ssl: TLSWrap {
+        _parent: TCP {
+          reading: [Getter/Setter],
+          onconnection: null,
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _parentWrap: null,
+        _secureContext: SecureContext { context: SecureContext {} },
+        reading: true,
+        onkeylog: [Function: onkeylog],
+        onhandshakestart: {},
+        onhandshakedone: [Function (anonymous)],
+        onocspresponse: [Function: onocspresponse],
+        onnewsession: [Function: onnewsessionclient],
+        onerror: [Function: onerror],
+        [Symbol(owner_symbol)]: [Circular *1]
+      },
+      _requestCert: true,
+      _rejectUnauthorized: true,
+      timeout: 5000,
+      parser: null,
+      _httpMessage: null,
+      autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+      [Symbol(alpncallback)]: null,
+      [Symbol(res)]: TLSWrap {
+        _parent: TCP {
+          reading: [Getter/Setter],
+          onconnection: null,
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _parentWrap: null,
+        _secureContext: SecureContext { context: SecureContext {} },
+        reading: true,
+        onkeylog: [Function: onkeylog],
+        onhandshakestart: {},
+        onhandshd: true,
+      _events: [Object: null prototype] {
+        close: [
+          [Function: onSocketCloseDestroySSL],
+          [Function: bound onceWrapper] {
+            listener: [Function (anonymous)]
+          },
+          [Function: onClose]
+        ],
+        end: [Function: onReadableStreamEnd],
+        newListener: [Function: keylogNewListener],
+        secure: [Function: onConnectSecure],
+        session: [Function (anonymous)],
+        free: [Function: onFree],
+        timeout: [Function: onTimeout],
+        agentRemove: [Function: onRemove],
+        error: [Function: bound onceWrapper] {
+          listener: [Function: freeSocketErrorListener]
+        }
+      },
+      _eventsCount: 9,
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+      _closeAfterHandlingError: false,
+      _readableState: ReadableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        buffer: BufferList { head: null, tail: null, length: 0 },
+        length: 0,
+        pipes: [],
+        flowing: true,
+        ended: false,
+        endEmitted: false,
+        reading: true,
+        constructed: true,
+        sync: false,
+        needReadable: true,
+        emittedReadable: false,
+        readableListening: false,
+        resumeScheduled: false,
+        errorEmitted: false,
+        emitClose: false,
+        autoDestroy: true,
+        destroyed: false,
+        errored: null,
+        closed: false,
+        closeEmitted: false,
+        defaultEncoding: 'utf8',
+        awaitDrainWriters: null,
+        multiAwaitDrain: false,
+        readingMore: false,
+        dataEmitted: true,
+        decoder: null,
+        encoding: null,
+        [Symbol(kPaused)]: false
+      },
+      _maxListeners: undefined,
+      _writableState: WritableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        finalCalled: false,
+        needDrain: false,
+        ending: false,
+        ended: false,
+        finished: false,
+        destroyed: false,
+        decodeStrings: false,
+        defaultEncoding: 'utf8',
+        length: 0,
+        writing: false,
+        corked: 0,
+        sync: false,
+        bufferProcessing: false,
+        onwrite: [Function: bound onwrite],
+        writecb: null,
+        writelen: 0,
+        afterWriteTickInfo: null,
+        buffered: [],
+        bufferedIndex: 0,
+        allBuffers: true,
+        allNoop: true,
+        pendingcb: 0,
+        constructed: true,
+        prefinished: false,
+        errorEmitted: false,
+        emitClose: false,
+        autoDestroy: true,
+        errored: null,
+        closed: false,
+        closeEmitted: false,
+        [Symbol(kOnFinished)]: []
+      },
+      allowHalfOpen: false,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: undefined,
+      _server: null,
+      ssl: TLSWrap {
+        _parent: TCP {
+          reading: [Getter/Setter],
+          onconnection: null,
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _parentWrap: null,
+        _secureContext: SecureContext { context: SecureContext {} },
+        reading: true,
+        onkeylog: [Function: onkeylog],
+        onhandshakestart: {},
+        onhandshakedone: [Function (anonymous)],
+        onocspresponse: [Function: onocspresponse],
+        onnewsession: [Function: onnewsessionclient],
+        onerror: [Function: onerror],
+        [Symbol(owner_symbol)]: [Circular *1]
+      },
+      _requestCert: true,
+      _rejectUnauthorized: true,
+      timeout: 5000,
+      parser: null,
+      _httpMessage: null,
+      autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+      [Symbol(alpncallback)]: null,
+      [Symbol(res)]: TLSWrap {
+        _parent: TCP {
+          reading: [Getter/Setter],
+          onconnection: null,
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _parentWrap: null,
+        _secureContext: SecureContext { context: SecureContext {} },
+        reading: true,
+        onkeylog: [Function: onkeylog],
+        onhandshakestart: {},
+        onhandshakedone: [Function (anonymous)],
+        onocspresponse: [Function: onocspresponse],
+        onnewsession: [Function: onnewsessionclient],
+        onerror: [Function: onerror],
+        [Symbol(owner_symbol)]: [Circular *1]
+      },
+      [Symbol(verified)]: true,
+      [Symbol(pendingSession)]: null,
+      [Symbol(async_id_symbol)]: -1,
+      [Symbol(kHandle)]: TLSWrap {
+        _parent: TCP {
+          reading: [Getter/Setter],
+          onconnection: null,
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _parentWrap: null,
+        _secureContext: SecureContext { context: SecureContext {} },
+        reading: true,
+        onkeylog: [Function: onkeylog],
+        onhandshakestart: {},
+        onhandshakedone: [Function (anonymous)],
+        onocspresponse: [Function: onocspresponse],
+        onnewsession: [Function: onnewsessionclient],
+        onerror: [Function: onerror],
+        [Symbol(owner_symbol)]: [Circular *1]
+      },
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: <ref *2> Timeout {
+        _idleTimeout: 5000,
+        _idlePrev: TimersList {
+          _idleNext: [Circular *2],
+          _idlePrev: [Circular *2],
+          expiry: 6831,
+          id: -9007199254740986,
+          msecs: 5000,
+          priorityQueuePosition: 3
+        },
+        _idleNext: TimersList {
+          _idleNext: [Circular *2],
+          _idlePrev: [Circular *2],
+          expiry: 6831,
+          id: -9007199254740986,
+          msecs: 5000,
+          priorityQueuePosition: 3
+        },
+        _idleStart: 1960,
+        _onTimeout: [Function: bound ],
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: false,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 1906,
+        [Symbol(triggerId)]: 1904
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kSetNoDelay)]: false,
+      [Symbol(kSetKeepAlive)]: true,
+      [Symbol(kSetKeepAliveInitialDelay)]: 1,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(connect-options)]: {
+        rejectUnauthorized: true,
+        ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+        checkServerIdentity: [Function: checkServerIdentity],
+        minDHSize: 1024,
+        maxRedirects: 21,
+        maxBodyLength: Infinity,
+        protocol: 'https:',
+        path: null,
+        method: 'POST',
+        headers: [Object: null prototype] {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'axios/1.5.1',
+          'Content-Length': '593',
+          'Accept-Encoding': 'gzip, compress, deflate, br'
+        },
+        agents: { http: undefined, https: undefined },
+        auth: undefined,
+        family: undefined,
+        beforeRedirect: [Function: dispatchBeforeRedirect],
+        beforeRedirects: { proxy: [Function: beforeRedirect] },
+        hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        port: 443,
+        agent: undefined,
+        nativeProtocols: {
+          'http:': {
+            _connectionListener: [Function: connectionListener],
+            METHODS: [Array],
+            STATUS_CODES: [Object],
+            Agent: [Function],
+            ClientRequest: [Function: ClientRequest],
+            IncomingMessage: [Function: IncomingMessage],
+            OutgoingMessage: [Function: OutgoingMessage],
+            Server: [Function: Server],
+            ServerResponse: [Function: ServerResponse],
+            createServer: [Function: createServer],
+            validateHeaderName: [Function: __noakedone: [Function (anonymous)],
+        onocspresponse: [Function: onocspresponse],
+        onnewsession: [Function: onnewsessionclient],
+        onerror: [Function: onerror],
+        [Symbol(owner_symbol)]: [Circular *1]
+      },
+      [Symbol(verified)]: true,
+      [Symbol(pendingSession)]: null,
+      [Symbol(async_id_symbol)]: -1,
+      [Symbol(kHandle)]: TLSWrap {
+        _parent: TCP {
+          reading: [Getter/Setter],
+          onconnection: null,
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _parentWrap: null,
+        _secureContext: SecureContext { context: SecureContext {} },
+        reading: true,
+        onkeylog: [Function: onkeylog],
+        onhandshakestart: {},
+        onhandshakedone: [Function (anonymous)],
+        onocspresponse: [Function: onocspresponse],
+        onnewsession: [Function: onnewsessionclient],
+        onerror: [Function: onerror],
+        [Symbol(owner_symbol)]: [Circular *1]
+      },
+      [Symbol(lastWriteQueueSize)]: 0,
+      [Symbol(timeout)]: <ref *2> Timeout {
+        _idleTimeout: 5000,
+        _idlePrev: TimersList {
+          _idleNext: [Circular *2],
+          _idlePrev: [Circular *2],
+          expiry: 6831,
+          id: -9007199254740986,
+          msecs: 5000,
+          priorityQueuePosition: 3
+        },
+        _idleNext: TimersList {
+          _idleNext: [Circular *2],
+          _idlePrev: [Circular *2],
+          expiry: 6831,
+          id: -9007199254740986,
+          msecs: 5000,
+          priorityQueuePosition: 3
+        },
+        _idleStart: 1960,
+        _onTimeout: [Function: bound ],
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: false,
+        [Symbol(refed)]: false,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 1906,
+        [Symbol(triggerId)]: 1904
+      },
+      [Symbol(kBuffer)]: null,
+      [Symbol(kBufferCb)]: null,
+      [Symbol(kBufferGen)]: null,
+      [Symbol(kCapture)]: false,
+      [Symbol(kSetNoDelay)]: false,
+      [Symbol(kSetKeepAlive)]: true,
+      [Symbol(kSetKeepAliveInitialDelay)]: 1,
+      [Symbol(kBytesRead)]: 0,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(connect-options)]: {
+        rejectUnauthorized: true,
+        ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+        checkServerIdentity: [Function: checkServerIdentity],
+        minDHSize: 1024,
+        maxRedirects: 21,
+        maxBodyLength: Infinity,
+        protocol: 'https:',
+        path: null,
+        method: 'POST',
+        headers: [Object: null prototype] {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'axios/1.5.1',
+          'Content-Length': '593',
+          'Accept-Encoding': 'gzip, compress, deflate, br'
+        },
+        agents: { http: undefined, https: undefined },
+        auth: undefined,
+        family: undefined,
+        beforeRedirect: [Function: dispatchBeforeRedirect],
+        beforeRedirects: { proxy: [Function: beforeRedirect] },
+        hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        port: 443,
+        agent: undefined,
+        nativeProtocols: {
+          'http:': {
+            _connectionListener: [Function: connectionListener],
+            METHODS: [Array],
+            STATUS_CODES: [Object],
+            Agent: [Function],
+            ClientRequest: [Function: ClientRequest],
+            IncomingMessage: [Function: IncomingMessage],
+            OutgoingMessage: [Function: OutgoingMessage],
+            Server: [Function: Server],
+            ServerResponse: [Function: ServerResponse],
+            createServer: [Function: createServer],
+            validateHeaderName: [Function: __node_internal_],
+            validateHeaderValue: [Function: __node_internal_],
+            get: [Function: get],
+            request: [Function: request],
+            setMaxIdleHTTPParsers: [Function: setMaxIdleHTTPParsers],
+            maxHeaderSize: [Getter],
+            globalAgent: [Getter/Setter]
+          },
+          'https:': {
+            Agent: [Function: Agent],
+            globalAgent: [Agent],
+            Server: [Function: Server],
+            createServer: [Function: createServer],
+            get: [Function: get],
+            request: [Function: request]
+          }
+        },
+        pathname: '/prod/validation/otelcol-core/v0.86.0',
+        _defaultAgent: Agent {
+          _events: [Object: null prototype] {
+            free: [Function (anonymous)],
+            newListener: [Function: maybeEnableKeylog]
+          },
+          _eventsCount: 2,
+          _maxListeners: undefined,
+          defaultPort: 443,
+          protocol: 'https:',
+          options: [Object: null prototype] {
+            keepAlive: true,
+            scheduling: 'lifo',
+            timeout: 5000,
+            noDelay: true,
+            path: null
+          },
+          requests: [Object: null prototype] {},
+          sockets: [Object: null prototype] {},
+          freeSockets: [Object: null prototype] {
+            'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [Array]
+          },
+          keepAliveMsecs: 1000,
+          keepAlive: true,
+          maxSockets: Infinity,
+          maxFreeSockets: 256,
+          scheduling: 'lifo',
+          maxTotalSockets: Infinity,
+          totalSocketCount: 1,
+          maxCachedSessions: 100,
+          _sessionCache: { map: [Object], list: [Array] },
+          [Symbol(kCapture)]: false
+        },
+        host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        keepAlive: true,
+        scheduling: 'lifo',
+        timeout: 5000,
+        noDelay: true,
+        servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+        encoding: null,
+        keepAliveInitialDelay: 1000
+      }
+    },
+    _header: 'POST /prod/validation/otelcol-core/v0.86.0 HTTP/1.1\r\n' +
+      'Accept: application/json, text/plain, */*\r\n' +
+      'Content-Type: application/x-www-form-urlencoded\r\n' +
+      'User-Agent: axios/1.5.1\r\n' +
+      'Content-Length: 593\r\n' +
+      'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+      'Host: u8r74ces9d.execute-api.eu-central-1.amazonaws.com\r\n' +
+      'Connection: keep-alive\r\n' +
+      '\r\n',
+    _keepAliveTimeout: 0,
+    _onPendingData: [Function: nop],
+    agent: Agent {
+      _events: [Object: null prototype] {
+        free: [Function (anonymous)],
+        newListener: [Function: maybeEnableKeylog]
+      },
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      defaultPort: 443,
+      protocol: 'https:',
+      options: [Object: null prototype] {
+        keepAlive: true,
+        scheduling: 'lifo',
+        timeout: 5000,
+        noDelay: true,
+        path: null
+      },
+      requests: [Object: null prototype] {},
+      sockets: [Object: null prototype] {},
+      freeSockets: [Object: null prototype] {
+        'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [
+          <ref *1> TLSSocket {
+            _tlsOptions: [Object],
+            _secureEstablished: true,
+            _securePending: false,
+            _newSessionPending: false,
+            _controlReleased: true,
+            secureConnecting: false,
+            _SNICallback: null,
+            servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            alpnProtocol: false,
+            authorized: true,
+            authorizationError: null,
+            encrypted: true,
+            _events: [Object: null prototype],
+            _eventsCount: 9,
+            connecting: false,
+            _hadError: false,
+            _parent: null,
+            _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            de_internal_],
+            validateHeaderValue: [Function: __node_internal_],
+            get: [Function: get],
+            request: [Function: request],
+            setMaxIdleHTTPParsers: [Function: setMaxIdleHTTPParsers],
+            maxHeaderSize: [Getter],
+            globalAgent: [Getter/Setter]
+          },
+          'https:': {
+            Agent: [Function: Agent],
+            globalAgent: [Agent],
+            Server: [Function: Server],
+            createServer: [Function: createServer],
+            get: [Function: get],
+            request: [Function: request]
+          }
+        },
+        pathname: '/prod/validation/otelcol-core/v0.86.0',
+        _defaultAgent: Agent {
+          _events: [Object: null prototype] {
+            free: [Function (anonymous)],
+            newListener: [Function: maybeEnableKeylog]
+          },
+          _eventsCount: 2,
+          _maxListeners: undefined,
+          defaultPort: 443,
+          protocol: 'https:',
+          options: [Object: null prototype] {
+            keepAlive: true,
+            scheduling: 'lifo',
+            timeout: 5000,
+            noDelay: true,
+            path: null
+          },
+          requests: [Object: null prototype] {},
+          sockets: [Object: null prototype] {},
+          freeSockets: [Object: null prototype] {
+            'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [Array]
+          },
+          keepAliveMsecs: 1000,
+          keepAlive: true,
+          maxSockets: Infinity,
+          maxFreeSockets: 256,
+          scheduling: 'lifo',
+          maxTotalSockets: Infinity,
+          totalSocketCount: 1,
+          maxCachedSessions: 100,
+          _sessionCache: { map: [Object], list: [Array] },
+          [Symbol(kCapture)]: false
+        },
+        host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        keepAlive: true,
+        scheduling: 'lifo',
+        timeout: 5000,
+        noDelay: true,
+        servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+        encoding: null,
+        keepAliveInitialDelay: 1000
+      }
+    },
+    _header: 'POST /prod/validation/otelcol-core/v0.86.0 HTTP/1.1\r\n' +
+      'Accept: application/json, text/plain, */*\r\n' +
+      'Content-Type: application/x-www-form-urlencoded\r\n' +
+      'User-Agent: axios/1.5.1\r\n' +
+      'Content-Length: 593\r\n' +
+      'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+      'Host: u8r74ces9d.execute-api.eu-central-1.amazonaws.com\r\n' +
+      'Connection: keep-alive\r\n' +
+      '\r\n',
+    _keepAliveTimeout: 0,
+    _onPendingData: [Function: nop],
+    agent: Agent {
+      _events: [Object: null prototype] {
+        free: [Function (anonymous)],
+        newListener: [Function: maybeEnableKeylog]
+      },
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      defaultPort: 443,
+      protocol: 'https:',
+      options: [Object: null prototype] {
+        keepAlive: true,
+        scheduling: 'lifo',
+        timeout: 5000,
+        noDelay: true,
+        path: null
+      },
+      requests: [Object: null prototype] {},
+      sockets: [Object: null prototype] {},
+      freeSockets: [Object: null prototype] {
+        'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [
+          <ref *1> TLSSocket {
+            _tlsOptions: [Object],
+            _secureEstablished: true,
+            _securePending: false,
+            _newSessionPending: false,
+            _controlReleased: true,
+            secureConnecting: false,
+            _SNICallback: null,
+            servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            alpnProtocol: false,
+            authorized: true,
+            authorizationError: null,
+            encrypted: true,
+            _events: [Object: null prototype],
+            _eventsCount: 9,
+            connecting: false,
+            _hadError: false,
+            _parent: null,
+            _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            _closeAfterHandlingError: false,
+            _readableState: [ReadableState],
+            _maxListeners: undefined,
+            _writableState: [WritableState],
+            allowHalfOpen: false,
+            _sockname: null,
+            _pendingData: null,
+            _pendingEncoding: '',
+            server: undefined,
+            _server: null,
+            ssl: [TLSWrap],
+            _requestCert: true,
+            _rejectUnauthorized: true,
+            timeout: 5000,
+            parser: null,
+            _httpMessage: null,
+            autoSelectFamilyAttemptedAddresses: [Array],
+            [Symbol(alpncallback)]: null,
+            [Symbol(res)]: [TLSWrap],
+            [Symbol(verified)]: true,
+            [Symbol(pendingSession)]: null,
+            [Symbol(async_id_symbol)]: -1,
+            [Symbol(kHandle)]: [TLSWrap],
+            [Symbol(lastWriteQueueSize)]: 0,
+            [Symbol(timeout)]: [Timeout],
+            [Symbol(kBuffer)]: null,
+            [Symbol(kBufferCb)]: null,
+            [Symbol(kBufferGen)]: null,
+            [Symbol(kCapture)]: false,
+            [Symbol(kSetNoDelay)]: false,
+            [Symbol(kSetKeepAlive)]: true,
+            [Symbol(kSetKeepAliveInitialDelay)]: 1,
+            [Symbol(kBytesRead)]: 0,
+            [Symbol(kBytesWritten)]: 0,
+            [Symbol(connect-options)]: [Object]
+          }
+        ]
+      },
+      keepAliveMsecs: 1000,
+      keepAlive: true,
+      maxSockets: Infinity,
+      maxFreeSockets: 256,
+      scheduling: 'lifo',
+      maxTotalSockets: Infinity,
+      totalSocketCount: 1,
+      maxCachedSessions: 100,
+      _sessionCache: {
+        map: {
+          'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': Buffer(1822) [Uint8Array] [
+             48, 130,   7,  26,   2,   1,   1,   2,   2,   3,   4,   4,
+              2,  19,   1,   4,  32, 189, 195, 225, 161, 196,  91,  41,
+            195, 124, 242, 193, 172,  65,  36,  98,   4, 204, 120, 160,
+            232, 150, 180, 227,  86,  39, 173, 212,  51, 235, 207,  96,
+            149,   4,  32,  74,  29, 116, 203,  79, 144, 213, 211,  16,
+              1, 118,  79, 126,  72,  92,  65, 174, 124, 141, 167, 122,
+            164,  83, 135, 200,  14, 133, 221, 207, 196, 193, 144, 161,
+              6,   2,   4, 101,  37,  42,  57, 162,   4,   2,   2,  28,
+             32, 163, 130,   5,
+            ... 1722 more items
+          ]
+        },
+        list: [
+          'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::'
+        ]
+      },
+      [Symbol(kCapture)]: false
+    },
+    socketPath: undefined,
+    method: 'POST',
+    maxHeaderSize: undefined,
+    insecureHTTPParser: undefined,
+    joinDuplicateHeaders: undefined,
+    path: '/prod/validation/otelcol-core/v0.86.0',
+    _ended: true,
+    res: IncomingMessage {
+      _readableState: ReadableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        buffer: BufferList { head: null, tail: null, length: 0 },
+        length: 0,
+        pipes: [],
+        flowing: true,
+        ended: true,
+        endEmitted: true,
+        reading: false,
+        constructed: true,
+        sync: true,
+        needReadable: false,
+        emittedReadable: false,
+        readableListening: false,
+        resumeScheduled: false,
+        errorEmitted: false,
+        emitClose: true,
+        autoDestroy: true,
+        destroyed: true,
+        errored: null,
+        closed: true,
+        closeEmitted: true,
+        defaultEncoding: 'utf8',
+        awaitDrainWriters: null,
+        multiAwaitDrain: false,
+        readingMore: true,
+        dataEmitted: true,
+        decoder: null,
+        encoding: null,
+        [Symbol(kPaused)]: false
+      },
+      _events: [Object: null prototype] {
+        end: [ [Function: responseOnEnd], [Function: handleStreamEnd] ],
+        error: [Function: handleStreamError],
+        data: [Function: handleStreamData],
+        aborted: [Function: handlerStreamAborted]
+      },
+      _eventsCount: 4,
+      _maxListeners: undefined,
+      socket: null,
+      httpVersionMajor: 1,
+      httpVersionMinor:_closeAfterHandlingError: false,
+            _readableState: [ReadableState],
+            _maxListeners: undefined,
+            _writableState: [WritableState],
+            allowHalfOpen: false,
+            _sockname: null,
+            _pendingData: null,
+            _pendingEncoding: '',
+            server: undefined,
+            _server: null,
+            ssl: [TLSWrap],
+            _requestCert: true,
+            _rejectUnauthorized: true,
+            timeout: 5000,
+            parser: null,
+            _httpMessage: null,
+            autoSelectFamilyAttemptedAddresses: [Array],
+            [Symbol(alpncallback)]: null,
+            [Symbol(res)]: [TLSWrap],
+            [Symbol(verified)]: true,
+            [Symbol(pendingSession)]: null,
+            [Symbol(async_id_symbol)]: -1,
+            [Symbol(kHandle)]: [TLSWrap],
+            [Symbol(lastWriteQueueSize)]: 0,
+            [Symbol(timeout)]: [Timeout],
+            [Symbol(kBuffer)]: null,
+            [Symbol(kBufferCb)]: null,
+            [Symbol(kBufferGen)]: null,
+            [Symbol(kCapture)]: false,
+            [Symbol(kSetNoDelay)]: false,
+            [Symbol(kSetKeepAlive)]: true,
+            [Symbol(kSetKeepAliveInitialDelay)]: 1,
+            [Symbol(kBytesRead)]: 0,
+            [Symbol(kBytesWritten)]: 0,
+            [Symbol(connect-options)]: [Object]
+          }
+        ]
+      },
+      keepAliveMsecs: 1000,
+      keepAlive: true,
+      maxSockets: Infinity,
+      maxFreeSockets: 256,
+      scheduling: 'lifo',
+      maxTotalSockets: Infinity,
+      totalSocketCount: 1,
+      maxCachedSessions: 100,
+      _sessionCache: {
+        map: {
+          'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': Buffer(1822) [Uint8Array] [
+             48, 130,   7,  26,   2,   1,   1,   2,   2,   3,   4,   4,
+              2,  19,   1,   4,  32, 189, 195, 225, 161, 196,  91,  41,
+            195, 124, 242, 193, 172,  65,  36,  98,   4, 204, 120, 160,
+            232, 150, 180, 227,  86,  39, 173, 212,  51, 235, 207,  96,
+            149,   4,  32,  74,  29, 116, 203,  79, 144, 213, 211,  16,
+              1, 118,  79, 126,  72,  92,  65, 174, 124, 141, 167, 122,
+            164,  83, 135, 200,  14, 133, 221, 207, 196, 193, 144, 161,
+              6,   2,   4, 101,  37,  42,  57, 162,   4,   2,   2,  28,
+             32, 163, 130,   5,
+            ... 1722 more items
+          ]
+        },
+        list: [
+          'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::'
+        ]
+      },
+      [Symbol(kCapture)]: false
+    },
+    socketPath: undefined,
+    method: 'POST',
+    maxHeaderSize: undefined,
+    insecureHTTPParser: undefined,
+    joinDuplicateHeaders: undefined,
+    path: '/prod/validation/otelcol-core/v0.86.0',
+    _ended: true,
+    res: IncomingMessage {
+      _readableState: ReadableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        buffer: BufferList { head: null, tail: null, length: 0 },
+        length: 0,
+        pipes: [],
+        flowing: true,
+        ended: true,
+        endEmitted: true,
+        reading: false,
+        constructed: true,
+        sync: true,
+        needReadable: false,
+        emittedReadable: false,
+        readableListening: false,
+        resumeScheduled: false,
+        errorEmitted: false,
+        emitClose: true,
+        autoDestroy: true,
+        destroyed: true,
+        errored: null,
+        closed: true,
+        closeEmitted: true,
+        defaultEncoding: 'utf8',
+        awaitDrainWriters: null,
+        multiAwaitDrain: false,
+        readingMore: true,
+        dataEmitted: true,
+        decoder: null,
+        encoding: null,
+        [Symbol(kPaused)]: false
+      },
+      _events: [Object: null prototype] {
+        end: [ [Function: responseOnEnd], [Function: handleStreamEnd] ],
+        error: [Function: handleStreamError],
+        data: [Function: handleStreamData],
+        aborted: [Function: handlerStreamAborted]
+      },
+      _eventsCount: 4,
+      _maxListeners: undefined,
+      socket: null,
+      httpVersionMajor: 1,
+      httpVersionMinor: 1,
+      httpVersion: '1.1',
+      complete: true,
+      rawHeaders: [
+        'Content-Type',
+        'application/json',
+        'Content-Length',
+        '23',
+        'Connection',
+        'keep-alive',
+        'Date',
+        'Tue, 10 Oct 2023 10:40:57 GMT',
+        'x-amzn-RequestId',
+        'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+        'x-amzn-ErrorType',
+        'ForbiddenException',
+        'x-amz-apigw-id',
+        'MlOI9FWIliAEXcg=',
+        'X-Cache',
+        'Error from cloudfront',
+        'Via',
+        '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+        'X-Amz-Cf-Pop',
+        'MUC50-P4',
+        'X-Amz-Cf-Id',
+        '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+      ],
+      rawTrailers: [],
+      joinDuplicateHeaders: undefined,
+      aborted: false,
+      upgrade: false,
+      url: '',
+      method: null,
+      statusCode: 403,
+      statusMessage: 'Forbidden',
+      client: <ref *1> TLSSocket {
+        _tlsOptions: {
+          allowHalfOpen: undefined,
+          pipe: false,
+          secureContext: SecureContext { context: SecureContext {} },
+          isServer: false,
+          requestCert: true,
+          rejectUnauthorized: true,
+          session: undefined,
+          ALPNProtocols: undefined,
+          requestOCSP: undefined,
+          enableTrace: undefined,
+          pskCallback: undefined,
+          highWaterMark: undefined,
+          onread: undefined,
+          signal: undefined
+        },
+        _secureEstablished: true,
+        _securePending: false,
+        _newSessionPending: false,
+        _controlReleased: true,
+        secureConnecting: false,
+        _SNICallback: null,
+        servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        alpnProtocol: false,
+        authorized: true,
+        authorizationError: null,
+        encrypted: true,
+        _events: [Object: null prototype] {
+          close: [
+            [Function: onSocketCloseDestroySSL],
+            [Function],
+            [Function: onClose]
+          ],
+          end: [Function: onReadableStreamEnd],
+          newListener: [Function: keylogNewListener],
+          secure: [Function: onConnectSecure],
+          session: [Function (anonymous)],
+          free: [Function: onFree],
+          timeout: [Function: onTimeout],
+          agentRemove: [Function: onRemove],
+          error: [Function: bound onceWrapper] {
+            listener: [Function: freeSocketErrorListener]
+          }
+        },
+        _eventsCount: 9,
+        connecting: false,
+        _hadError: false,
+        _parent: null,
+        _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        _closeAfterHandlingError: false,
+        _readableState: ReadableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          buffer: BufferList { head: null, tail: null, length: 0 },
+          length: 0,
+          pipes: [],
+          flowing: true,
+          ended: false,
+          endEmitted: false,
+          reading: true,
+          constructed: true,
+          sync: false,
+          needReadable: true,
+          emittedReadable: false,
+          readableListening: false,
+          resumeScheduled: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          destroyed: false,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          defaultEncoding: 'utf8',
+          awaitDrainWriters: null,
+          multiAwaitDrain: false,
+          readingMore: false,
+          dataEmitted: true,
+          decoder: null,
+          encoding: null,
+          [Symbol(kPaused)]: false
+        },
+        _maxListeners: undefined,
+        _writableState: WritableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          finalCalled: false,
+          needDrain: false,
+          ending: false,
+          ended: false,
+          finished: false,
+          destroyed: false,
+          decodeStrings: false,
+          defaultEncoding: 'utf8',
+          length: 0,
+          writing: false,
+          corked: 0, 1,
+      httpVersion: '1.1',
+      complete: true,
+      rawHeaders: [
+        'Content-Type',
+        'application/json',
+        'Content-Length',
+        '23',
+        'Connection',
+        'keep-alive',
+        'Date',
+        'Tue, 10 Oct 2023 10:40:57 GMT',
+        'x-amzn-RequestId',
+        'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+        'x-amzn-ErrorType',
+        'ForbiddenException',
+        'x-amz-apigw-id',
+        'MlOI9FWIliAEXcg=',
+        'X-Cache',
+        'Error from cloudfront',
+        'Via',
+        '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+        'X-Amz-Cf-Pop',
+        'MUC50-P4',
+        'X-Amz-Cf-Id',
+        '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+      ],
+      rawTrailers: [],
+      joinDuplicateHeaders: undefined,
+      aborted: false,
+      upgrade: false,
+      url: '',
+      method: null,
+      statusCode: 403,
+      statusMessage: 'Forbidden',
+      client: <ref *1> TLSSocket {
+        _tlsOptions: {
+          allowHalfOpen: undefined,
+          pipe: false,
+          secureContext: SecureContext { context: SecureContext {} },
+          isServer: false,
+          requestCert: true,
+          rejectUnauthorized: true,
+          session: undefined,
+          ALPNProtocols: undefined,
+          requestOCSP: undefined,
+          enableTrace: undefined,
+          pskCallback: undefined,
+          highWaterMark: undefined,
+          onread: undefined,
+          signal: undefined
+        },
+        _secureEstablished: true,
+        _securePending: false,
+        _newSessionPending: false,
+        _controlReleased: true,
+        secureConnecting: false,
+        _SNICallback: null,
+        servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        alpnProtocol: false,
+        authorized: true,
+        authorizationError: null,
+        encrypted: true,
+        _events: [Object: null prototype] {
+          close: [
+            [Function: onSocketCloseDestroySSL],
+            [Function],
+            [Function: onClose]
+          ],
+          end: [Function: onReadableStreamEnd],
+          newListener: [Function: keylogNewListener],
+          secure: [Function: onConnectSecure],
+          session: [Function (anonymous)],
+          free: [Function: onFree],
+          timeout: [Function: onTimeout],
+          agentRemove: [Function: onRemove],
+          error: [Function: bound onceWrapper] {
+            listener: [Function: freeSocketErrorListener]
+          }
+        },
+        _eventsCount: 9,
+        connecting: false,
+        _hadError: false,
+        _parent: null,
+        _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        _closeAfterHandlingError: false,
+        _readableState: ReadableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          buffer: BufferList { head: null, tail: null, length: 0 },
+          length: 0,
+          pipes: [],
+          flowing: true,
+          ended: false,
+          endEmitted: false,
+          reading: true,
+          constructed: true,
+          sync: false,
+          needReadable: true,
+          emittedReadable: false,
+          readableListening: false,
+          resumeScheduled: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          destroyed: false,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          defaultEncoding: 'utf8',
+          awaitDrainWriters: null,
+          multiAwaitDrain: false,
+          readingMore: false,
+          dataEmitted: true,
+          decoder: null,
+          encoding: null,
+          [Symbol(kPaused)]: false
+        },
+        _maxListeners: undefined,
+        _writableState: WritableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          finalCalled: false,
+          needDrain: false,
+          ending: false,
+          ended: false,
+          finished: false,
+          destroyed: false,
+          decodeStrings: false,
+          defaultEncoding: 'utf8',
+          length: 0,
+          writing: false,
+          corked: 0,
+          sync: false,
+          bufferProcessing: false,
+          onwrite: [Function: bound onwrite],
+          writecb: null,
+          writelen: 0,
+          afterWriteTickInfo: null,
+          buffered: [],
+          bufferedIndex: 0,
+          allBuffers: true,
+          allNoop: true,
+          pendingcb: 0,
+          constructed: true,
+          prefinished: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          [Symbol(kOnFinished)]: []
+        },
+        allowHalfOpen: false,
+        _sockname: null,
+        _pendingData: null,
+        _pendingEncoding: '',
+        server: undefined,
+        _server: null,
+        ssl: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _requestCert: true,
+        _rejectUnauthorized: true,
+        timeout: 5000,
+        parser: null,
+        _httpMessage: null,
+        autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+        [Symbol(alpncallback)]: null,
+        [Symbol(res)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(verified)]: true,
+        [Symbol(pendingSession)]: null,
+        [Symbol(async_id_symbol)]: -1,
+        [Symbol(kHandle)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(lastWriteQueueSize)]: 0,
+        [Symbol(timeout)]: <ref *2> Timeout {
+          _idleTimeout: 5000,
+          _idlePrev: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleNext: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleStart: 1960,
+          _onTimeout: [Function: bound ],
+          _timerArgs: undefined,
+          _repeat: null,
+          _destroyed: false,
+          [Symbol(refed)]: false,
+          [Symbol(kHasPrimitive)]: false,
+          [Symbol(asyncId)]: 1906,
+          [Symbol(triggerId)]: 1904
+        },
+        [Symbol(kBuffer)]: null,
+        [Symbol(kBufferCb)]: null,
+        [Symbol(kBufferGen)]: null,
+        
+          sync: false,
+          bufferProcessing: false,
+          onwrite: [Function: bound onwrite],
+          writecb: null,
+          writelen: 0,
+          afterWriteTickInfo: null,
+          buffered: [],
+          bufferedIndex: 0,
+          allBuffers: true,
+          allNoop: true,
+          pendingcb: 0,
+          constructed: true,
+          prefinished: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          [Symbol(kOnFinished)]: []
+        },
+        allowHalfOpen: false,
+        _sockname: null,
+        _pendingData: null,
+        _pendingEncoding: '',
+        server: undefined,
+        _server: null,
+        ssl: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _requestCert: true,
+        _rejectUnauthorized: true,
+        timeout: 5000,
+        parser: null,
+        _httpMessage: null,
+        autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+        [Symbol(alpncallback)]: null,
+        [Symbol(res)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(verified)]: true,
+        [Symbol(pendingSession)]: null,
+        [Symbol(async_id_symbol)]: -1,
+        [Symbol(kHandle)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(lastWriteQueueSize)]: 0,
+        [Symbol(timeout)]: <ref *2> Timeout {
+          _idleTimeout: 5000,
+          _idlePrev: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleNext: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleStart: 1960,
+          _onTimeout: [Function: bound ],
+          _timerArgs: undefined,
+          _repeat: null,
+          _destroyed: false,
+          [Symbol(refed)]: false,
+          [Symbol(kHasPrimitive)]: false,
+          [Symbol(asyncId)]: 1906,
+          [Symbol(triggerId)]: 1904
+        },
+        [Symbol(kBuffer)]: null,
+        [Symbol(kBufferCb)]: null,
+        [Symbol(kBufferGen)]: null,
+        [Symbol(kCapture)]: false,
+        [Symbol(kSetNoDelay)]: false,
+        [Symbol(kSetKeepAlive)]: true,
+        [Symbol(kSetKeepAliveInitialDelay)]: 1,
+        [Symbol(kBytesRead)]: 0,
+        [Symbol(kBytesWritten)]: 0,
+        [Symbol(connect-options)]: {
+          rejectUnauthorized: true,
+          ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+          checkServerIdentity: [Function: checkServerIdentity],
+          minDHSize: 1024,
+          maxRedirects: 21,
+          maxBodyLength: Infinity,
+          protocol: 'https:',
+          path: null,
+          method: 'POST',
+          headers: [Object: null prototype] {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'axios/1.5.1',
+            'Content-Length': '593',
+            'Accept-Encoding': 'gzip, compress, deflate, br'
+          },
+          agents: { http: undefined, https: undefined },
+          auth: undefined,
+          family: undefined,
+          beforeRedirect: [Function: dispatchBeforeRedirect],
+          beforeRedirects: { proxy: [Function: beforeRedirect] },
+          hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          port: 443,
+          agent: undefined,
+          nativeProtocols: { 'http:': [Object], 'https:': [Object] },
+          pathname: '/prod/validation/otelcol-core/v0.86.0',
+          _defaultAgent: Agent {
+            _events: [Object: null prototype],
+            _eventsCount: 2,
+            _maxListeners: undefined,
+            defaultPort: 443,
+            protocol: 'https:',
+            options: [Object: null prototype],
+            requests: [Object: null prototype] {},
+            sockets: [Object: null prototype] {},
+            freeSockets: [Object: null prototype],
+            keepAliveMsecs: 1000,
+            keepAlive: true,
+            maxSockets: Infinity,
+            maxFreeSockets: 256,
+            scheduling: 'lifo',
+            maxTotalSockets: Infinity,
+            totalSocketCount: 1,
+            maxCachedSessions: 100,
+            _sessionCache: [Object],
+            [Symbol(kCapture)]: false
+          },
+          host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          keepAlive: true,
+          scheduling: 'lifo',
+          timeout: 5000,
+          noDelay: true,
+          servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+          encoding: null,
+          keepAliveInitialDelay: 1000
+        }
+      },
+      _consuming: false,
+      _dumped: false,
+      req: [Circular *3],
+      responseUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      redirects: [],
+      [Symbol(kCapture)]: false,
+      [Symbol(kHeaders)]: {
+        'content-type': 'application/json',
+        'content-length': '23',
+        connection: 'keep-alive',
+        date: 'Tue, 10 Oct 2023 10:40:57 GMT',
+        'x-amzn-requestid': 'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+        'x-amzn-errortype': 'ForbiddenException',
+        'x-amz-apigw-id': 'MlOI9FWIliAEXcg=',
+        'x-cache': 'Error from cloudfront',
+        via: '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+        'x-amz-cf-pop': 'MUC50-P4',
+        'x-amz-cf-id': '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+      },
+      [Symbol(kHeadersCount)]: 22,
+      [Symbol(kTrailers)]: null,
+      [Symbol(kTrailersCount)]: 0
+    },
+    aborted: false,
+    timeoutCb: null,
+    upgradeOrConnect: false,
+    parser: null,
+    maxHeadersCount: null,
+    reusedSocket: false,
+    host: 'u8r74ces9[Symbol(kCapture)]: false,
+        [Symbol(kSetNoDelay)]: false,
+        [Symbol(kSetKeepAlive)]: true,
+        [Symbol(kSetKeepAliveInitialDelay)]: 1,
+        [Symbol(kBytesRead)]: 0,
+        [Symbol(kBytesWritten)]: 0,
+        [Symbol(connect-options)]: {
+          rejectUnauthorized: true,
+          ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+          checkServerIdentity: [Function: checkServerIdentity],
+          minDHSize: 1024,
+          maxRedirects: 21,
+          maxBodyLength: Infinity,
+          protocol: 'https:',
+          path: null,
+          method: 'POST',
+          headers: [Object: null prototype] {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'axios/1.5.1',
+            'Content-Length': '593',
+            'Accept-Encoding': 'gzip, compress, deflate, br'
+          },
+          agents: { http: undefined, https: undefined },
+          auth: undefined,
+          family: undefined,
+          beforeRedirect: [Function: dispatchBeforeRedirect],
+          beforeRedirects: { proxy: [Function: beforeRedirect] },
+          hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          port: 443,
+          agent: undefined,
+          nativeProtocols: { 'http:': [Object], 'https:': [Object] },
+          pathname: '/prod/validation/otelcol-core/v0.86.0',
+          _defaultAgent: Agent {
+            _events: [Object: null prototype],
+            _eventsCount: 2,
+            _maxListeners: undefined,
+            defaultPort: 443,
+            protocol: 'https:',
+            options: [Object: null prototype],
+            requests: [Object: null prototype] {},
+            sockets: [Object: null prototype] {},
+            freeSockets: [Object: null prototype],
+            keepAliveMsecs: 1000,
+            keepAlive: true,
+            maxSockets: Infinity,
+            maxFreeSockets: 256,
+            scheduling: 'lifo',
+            maxTotalSockets: Infinity,
+            totalSocketCount: 1,
+            maxCachedSessions: 100,
+            _sessionCache: [Object],
+            [Symbol(kCapture)]: false
+          },
+          host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          keepAlive: true,
+          scheduling: 'lifo',
+          timeout: 5000,
+          noDelay: true,
+          servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+          encoding: null,
+          keepAliveInitialDelay: 1000
+        }
+      },
+      _consuming: false,
+      _dumped: false,
+      req: [Circular *3],
+      responseUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      redirects: [],
+      [Symbol(kCapture)]: false,
+      [Symbol(kHeaders)]: {
+        'content-type': 'application/json',
+        'content-length': '23',
+        connection: 'keep-alive',
+        date: 'Tue, 10 Oct 2023 10:40:57 GMT',
+        'x-amzn-requestid': 'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+        'x-amzn-errortype': 'ForbiddenException',
+        'x-amz-apigw-id': 'MlOI9FWIliAEXcg=',
+        'x-cache': 'Error from cloudfront',
+        via: '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+        'x-amz-cf-pop': 'MUC50-P4',
+        'x-amz-cf-id': '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+      },
+      [Symbol(kHeadersCount)]: 22,
+      [Symbol(kTrailers)]: null,
+      [Symbol(kTrailersCount)]: 0
+    },
+    aborted: false,
+    timeoutCb: null,
+    upgradeOrConnect: false,
+    parser: null,
+    maxHeadersCount: null,
+    reusedSocket: false,
+    host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+    protocol: 'https:',
+    _redirectable: Writable {
+      _writableState: WritableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        finalCalled: false,
+        needDrain: false,
+        ending: false,
+        ended: false,
+        finished: false,
+        destroyed: false,
+        decodeStrings: true,
+        defaultEncoding: 'utf8',
+        length: 0,
+        writing: false,
+        corked: 0,
+        sync: true,
+        bufferProcessing: false,
+        onwrite: [Function: bound onwrite],
+        writecb: null,
+        writelen: 0,
+        afterWriteTickInfo: null,
+        buffered: [],
+        bufferedIndex: 0,
+        allBuffers: true,
+        allNoop: true,
+        pendingcb: 0,
+        constructed: true,
+        prefinished: false,
+        errorEmitted: false,
+        emitClose: true,
+        autoDestroy: true,
+        errored: null,
+        closed: false,
+        closeEmitted: false,
+        [Symbol(kOnFinished)]: []
+      },
+      _events: [Object: null prototype] {
+        response: [Function: handleResponse],
+        error: [Function: handleRequestError],
+        socket: [Function: handleRequestSocket]
+      },
+      _eventsCount: 3,
+      _maxListeners: undefined,
+      _options: {
+        maxRedirects: 21,
+        maxBodyLength: Infinity,
+        protocol: 'https:',
+        path: '/prod/validation/otelcol-core/v0.86.0',
+        method: 'POST',
+        headers: [Object: null prototype] {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'axios/1.5.1',
+          'Content-Length': '593',
+          'Accept-Encoding': 'gzip, compress, deflate, br'
+        },
+        agents: { http: undefined, https: undefined },
+        auth: undefined,
+        family: undefined,
+        beforeRedirect: [Function: dispatchBeforeRedirect],
+        beforeRedirects: { proxy: [Function: beforeRedirect] },
+        hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        port: '',
+        agent: undefined,
+        nativeProtocols: {
+          'http:': {
+            _connectionListener: [Function: connectionListener],
+            METHODS: [Array],
+            STATUS_CODES: [Object],
+            Agent: [Function],
+            ClientRequest: [Function: ClientRequest],
+            IncomingMessage: [Function: IncomingMessage],
+            OutgoingMessage: [Function: OutgoingMessage],
+            Server: [Function: Server],
+            ServerResponse: [Function: ServerResponse],
+            createServer: [Function: createServer],
+            validateHeaderName: [Function: __node_internal_],
+            validateHeaderValue: [Function: __node_internal_],
+            get: [Function: get],
+            request: [Function: request],
+            setMaxIdleHTTPParsers: [Function: setMaxIdleHTTPParsers],
+            maxHeaderSize: [Getter],
+            globalAgent: [Getter/Setter]
+          },
+          'https:': {
+            Agent: [Function: Agent],
+            globalAgent: [Agent],
+            Server: [Function: Server],
+            createServer: [Function: createServer],
+            get: [Function: get],
+            request: [Function: request]
+          }
+        },
+        pathname: '/prod/validation/otelcol-core/v0.86.0'
+      },
+      _ended: true,
+      _ending: true,
+      _redirectCount: 0,
+      _redirects: [],
+      _requestBodyLength: 593,
+      _requestBodyBuffers: [],
+      _onNativeResponse: [Function (anonymous)],
+      _currentRequest: [Circular *3],
+      _currentUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      [Symbol(kCapture)]: false
+    },
+    [Symbol(kCapture)]: false,
+    [Symbol(kBytesWritten)]: 0,
+    [Symbol(kNeedDrain)]: false,
+    [Symbol(corked)]: 0,
+    [Symbol(kOutHeaders)]: [Object: null prototype] {
+      accept: [ 'Accept', 'application/json, text/plain, */*' ],
+      'content-type': [ 'Content-Type', 'application/x-www-form-urlencoded' ],
+      'user-agent': [ 'User-Agent', 'axiosd.execute-api.eu-central-1.amazonaws.com',
+    protocol: 'https:',
+    _redirectable: Writable {
+      _writableState: WritableState {
+        objectMode: false,
+        highWaterMark: 16384,
+        finalCalled: false,
+        needDrain: false,
+        ending: false,
+        ended: false,
+        finished: false,
+        destroyed: false,
+        decodeStrings: true,
+        defaultEncoding: 'utf8',
+        length: 0,
+        writing: false,
+        corked: 0,
+        sync: true,
+        bufferProcessing: false,
+        onwrite: [Function: bound onwrite],
+        writecb: null,
+        writelen: 0,
+        afterWriteTickInfo: null,
+        buffered: [],
+        bufferedIndex: 0,
+        allBuffers: true,
+        allNoop: true,
+        pendingcb: 0,
+        constructed: true,
+        prefinished: false,
+        errorEmitted: false,
+        emitClose: true,
+        autoDestroy: true,
+        errored: null,
+        closed: false,
+        closeEmitted: false,
+        [Symbol(kOnFinished)]: []
+      },
+      _events: [Object: null prototype] {
+        response: [Function: handleResponse],
+        error: [Function: handleRequestError],
+        socket: [Function: handleRequestSocket]
+      },
+      _eventsCount: 3,
+      _maxListeners: undefined,
+      _options: {
+        maxRedirects: 21,
+        maxBodyLength: Infinity,
+        protocol: 'https:',
+        path: '/prod/validation/otelcol-core/v0.86.0',
+        method: 'POST',
+        headers: [Object: null prototype] {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'axios/1.5.1',
+          'Content-Length': '593',
+          'Accept-Encoding': 'gzip, compress, deflate, br'
+        },
+        agents: { http: undefined, https: undefined },
+        auth: undefined,
+        family: undefined,
+        beforeRedirect: [Function: dispatchBeforeRedirect],
+        beforeRedirects: { proxy: [Function: beforeRedirect] },
+        hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        port: '',
+        agent: undefined,
+        nativeProtocols: {
+          'http:': {
+            _connectionListener: [Function: connectionListener],
+            METHODS: [Array],
+            STATUS_CODES: [Object],
+            Agent: [Function],
+            ClientRequest: [Function: ClientRequest],
+            IncomingMessage: [Function: IncomingMessage],
+            OutgoingMessage: [Function: OutgoingMessage],
+            Server: [Function: Server],
+            ServerResponse: [Function: ServerResponse],
+            createServer: [Function: createServer],
+            validateHeaderName: [Function: __node_internal_],
+            validateHeaderValue: [Function: __node_internal_],
+            get: [Function: get],
+            request: [Function: request],
+            setMaxIdleHTTPParsers: [Function: setMaxIdleHTTPParsers],
+            maxHeaderSize: [Getter],
+            globalAgent: [Getter/Setter]
+          },
+          'https:': {
+            Agent: [Function: Agent],
+            globalAgent: [Agent],
+            Server: [Function: Server],
+            createServer: [Function: createServer],
+            get: [Function: get],
+            request: [Function: request]
+          }
+        },
+        pathname: '/prod/validation/otelcol-core/v0.86.0'
+      },
+      _ended: true,
+      _ending: true,
+      _redirectCount: 0,
+      _redirects: [],
+      _requestBodyLength: 593,
+      _requestBodyBuffers: [],
+      _onNativeResponse: [Function (anonymous)],
+      _currentRequest: [Circular *3],
+      _currentUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      [Symbol(kCapture)]: false
+    },
+    [Symbol(kCapture)]: false,
+    [Symbol(kBytesWritten)]: 0,
+    [Symbol(kNeedDrain)]: false,
+    [Symbol(corked)]: 0,
+    [Symbol(kOutHeaders)]: [Object: null prototype] {
+      accept: [ 'Accept', 'application/json, text/plain, */*' ],
+      'content-type': [ 'Content-Type', 'application/x-www-form-urlencoded' ],
+      'user-agent': [ 'User-Agent', 'axios/1.5.1' ],
+      'content-length': [ 'Content-Length', '593' ],
+      'accept-encoding': [ 'Accept-Encoding', 'gzip, compress, deflate, br' ],
+      host: [ 'Host', 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com' ]
+    },
+    [Symbol(errored)]: null,
+    [Symbol(kHighWaterMark)]: 16384,
+    [Symbol(kRejectNonStandardBodyWrites)]: false,
+    [Symbol(kUniqueHeaders)]: null
+  },
+  response: {
+    status: 403,
+    statusText: 'Forbidden',
+    headers: Object [AxiosHeaders] {
+      'content-type': 'application/json',
+      'content-length': '23',
+      connection: 'keep-alive',
+      date: 'Tue, 10 Oct 2023 10:40:57 GMT',
+      'x-amzn-requestid': 'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+      'x-amzn-errortype': 'ForbiddenException',
+      'x-amz-apigw-id': 'MlOI9FWIliAEXcg=',
+      'x-cache': 'Error from cloudfront',
+      via: '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+      'x-amz-cf-pop': 'MUC50-P4',
+      'x-amz-cf-id': '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+    },
+    config: {
+      transitional: {
+        silentJSONParsing: true,
+        forcedJSONParsing: true,
+        clarifyTimeoutError: false
+      },
+      adapter: [ 'xhr', 'http' ],
+      transformRequest: [ [Function: transformRequest] ],
+      transformResponse: [ [Function: transformResponse] ],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: {
+        FormData: [Function: FormData] {
+          LINE_BREAK: '\r\n',
+          DEFAULT_CONTENT_TYPE: 'application/octet-stream'
+        },
+        Blob: [class Blob]
+      },
+      validateStatus: [Function: validateStatus],
+      headers: Object [AxiosHeaders] {
+        Accept: 'application/json, text/plain, */*',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'axios/1.5.1',
+        'Content-Length': '593',
+        'Accept-Encoding': 'gzip, compress, deflate, br'
+      },
+      baseURL: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      method: 'post',
+      url: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      data: '# Learn more about the OpenTelemetry Collector via\n' +
+        '# https://opentelemetry.io/docs/collector/\n' +
+        '\n' +
+        'receivers:\n' +
+        '  otlp:\n' +
+        '    protocols:\n' +
+        '      grpc:\n' +
+        '      http:\n' +
+        '\n' +
+        'processors:\n' +
+        '  batch:\n' +
+        '\n' +
+        'exporters:\n' +
+        '  otlp:\n' +
+        '    endpoint: otelcol:4317\n' +
+        '\n' +
+        'extensions:\n' +
+        '  health_check:\n' +
+        '  pprof:\n' +
+        '  zpages:\n' +
+        '\n' +
+        'service:\n' +
+        '  extensions: [health_check, pprof, zpages]\n' +
+        '  pipelines:\n' +
+        '    traces:\n' +
+        '      receivers: [otlp]\n' +
+        '      processors: [batch]\n' +
+        '      exporters: [otlp]\n' +
+        '    metrics:\n' +
+        '      receivers: [otlp]\n' +
+        '      processors: [batch]\n' +
+        '      exporters: [otlp]\n' +
+        '    logs:\n' +
+        '      receivers: [otlp]\n' +
+        '      processors: [batch]\n' +
+        '      exporters: [otlp]'
+    },
+    request: <ref *3> ClientRequest {
+      _events: [Object: null prototype] {
+        abort: [Function (anonymous)],
+        aborted: [Function (anonymous)],
+        connect: [Function (anonymous)],
+        error: [Function (anonymous)],
+        socket: [Function (anonymous)],
+        timeout: [Function (anonymous)],
+        finish: [Function: requestOnFinish]
+      },
+      _eventsCount: 7,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: false,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: true,
+      sendDate: false,
+      /1.5.1' ],
+      'content-length': [ 'Content-Length', '593' ],
+      'accept-encoding': [ 'Accept-Encoding', 'gzip, compress, deflate, br' ],
+      host: [ 'Host', 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com' ]
+    },
+    [Symbol(errored)]: null,
+    [Symbol(kHighWaterMark)]: 16384,
+    [Symbol(kRejectNonStandardBodyWrites)]: false,
+    [Symbol(kUniqueHeaders)]: null
+  },
+  response: {
+    status: 403,
+    statusText: 'Forbidden',
+    headers: Object [AxiosHeaders] {
+      'content-type': 'application/json',
+      'content-length': '23',
+      connection: 'keep-alive',
+      date: 'Tue, 10 Oct 2023 10:40:57 GMT',
+      'x-amzn-requestid': 'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+      'x-amzn-errortype': 'ForbiddenException',
+      'x-amz-apigw-id': 'MlOI9FWIliAEXcg=',
+      'x-cache': 'Error from cloudfront',
+      via: '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+      'x-amz-cf-pop': 'MUC50-P4',
+      'x-amz-cf-id': '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+    },
+    config: {
+      transitional: {
+        silentJSONParsing: true,
+        forcedJSONParsing: true,
+        clarifyTimeoutError: false
+      },
+      adapter: [ 'xhr', 'http' ],
+      transformRequest: [ [Function: transformRequest] ],
+      transformResponse: [ [Function: transformResponse] ],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: {
+        FormData: [Function: FormData] {
+          LINE_BREAK: '\r\n',
+          DEFAULT_CONTENT_TYPE: 'application/octet-stream'
+        },
+        Blob: [class Blob]
+      },
+      validateStatus: [Function: validateStatus],
+      headers: Object [AxiosHeaders] {
+        Accept: 'application/json, text/plain, */*',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'axios/1.5.1',
+        'Content-Length': '593',
+        'Accept-Encoding': 'gzip, compress, deflate, br'
+      },
+      baseURL: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      method: 'post',
+      url: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+      data: '# Learn more about the OpenTelemetry Collector via\n' +
+        '# https://opentelemetry.io/docs/collector/\n' +
+        '\n' +
+        'receivers:\n' +
+        '  otlp:\n' +
+        '    protocols:\n' +
+        '      grpc:\n' +
+        '      http:\n' +
+        '\n' +
+        'processors:\n' +
+        '  batch:\n' +
+        '\n' +
+        'exporters:\n' +
+        '  otlp:\n' +
+        '    endpoint: otelcol:4317\n' +
+        '\n' +
+        'extensions:\n' +
+        '  health_check:\n' +
+        '  pprof:\n' +
+        '  zpages:\n' +
+        '\n' +
+        'service:\n' +
+        '  extensions: [health_check, pprof, zpages]\n' +
+        '  pipelines:\n' +
+        '    traces:\n' +
+        '      receivers: [otlp]\n' +
+        '      processors: [batch]\n' +
+        '      exporters: [otlp]\n' +
+        '    metrics:\n' +
+        '      receivers: [otlp]\n' +
+        '      processors: [batch]\n' +
+        '      exporters: [otlp]\n' +
+        '    logs:\n' +
+        '      receivers: [otlp]\n' +
+        '      processors: [batch]\n' +
+        '      exporters: [otlp]'
+    },
+    request: <ref *3> ClientRequest {
+      _events: [Object: null prototype] {
+        abort: [Function (anonymous)],
+        aborted: [Function (anonymous)],
+        connect: [Function (anonymous)],
+        error: [Function (anonymous)],
+        socket: [Function (anonymous)],
+        timeout: [Function (anonymous)],
+        finish: [Function: requestOnFinish]
+      },
+      _eventsCount: 7,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: false,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: true,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: '593',
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: true,
+      socket: <ref *1> TLSSocket {
+        _tlsOptions: {
+          allowHalfOpen: undefined,
+          pipe: false,
+          secureContext: SecureContext { context: SecureContext {} },
+          isServer: false,
+          requestCert: true,
+          rejectUnauthorized: true,
+          session: undefined,
+          ALPNProtocols: undefined,
+          requestOCSP: undefined,
+          enableTrace: undefined,
+          pskCallback: undefined,
+          highWaterMark: undefined,
+          onread: undefined,
+          signal: undefined
+        },
+        _secureEstablished: true,
+        _securePending: false,
+        _newSessionPending: false,
+        _controlReleased: true,
+        secureConnecting: false,
+        _SNICallback: null,
+        servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        alpnProtocol: false,
+        authorized: true,
+        authorizationError: null,
+        encrypted: true,
+        _events: [Object: null prototype] {
+          close: [
+            [Function: onSocketCloseDestroySSL],
+            [Function],
+            [Function: onClose]
+          ],
+          end: [Function: onReadableStreamEnd],
+          newListener: [Function: keylogNewListener],
+          secure: [Function: onConnectSecure],
+          session: [Function (anonymous)],
+          free: [Function: onFree],
+          timeout: [Function: onTimeout],
+          agentRemove: [Function: onRemove],
+          error: [Function: bound onceWrapper] {
+            listener: [Function: freeSocketErrorListener]
+          }
+        },
+        _eventsCount: 9,
+        connecting: false,
+        _hadError: false,
+        _parent: null,
+        _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        _closeAfterHandlingError: false,
+        _readableState: ReadableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          buffer: BufferList { head: null, tail: null, length: 0 },
+          length: 0,
+          pipes: [],
+          flowing: true,
+          ended: false,
+          endEmitted: false,
+          reading: true,
+          constructed: true,
+          sync: false,
+          needReadable: true,
+          emittedReadable: false,
+          readableListening: false,
+          resumeScheduled: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          destroyed: false,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          defaultEncoding: 'utf8',
+          awaitDrainWriters: null,
+          multiAwaitDrain: false,
+          readingMore: false,
+          dataEmitted: true,
+          decoder: null,
+          encoding: null,
+          [Symbol(kPaused)]: false
+        },
+        _maxListeners: undefined,
+        _writableState: WritableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          finalCalled: false,
+          needDrain: false,
+          ending: false,
+          ended: false,
+          finished: false,
+          destroyed: false,
+          decodeStrings: false,
+          defaultEncoding: 'utf8',
+          length: 0,
+          writing: false,
+          corked: 0,
+          sync: false,
+          bufferProcessing: false,
+          onwrite: [Function: bound onwrite],
+          writecb: null,
+          writelen: 0,
+          afterWriteTickInfo: null,
+          buffered: [],
+          bufferedIndex: 0,
+          allBuffers: true,
+          allNoop: true,
+          pendingcb: 0,
+          constructed: true,
+          prefinished: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          [Symbol(kOnFinished)]: []
+        },
+        allowHalfOpen: false,
+        _sockname: null,
+        _pendingData: null,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: '593',
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: true,
+      socket: <ref *1> TLSSocket {
+        _tlsOptions: {
+          allowHalfOpen: undefined,
+          pipe: false,
+          secureContext: SecureContext { context: SecureContext {} },
+          isServer: false,
+          requestCert: true,
+          rejectUnauthorized: true,
+          session: undefined,
+          ALPNProtocols: undefined,
+          requestOCSP: undefined,
+          enableTrace: undefined,
+          pskCallback: undefined,
+          highWaterMark: undefined,
+          onread: undefined,
+          signal: undefined
+        },
+        _secureEstablished: true,
+        _securePending: false,
+        _newSessionPending: false,
+        _controlReleased: true,
+        secureConnecting: false,
+        _SNICallback: null,
+        servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        alpnProtocol: false,
+        authorized: true,
+        authorizationError: null,
+        encrypted: true,
+        _events: [Object: null prototype] {
+          close: [
+            [Function: onSocketCloseDestroySSL],
+            [Function],
+            [Function: onClose]
+          ],
+          end: [Function: onReadableStreamEnd],
+          newListener: [Function: keylogNewListener],
+          secure: [Function: onConnectSecure],
+          session: [Function (anonymous)],
+          free: [Function: onFree],
+          timeout: [Function: onTimeout],
+          agentRemove: [Function: onRemove],
+          error: [Function: bound onceWrapper] {
+            listener: [Function: freeSocketErrorListener]
+          }
+        },
+        _eventsCount: 9,
+        connecting: false,
+        _hadError: false,
+        _parent: null,
+        _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+        _closeAfterHandlingError: false,
+        _readableState: ReadableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          buffer: BufferList { head: null, tail: null, length: 0 },
+          length: 0,
+          pipes: [],
+          flowing: true,
+          ended: false,
+          endEmitted: false,
+          reading: true,
+          constructed: true,
+          sync: false,
+          needReadable: true,
+          emittedReadable: false,
+          readableListening: false,
+          resumeScheduled: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          destroyed: false,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          defaultEncoding: 'utf8',
+          awaitDrainWriters: null,
+          multiAwaitDrain: false,
+          readingMore: false,
+          dataEmitted: true,
+          decoder: null,
+          encoding: null,
+          [Symbol(kPaused)]: false
+        },
+        _maxListeners: undefined,
+        _writableState: WritableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          finalCalled: false,
+          needDrain: false,
+          ending: false,
+          ended: false,
+          finished: false,
+          destroyed: false,
+          decodeStrings: false,
+          defaultEncoding: 'utf8',
+          length: 0,
+          writing: false,
+          corked: 0,
+          sync: false,
+          bufferProcessing: false,
+          onwrite: [Function: bound onwrite],
+          writecb: null,
+          writelen: 0,
+          afterWriteTickInfo: null,
+          buffered: [],
+          bufferedIndex: 0,
+          allBuffers: true,
+          allNoop: true,
+          pendingcb: 0,
+          constructed: true,
+          prefinished: false,
+          errorEmitted: false,
+          emitClose: false,
+          autoDestroy: true,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          [Symbol(kOnFinished)]: []
+        },
+        allowHalfOpen: false,
+        _sockname: null,
+        _pendingData: null,
+        _pendingEncoding: '',
+        server: undefined,
+        _server: null,
+        ssl: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _requestCert: true,
+        _rejectUnauthorized: true,
+        timeout: 5000,
+        parser: null,
+        _httpMessage: null,
+        autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+        [Symbol(alpncallback)]: null,
+        [Symbol(res)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(verified)]: true,
+        [Symbol(pendingSession)]: null,
+        [Symbol(async_id_symbol)]: -1,
+        [Symbol(kHandle)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(lastWriteQueueSize)]: 0,
+        [Symbol(timeout)]: <ref *2> Timeout {
+          _idleTimeout: 5000,
+          _idlePrev: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleNext: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleStart: 1960,
+          _onTimeout: [Function: bound ],
+          _timerArgs: undefined,
+          _repeat: null,
+          _destroyed: false,
+          [Symbol(refed)]: false,
+          [Symbol(kHasPrimitive)]: false,
+          [Symbol(asyncId)]: 1906,
+          [Symbol(triggerId)]: 1904
+        },
+        [Symbol(kBuffer)]: null,
+        [Symbol(kBufferCb)]: null,
+        [Symbol(kBufferGen)]: null,
+        [Symbol(kCapture)]: false,
+        [Symbol(kSetNoDelay)]: false,
+        [Symbol(kSetKeepAlive)]: true,
+        [Symbol(kSetKeepAliveInitialDelay)]: 1,
+        [Symbol(kBytesRead)]: 0,
+        [Symbol(kBytesWritten)]: 0,
+        [Symbol(connect-options)]: {
+          rejectUnauthorized: true,
+          ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!  _pendingEncoding: '',
+        server: undefined,
+        _server: null,
+        ssl: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        _requestCert: true,
+        _rejectUnauthorized: true,
+        timeout: 5000,
+        parser: null,
+        _httpMessage: null,
+        autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+        [Symbol(alpncallback)]: null,
+        [Symbol(res)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(verified)]: true,
+        [Symbol(pendingSession)]: null,
+        [Symbol(async_id_symbol)]: -1,
+        [Symbol(kHandle)]: TLSWrap {
+          _parent: TCP {
+            reading: [Getter/Setter],
+            onconnection: null,
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _parentWrap: null,
+          _secureContext: SecureContext { context: SecureContext {} },
+          reading: true,
+          onkeylog: [Function: onkeylog],
+          onhandshakestart: {},
+          onhandshakedone: [Function (anonymous)],
+          onocspresponse: [Function: onocspresponse],
+          onnewsession: [Function: onnewsessionclient],
+          onerror: [Function: onerror],
+          [Symbol(owner_symbol)]: [Circular *1]
+        },
+        [Symbol(lastWriteQueueSize)]: 0,
+        [Symbol(timeout)]: <ref *2> Timeout {
+          _idleTimeout: 5000,
+          _idlePrev: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleNext: TimersList {
+            _idleNext: [Circular *2],
+            _idlePrev: [Circular *2],
+            expiry: 6831,
+            id: -9007199254740986,
+            msecs: 5000,
+            priorityQueuePosition: 3
+          },
+          _idleStart: 1960,
+          _onTimeout: [Function: bound ],
+          _timerArgs: undefined,
+          _repeat: null,
+          _destroyed: false,
+          [Symbol(refed)]: false,
+          [Symbol(kHasPrimitive)]: false,
+          [Symbol(asyncId)]: 1906,
+          [Symbol(triggerId)]: 1904
+        },
+        [Symbol(kBuffer)]: null,
+        [Symbol(kBufferCb)]: null,
+        [Symbol(kBufferGen)]: null,
+        [Symbol(kCapture)]: false,
+        [Symbol(kSetNoDelay)]: false,
+        [Symbol(kSetKeepAlive)]: true,
+        [Symbol(kSetKeepAliveInitialDelay)]: 1,
+        [Symbol(kBytesRead)]: 0,
+        [Symbol(kBytesWritten)]: 0,
+        [Symbol(connect-options)]: {
+          rejectUnauthorized: true,
+          ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+          checkServerIdentity: [Function: checkServerIdentity],
+          minDHSize: 1024,
+          maxRedirects: 21,
+          maxBodyLength: Infinity,
+          protocol: 'https:',
+          path: null,
+          method: 'POST',
+          headers: [Object: null prototype] {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'axios/1.5.1',
+            'Content-Length': '593',
+            'Accept-Encoding': 'gzip, compress, deflate, br'
+          },
+          agents: { http: undefined, https: undefined },
+          auth: undefined,
+          family: undefined,
+          beforeRedirect: [Function: dispatchBeforeRedirect],
+          beforeRedirects: { proxy: [Function: beforeRedirect] },
+          hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          port: 443,
+          agent: undefined,
+          nativeProtocols: { 'http:': [Object], 'https:': [Object] },
+          pathname: '/prod/validation/otelcol-core/v0.86.0',
+          _defaultAgent: Agent {
+            _events: [Object: null prototype],
+            _eventsCount: 2,
+            _maxListeners: undefined,
+            defaultPort: 443,
+            protocol: 'https:',
+            options: [Object: null prototype],
+            requests: [Object: null prototype] {},
+            sockets: [Object: null prototype] {},
+            freeSockets: [Object: null prototype],
+            keepAliveMsecs: 1000,
+            keepAlive: true,
+            maxSockets: Infinity,
+            maxFreeSockets: 256,
+            scheduling: 'lifo',
+            maxTotalSockets: Infinity,
+            totalSocketCount: 1,
+            maxCachedSessions: 100,
+            _sessionCache: [Object],
+            [Symbol(kCapture)]: false
+          },
+          host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          keepAlive: true,
+          scheduling: 'lifo',
+          timeout: 5000,
+          noDelay: true,
+          servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+          encoding: null,
+          keepAliveInitialDelay: 1000
+        }
+      },
+      _header: 'POST /prod/validation/otelcol-core/v0.86.0 HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'Content-Type: application/x-www-form-urlencoded\r\n' +
+        'User-Agent: axios/1.5.1\r\n' +
+        'Content-Length: 593\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: u8r74ces9d.execute-api.eu-central-1.amazonaws.com\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: Agent {
+        _events: [Object: null prototype] {
+          free: [Function (anonymous)],
+          newListener: [Function: maybeEnableKeylog]
+        },
+        _eventsCount: 2,
+        _maxListeners: undefined,
+        defaultPort: 443,
+        protocol: 'https:',
+        options: [Object: null prototype] {
+          keepAlive: true,
+          scheduling: 'lifo',
+          timeout: 5000,
+          noDelay: true,
+          path: null
+        },
+        requests: [Object: null prototype] {},
+        sockets: [Object: null prototype] {},
+        freeSockets: [Object: null prototype] {
+          'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [ [TLSSocket] ]
+        },
+        keepAliveMsecs: 1000,
+        keepAlive: true,
+        maxSockets: Infinity,
+        maxFreeSockets: 256,
+        scheduling: 'lifo',
+        maxTotalSockets: Infinity,
+        totalSocketCount: 1,
+        maxCachedSessions: 100,
+        _sessionCache: {
+          map: {
+            'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [Buffer [Uint8Array]]
+          },
+          list: [
+            'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::'
+          ]
+        },
+        [SymeNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+          checkServerIdentity: [Function: checkServerIdentity],
+          minDHSize: 1024,
+          maxRedirects: 21,
+          maxBodyLength: Infinity,
+          protocol: 'https:',
+          path: null,
+          method: 'POST',
+          headers: [Object: null prototype] {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'axios/1.5.1',
+            'Content-Length': '593',
+            'Accept-Encoding': 'gzip, compress, deflate, br'
+          },
+          agents: { http: undefined, https: undefined },
+          auth: undefined,
+          family: undefined,
+          beforeRedirect: [Function: dispatchBeforeRedirect],
+          beforeRedirects: { proxy: [Function: beforeRedirect] },
+          hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          port: 443,
+          agent: undefined,
+          nativeProtocols: { 'http:': [Object], 'https:': [Object] },
+          pathname: '/prod/validation/otelcol-core/v0.86.0',
+          _defaultAgent: Agent {
+            _events: [Object: null prototype],
+            _eventsCount: 2,
+            _maxListeners: undefined,
+            defaultPort: 443,
+            protocol: 'https:',
+            options: [Object: null prototype],
+            requests: [Object: null prototype] {},
+            sockets: [Object: null prototype] {},
+            freeSockets: [Object: null prototype],
+            keepAliveMsecs: 1000,
+            keepAlive: true,
+            maxSockets: Infinity,
+            maxFreeSockets: 256,
+            scheduling: 'lifo',
+            maxTotalSockets: Infinity,
+            totalSocketCount: 1,
+            maxCachedSessions: 100,
+            _sessionCache: [Object],
+            [Symbol(kCapture)]: false
+          },
+          host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          keepAlive: true,
+          scheduling: 'lifo',
+          timeout: 5000,
+          noDelay: true,
+          servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+          encoding: null,
+          keepAliveInitialDelay: 1000
+        }
+      },
+      _header: 'POST /prod/validation/otelcol-core/v0.86.0 HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'Content-Type: application/x-www-form-urlencoded\r\n' +
+        'User-Agent: axios/1.5.1\r\n' +
+        'Content-Length: 593\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: u8r74ces9d.execute-api.eu-central-1.amazonaws.com\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: Agent {
+        _events: [Object: null prototype] {
+          free: [Function (anonymous)],
+          newListener: [Function: maybeEnableKeylog]
+        },
+        _eventsCount: 2,
+        _maxListeners: undefined,
+        defaultPort: 443,
+        protocol: 'https:',
+        options: [Object: null prototype] {
+          keepAlive: true,
+          scheduling: 'lifo',
+          timeout: 5000,
+          noDelay: true,
+          path: null
+        },
+        requests: [Object: null prototype] {},
+        sockets: [Object: null prototype] {},
+        freeSockets: [Object: null prototype] {
+          'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [ [TLSSocket] ]
+        },
+        keepAliveMsecs: 1000,
+        keepAlive: true,
+        maxSockets: Infinity,
+        maxFreeSockets: 256,
+        scheduling: 'lifo',
+        maxTotalSockets: Infinity,
+        totalSocketCount: 1,
+        maxCachedSessions: 100,
+        _sessionCache: {
+          map: {
+            'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::': [Buffer [Uint8Array]]
+          },
+          list: [
+            'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::'
+          ]
+        },
+        [Symbol(kCapture)]: false
+      },
+      socketPath: undefined,
+      method: 'POST',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: undefined,
+      joinDuplicateHeaders: undefined,
+      path: '/prod/validation/otelcol-core/v0.86.0',
+      _ended: true,
+      res: IncomingMessage {
+        _readableState: ReadableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          buffer: BufferList { head: null, tail: null, length: 0 },
+          length: 0,
+          pipes: [],
+          flowing: true,
+          ended: true,
+          endEmitted: true,
+          reading: false,
+          constructed: true,
+          sync: true,
+          needReadable: false,
+          emittedReadable: false,
+          readableListening: false,
+          resumeScheduled: false,
+          errorEmitted: false,
+          emitClose: true,
+          autoDestroy: true,
+          destroyed: true,
+          errored: null,
+          closed: true,
+          closeEmitted: true,
+          defaultEncoding: 'utf8',
+          awaitDrainWriters: null,
+          multiAwaitDrain: false,
+          readingMore: true,
+          dataEmitted: true,
+          decoder: null,
+          encoding: null,
+          [Symbol(kPaused)]: false
+        },
+        _events: [Object: null prototype] {
+          end: [ [Function: responseOnEnd], [Function: handleStreamEnd] ],
+          error: [Function: handleStreamError],
+          data: [Function: handleStreamData],
+          aborted: [Function: handlerStreamAborted]
+        },
+        _eventsCount: 4,
+        _maxListeners: undefined,
+        socket: null,
+        httpVersionMajor: 1,
+        httpVersionMinor: 1,
+        httpVersion: '1.1',
+        complete: true,
+        rawHeaders: [
+          'Content-Type',
+          'application/json',
+          'Content-Length',
+          '23',
+          'Connection',
+          'keep-alive',
+          'Date',
+          'Tue, 10 Oct 2023 10:40:57 GMT',
+          'x-amzn-RequestId',
+          'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+          'x-amzn-ErrorType',
+          'ForbiddenException',
+          'x-amz-apigw-id',
+          'MlOI9FWIliAEXcg=',
+          'X-Cache',
+          'Error from cloudfront',
+          'Via',
+          '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+          'X-Amz-Cf-Pop',
+          'MUC50-P4',
+          'X-Amz-Cf-Id',
+          '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+        ],
+        rawTrailers: [],
+        joinDuplicateHeaders: undefined,
+        aborted: false,
+        upgrade: false,
+        url: '',
+        method: null,
+        statusCode: 403,
+        statusMessage: 'Forbidden',
+        client: <ref *1> TLSSocket {
+          _tlsOptions: {
+            allowHalfOpen: undefined,
+            pipe: false,
+            secureContext: [SecureContext],
+            isServer: false,
+            requestCert: true,
+            rejectUnauthorized: true,
+            session: undefined,
+            ALPNProtocols: undefined,
+            requestOCSP: undefined,
+            enableTrace: undefined,
+            pskCallback: undefined,
+            highWaterMark: undefined,
+            onread: undefined,
+            signal: undefined
+          },
+          _secureEstablished: true,
+          _securePending: false,
+          _newSessionPending: false,
+          _controlReleased: true,
+          secureConnecting: false,
+          _SNICallback: null,
+          servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          alpnProtocol: false,
+          authorized: true,
+          authorizationError: null,
+          encrypted: true,
+          _events: [Object: null prototype] {
+            close: [Array],
+            end: [Function: onReadableStreamEnd],
+            newListener: [Function: keylogNewListener],
+            secure: [Function: onConnectSecure],
+            session: [Function (anonymous)],
+            free: [Function: onFree],
+            timeout: [Function: onTimeout],
+            agentRemove: [Function: onRemove],
+            error: [Function]
+          },
+          _eventsCount: 9,
+ bol(kCapture)]: false
+      },
+      socketPath: undefined,
+      method: 'POST',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: undefined,
+      joinDuplicateHeaders: undefined,
+      path: '/prod/validation/otelcol-core/v0.86.0',
+      _ended: true,
+      res: IncomingMessage {
+        _readableState: ReadableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          buffer: BufferList { head: null, tail: null, length: 0 },
+          length: 0,
+          pipes: [],
+          flowing: true,
+          ended: true,
+          endEmitted: true,
+          reading: false,
+          constructed: true,
+          sync: true,
+          needReadable: false,
+          emittedReadable: false,
+          readableListening: false,
+          resumeScheduled: false,
+          errorEmitted: false,
+          emitClose: true,
+          autoDestroy: true,
+          destroyed: true,
+          errored: null,
+          closed: true,
+          closeEmitted: true,
+          defaultEncoding: 'utf8',
+          awaitDrainWriters: null,
+          multiAwaitDrain: false,
+          readingMore: true,
+          dataEmitted: true,
+          decoder: null,
+          encoding: null,
+          [Symbol(kPaused)]: false
+        },
+        _events: [Object: null prototype] {
+          end: [ [Function: responseOnEnd], [Function: handleStreamEnd] ],
+          error: [Function: handleStreamError],
+          data: [Function: handleStreamData],
+          aborted: [Function: handlerStreamAborted]
+        },
+        _eventsCount: 4,
+        _maxListeners: undefined,
+        socket: null,
+        httpVersionMajor: 1,
+        httpVersionMinor: 1,
+        httpVersion: '1.1',
+        complete: true,
+        rawHeaders: [
+          'Content-Type',
+          'application/json',
+          'Content-Length',
+          '23',
+          'Connection',
+          'keep-alive',
+          'Date',
+          'Tue, 10 Oct 2023 10:40:57 GMT',
+          'x-amzn-RequestId',
+          'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+          'x-amzn-ErrorType',
+          'ForbiddenException',
+          'x-amz-apigw-id',
+          'MlOI9FWIliAEXcg=',
+          'X-Cache',
+          'Error from cloudfront',
+          'Via',
+          '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+          'X-Amz-Cf-Pop',
+          'MUC50-P4',
+          'X-Amz-Cf-Id',
+          '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+        ],
+        rawTrailers: [],
+        joinDuplicateHeaders: undefined,
+        aborted: false,
+        upgrade: false,
+        url: '',
+        method: null,
+        statusCode: 403,
+        statusMessage: 'Forbidden',
+        client: <ref *1> TLSSocket {
+          _tlsOptions: {
+            allowHalfOpen: undefined,
+            pipe: false,
+            secureContext: [SecureContext],
+            isServer: false,
+            requestCert: true,
+            rejectUnauthorized: true,
+            session: undefined,
+            ALPNProtocols: undefined,
+            requestOCSP: undefined,
+            enableTrace: undefined,
+            pskCallback: undefined,
+            highWaterMark: undefined,
+            onread: undefined,
+            signal: undefined
+          },
+          _secureEstablished: true,
+          _securePending: false,
+          _newSessionPending: false,
+          _controlReleased: true,
+          secureConnecting: false,
+          _SNICallback: null,
+          servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          alpnProtocol: false,
+          authorized: true,
+          authorizationError: null,
+          encrypted: true,
+          _events: [Object: null prototype] {
+            close: [Array],
+            end: [Function: onReadableStreamEnd],
+            newListener: [Function: keylogNewListener],
+            secure: [Function: onConnectSecure],
+            session: [Function (anonymous)],
+            free: [Function: onFree],
+            timeout: [Function: onTimeout],
+            agentRemove: [Function: onRemove],
+            error: [Function]
+          },
+          _eventsCount: 9,
+          connecting: false,
+          _hadError: false,
+          _parent: null,
+          _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          _closeAfterHandlingError: false,
+          _readableState: ReadableState {
+            objectMode: false,
+            highWaterMark: 16384,
+            buffer: [BufferList],
+            length: 0,
+            pipes: [],
+            flowing: true,
+            ended: false,
+            endEmitted: false,
+            reading: true,
+            constructed: true,
+            sync: false,
+            needReadable: true,
+            emittedReadable: false,
+            readableListening: false,
+            resumeScheduled: false,
+            errorEmitted: false,
+            emitClose: false,
+            autoDestroy: true,
+            destroyed: false,
+            errored: null,
+            closed: false,
+            closeEmitted: false,
+            defaultEncoding: 'utf8',
+            awaitDrainWriters: null,
+            multiAwaitDrain: false,
+            readingMore: false,
+            dataEmitted: true,
+            decoder: null,
+            encoding: null,
+            [Symbol(kPaused)]: false
+          },
+          _maxListeners: undefined,
+          _writableState: WritableState {
+            objectMode: false,
+            highWaterMark: 16384,
+            finalCalled: false,
+            needDrain: false,
+            ending: false,
+            ended: false,
+            finished: false,
+            destroyed: false,
+            decodeStrings: false,
+            defaultEncoding: 'utf8',
+            length: 0,
+            writing: false,
+            corked: 0,
+            sync: false,
+            bufferProcessing: false,
+            onwrite: [Function: bound onwrite],
+            writecb: null,
+            writelen: 0,
+            afterWriteTickInfo: null,
+            buffered: [],
+            bufferedIndex: 0,
+            allBuffers: true,
+            allNoop: true,
+            pendingcb: 0,
+            constructed: true,
+            prefinished: false,
+            errorEmitted: false,
+            emitClose: false,
+            autoDestroy: true,
+            errored: null,
+            closed: false,
+            closeEmitted: false,
+            [Symbol(kOnFinished)]: []
+          },
+          allowHalfOpen: false,
+          _sockname: null,
+          _pendingData: null,
+          _pendingEncoding: '',
+          server: undefined,
+          _server: null,
+          ssl: TLSWrap {
+            _parent: [TCP],
+            _parentWrap: null,
+            _secureContext: [SecureContext],
+            reading: true,
+            onkeylog: [Function: onkeylog],
+            onhandshakestart: {},
+            onhandshakedone: [Function (anonymous)],
+            onocspresponse: [Function: onocspresponse],
+            onnewsession: [Function: onnewsessionclient],
+            onerror: [Function: onerror],
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _requestCert: true,
+          _rejectUnauthorized: true,
+          timeout: 5000,
+          parser: null,
+          _httpMessage: null,
+          autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+          [Symbol(alpncallback)]: null,
+          [Symbol(res)]: TLSWrap {
+            _parent: [TCP],
+            _parentWrap: null,
+            _secureContext: [SecureContext],
+            reading: true,
+            onkeylog: [Function: onkeylog],
+            onhandshakestart: {},
+            onhandshakedone: [Function (anonymous)],
+            onocspresponse: [Function: onocspresponse],
+            onnewsession: [Function: onnewsessionclient],
+            onerror: [Function: onerror],
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          [Symbol(verified)]: true,
+          [Symbol(pendingSession)]: null,
+          [Symbol(async_id_symbol)]: -1,
+          [Symbol(kHandle)]: TLSWrap {
+            _parent: [TCP],
+            _parentWrap: null,
+            _secureContext: [SecureContext],
+            reading: true,
+            onkeylog: [Function: onkeylog],
+            onhandshakestart:          connecting: false,
+          _hadError: false,
+          _parent: null,
+          _host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          _closeAfterHandlingError: false,
+          _readableState: ReadableState {
+            objectMode: false,
+            highWaterMark: 16384,
+            buffer: [BufferList],
+            length: 0,
+            pipes: [],
+            flowing: true,
+            ended: false,
+            endEmitted: false,
+            reading: true,
+            constructed: true,
+            sync: false,
+            needReadable: true,
+            emittedReadable: false,
+            readableListening: false,
+            resumeScheduled: false,
+            errorEmitted: false,
+            emitClose: false,
+            autoDestroy: true,
+            destroyed: false,
+            errored: null,
+            closed: false,
+            closeEmitted: false,
+            defaultEncoding: 'utf8',
+            awaitDrainWriters: null,
+            multiAwaitDrain: false,
+            readingMore: false,
+            dataEmitted: true,
+            decoder: null,
+            encoding: null,
+            [Symbol(kPaused)]: false
+          },
+          _maxListeners: undefined,
+          _writableState: WritableState {
+            objectMode: false,
+            highWaterMark: 16384,
+            finalCalled: false,
+            needDrain: false,
+            ending: false,
+            ended: false,
+            finished: false,
+            destroyed: false,
+            decodeStrings: false,
+            defaultEncoding: 'utf8',
+            length: 0,
+            writing: false,
+            corked: 0,
+            sync: false,
+            bufferProcessing: false,
+            onwrite: [Function: bound onwrite],
+            writecb: null,
+            writelen: 0,
+            afterWriteTickInfo: null,
+            buffered: [],
+            bufferedIndex: 0,
+            allBuffers: true,
+            allNoop: true,
+            pendingcb: 0,
+            constructed: true,
+            prefinished: false,
+            errorEmitted: false,
+            emitClose: false,
+            autoDestroy: true,
+            errored: null,
+            closed: false,
+            closeEmitted: false,
+            [Symbol(kOnFinished)]: []
+          },
+          allowHalfOpen: false,
+          _sockname: null,
+          _pendingData: null,
+          _pendingEncoding: '',
+          server: undefined,
+          _server: null,
+          ssl: TLSWrap {
+            _parent: [TCP],
+            _parentWrap: null,
+            _secureContext: [SecureContext],
+            reading: true,
+            onkeylog: [Function: onkeylog],
+            onhandshakestart: {},
+            onhandshakedone: [Function (anonymous)],
+            onocspresponse: [Function: onocspresponse],
+            onnewsession: [Function: onnewsessionclient],
+            onerror: [Function: onerror],
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          _requestCert: true,
+          _rejectUnauthorized: true,
+          timeout: 5000,
+          parser: null,
+          _httpMessage: null,
+          autoSelectFamilyAttemptedAddresses: [ '18.173.187.56:443' ],
+          [Symbol(alpncallback)]: null,
+          [Symbol(res)]: TLSWrap {
+            _parent: [TCP],
+            _parentWrap: null,
+            _secureContext: [SecureContext],
+            reading: true,
+            onkeylog: [Function: onkeylog],
+            onhandshakestart: {},
+            onhandshakedone: [Function (anonymous)],
+            onocspresponse: [Function: onocspresponse],
+            onnewsession: [Function: onnewsessionclient],
+            onerror: [Function: onerror],
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          [Symbol(verified)]: true,
+          [Symbol(pendingSession)]: null,
+          [Symbol(async_id_symbol)]: -1,
+          [Symbol(kHandle)]: TLSWrap {
+            _parent: [TCP],
+            _parentWrap: null,
+            _secureContext: [SecureContext],
+            reading: true,
+            onkeylog: [Function: onkeylog],
+            onhandshakestart: {},
+            onhandshakedone: [Function (anonymous)],
+            onocspresponse: [Function: onocspresponse],
+            onnewsession: [Function: onnewsessionclient],
+            onerror: [Function: onerror],
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          [Symbol(lastWriteQueueSize)]: 0,
+          [Symbol(timeout)]: <ref *2> Timeout {
+            _idleTimeout: 5000,
+            _idlePrev: [TimersList],
+            _idleNext: [TimersList],
+            _idleStart: 1960,
+            _onTimeout: [Function: bound ],
+            _timerArgs: undefined,
+            _repeat: null,
+            _destroyed: false,
+            [Symbol(refed)]: false,
+            [Symbol(kHasPrimitive)]: false,
+            [Symbol(asyncId)]: 1906,
+            [Symbol(triggerId)]: 1904
+          },
+          [Symbol(kBuffer)]: null,
+          [Symbol(kBufferCb)]: null,
+          [Symbol(kBufferGen)]: null,
+          [Symbol(kCapture)]: false,
+          [Symbol(kSetNoDelay)]: false,
+          [Symbol(kSetKeepAlive)]: true,
+          [Symbol(kSetKeepAliveInitialDelay)]: 1,
+          [Symbol(kBytesRead)]: 0,
+          [Symbol(kBytesWritten)]: 0,
+          [Symbol(connect-options)]: {
+            rejectUnauthorized: true,
+            ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+            checkServerIdentity: [Function: checkServerIdentity],
+            minDHSize: 1024,
+            maxRedirects: 21,
+            maxBodyLength: Infinity,
+            protocol: 'https:',
+            path: null,
+            method: 'POST',
+            headers: [Object: null prototype],
+            agents: [Object],
+            auth: undefined,
+            family: undefined,
+            beforeRedirect: [Function: dispatchBeforeRedirect],
+            beforeRedirects: [Object],
+            hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            port: 443,
+            agent: undefined,
+            nativeProtocols: [Object],
+            pathname: '/prod/validation/otelcol-core/v0.86.0',
+            _defaultAgent: [Agent],
+            host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            keepAlive: true,
+            scheduling: 'lifo',
+            timeout: 5000,
+            noDelay: true,
+            servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+            encoding: null,
+            keepAliveInitialDelay: 1000
+          }
+        },
+        _consuming: false,
+        _dumped: false,
+        req: [Circular *3],
+        responseUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+        redirects: [],
+        [Symbol(kCapture)]: false,
+        [Symbol(kHeaders)]: {
+          'content-type': 'application/json',
+          'content-length': '23',
+          connection: 'keep-alive',
+          date: 'Tue, 10 Oct 2023 10:40:57 GMT',
+          'x-amzn-requestid': 'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+          'x-amzn-errortype': 'ForbiddenException',
+          'x-amz-apigw-id': 'MlOI9FWIliAEXcg=',
+          'x-cache': 'Error from cloudfront',
+          via: '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+          'x-amz-cf-pop': 'MUC50-P4',
+          'x-amz-cf-id': '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+        },
+        [Symbol(kHeadersCount)]: 22,
+        [Symbol(kTrailers)]: null,
+        [Symbol(kTrailersCount)]: 0
+      },
+      aborted: false,
+      timeoutCb: null,
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'u8r74ces9d.execute-api.eu-central-1.amazona{},
+            onhandshakedone: [Function (anonymous)],
+            onocspresponse: [Function: onocspresponse],
+            onnewsession: [Function: onnewsessionclient],
+            onerror: [Function: onerror],
+            [Symbol(owner_symbol)]: [Circular *1]
+          },
+          [Symbol(lastWriteQueueSize)]: 0,
+          [Symbol(timeout)]: <ref *2> Timeout {
+            _idleTimeout: 5000,
+            _idlePrev: [TimersList],
+            _idleNext: [TimersList],
+            _idleStart: 1960,
+            _onTimeout: [Function: bound ],
+            _timerArgs: undefined,
+            _repeat: null,
+            _destroyed: false,
+            [Symbol(refed)]: false,
+            [Symbol(kHasPrimitive)]: false,
+            [Symbol(asyncId)]: 1906,
+            [Symbol(triggerId)]: 1904
+          },
+          [Symbol(kBuffer)]: null,
+          [Symbol(kBufferCb)]: null,
+          [Symbol(kBufferGen)]: null,
+          [Symbol(kCapture)]: false,
+          [Symbol(kSetNoDelay)]: false,
+          [Symbol(kSetKeepAlive)]: true,
+          [Symbol(kSetKeepAliveInitialDelay)]: 1,
+          [Symbol(kBytesRead)]: 0,
+          [Symbol(kBytesWritten)]: 0,
+          [Symbol(connect-options)]: {
+            rejectUnauthorized: true,
+            ciphers: 'TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA',
+            checkServerIdentity: [Function: checkServerIdentity],
+            minDHSize: 1024,
+            maxRedirects: 21,
+            maxBodyLength: Infinity,
+            protocol: 'https:',
+            path: null,
+            method: 'POST',
+            headers: [Object: null prototype],
+            agents: [Object],
+            auth: undefined,
+            family: undefined,
+            beforeRedirect: [Function: dispatchBeforeRedirect],
+            beforeRedirects: [Object],
+            hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            port: 443,
+            agent: undefined,
+            nativeProtocols: [Object],
+            pathname: '/prod/validation/otelcol-core/v0.86.0',
+            _defaultAgent: [Agent],
+            host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            keepAlive: true,
+            scheduling: 'lifo',
+            timeout: 5000,
+            noDelay: true,
+            servername: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+            _agentKey: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com:443:::::::::::::::::::::',
+            encoding: null,
+            keepAliveInitialDelay: 1000
+          }
+        },
+        _consuming: false,
+        _dumped: false,
+        req: [Circular *3],
+        responseUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+        redirects: [],
+        [Symbol(kCapture)]: false,
+        [Symbol(kHeaders)]: {
+          'content-type': 'application/json',
+          'content-length': '23',
+          connection: 'keep-alive',
+          date: 'Tue, 10 Oct 2023 10:40:57 GMT',
+          'x-amzn-requestid': 'e324a05a-0cb3-4f8b-bfdd-1041fd5498c8',
+          'x-amzn-errortype': 'ForbiddenException',
+          'x-amz-apigw-id': 'MlOI9FWIliAEXcg=',
+          'x-cache': 'Error from cloudfront',
+          via: '1.1 3a31afbebc94940fbd5e1e63050bb58a.cloudfront.net (CloudFront)',
+          'x-amz-cf-pop': 'MUC50-P4',
+          'x-amz-cf-id': '6CY-sNjMvrlXwAh47cTG9-0sHO-FBO4NEa710XRbcgCWm7_BHfOfXg=='
+        },
+        [Symbol(kHeadersCount)]: 22,
+        [Symbol(kTrailers)]: null,
+        [Symbol(kTrailersCount)]: 0
+      },
+      aborted: false,
+      timeoutCb: null,
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+      protocol: 'https:',
+      _redirectable: Writable {
+        _writableState: WritableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          finalCalled: false,
+          needDrain: false,
+          ending: false,
+          ended: false,
+          finished: false,
+          destroyed: false,
+          decodeStrings: true,
+          defaultEncoding: 'utf8',
+          length: 0,
+          writing: false,
+          corked: 0,
+          sync: true,
+          bufferProcessing: false,
+          onwrite: [Function: bound onwrite],
+          writecb: null,
+          writelen: 0,
+          afterWriteTickInfo: null,
+          buffered: [],
+          bufferedIndex: 0,
+          allBuffers: true,
+          allNoop: true,
+          pendingcb: 0,
+          constructed: true,
+          prefinished: false,
+          errorEmitted: false,
+          emitClose: true,
+          autoDestroy: true,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          [Symbol(kOnFinished)]: []
+        },
+        _events: [Object: null prototype] {
+          response: [Function: handleResponse],
+          error: [Function: handleRequestError],
+          socket: [Function: handleRequestSocket]
+        },
+        _eventsCount: 3,
+        _maxListeners: undefined,
+        _options: {
+          maxRedirects: 21,
+          maxBodyLength: Infinity,
+          protocol: 'https:',
+          path: '/prod/validation/otelcol-core/v0.86.0',
+          method: 'POST',
+          headers: [Object: null prototype] {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'axios/1.5.1',
+            'Content-Length': '593',
+            'Accept-Encoding': 'gzip, compress, deflate, br'
+          },
+          agents: { http: undefined, https: undefined },
+          auth: undefined,
+          family: undefined,
+          beforeRedirect: [Function: dispatchBeforeRedirect],
+          beforeRedirects: { proxy: [Function: beforeRedirect] },
+          hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          port: '',
+          agent: undefined,
+          nativeProtocols: { 'http:': [Object], 'https:': [Object] },
+          pathname: '/prod/validation/otelcol-core/v0.86.0'
+        },
+        _ended: true,
+        _ending: true,
+        _redirectCount: 0,
+        _redirects: [],
+        _requestBodyLength: 593,
+        _requestBodyBuffers: [],
+        _onNativeResponse: [Function (anonymous)],
+        _currentRequest: [Circular *3],
+        _currentUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+        [Symbol(kCapture)]: false
+      },
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(kNeedDrain)]: false,
+      [Symbol(corked)]: 0,
+      [Symbol(kOutHeaders)]: [Object: null prototype] {
+        accept: [ 'Accept', 'application/json, text/plain, */*' ],
+        'content-type': [ 'Content-Type', 'application/x-www-form-urlencoded' ],
+        'user-agent': [ 'User-Agent', 'axios/1.5.1' ],
+        'content-length': [ 'Content-Length', '593' ],
+        'accept-encoding': [ 'Accept-Encoding', 'gzip, compress, deflate, br' ],
+        host: [ 'Host', 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com' ]
+      },
+      [Symbol(errored)]: null,
+      [Symbol(kHighWaterMark)]: 16384,
+      [Symbol(kRejectNonStandardBodyWrites)]: false,
+      [Symbol(kUniqueHeaders)]: null
+    },
+    data: { message: 'Forbidden' }
+  }
+}
+
+Node.js v20.7.0
+ws.com',
+      protocol: 'https:',
+      _redirectable: Writable {
+        _writableState: WritableState {
+          objectMode: false,
+          highWaterMark: 16384,
+          finalCalled: false,
+          needDrain: false,
+          ending: false,
+          ended: false,
+          finished: false,
+          destroyed: false,
+          decodeStrings: true,
+          defaultEncoding: 'utf8',
+          length: 0,
+          writing: false,
+          corked: 0,
+          sync: true,
+          bufferProcessing: false,
+          onwrite: [Function: bound onwrite],
+          writecb: null,
+          writelen: 0,
+          afterWriteTickInfo: null,
+          buffered: [],
+          bufferedIndex: 0,
+          allBuffers: true,
+          allNoop: true,
+          pendingcb: 0,
+          constructed: true,
+          prefinished: false,
+          errorEmitted: false,
+          emitClose: true,
+          autoDestroy: true,
+          errored: null,
+          closed: false,
+          closeEmitted: false,
+          [Symbol(kOnFinished)]: []
+        },
+        _events: [Object: null prototype] {
+          response: [Function: handleResponse],
+          error: [Function: handleRequestError],
+          socket: [Function: handleRequestSocket]
+        },
+        _eventsCount: 3,
+        _maxListeners: undefined,
+        _options: {
+          maxRedirects: 21,
+          maxBodyLength: Infinity,
+          protocol: 'https:',
+          path: '/prod/validation/otelcol-core/v0.86.0',
+          method: 'POST',
+          headers: [Object: null prototype] {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'axios/1.5.1',
+            'Content-Length': '593',
+            'Accept-Encoding': 'gzip, compress, deflate, br'
+          },
+          agents: { http: undefined, https: undefined },
+          auth: undefined,
+          family: undefined,
+          beforeRedirect: [Function: dispatchBeforeRedirect],
+          beforeRedirects: { proxy: [Function: beforeRedirect] },
+          hostname: 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com',
+          port: '',
+          agent: undefined,
+          nativeProtocols: { 'http:': [Object], 'https:': [Object] },
+          pathname: '/prod/validation/otelcol-core/v0.86.0'
+        },
+        _ended: true,
+        _ending: true,
+        _redirectCount: 0,
+        _redirects: [],
+        _requestBodyLength: 593,
+        _requestBodyBuffers: [],
+        _onNativeResponse: [Function (anonymous)],
+        _currentRequest: [Circular *3],
+        _currentUrl: 'https://u8r74ces9d.execute-api.eu-central-1.amazonaws.com/prod/validation/otelcol-core/v0.86.0',
+        [Symbol(kCapture)]: false
+      },
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(kNeedDrain)]: false,
+      [Symbol(corked)]: 0,
+      [Symbol(kOutHeaders)]: [Object: null prototype] {
+        accept: [ 'Accept', 'application/json, text/plain, */*' ],
+        'content-type': [ 'Content-Type', 'application/x-www-form-urlencoded' ],
+        'user-agent': [ 'User-Agent', 'axios/1.5.1' ],
+        'content-length': [ 'Content-Length', '593' ],
+        'accept-encoding': [ 'Accept-Encoding', 'gzip, compress, deflate, br' ],
+        host: [ 'Host', 'u8r74ces9d.execute-api.eu-central-1.amazonaws.com' ]
+      },
+      [Symbol(errored)]: null,
+      [Symbol(kHighWaterMark)]: 16384,
+      [Symbol(kRejectNonStandardBodyWrites)]: false,
+      [Symbol(kUniqueHeaders)]: null
+    },
+    data: { message: 'Forbidden' }
+  }
+}
+
+Node.js v20.7.0
+👾 [31mTask "test" failed when executing "jest --passWithNoTests --updateSnapshot" (cwd: /Users/mmanciop/git/otelbin/validation-src)[39m
+👾 [31mTask "test" failed when executing "jest --passWithNoTests --updateSnapshot" (cwd: /Users/mmanciop/git/otelbin/validation-src)[39m
