@@ -42,8 +42,7 @@ OTelBin is a configuration tool for [OpenTelemetry collector pipelines](https://
 - [Tailwind](https://tailwindcss.com/) – CSS
 - [Upstash](https://upstash.com/) – redis
 - [Clerk](https://clerk.com/) – auth
-- [Vercel](https://vercel.com/) – hosting
-- [Posthog](https://posthog.com/) – analytics
+- [Vercel](https://vercel.com/) – hosting and privacy-friendly analytics
 
 ## Contributing
 
