@@ -8,6 +8,14 @@ import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { join } from 'path';
 
+declare global {
+  namespace NodeJS {
+      interface ProcessEnv {
+          TEST_ENVIRONMENT_NAME: string;
+      }
+  }
+}
+
 interface Distributions {
   [id: string]: Distribution;
 }
@@ -140,6 +148,7 @@ export class OTelBinValidationStack extends Stack {
           code: DockerImageCode.fromImageAsset(join(__dirname, 'images', 'otelcol-validator'), {
             platform: Platform.LINUX_AMD64,
             buildArgs: {
+              DISTRO_NAME: id,
               GH_TOKEN: props.githubToken,
               GH_REPOSITORY: distribution.repository,
               GH_RELEASE: release.version,
@@ -148,9 +157,10 @@ export class OTelBinValidationStack extends Stack {
           }),
           /*
            * The default 128 cause the OtelCol process to swap a lot, and that increased
-           * latency by a couple seconds when testing with the Otelcol Contrib v0.85.1
+           * latency by a couple seconds in cold start and normal validations when testing
+           * with the Otelcol Contrib v0.85.1.
            */
-          memorySize: 512,
+          memorySize: 1024,
           timeout: Duration.seconds(15),
         });
 
@@ -168,6 +178,8 @@ if (!process.env.GH_TOKEN) {
   throw new Error('No GitHub token provided via the "GH_TOKEN" environment variable');
 }
 
+const testEnvironmentName = process.env.TEST_ENVIRONMENT_NAME || 'dev';
+
 const env = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEFAULT_REGION,
@@ -176,6 +188,6 @@ const env = {
 
 const app = new App();
 
-new OTelBinValidationStack(app, 'otelbin-validation-dev', env);
+new OTelBinValidationStack(app, `otelbin-validation-${testEnvironmentName}`, env);
 
 app.synth();

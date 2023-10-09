@@ -30,5 +30,21 @@
                 "artifact": "otelcol-contrib_0.85.0_linux_amd64.rpm"
             }
         ]
+    },
+    "adot": {
+        "provider": "Amazon Web Services (AWS)",
+        "description": "AWS Distro for OpenTelemetry",
+        "website": "https://aws.amazon.com/otel/",
+        "repository": "aws-observability/aws-otel-collector",
+        "releases": [
+            {
+                "version": "v0.33.1",
+                "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.33.1/aws-otel-collector.rpm"
+            },
+            {
+                "version": "v0.32.1",
+                "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.32.1/aws-otel-collector.rpm"
+            }
+        ]
     }
 }

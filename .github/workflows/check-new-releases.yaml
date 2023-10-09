@@ -51,6 +51,46 @@ jobs:
           name: releases-${{ matrix.artifact_prefix }}.json
           path: releases.json
 
+  check-adot-releases:
+    name: Check new AWS DIstro for OpenTelemetry releases
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    outputs:
+      releases: ${{ steps.list-releases.outputs.releases }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        env:
+          NODE_MAJOR: 20
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl gnupg
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg      
+          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+          sudo apt-get update
+          sudo apt-get install nodejs -y
+      - name: Build dependency checker application
+        run: |
+          (cd .github/workflows/scripts/list-releases && npm install && npm run build)
+      - name: List matching releases
+        id: list-releases
+        env:
+          DISTRO_NAME: adot
+          GH_REPOSITORY: aws-observability/aws-otel-collector
+        run: |
+          (cd .github/workflows/scripts/list-releases && npm run start) > releases.json
+          cat releases.json
+      - name: Upload releases.json artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: releases-adot.json
+          path: releases.json
+
   open-pr:
     name: Open PR
     needs: check-community-releases
