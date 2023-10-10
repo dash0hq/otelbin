@@ -12,8 +12,6 @@ import { Toaster } from "~/components/toaster";
 import { dark } from "@clerk/themes";
 import { Inter } from "next/font/google";
 import { cn } from "~/lib/utils";
-import { PostHogProvider } from "~/app/PostHogProvider";
-import { cookies } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
-	let content = (
+	return (
 		<ClerkProvider
 			appearance={{
 				baseTheme: dark,
@@ -48,11 +46,4 @@ export default function RootLayout({ children }: PropsWithChildren) {
 			</html>
 		</ClerkProvider>
 	);
-
-	const cookiesAccepted = cookies().get("otelbin-cookies-accepted")?.value === "true";
-	if (cookiesAccepted) {
-		content = <PostHogProvider>{content}</PostHogProvider>;
-	}
-
-	return content;
 }
