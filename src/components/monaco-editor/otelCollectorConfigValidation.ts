@@ -62,9 +62,6 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 				ajvError.push(...validationErrors);
 			}
 		}
-
-		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData, monacoRef);
-		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	} catch (error: unknown) {
 		const knownError = error as IJsYamlError;
 		const errorLineNumber = knownError.mark.line;
@@ -74,73 +71,74 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			endLineNumber: errorLineNumber || 0,
 			startColumn: 0,
 			endColumn: 0,
-			severity: monacoRef?.current?.MarkerSeverity.Error || 1,
+			severity: 8,
 			message: errorMessage,
 		};
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", [errorMarker]);
 
 		totalErrors.jsYamlError = knownError;
 	}
+	if (!totalErrors.jsYamlError) {
+		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData);
+		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
+	}
 	return totalErrors;
 }
 
-function customValidate(
+export function customValidate(
 	mainItemsData: IValidateItem,
 	serviceItemsData: IValidateItem | undefined,
 	errorMarkers: editor.IMarkerData[],
 	totalErrors: IError,
-	configData: string,
-	monacoRef?: MonacoRefType
+	configData: string
 ) {
-	if (!totalErrors.jsYamlError) {
-		if (!mainItemsData) return totalErrors;
-		for (const key of Object.keys(mainItemsData)) {
-			const mainItems = mainItemsData[key];
-			const serviceItems = serviceItemsData && serviceItemsData[key];
+	if (!mainItemsData) return totalErrors;
+	for (const key of Object.keys(mainItemsData)) {
+		const mainItems = mainItemsData[key];
+		const serviceItems = serviceItemsData && serviceItemsData[key];
 
-			if (!serviceItems) continue;
+		if (!serviceItems) continue;
 
-			serviceItems.forEach((item) => {
-				if (
-					!mainItems?.some((mainItem) => mainItem.source === item.source) &&
-					!mainItemsData["connectors"]?.some((mainItem) => mainItem.source === item.source)
-				) {
-					const errorMessage = `${capitalize(key)} "${item.source}" is not defined.`;
-					const { line, column } = findLineAndColumn(configData, item.offset);
-					const endColumn = column + (item.source?.length || 0);
+		serviceItems.forEach((item) => {
+			if (
+				!mainItems?.some((mainItem) => mainItem.source === item.source) &&
+				!mainItemsData["connectors"]?.some((mainItem) => mainItem.source === item.source)
+			) {
+				const errorMessage = `${capitalize(key)} "${item.source}" is not defined.`;
+				const { line, column } = findLineAndColumn(configData, item.offset);
+				const endColumn = column + (item.source?.length || 0);
 
-					const errorMarker = {
-						startLineNumber: line || 0,
-						endLineNumber: 0,
-						startColumn: column || 0,
-						endColumn: endColumn,
-						severity: monacoRef?.current?.MarkerSeverity.Error || 1,
-						message: errorMessage,
-					};
-					errorMarkers.push(errorMarker);
-					totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
-				}
-			});
-			mainItems?.forEach((item) => {
-				if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
-					const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
-					const { line, column } = findLineAndColumn(configData, item.offset);
-					const endColumn = column + (item.source?.length || 0);
+				const errorMarker = {
+					startLineNumber: line || 0,
+					endLineNumber: 0,
+					startColumn: column || 0,
+					endColumn: endColumn,
+					severity: 8,
+					message: errorMessage,
+				};
+				errorMarkers.push(errorMarker);
+				totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
+			}
+		});
+		mainItems?.forEach((item) => {
+			if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
+				const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
+				const { line, column } = findLineAndColumn(configData, item.offset);
+				const endColumn = column + (item.source?.length || 0);
 
-					const errorMarker = {
-						startLineNumber: line || 0,
-						endLineNumber: 0,
-						startColumn: column || 0,
-						endColumn: endColumn,
-						severity: monacoRef?.current?.MarkerSeverity.Warning || 1,
-						message: errorMessage,
-					};
-					errorMarkers.push(errorMarker);
+				const errorMarker = {
+					startLineNumber: line || 0,
+					endLineNumber: 0,
+					startColumn: column || 0,
+					endColumn: endColumn,
+					severity: 4,
+					message: errorMessage,
+				};
+				errorMarkers.push(errorMarker);
 
-					totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
-				}
-			});
-		}
+				totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
+			}
+		});
 	}
 }
 
@@ -168,8 +166,8 @@ export function extractServiceItems(docObject: IItem[]) {
 }
 
 export function findLeafs(yamlItems?: IItem[], parent?: IItem) {
-	if (yamlItems?.length === 0) return;
-	else if (Array.isArray(yamlItems)) {
+	if (yamlItems?.length === 0 || yamlItems === undefined) return {};
+	else if (Array.isArray(yamlItems) && yamlItems.length > 0) {
 		for (let i = 0; i < yamlItems.length; i++) {
 			const item = yamlItems[i];
 			if (item?.value) {
@@ -193,6 +191,7 @@ export function findLeafs(yamlItems?: IItem[], parent?: IItem) {
 			}
 		}
 	}
+
 	return serviceItemsData;
 }
 
