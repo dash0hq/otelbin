@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { createContext, useCallback, useRef, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import { type editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
@@ -9,8 +9,8 @@ import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } fro
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
-import { Parser } from "yaml";
-import type { Document, IItem } from "../components/monaco-editor/yamlParserTypes";
+import type { IItem } from "../components/monaco-editor/parseYaml";
+import { getParsedValue } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter } from "monaco-worker-manager";
 import { createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
@@ -88,14 +88,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [viewMode, setViewMode] = useState("both");
 	const [path, setPath] = useState("");
 
-	const getValue = useCallback((editorValue: string) => {
-		const value = editorValue;
-		const parsedYaml = Array.from(new Parser().parse(value));
-		const doc = parsedYaml.find((token) => token.type === "document") as Document;
-		const docObject: IItem[] = doc?.value?.items ?? [];
-		return docObject;
-	}, []);
-
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
 
@@ -171,10 +163,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		);
 
 		let value = editorRef.current?.getValue() ?? "";
-		let docObject = getValue(value);
+		let docObject = getParsedValue(value);
 		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
-			docObject = getValue(value);
+			docObject = getParsedValue(value);
 		});
 
 		function correctKey(value: string, key?: string, key2?: string) {

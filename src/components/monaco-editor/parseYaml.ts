@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Parser } from "yaml";
+
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -57,3 +59,11 @@ export interface Document {
 	value?: IValue;
 	end?: SourceToken[];
 }
+
+export const getParsedValue = (editorValue: string) => {
+	const value = editorValue;
+	const parsedYaml = Array.from(new Parser().parse(value));
+	const doc = parsedYaml.find((token) => token.type === "document") as Document;
+	const docObject: IItem[] = doc?.value?.items ?? [];
+	return docObject;
+};

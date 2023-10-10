@@ -63,7 +63,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}, [currentConfig, editorRef, monacoRef]);
 
-	const isValidConfig = errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0;
+	const isValidConfig =
+		errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0 && (errors.customErrors?.length ?? 0) === 0;
 
 	const handleEditorChange: OnChange = (value) => {
 		setCurrentConfig(value || "");
