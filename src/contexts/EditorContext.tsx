@@ -113,7 +113,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 		monacoRef.current = monaco;
 		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
-			wordPattern: /\w+\/\w+|\w+/,
+			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
 		});
 
 		const createData: MonacoYamlOptions = {
