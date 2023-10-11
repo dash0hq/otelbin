@@ -3,14 +3,13 @@
 
 import { describe, expect, test, it } from "@jest/globals";
 import {
-	capitalize,
 	findLineAndColumn,
 	extractMainItemsData,
 	extractServiceItems,
 	findLeafs,
 	type IValidateItem,
-	customValidate,
-} from "./otelCollectorConfigValidation";
+} from "./parseYaml";
+import { capitalize, customValidate } from "./otelCollectorConfigValidation";
 import { type IItem, getParsedValue } from "./parseYaml";
 import type { editor } from "monaco-editor";
 
@@ -90,7 +89,7 @@ describe("findLeafs", () => {
 		const docObject = getParsedValue(yaml);
 		const yamlItems = extractServiceItems(docObject);
 
-		const result = findLeafs(yamlItems, docObject.filter((item: IItem) => item.key.source === "service")[0]);
+		const result = findLeafs(yamlItems, docObject.filter((item: IItem) => item.key.source === "service")[0], {});
 		expect(result).toEqual({
 			extensions: [
 				{ source: "health_check", offset: 64 },
