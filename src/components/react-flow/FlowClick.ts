@@ -3,100 +3,82 @@
 
 import type { editor } from "monaco-editor";
 import type { RefObject } from "react";
-import JsYaml from "js-yaml";
-import type { IConfig } from "./dataType";
 import "./decorationStyles.css";
-
+import {
+	type IValidateItem,
+	extractMainItemsData,
+	extractServiceItems,
+	findLeafs,
+	type ILeaf,
+	findLineAndColumn,
+} from "../monaco-editor/parseYaml";
+import { type IItem, getParsedValue } from "../monaco-editor/parseYaml";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
 export interface IData {
 	label: string;
 	parentNode: string;
-	type?: string;
+	type: string;
 	id: string;
 }
 
 export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null) {
 	event.stopPropagation();
+	const config = editorRef?.current?.getModel()?.getValue() || "";
+	const docObject = getParsedValue(config);
+	const mainItemsData: IValidateItem = extractMainItemsData(docObject);
+	let serviceItemsData: IValidateItem | undefined = {};
+	const serviceItems: IItem[] | undefined = extractServiceItems(docObject);
+	serviceItemsData = findLeafs(
+		serviceItems,
+		docObject.filter((item: IItem) => item.key.source === "service")[0],
+		serviceItemsData
+	);
 
-	const configData = editorRef?.current?.getModel()?.getValue() || "";
-	const jsonData = JsYaml.load(configData) as IConfig;
-	const parents = Object.keys(jsonData?.service?.pipelines ?? {});
+	const isConnector = data.type.includes("connectors");
+	const dataType = (event.altKey ? (isConnector ? data.type.split("/")[1] : data.type) : data.type.split("/")[0]) || "";
+	const clickedItem = findClickedItem(data.label, dataType, mainItemsData, serviceItemsData);
 
-	const findMatch = (label: string) =>
-		editorRef?.current?.getModel()?.findMatches(label, true, false, false, null, true);
+	if (clickedItem) {
+		const { line, column } = findLineAndColumn(config, clickedItem.offset);
+		changePosition(line, column);
+		changeDecoration(clickedItem, line, column);
+	}
 
-	const indentationRegex = /^(\s*)/;
-
-	const getStartPosition = (keyword: string) => {
-		const positions = findMatch(keyword);
-		const startLine = (positions && positions[0]?.range.startLineNumber) || 0;
-		return { positions, startLine };
-	};
-
-	const { positions: pipelinePositions, startLine: pipeLinesStartLine } = getStartPosition("pipelines");
-	const lines = editorRef?.current?.getModel()?.getValue().split(/\r?\n/) || [];
-	const afterPipeLinesIndentationCount = lines[pipeLinesStartLine]?.match(indentationRegex)?.[0].length || 0;
-
-	let pipeLinesEndLine = pipeLinesStartLine;
-	for (let i = pipeLinesStartLine; i < lines.length; i++) {
-		if ((lines[i]?.match(indentationRegex)?.[0].length || 0) >= afterPipeLinesIndentationCount) {
-			pipeLinesEndLine += 1;
+	function findClickedItem(
+		label: string,
+		dataType: string,
+		mainItemsData: IValidateItem,
+		serviceItemsData?: IValidateItem
+	) {
+		if (event.altKey) {
+			return serviceItemsData?.[dataType]?.find((item) => item.source === label);
+		} else {
+			return mainItemsData[dataType]?.find((item) => item.source === label);
 		}
 	}
 
-	const getStartPositionInPipeline = (keyword: string) => {
-		const positions = findMatch(keyword);
-		return (
-			positions?.filter(
-				(position) =>
-					position.range.startLineNumber > getStartPosition("pipelines").startLine &&
-					position.range.startLineNumber <= pipeLinesEndLine
-			) || []
-		);
-	};
+	function changePosition(line: number, column: number) {
+		editorRef?.current?.setPosition({
+			lineNumber: line,
+			column: column,
+		});
+		editorRef?.current?.focus();
+		editorRef?.current?.revealPositionInCenter({
+			lineNumber: line,
+			column: column,
+		});
+	}
 
-	const getStartPositionOffset = () => {
-		const parentPosition = getStartPositionInPipeline(data.parentNode)[0];
-		const childPosition = getStartPositionInPipeline(data.type || "").filter(
-			(position) => position.range.startLineNumber >= ((parentPosition && parentPosition.range.startLineNumber) || 0)
-		)[0];
-		return (
-			editorRef?.current?.getModel()?.getOffsetAt({
-				column: childPosition?.range.startColumn || 0,
-				lineNumber: childPosition?.range.startLineNumber || 0,
-			}) || 0
-		);
-	};
-
-	const getStartLineInPipeline = (keyword: string) => {
-		const positions = findMatch(keyword);
-		return positions?.filter(
-			(position) =>
-				position.range.startLineNumber > getStartPosition("pipelines").startLine &&
-				position.range.startLineNumber < pipeLinesEndLine
-		)[0]?.range.startLineNumber;
-	};
-
-	const goToSection = (keyword: string, startLine: number) => {
-		const activePosition = findMatch(keyword)?.filter((position) => position.range.startLineNumber > startLine);
-		const matchLabel = activePosition?.filter(
-			(position) =>
-				(editorRef?.current?.getModel()?.getOffsetAt({
-					column: position.range.startColumn,
-					lineNumber: position.range.startLineNumber,
-				}) || 0) >= getStartPositionOffset()
-		)[0];
-		changePosition(matchLabel);
-
+	function changeDecoration(clickedItem: ILeaf | undefined, line: number, column: number) {
 		let oldDecoration: string[] = [];
 
 		const highlightDecoration: editor.IModelDeltaDecoration = {
 			range: {
-				startLineNumber: matchLabel?.range.startLineNumber || 0,
-				startColumn: matchLabel?.range.startColumn || 0,
-				endLineNumber: matchLabel?.range.endLineNumber || 0,
-				endColumn: matchLabel?.range.endColumn || 0,
+				startLineNumber: line || 0,
+				startColumn: column || 0,
+				endLineNumber: line || 0,
+				endColumn: column + (clickedItem?.source?.length || 0),
 			},
 			options: {
 				isWholeLine: true,
@@ -110,23 +92,5 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 		setTimeout(() => {
 			editorRef?.current?.getModel()?.deltaDecorations(oldDecoration, []);
 		}, 550);
-	};
-
-	if (parents.includes(data.parentNode)) {
-		goToSection(data.label, getStartLineInPipeline(data.parentNode) || 0);
-	} else {
-		changePosition(pipelinePositions?.[0]);
-	}
-
-	function changePosition(position?: editor.FindMatch) {
-		editorRef?.current?.setPosition({
-			lineNumber: position?.range.startLineNumber || 1,
-			column: position?.range.startColumn || 1,
-		});
-		editorRef?.current?.focus();
-		editorRef?.current?.revealPositionInCenter({
-			lineNumber: position?.range.startLineNumber || 1,
-			column: position?.range.startColumn || 1,
-		});
 	}
 }

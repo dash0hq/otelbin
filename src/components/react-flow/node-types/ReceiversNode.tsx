@@ -39,7 +39,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 	const label = data.label || "";
 	const splitLabel = label.includes("/") ? label.split("/") : [label];
 	const iconColor = hovered ? "#F3F5F6" : "#9CA2AB";
-	const isConnector = data.type === "connectors";
+	const isConnector = data.type?.includes("connectors");
 	return (
 		<div
 			className={`flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node ${
