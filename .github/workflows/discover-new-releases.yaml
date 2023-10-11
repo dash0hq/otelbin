@@ -1,4 +1,4 @@
-name: Check for new OpenTelemetry collector releases to support
+name: Discover new OtelCol releases
 on:
   schedule:
     - cron: '0 2 * * *' # run at 2 AM UTC
@@ -6,13 +6,17 @@ on:
 
 jobs:
   check-community-releases:
-    name: Check new OpenTelemetry Collector community releases
+    name: OpenTelemetry official distribution
     strategy:
       fail-fast: false
       matrix:
-        github_projects: ['open-telemetry/opentelemetry-collector-releases']
-        artifact_prefix: ['otelcol', 'otelcol-contrib']
-        artifact_suffix: ['linux_amd64.rpm']
+        distro:
+        - name: otelcol-core
+          artifact_prefix: otelcol_
+          artifact_suffix: _linux_amd64.rpm
+        - name: otelcol-contrib
+          artifact_prefix: otelcol-contrib_
+          artifact_suffix: _linux_amd64.rpm
     runs-on: ubuntu-latest
     outputs:
       releases: ${{ steps.list-releases.outputs.releases }}
@@ -33,26 +37,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install nodejs -y
       - name: Build dependency checker application
+        working-directory: .github/workflows/scripts/list-releases
         run: |
-          (cd .github/workflows/scripts/list-releases && npm install && npm run build)
+          npm install
+          npm run build
       - name: List matching releases
         id: list-releases
         env:
-          DISTRO_NAME: ${{ matrix.artifact_prefix }}
-          GH_REPOSITORY: ${{ matrix.github_projects }}
-          GH_ASSET_PREFIX: ${{ matrix.artifact_prefix }}_
-          GH_ASSET_SUFFIX: _${{ matrix.artifact_suffix }}
+          DISTRO_NAME: ${{ matrix.distro.name }}
+          GH_REPOSITORY: open-telemetry/opentelemetry-collector-releases
+          GH_ASSET_PREFIX: ${{ matrix.distro.artifact_prefix }}
+          GH_ASSET_SUFFIX: ${{ matrix.distro.artifact_suffix }}
+        working-directory: .github/workflows/scripts/list-releases
         run: |
-          (cd .github/workflows/scripts/list-releases && npm run start) > releases.json
-          cat releases.json
+          npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
         uses: actions/upload-artifact@v3
         with:
-          name: releases-${{ matrix.artifact_prefix }}.json
-          path: releases.json
+          name: releases-${{ matrix.distro.name }}
+          path: .github/workflows/scripts/list-releases/releases.json
 
   check-adot-releases:
-    name: Check new AWS DIstro for OpenTelemetry releases
+    name: AWS Distro for OpenTelemetry
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
@@ -75,57 +81,67 @@ jobs:
           sudo apt-get update
           sudo apt-get install nodejs -y
       - name: Build dependency checker application
+        working-directory: .github/workflows/scripts/list-releases
         run: |
-          (cd .github/workflows/scripts/list-releases && npm install && npm run build)
+          npm install
+          npm run build
       - name: List matching releases
         id: list-releases
+        working-directory: .github/workflows/scripts/list-releases
         env:
           DISTRO_NAME: adot
           GH_REPOSITORY: aws-observability/aws-otel-collector
         run: |
-          (cd .github/workflows/scripts/list-releases && npm run start) > releases.json
-          cat releases.json
+          npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
         uses: actions/upload-artifact@v3
         with:
-          name: releases-adot.json
-          path: releases.json
+          name: releases-adot
+          path: .github/workflows/scripts/list-releases/releases.json
 
-  open-pr:
-    name: Open PR
-    needs: check-community-releases
+  compose-supported-distro-list:
+    name: Compose supported distro list 
+    needs:
+    - check-community-releases
+    - check-adot-releases
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Download release artifacts
         uses: actions/download-artifact@v3
         with:
           path: releases/
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
       - name: Merge release data
         run: |
-          jq -rs 'reduce .[] as $item ({}; . * $item)' validation-src/src/assets/supported-distributions.json releases/*.json > validation-src/src/assets/supported-distributions-updated.json
+          mv validation-src/src/assets/supported-distributions.json validation-src/src/assets/supported-distributions.json.old
+          jq -rs 'reduce .[] as $item ({}; . * $item)' validation-src/src/assets/supported-distributions.json.old releases/*/*.json > validation-src/src/assets/supported-distributions.json
       - name: Upload updated releases.json artifact
         uses: actions/upload-artifact@v3
         with:
-          name: supported-distributions.json
-          path: validation-src/src/assets/supported-distributions-updated.json
-      # - name: Prepare PR
-      #   run: |
-      #     mv validation-src/src/assets/supported-distributions-updated.json validation-src/src/assets/supported-distributions.json
-      #       - name: Create Pull Request
-      # - name: Create PR
-      #   uses: peter-evans/create-pull-request@v4
-      #   with:
-      #     token: "${{ secrets.GITHUB_TOKEN }}"
-      #     title: Update supported distribution versions
-      #     branch: ${{steps.branch_name.outputs.branch_name}}
-      #     commit-message: Update supported distribution versions
-      #     body: ''
-      #     base: main
-      #     labels: version-testing, automerge
-      #     reviewers: mmanciop,bripkens
+          name: supported-distributions
+          path: validation-src/src/assets/supported-distributions.json
+
+  create-pr:
+    name: Create Pull Request
+    needs:
+      - compose-supported-distro-list
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Download updated supported distro list
+        uses: actions/download-artifact@v3
+        with:
+          name: supported-distributions
+          path: validation-src/src/assets
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: Update supported versions
+          commit-message: 'chore: update the version list of supported OpenTelemetry collector distros'
+          add-paths: validation-src/src/assets/supported-distributions.json
+          branch: update-supported-versions
+          reviewers: mmanciop,bripkens

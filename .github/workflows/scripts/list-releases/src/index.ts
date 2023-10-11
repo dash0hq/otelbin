@@ -10,6 +10,7 @@ interface GitHubReleaseAsset {
 interface Release {
 	version: string;
 	artifact: string;
+	released_at?: Date;
 }
 
 declare global {
@@ -37,11 +38,9 @@ const [owner, repo] = process.env.GH_REPOSITORY.split("/");
 
 	for await (const { data: releases } of iterator) {
 		for (const release of releases) {
-			let matchingAsset: string = "";
-
 			switch (distroName) {
 				case "otelcol-core":
-				case "otelcol-contrib":
+				case "otelcol-contrib": {
 					const assetPrefix = process.env.GH_ASSET_PREFIX;
 					if (!assetPrefix) {
 						throw new Error('The required "GH_ASSET_PREFIX" environment variable is not set');
@@ -52,29 +51,72 @@ const [owner, repo] = process.env.GH_REPOSITORY.split("/");
 						throw new Error('The required "GH_ASSET_SUFFIX" environment variable is not set');
 					}
 
-					matchingAsset = release.assets.find(
+					const matchingAsset = release.assets?.find(
 						(asset: GitHubReleaseAsset) => asset.name?.startsWith(assetPrefix) && asset.name?.endsWith(assetSuffix)
-					)?.name;
+					);
+
+					if (matchingAsset) {
+						let released_at: Date | undefined;
+
+						const timestamp = matchingAsset.updated_at || matchingAsset.created_at;
+						if (timestamp) {
+							released_at = new Date(timestamp);
+						}
+
+						foundReleases.push({
+							version: release.tag_name!,
+							artifact: matchingAsset.name,
+							released_at,
+						});
+					} else {
+						console.error(
+							`Otel ${distroName} community release '${release.name}' has no recognizable RPM asset; this release will be skipped`
+						);
+					}
+
 					break;
-				case "adot":
+				}
+				case "adot": {
 					/*
 					 * ADOT is linking RPM packages in the body of the release. e.g.:
 					 * https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.33.2/aws-otel-collector.rpm
 					 */
-					matchingAsset = [...release.body?.toString().matchAll(/https?:\/\/\S+/g)].find((value) => {
-						const url = value.toString();
-						return url.includes("/amazon_linux/amd64/") && url.endsWith("rpm");
-					})[0];
+					let matchingAsset: string | undefined;
+					const urlsInReleaseBody = release.body?.toString().matchAll(/https?:\/\/\S+/g);
+					if (urlsInReleaseBody) {
+						const amazonLinuxRpmUrls = [...urlsInReleaseBody].find((value) => {
+							const url = value.toString();
+							return url.includes("/amazon_linux/amd64/") && url.endsWith("rpm");
+						});
+
+						if (amazonLinuxRpmUrls?.length) {
+							matchingAsset = amazonLinuxRpmUrls[0];
+						}
+					}
+
+					if (matchingAsset) {
+						let released_at: Date | undefined;
+
+						const timestamp = release.published_at || release.created_at;
+						if (timestamp) {
+							released_at = new Date(timestamp);
+						}
+
+						foundReleases.push({
+							version: release.tag_name!,
+							artifact: matchingAsset,
+							released_at,
+						});
+					} else {
+						console.error(
+							`ADOT release '${release.name}' has no recognizable RPM URLs for Amazon Linux 2 in the release body; this release will be skipped`
+						);
+					}
+
 					break;
+				}
 				default:
 					throw new Error(`Unknown distro name '${distroName}'`);
-			}
-
-			if (matchingAsset) {
-				foundReleases.push({
-					version: release.tag_name || "",
-					artifact: matchingAsset,
-				});
 			}
 		}
 	}

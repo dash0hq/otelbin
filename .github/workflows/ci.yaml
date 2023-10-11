@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
+      - '*'
     tags:
       - 'v*'
   pull_request:
@@ -70,7 +70,24 @@ jobs:
         shell: bash
         working-directory: validation-src
         run: |
-          sudo apt-get update && sudo apt-get install -y jq
+          sudo apt-get update
+          sudo apt-get install -y jq ucommon-utils
+
+      - name: Get test environment name
+        id: get_test_env_name
+        shell: bash
+        # When the trigger is a pull event, use the PR's branch name (`github.head_ref`), which
+        # is available only for pull trigger. Otherwise, use the branch on which the commit was pushed.
+        # (Ref names in pull requests are in the shape of `<pr_id>/merge` and those will break CDK.)
+        run: |
+          export REF_NAME="${{ github.head_ref || github.ref_name }}"
+          # Ensure test name is not long enough to break restrictions on length names in AWS (e.g., role-name length)
+          # This logic ensures test envs have max length 18. Names of length 13 to 17 will become of length 18 to ensure
+          # no accidental clashes.
+          if [[ ${#REF_NAME} -gt 12 ]]; then
+            REF_NAME="${REF_NAME:0:12}-$(echo "${REF_NAME:12}" | md5 | cut -c 1-45 | tr -d '\n')"
+          fi
+          echo "test_env_name=${REF_NAME}" >> $GITHUB_OUTPUT || exit 1
 
       - name: Deploy validation backend
         shell: bash
@@ -82,8 +99,7 @@ jobs:
           CDK_DEPLOY_ACCOUNT: ${{ github.ref == 'refs/heads/main' && '462608073829' || '622203989445' }}
           CDK_DEPLOY_REGION: 'eu-central-1'
           GH_TOKEN: ${{ github.token }}
-          # We are using dev for historic purposes (name of first test env bootstrapped)
-          TEST_ENVIRONMENT_NAME: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref.name }}
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
           npx projen deploy --require-approval never --outputs-file ./cdk-outputs.json
 
@@ -92,7 +108,7 @@ jobs:
         shell: bash
         working-directory: validation-src
         env:
-          TEST_ENVIRONMENT_NAME: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref.name }}
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
           echo api_gateway_name=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apiname" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
           echo api_gateway_url=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apiurl" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}

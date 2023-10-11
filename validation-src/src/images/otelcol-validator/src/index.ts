@@ -42,8 +42,8 @@ export const validateAdot = async (otelcolRealPath: string, configPath: string):
 
   const otelcol = spawn(otelcolRealPath, [`--config=${configPath}`]);
 
-  let stdout = '',
-    stderr = '';
+  let stdout = '';
+  let stderr = '';
 
   otelcol.stdout.on('data', (data) => {
     stdout += data.toString();

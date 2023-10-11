@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { ApiKeySourceType, AwsIntegration, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -35,6 +35,7 @@ export interface Release {
 }
 
 export interface OTelBinValidationStackProps extends StackProps {
+  testEnvironmentName: string;
   githubToken: string;
 }
 
@@ -43,16 +44,16 @@ export class OTelBinValidationStack extends Stack {
     super(scope, id, props);
 
     const api = new RestApi(this, 'validation-api', {
-      restApiName: 'otelbin-validation',
+      restApiName: `otelbin-validation-${props.testEnvironmentName}`,
       binaryMediaTypes: ['application/json'],
       apiKeySourceType: ApiKeySourceType.HEADER,
     });
     const apiKey = api.addApiKey('api-key', {
-      apiKeyName: 'otelbin-apikey',
+      apiKeyName: `validation-apikey-${props.testEnvironmentName}`,
     });
 
     const usagePlan = new UsagePlan(this, 'usage-plan', {
-      name: 'validation-api-usage-plan',
+      name: `validation-api-${props.testEnvironmentName}`,
       apiStages: [
         {
           api,
@@ -71,7 +72,7 @@ export class OTelBinValidationStack extends Stack {
     const supportedDistributionsPath = join(__dirname, 'assets');
 
     const supportedDistributionsListBucket = new Bucket(this, 'supported-distributions-list', {
-      bucketName: 'supported-distributions-list',
+      bucketName: `supported-distributions-list-${props.testEnvironmentName}`,
       enforceSSL: true,
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
@@ -84,7 +85,7 @@ export class OTelBinValidationStack extends Stack {
 
     const credentialsRole = new Role(this, 'api-gateway-s3-assume-role', {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
-      roleName: 'API-Gateway-Serve-Supported-Distributions-List',
+      roleName: `serve-distributions-list-${props.testEnvironmentName}`,
     });
     credentialsRole.addToPolicy(
       new PolicyStatement({
@@ -169,21 +170,23 @@ export class OTelBinValidationStack extends Stack {
         releaseResource.addMethod('POST', new LambdaIntegration(releaseLambda), {
           apiKeyRequired: true,
         });
+
+        Tags.of(releaseLambda).add('otelcol-version', `${distributionName}-${release.version}`);
       }
     }
 
     new CfnOutput(this, 'api-name', {
-      exportName: 'api-name',
+      exportName: `api-name-${props.testEnvironmentName}`,
       value: api.restApiName,
     });
 
     new CfnOutput(this, 'api-url', {
-      exportName: 'api-url',
+      exportName: `api-url-${props.testEnvironmentName}`,
       value: api.url,
     });
 
     new CfnOutput(this, 'api-key-id', {
-      exportName: 'api-key-id',
+      exportName: `api-key-id-${props.testEnvironmentName}`,
       value: apiKey.keyId,
     });
   }
@@ -199,6 +202,7 @@ const testEnvironmentName = process.env.TEST_ENVIRONMENT_NAME || 'dev';
 const env = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEFAULT_REGION,
+  testEnvironmentName,
   githubToken: process.env.GH_TOKEN,
 };
 
