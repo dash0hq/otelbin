@@ -127,7 +127,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							width: viewMode === "code" ? "100%" : viewMode === "pipeline" ? "0px" : `${width}px`,
 						}}
 					>
-						<EditorTopBar config={config} font={firaCode} />
+						<EditorTopBar config={currentConfig} font={firaCode} />
 						<div className={`h-full w-full shrink grow ${firaCode.className}`}>
 							{clerk.loaded && (
 								<AutoSizer>
