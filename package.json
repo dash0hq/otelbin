@@ -17,6 +17,7 @@
 	"dependencies": {
 		"@clerk/nextjs": "^4.23.5",
 		"@clerk/themes": "^1.7.6",
+		"@jest/globals": "^29.7.0",
 		"@monaco-editor/react": "^4.5.2",
 		"@radix-ui/react-dialog": "^1.0.5",
 		"@radix-ui/react-popover": "^1.0.7",
@@ -39,7 +40,6 @@
 		"monaco-languageserver-types": "^0.2.3",
 		"monaco-yaml": "^5.1.0",
 		"next": "^13.5.4",
-		"posthog-js": "^1.82.0",
 		"projen": "^0.73.37",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
@@ -47,6 +47,7 @@
 		"swr": "^2.2.2",
 		"tailwind-merge": "^1.13.2",
 		"tailwindcss-animate": "^1.0.6",
+		"ts-jest": "^29.1.1",
 		"yaml": "^2.3.2",
 		"yaml-language-server": "^1.14.0"
 	},
