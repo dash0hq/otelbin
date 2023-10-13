@@ -36,18 +36,26 @@ jobs:
           echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
           sudo apt-get update
           sudo apt-get install nodejs -y
-      - name: Build dependency checker application
+      - name: Build list generator
         working-directory: .github/workflows/scripts/list-releases
         run: |
           npm install
           npm run build
+      - name: Look up ignored releases range
+        id: lookup-ignored-releases
+        shell: bash
+        working-directory: validation-src/src/assets
+        run: |
+          echo "range=$(jq -r '.["${{matrix.distro.name}}"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
       - name: List matching releases
         id: list-releases
+        shell: bash
         env:
           DISTRO_NAME: ${{ matrix.distro.name }}
           GH_REPOSITORY: open-telemetry/opentelemetry-collector-releases
           GH_ASSET_PREFIX: ${{ matrix.distro.artifact_prefix }}
           GH_ASSET_SUFFIX: ${{ matrix.distro.artifact_suffix }}
+          IGNORED_RELEASES: ${{ steps.lookup-ignored-releases.outputs.range }}
         working-directory: .github/workflows/scripts/list-releases
         run: |
           npm run start --silent | tee releases.json
@@ -80,17 +88,24 @@ jobs:
           echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
           sudo apt-get update
           sudo apt-get install nodejs -y
-      - name: Build dependency checker application
+      - name: Build list generator
         working-directory: .github/workflows/scripts/list-releases
         run: |
           npm install
           npm run build
+      - name: Look up ignored releases range
+        id: lookup-ignored-releases
+        shell: bash
+        working-directory: validation-src/src/assets
+        run: |
+          echo "range=$(jq -r '.["${{matrix.distro.name}}"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
       - name: List matching releases
         id: list-releases
         working-directory: .github/workflows/scripts/list-releases
         env:
           DISTRO_NAME: adot
           GH_REPOSITORY: aws-observability/aws-otel-collector
+          IGNORED_RELEASES: ${{ steps.lookup-ignored-releases.outputs.range }}
         run: |
           npm run start --silent | tee releases.json
       - name: Upload releases.json artifact

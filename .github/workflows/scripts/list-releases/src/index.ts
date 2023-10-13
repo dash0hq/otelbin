@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/rest";
+import { satisfies } from "semver";
 
 // Declare that this is a module
 export {};
@@ -20,12 +21,14 @@ declare global {
 			GH_REPOSITORY: string;
 			GH_ASSET_PREFIX?: string;
 			GH_ASSET_SUFFIX?: string;
+			IGNORED_RELEASES: string;
 		}
 	}
 }
 
 const distroName = process.env.DISTRO_NAME;
 const [owner, repo] = process.env.GH_REPOSITORY.split("/");
+const ignoredReleases = process.env.IGNORED_RELEASES;
 
 (async () => {
 	const octokit = new Octokit();
@@ -38,6 +41,11 @@ const [owner, repo] = process.env.GH_REPOSITORY.split("/");
 
 	for await (const { data: releases } of iterator) {
 		for (const release of releases) {
+			if (ignoredReleases && satisfies(release.tag_name, ignoredReleases)) {
+				console.error(`Skipping release '${release.tag_name}', it falls within the range of ignored releases`);
+				continue;
+			}
+
 			switch (distroName) {
 				case "otelcol-core":
 				case "otelcol-contrib": {
