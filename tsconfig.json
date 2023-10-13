@@ -43,6 +43,7 @@
   ],
   "exclude": [
     "node_modules",
-    "validation-src"
+    "validation-src",
+    ".github/workflows/scripts/list-releases"
   ]
 }
