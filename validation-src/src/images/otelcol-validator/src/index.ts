@@ -40,7 +40,12 @@ export const validateAdot = async (otelcolRealPath: string, configPath: string):
   });
   let isResolved = false;
 
-  const otelcol = spawn(otelcolRealPath, [`--config=${configPath}`]);
+  /*
+   * Node.js spawn is unreliable in terms of collecting stdout and stderr through the spawn call
+   * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
+   * increases the reliability.
+   */
+  const otelcol = spawn('/bin/sh', ['-c', `${otelcolRealPath} --config=${configPath}`]);
 
   let stdout = '';
   let stderr = '';
@@ -87,7 +92,12 @@ export const validateAdot = async (otelcolRealPath: string, configPath: string):
 };
 
 export const validateOtelCol = async (otelcolRealPath: string, configPath: string): Promise<void> => {
-  await spawnAsync(otelcolRealPath, ['validate', `--config=${configPath}`], {
+  /*
+   * Node.js spawn is unreliable in terms of collecting stdout and stderr through the spawn call
+   * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
+   * increases the reliability.
+   */
+  await spawnAsync('/bin/sh', ['-c', `${otelcolRealPath} validate --config=${configPath}`], {
     ignoreStdio: false,
     detached: false,
     stdio: 'pipe',
