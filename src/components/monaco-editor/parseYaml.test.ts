@@ -17,14 +17,14 @@ processors:
 service:
   extensions: [health_check, pprof, zpages]
   pipelines:
-		traces:
-			receivers: [otlp]
-			processors: [batch]
-			exporters: [otlp]
-        metrics:
-            receivers: [otlp]
-            processors: [batch]
-            exporters: [otlp]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
 `
 		.trim()
 		.replaceAll(/\t/g, "  ") as string,
@@ -47,15 +47,15 @@ describe("findPipelinesKeyValues", () => {
 		expect(result).toEqual({
 			receivers: [
 				{ source: "otlp", offset: 136, level1Parent: "traces" },
-				{ source: "otlp", offset: 233, level1Parent: "metrics" },
+				{ source: "otlp", offset: 223, level1Parent: "metrics" },
 			],
 			processors: [
 				{ source: "batch", offset: 161, level1Parent: "traces" },
-				{ source: "batch", offset: 264, level1Parent: "metrics" },
+				{ source: "batch", offset: 248, level1Parent: "metrics" },
 			],
 			exporters: [
 				{ source: "otlp", offset: 186, level1Parent: "traces" },
-				{ source: "otlp", offset: 295, level1Parent: "metrics" },
+				{ source: "otlp", offset: 273, level1Parent: "metrics" },
 			],
 		});
 	});
