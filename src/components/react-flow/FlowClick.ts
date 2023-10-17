@@ -8,9 +8,9 @@ import {
 	type IValidateItem,
 	extractMainItemsData,
 	extractServiceItems,
-	findLeafs,
 	type ILeaf,
 	findLineAndColumn,
+	findPipelinesKeyValues,
 } from "../monaco-editor/parseYaml";
 import { type IItem, getParsedValue } from "../monaco-editor/parseYaml";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
@@ -27,17 +27,20 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 	const config = editorRef?.current?.getModel()?.getValue() || "";
 	const docObject = getParsedValue(config);
 	const mainItemsData: IValidateItem = extractMainItemsData(docObject);
-	let serviceItemsData: IValidateItem | undefined = {};
+	let pipelinesKeyValues: IValidateItem | undefined = {};
 	const serviceItems: IItem[] | undefined = extractServiceItems(docObject);
-	serviceItemsData = findLeafs(
-		serviceItems,
+	const pipeLineItems: IItem[] | undefined = serviceItems?.filter((item: IItem) => item.key.source === "pipelines");
+
+	pipelinesKeyValues = findPipelinesKeyValues(
+		pipeLineItems,
+		docObject.filter((item: IItem) => item.key.source === "pipelines")[0],
 		docObject.filter((item: IItem) => item.key.source === "service")[0],
-		serviceItemsData
+		pipelinesKeyValues
 	);
 
 	const isConnector = data.type.includes("connectors");
 	const dataType = (event.altKey ? (isConnector ? data.type.split("/")[1] : data.type) : data.type.split("/")[0]) || "";
-	const clickedItem = findClickedItem(data.label, dataType, mainItemsData, serviceItemsData);
+	const clickedItem = findClickedItem(data.label, dataType, mainItemsData, pipelinesKeyValues);
 
 	if (clickedItem) {
 		const { line, column } = findLineAndColumn(config, clickedItem.offset);
@@ -49,10 +52,12 @@ export function FlowClick(event: React.MouseEvent, data: IData, editorRef: Edito
 		label: string,
 		dataType: string,
 		mainItemsData: IValidateItem,
-		serviceItemsData?: IValidateItem
+		pipelinesKeyValues?: IValidateItem
 	) {
 		if (event.altKey) {
-			return serviceItemsData?.[dataType]?.find((item) => item.source === label);
+			return pipelinesKeyValues?.[dataType]
+				?.filter((item) => item.level1Parent === data.parentNode)
+				.find((item) => item.source === label);
 		} else {
 			return mainItemsData[dataType]?.find((item) => item.source === label);
 		}
