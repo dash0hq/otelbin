@@ -28,9 +28,9 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 		borderRadius: "0px 0px 8px 8px",
 		paddingBottom: "6px",
 		paddingTop: "6px",
-		borderLeft: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
-		borderRight: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
-		borderBottom: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
+		borderLeft: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
+		borderRight: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
+		borderBottom: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
 	};
 
 	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -42,7 +42,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 	const isConnector = data.type?.includes("connectors");
 	return (
 		<div
-			className={`flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node ${
+			className={`flex h-20 w-[120px] flex-col items-center rounded-lg shadow-node mr-3 ${
 				isFocused === data.id ? (isConnector ? "animate-connectorFocus" : "animate-focus") : ""
 			}`}
 		>

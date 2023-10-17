@@ -28,9 +28,9 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 		borderRadius: "0px 0px 8px 8px",
 		paddingBottom: "6px",
 		paddingTop: "6px",
-		borderLeft: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
-		borderRight: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
-		borderBottom: `1px solid ${hovered ? "6D737D" : "#40454E"}`,
+		borderLeft: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
+		borderRight: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
+		borderBottom: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
 	};
 
 	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -44,7 +44,7 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 	return (
 		<>
 			<div
-				className={`flex h-20 max-h-[81px] max-w-[121px] w-[120px] flex-col items-center rounded-lg shadow-node ${
+				className={`flex h-20 max-h-[81px] max-w-[121px] w-[120px] flex-col items-center rounded-lg shadow-node mx-3 ${
 					isFocused === data.id ? "animate-processorFocus" : ""
 				}`}
 			>
