@@ -15,7 +15,7 @@ export function UrlCopy({ url }: UrlCopyProps) {
   const { toast } = useToast();
 
   return (
-    <div className="mx-4 flex gap-2">‚
+    <div className="mx-4 flex gap-2">
       <Input type="url" readOnly value={url} size="xs" />
       <Tooltip>
         <TooltipTrigger asChild>
