@@ -25,6 +25,7 @@ import { useClerk } from "@clerk/nextjs";
 import { PanelLeftOpen } from "lucide-react";
 import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
+import { track } from "@vercel/analytics";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -77,6 +78,9 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		// /restore page. Without this we ran into return URL problems with GitHub
 		// and Google as our return URL can be **very** long.
 		localStorage.setItem("config-restore", config);
+		if (config !== editorBinding.fallback) {
+			track("OTel config link loaded");
+		}
 	}, [config]);
 
 	useEffect(() => {
