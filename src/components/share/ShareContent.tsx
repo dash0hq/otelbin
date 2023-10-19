@@ -8,6 +8,7 @@ import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { UrlCopy } from "~/components/share/UrlCopy";
 import { SignedInUrlSharing } from "~/components/share/SignedInUrlSharing";
+import { track } from '@vercel/analytics';
 
 export function ShareContent() {
 	const [{ config }, getLink] = useUrlState([editorBinding]);
