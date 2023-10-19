@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { IconButton } from "~/components/icon-button";
 import { Copy } from "lucide-react";
 import { useToast } from "~/components/use-toast";
-import { track } from '@vercel/analytics';
+import { track } from "@vercel/analytics";
 
 
 export interface UrlCopyProps {
