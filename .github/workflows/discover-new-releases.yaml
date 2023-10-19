@@ -98,7 +98,7 @@ jobs:
         shell: bash
         working-directory: validation-src/src/assets
         run: |
-          echo "range=$(jq -r '.["${{matrix.distro.name}}"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
+          echo "range=$(jq -r '.["adot"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
       - name: List matching releases
         id: list-releases
         working-directory: .github/workflows/scripts/list-releases
