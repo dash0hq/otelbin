@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import Logo from "./assets/svg/otelbin-logo-new.svg";
+import Logo from "./assets/svg/otelbin_logo_white.svg";
 import { ButtonGroup, ButtonGroupItem } from "~/components/button-group";
 import { Columns, Code2, LogIn } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
@@ -35,8 +35,8 @@ export default function AppHeader({ activeView }: { activeView: string }) {
 	return (
 		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
 			<div className="flex items-center gap-x-2">
-				<Logo height={26} />
-				<p className="text-sm font-semibold">OTelBin</p>
+				<Logo height={22} />
+				<p className="text-md font-bold text-neutral-950">OTelBin</p>
 			</div>
 			<div className="flex gap-x-2">
 				<ButtonGroup size="xs" variant="default" className="!gap-0 bg-button">

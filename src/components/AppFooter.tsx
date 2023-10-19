@@ -12,12 +12,21 @@ export function AppFooter() {
 			<div className="flex gap-4">
 				<a
 					className="flex cursor-pointer items-center gap-1 transition-colors hover:text-default"
-					href="https://join.slack.com/t/dash0-community/shared_invite/zt-21gxq6bya-VcO45Wr~nlxc37aLWqqrjA"
+					href="https://slack.cncf.io/"
 					target="_blank"
 					rel="noreferrer noopener"
 				>
 					<Slack size="0.875rem" />
-					Community Slack
+					Join CNCF Slack
+				</a>
+				<a
+					className="flex cursor-pointer items-center gap-1 transition-colors hover:text-default"
+					href="https://cloud-native.slack.com/archives/C061WC8RQJX"
+					target="_blank"
+					rel="noreferrer noopener"
+				>
+					<Slack size="0.875rem" />
+					#OTelBin on CNCF Slack
 				</a>
 				<a
 					className="flex cursor-pointer items-center gap-1 transition-colors hover:text-default"
