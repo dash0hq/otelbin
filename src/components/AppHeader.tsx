@@ -10,6 +10,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "~/components/button";
 import { useViewMode } from "~/contexts/EditorContext";
 import { MapIcon } from "~/icons/map";
+import { track } from '@vercel/analytics';
 
 const viewModes = [
 	{
