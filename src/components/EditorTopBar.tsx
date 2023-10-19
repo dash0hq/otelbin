@@ -20,7 +20,7 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 		link.download = "config.yaml";
 		link.href = url;
 		link.click();
-		track('Download Config');
+		track('Download Config', { location: 'Editor' });
 	}
 
 	function handleCopy() {
