@@ -91,11 +91,11 @@ jobs:
         shell: bash
         working-directory: packages/otelbin-validation
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'eu-central-1' 
+          AWS_ACCESS_KEY_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY: ${{ github.ref == 'refs/heads/main' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_DEFAULT_REGION: 'us-east-2' 
           CDK_DEPLOY_ACCOUNT: ${{ github.ref == 'refs/heads/main' && '462608073829' || '622203989445' }}
-          CDK_DEPLOY_REGION: 'eu-central-1'
+          CDK_DEPLOY_REGION: 'us-east-2'
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
@@ -149,9 +149,9 @@ jobs:
         shell: bash
         working-directory: packages/otelbin-validation
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'eu-central-1' 
+          AWS_ACCESS_KEY_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY: ${{ github.ref == 'refs/heads/main' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_DEFAULT_REGION: 'us-east-2' 
           API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
           API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
           RELEASE_UNDER_TEST: ${{ matrix.test_matrix }}
