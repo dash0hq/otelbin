@@ -37,6 +37,7 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 					description: "Failed to copy to clipboard",
 				});
 			});
+			track('Copied Config To Clipboard');
 	}
 
 	return (
