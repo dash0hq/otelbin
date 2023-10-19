@@ -22,6 +22,9 @@ import { AutoSizer } from "~/components/AutoSizer";
 import { ResizeBar } from "~/components/monaco-editor/ResizeBar";
 import { Fira_Code } from "next/font/google";
 import { useClerk } from "@clerk/nextjs";
+import { PanelLeftOpen } from "lucide-react";
+import { IconButton } from "~/components/icon-button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -34,7 +37,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const editorRef = useEditorRef();
 	const monacoRef = useMonacoRef();
 	const [width, setWidth] = useState(Number(localStorage.getItem("width") || 440));
-	const { viewMode } = useViewMode();
+	const { setViewMode, viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 	const [{ config }, getLink] = useUrlState([editorBinding]);
@@ -119,7 +122,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		<>
 			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
 			<div className="flex h-full max-h-screen min-h-screen flex-col">
-				<AppHeader activeView={viewMode} />
+				<AppHeader />
 				<div className="flex h-full w-full shrink grow">
 					<div
 						className={`relative flex shrink-0 select-none flex-col`}
@@ -159,7 +162,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 						{viewMode !== "pipeline" && <ErrorConsole errors={errors} font={firaCode} />}
 						{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 					</div>
-					<div className="z-0 min-h-full w-full shrink grow">
+					<div className="z-0 min-h-full w-full shrink grow relative">
 						<ReactFlowProvider>
 							<AutoSizer>
 								{({ width, height }) => (
@@ -175,6 +178,17 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 								)}
 							</AutoSizer>
 						</ReactFlowProvider>
+
+						{viewMode === "pipeline" && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<IconButton onClick={() => setViewMode("both")} size={"xs"} className="absolute top-4 left-4 z-1">
+										<PanelLeftOpen />
+									</IconButton>
+								</TooltipTrigger>
+								<TooltipContent>Show editor</TooltipContent>
+							</Tooltip>
+						)}
 					</div>
 				</div>
 				<AppFooter />

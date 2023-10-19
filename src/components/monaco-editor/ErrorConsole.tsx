@@ -155,7 +155,7 @@ export function ErrorCount({
 					<AlertTriangle height={14.67} />
 					<div className="flex w-full items-center justify-between">
 						<p className="text-xs font-medium">{`${warningsCount} ${
-							(warningsCount || 0) <= 1 ? `Warning` : `Warnings`
+							(warningsCount || 0) === 1 ? `Warning` : `Warnings`
 						}`}</p>
 						{((warningsCount || 0) > 0 || errorsCount > 0) && <ChevronDown width={12} color="#64748b" />}
 					</div>
@@ -172,7 +172,7 @@ export function ErrorCount({
 				>
 					<XCircle height={14.67} />
 					<div className="flex w-full items-center justify-between">
-						<p className="text-xs font-medium">{`${errorsCount} ${errorsCount <= 1 ? `Error` : `Errors`}`}</p>
+						<p className="text-xs font-medium">{`${errorsCount} ${errorsCount === 1 ? `Error` : `Errors`}`}</p>
 					</div>
 				</div>
 			)}

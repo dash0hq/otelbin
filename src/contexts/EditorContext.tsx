@@ -36,9 +36,11 @@ export const FocusContext = createContext<{
 	isFocused: "",
 });
 
+export type ViewMode = "both" | "code" | "pipeline";
+
 export const ViewModeContext = createContext<{
-	viewMode: string;
-	setViewMode: (viewMode: string) => void;
+	viewMode: ViewMode;
+	setViewMode: (viewMode: ViewMode) => void;
 }>({
 	viewMode: "both",
 	setViewMode: () => {
@@ -85,7 +87,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const monacoRef = useRef<Monaco | null>(null);
 	const monacoYamlRef = useRef<unknown | null>(null);
 	const [focused, setFocused] = useState("");
-	const [viewMode, setViewMode] = useState("both");
+	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
