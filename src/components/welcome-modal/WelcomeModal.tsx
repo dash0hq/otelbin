@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useState } from "react";
-import Logo from "~/components/assets/svg/otelbin-logo-new.svg";
+import Logo from "../assets/svg/otelbin_logo_white.svg";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "~/components/dialog";
 import { Button } from "~/components/button";

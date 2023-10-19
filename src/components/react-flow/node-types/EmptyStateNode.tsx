@@ -19,13 +19,13 @@ const EmptyStateNode = () => {
 				<a href="https://slack.cncf.io/" target="_blank" rel="noreferrer noopener">
 					<Button className="text-[13px] font-medium text-default" size="sm">
 						<Slack width={16} />
-						Join the CNCF Slack
+						Join CNCF Slack
 					</Button>
 				</a>
-				<a href="https://slack.cncf.io/" target="_blank" rel="noreferrer noopener">
+				<a href="https://cloud-native.slack.com/archives/C061WC8RQJX" target="_blank" rel="noreferrer noopener">
 					<Button className="text-[13px] font-medium text-default" size="sm">
 						<Slack width={16} />
-						Join the Dash0 Slack
+						Join #OTelBin on CNCF Slack
 					</Button>
 				</a>
 				<a href="https://github.com/dash0hq/otelbin/issues/new" target="_blank" rel="noreferrer noopener">

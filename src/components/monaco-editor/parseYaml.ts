@@ -63,6 +63,7 @@ export interface Document {
 export interface ILeaf {
 	source?: string;
 	offset: number;
+	level1Parent?: string;
 }
 
 export interface IValidateItem {
@@ -121,6 +122,40 @@ export function findLeafs(yamlItems?: IItem[], parent?: IItem, serviceItemsData?
 				} else if (Array.isArray(item.value.items)) {
 					if (item.key) {
 						findLeafs(item.value.items, item, serviceItemsData);
+					}
+				}
+			}
+		}
+	}
+	return serviceItemsData;
+}
+
+export function findPipelinesKeyValues(
+	yamlItems?: IItem[],
+	parent?: IItem,
+	level1Parent?: IItem,
+	serviceItemsData?: IValidateItem
+) {
+	if (yamlItems?.length === 0 || yamlItems === undefined) return {};
+	else if (Array.isArray(yamlItems) && yamlItems.length > 0) {
+		for (let i = 0; i < yamlItems.length; i++) {
+			const item = yamlItems[i];
+			if (item?.value) {
+				if (item.value.source && parent) {
+					const source = item.value.source;
+					const offset = item.value.offset;
+					const parentKey = parent.key.source;
+					const level1ParentKey = level1Parent?.key.source;
+					if (!serviceItemsData) return;
+					if (!serviceItemsData[parentKey]) {
+						serviceItemsData[parentKey] = [];
+					}
+					if (serviceItemsData[parentKey]) {
+						serviceItemsData[parentKey]?.push({ source, offset, level1Parent: level1ParentKey });
+					}
+				} else if (Array.isArray(item.value.items)) {
+					if (item.key) {
+						findPipelinesKeyValues(item.value.items, item, parent, serviceItemsData);
 					}
 				}
 			}
