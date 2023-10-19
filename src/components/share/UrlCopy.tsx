@@ -6,6 +6,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { IconButton } from "~/components/icon-button";
 import { Copy } from "lucide-react";
 import { useToast } from "~/components/use-toast";
+import { track } from '@vercel/analytics';
+
 
 export interface UrlCopyProps {
 	url: string;
@@ -18,7 +20,7 @@ export function UrlCopy({ url }: UrlCopyProps) {
 			<Input type="url" readOnly value={url} size="xs" />
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<IconButton size="xs" onClick={copyToClipboard}>
+					<IconButton size="xs" onClick={track('Shared Link');copyToClipboard}>
 						<Copy />
 					</IconButton>
 				</TooltipTrigger>
