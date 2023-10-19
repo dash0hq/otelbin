@@ -33,7 +33,7 @@ export function ShareContent() {
 
 			<div className="mt-3 border-t-1 border-subtle px-4 py-3">
 				<Button asChild size="xs">
-					<a href={`data:text/plain;base64,${btoa(config)}`} download="config.yaml">
+					<a href={`data:text/plain;base64,${btoa(config)}`} download="config.yaml" onClick={() => track('Download Config')}>
 						<ArrowDownToLine className="mr-1" />
 						Download YAML
 					</a>
