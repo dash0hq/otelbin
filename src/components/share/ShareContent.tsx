@@ -8,6 +8,7 @@ import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { UrlCopy } from "~/components/share/UrlCopy";
 import { SignedInUrlSharing } from "~/components/share/SignedInUrlSharing";
+import { track } from "@vercel/analytics";
 
 export function ShareContent() {
 	const [{ config }, getLink] = useUrlState([editorBinding]);
@@ -33,7 +34,11 @@ export function ShareContent() {
 
 			<div className="mt-3 border-t-1 border-subtle px-4 py-3">
 				<Button asChild size="xs">
-					<a href={`data:text/plain;base64,${btoa(config)}`} download="config.yaml">
+					<a
+						href={`data:text/plain;base64,${btoa(config)}`}
+						download="config.yaml"
+						onClick={() => track("Download Config", { location: "Share" })}
+					>
 						<ArrowDownToLine className="mr-1" />
 						Download YAML
 					</a>

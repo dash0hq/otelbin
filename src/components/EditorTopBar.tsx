@@ -7,6 +7,7 @@ import { useToast } from "~/components/use-toast";
 import { ArrowDownToLine, Copy } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
 import { useBreadcrumbs } from "~/contexts/EditorContext";
+import { track } from "@vercel/analytics";
 
 export default function EditorTopBar({ config, font }: { config: string; font: NextFont }) {
 	const { toast } = useToast();
@@ -19,6 +20,7 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 		link.download = "config.yaml";
 		link.href = url;
 		link.click();
+		track("Download Config", { location: "Editor" });
 	}
 
 	function handleCopy() {
@@ -35,6 +37,7 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 					description: "Failed to copy to clipboard",
 				});
 			});
+		track("Copied Config To Clipboard");
 	}
 
 	return (
