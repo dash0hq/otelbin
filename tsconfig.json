@@ -43,7 +43,7 @@
   ],
   "exclude": [
     "node_modules",
-    "validation-src",
+    "packages/otelbin-validation",
     ".github/workflows/scripts/list-releases"
   ]
 }

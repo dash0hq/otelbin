@@ -44,7 +44,7 @@ jobs:
       - name: Look up ignored releases range
         id: lookup-ignored-releases
         shell: bash
-        working-directory: validation-src/src/assets
+        working-directory: packages/otelbin-validation/src/assets
         run: |
           echo "range=$(jq -r '.["${{matrix.distro.name}}"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
       - name: List matching releases
@@ -96,7 +96,7 @@ jobs:
       - name: Look up ignored releases range
         id: lookup-ignored-releases
         shell: bash
-        working-directory: validation-src/src/assets
+        working-directory: packages/otelbin-validation/src/assets
         run: |
           echo "range=$(jq -r '.["adot"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
       - name: List matching releases
@@ -131,13 +131,13 @@ jobs:
           path: releases/
       - name: Merge release data
         run: |
-          mv validation-src/src/assets/supported-distributions.json validation-src/src/assets/supported-distributions.json.old
-          jq -rs 'reduce .[] as $item ({}; . * $item)' validation-src/src/assets/supported-distributions.json.old releases/*/*.json > validation-src/src/assets/supported-distributions.json
+          mv packages/otelbin-validation/src/assets/supported-distributions.json packages/otelbin-validation/src/assets/supported-distributions.json.old
+          jq -rs 'reduce .[] as $item ({}; . * $item)' packages/otelbin-validation/src/assets/supported-distributions.json.old releases/*/*.json > packages/otelbin-validation/src/assets/supported-distributions.json
       - name: Upload updated releases.json artifact
         uses: actions/upload-artifact@v3
         with:
           name: supported-distributions
-          path: validation-src/src/assets/supported-distributions.json
+          path: packages/otelbin-validation/src/assets/supported-distributions.json
 
   create-pr:
     name: Create Pull Request
@@ -151,12 +151,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: supported-distributions
-          path: validation-src/src/assets
+          path: packages/otelbin-validation/src/assets
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           title: Update supported versions
           commit-message: 'chore: update the version list of supported OpenTelemetry collector distros'
-          add-paths: validation-src/src/assets/supported-distributions.json
+          add-paths: packages/otelbin-validation/src/assets/supported-distributions.json
           branch: update-supported-versions
           reviewers: mmanciop,bripkens

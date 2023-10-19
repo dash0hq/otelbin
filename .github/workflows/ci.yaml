@@ -66,7 +66,7 @@ jobs:
 
       - name: Install CDK dependencies
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         run: |
           npm ci
           npm i -g aws-cli
@@ -89,7 +89,7 @@ jobs:
 
       - name: Deploy validation backend
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -104,7 +104,7 @@ jobs:
       - name: Read API Gateway URL
         id: parse_cdk_output
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         env:
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
@@ -115,7 +115,7 @@ jobs:
       - name: Prepare test matrix
         id: prepare_test_matrix
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         run: |
           echo test_matrix=$(jq -r '. | [to_entries[] | {distribution: .key, release: .value.releases[].version} | "\(.distribution)/\(.release)"]' < ./src/assets/supported-distributions.json) >> ${GITHUB_OUTPUT}
 
@@ -141,13 +141,13 @@ jobs:
 
       - name: Install CDK dependencies
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         run: |
           npm ci
 
       - name: Retrieve API Key for Validation API
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

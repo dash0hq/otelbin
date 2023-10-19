@@ -22,13 +22,13 @@ jobs:
 
       - name: Install CDK dependencies
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         run: |
           npm ci
 
       - name: Delete validation backend
         shell: bash
-        working-directory: validation-src
+        working-directory: packages/otelbin-validation
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
