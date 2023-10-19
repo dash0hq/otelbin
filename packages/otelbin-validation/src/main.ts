@@ -143,6 +143,7 @@ export class OTelBinValidationStack extends Stack {
 
       for (let release of distribution.releases) {
         const releaseLambda = new DockerImageFunction(this, `${distributionName}-${release.version}`, {
+          description: `Configuration validation for the the '${distributionName}' distribution, version '${release.version}'`,
           architecture: Architecture.X86_64,
           code: DockerImageCode.fromImageAsset(join(__dirname, 'images', 'otelcol-validator'), {
             platform: Platform.LINUX_AMD64,
