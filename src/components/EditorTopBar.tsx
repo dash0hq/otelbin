@@ -43,7 +43,7 @@ export default function EditorTopBar({
           description: "Failed to copy to clipboard",
         });
       });
-    track("Copied Config To Clipboard"‚‚);
+    track("Copied Config To Clipboard");
   }
 
   return (
