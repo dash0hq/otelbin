@@ -20,7 +20,7 @@ export function UrlCopy({ url }: UrlCopyProps) {
 			<Input type="url" readOnly value={url} size="xs" />
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<IconButton size="xs" onClick={track('Shared Link');copyToClipboard}>
+					<IconButton size="xs" onClick={copyToClipboard}>
 						<Copy />
 					</IconButton>
 				</TooltipTrigger>
@@ -43,5 +43,6 @@ export function UrlCopy({ url }: UrlCopyProps) {
 					description: "Failed to copy to clipboard",
 				});
 			});
+		track('Shared Link');
 	}
 }
