@@ -75,7 +75,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 
 	useEffect(() => {
 		if (config !== editorBinding.fallback) {
-			track("OTel config link loaded");
+			track("Opened with non-default config");
 		}
 		// eslint-disable-next-line
 	}, []);
