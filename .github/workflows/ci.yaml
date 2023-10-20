@@ -10,9 +10,14 @@ on:
     branches:
       - 'main'
 
+# Ensure we only have one such workflow running per branch, to avoid
+# conflicts in the test env
+concurrency:
+  group: ${{ github.ref }}
+
 jobs:
   verify:
-    name: Verify
+    name: Code tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -21,7 +26,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
 
@@ -36,3 +42,118 @@ jobs:
       - name: Test
         shell: bash
         run: npm run test
+
+  prep-itests:
+    name: Deploy validation backend
+    needs: ['verify']
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      test_matrix: ${{ steps.prepare_test_matrix.outputs.test_matrix }}
+      validation_api_apigateway_name: ${{ steps.parse_cdk_output.outputs.api_gateway_name }}
+      validation_api_apigateway_url: ${{ steps.parse_cdk_output.outputs.api_gateway_url }}\
+      validation_api_apigateway_key_id: ${{ steps.parse_cdk_output.outputs.api_gateway_key_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install CDK dependencies
+        shell: bash
+        working-directory: packages/otelbin-validation
+        run: |
+          npm ci
+          npm i -g aws-cli
+
+      - name: Get test environment name
+        id: get_test_env_name
+        shell: bash
+        # When the trigger is a pull event, use the PR's branch name (`github.head_ref`), which
+        # is available only for pull trigger. Otherwise, use the branch on which the commit was pushed.
+        # (Ref names in pull requests are in the shape of `<pr_id>/merge` and those will break CDK.)
+        run: |
+          export REF_NAME="${{ github.head_ref || github.ref_name }}"
+          # Ensure test name is not long enough to break restrictions on length names in AWS (e.g., role-name length)
+          # This logic ensures test envs have max length 18. Names of length 13 to 17 will become of length 18 to ensure
+          # no accidental clashes.
+          if [[ ${#REF_NAME} -gt 12 ]]; then
+            REF_NAME="${REF_NAME:0:12}-$(echo "${REF_NAME:12}" | md5sum | awk '{print $1}' | cut -c 1-5 | tr -d '\n')"
+          fi
+          echo "test_env_name=${REF_NAME}" >> $GITHUB_OUTPUT || exit 1
+
+      - name: Deploy validation backend
+        shell: bash
+        working-directory: packages/otelbin-validation
+        env:
+          AWS_ACCESS_KEY_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY: ${{ github.ref == 'refs/heads/main' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_DEFAULT_REGION: 'us-east-2' 
+          CDK_DEPLOY_ACCOUNT: ${{ github.ref == 'refs/heads/main' && '462608073829' || '622203989445' }}
+          CDK_DEPLOY_REGION: 'us-east-2'
+          GH_TOKEN: ${{ github.token }}
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+        run: |
+          npx projen deploy --require-approval never --outputs-file ./cdk-outputs.json
+
+      - name: Read API Gateway URL
+        id: parse_cdk_output
+        shell: bash
+        working-directory: packages/otelbin-validation
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+        run: |
+          echo api_gateway_name=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apiname" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
+          echo api_gateway_url=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apiurl" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
+          echo api_gateway_key_id=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apikeyid" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
+
+      - name: Prepare test matrix
+        id: prepare_test_matrix
+        shell: bash
+        working-directory: packages/otelbin-validation
+        run: |
+          echo test_matrix=$(jq -r '. | [to_entries[] | {distribution: .key, release: .value.releases[].version} | "\(.distribution)/\(.release)"]' < ./src/assets/supported-distributions.json) >> ${GITHUB_OUTPUT}
+
+  run-itests:
+    name: Validation tests
+    needs: ['prep-itests']
+    strategy:
+      matrix:
+        test_matrix: ${{ fromJson(needs.prep-itests.outputs.test_matrix )}}
+      fail-fast: false # We want to run all the tests, to prevent one failure from hiding another
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install CDK dependencies
+        shell: bash
+        working-directory: packages/otelbin-validation
+        run: |
+          npm ci
+
+      - name: Retrieve API Key for Validation API
+        shell: bash
+        working-directory: packages/otelbin-validation
+        env:
+          AWS_ACCESS_KEY_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY: ${{ github.ref == 'refs/heads/main' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_DEFAULT_REGION: 'us-east-2' 
+          API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
+          API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
+          RELEASE_UNDER_TEST: ${{ matrix.test_matrix }}
+        run: |
+          VALIDATION_API_KEY=$(aws apigateway get-api-key --api-key ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }} --include-value | jq -r '.value') npm run test

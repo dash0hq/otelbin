@@ -1,0 +1,42 @@
+###
+# Call supported-distribtions
+GET http://localhost:3000/validation/supported-distributions
+
+###
+# Call verification endpoint
+POST http://localhost:3000/validation?distro=otelcol-contrib&version=v0.86.0
+Content-Type: application/yaml
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+processors:
+  batch:
+
+exporters:
+  otlp:
+    endpoint: otelcol:4317
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    traces:
+      receivers: [otlp, foobar]
+      processors: [batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]

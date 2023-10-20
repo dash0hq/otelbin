@@ -21,14 +21,23 @@ function getHashSearchParams(): URLSearchParams {
 export const useHashSearchParams = () => {
 	const [hash, setHash] = useState(getHashSearchParams());
 
+	// There is unfortunately no other reliable way to observe hash changes...
 	useEffect(() => {
-		function onHashChange() {
-			setHash(getHashSearchParams());
-		}
+		let previousHref = window.location.href;
+		const observer = new MutationObserver(() => {
+			if (previousHref !== window.location.href) {
+				previousHref = window.location.href;
+				setHash(getHashSearchParams());
+			}
+		});
 
-		window.addEventListener("hashchange", onHashChange);
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+		});
+
 		return () => {
-			window.removeEventListener("hashchange", onHashChange);
+			observer.disconnect();
 		};
 	}, []);
 
