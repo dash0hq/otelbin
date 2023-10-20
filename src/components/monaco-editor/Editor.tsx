@@ -74,13 +74,16 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	};
 
 	useEffect(() => {
+		if (config !== editorBinding.fallback) {
+			track("OTel config link loaded");
+		}
+	});
+
+	useEffect(() => {
 		// This is done to support config restoration when signing in. See the
 		// /restore page. Without this we ran into return URL problems with GitHub
 		// and Google as our return URL can be **very** long.
 		localStorage.setItem("config-restore", config);
-		if (config !== editorBinding.fallback) {
-			track("OTel config link loaded");
-		}
 	}, [config]);
 
 	useEffect(() => {
