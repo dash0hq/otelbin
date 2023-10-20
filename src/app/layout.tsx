@@ -16,7 +16,7 @@ import { cn } from "~/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "OTelBin – crafted with ❤️ by Dash0",
+	title: "OTelBin – by Dash0",
 	description: "Edit, visualize and share OpenTelemetry Collector configurations",
 };
 
