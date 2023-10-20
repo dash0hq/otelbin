@@ -4,7 +4,8 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   defaultReleaseBranch: 'main',
   name: 'otelbin-validation',
   deps: ['aws-lambda'],
-  devDeps: ['@jest/globals', '@types/aws-lambda', 'esbuild'],
+  devDeps: ['@jest/globals', '@types/aws-lambda', 'axios', 'esbuild'],
   github: false, // Skip GitHub integration, as this CDK app is not in the repo's root
+  packageManager: 'npm',
 });
 project.synth();

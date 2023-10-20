@@ -24,13 +24,15 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@types/jest": "*",
+    "@jest/globals": "^29.7.0",
+    "@types/aws-lambda": "^8.10.125",
+    "@types/jest": "^29.5.5",
     "@types/node": "^16",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
     "aws-cdk": "^2.99.1",
     "axios": "^1.5.1",
-    "esbuild": "*",
+    "esbuild": "^0.19.4",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.7",
     "eslint-import-resolver-typescript": "^3.5.5",
@@ -39,15 +41,13 @@
     "jest-junit": "^15",
     "npm-check-updates": "^16",
     "projen": "^0.73.37",
-    "ts-jest": "*",
-    "ts-node": "*",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@jest/globals": "^29.7.0",
     "aws-cdk-lib": "^2.99.1",
     "aws-lambda": "^1.0.7",
-    "cdk": "^2.99.1",
     "constructs": "^10.0.5"
   },
   "license": "Apache-2.0",

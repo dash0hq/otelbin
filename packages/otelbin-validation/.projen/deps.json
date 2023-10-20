@@ -1,7 +1,7 @@
 {
   "dependencies": [
     {
-      "name": "@types/aws-apigateway",
+      "name": "@jest/globals",
       "type": "build"
     },
     {
@@ -30,6 +30,10 @@
     {
       "name": "aws-cdk",
       "version": "^2.99.1",
+      "type": "build"
+    },
+    {
+      "name": "axios",
       "type": "build"
     },
     {
@@ -86,6 +90,10 @@
     {
       "name": "aws-cdk-lib",
       "version": "^2.99.1",
+      "type": "runtime"
+    },
+    {
+      "name": "aws-lambda",
       "type": "runtime"
     },
     {
