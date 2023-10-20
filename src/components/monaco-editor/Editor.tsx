@@ -77,7 +77,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		if (config !== editorBinding.fallback) {
 			track("OTel config link loaded");
 		}
-	});
+		// eslint-disable-next-line
+	}, []);
 
 	useEffect(() => {
 		// This is done to support config restoration when signing in. See the
