@@ -61,3 +61,4 @@ We love our contributors! Here's how you can contribute:
 <a href="https://github.com/dash0hq/otelbin/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=dash0hq/otelbin" />
 </a>
+
