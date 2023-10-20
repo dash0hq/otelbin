@@ -1,5 +1,5 @@
 <a href="https://www.otelbin.io">
-  <!--<img alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/28986134/8f70a87f-4f13-426a-9785-a47f77433edd"> -->
+  <img width="1355" alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/596443/788d15af-1620-4eaa-9b39-3dba355c6399">
   <h1 align="center">OTelBin</h1>
 </a>
 
@@ -21,19 +21,23 @@
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
   <a href="#contributing"><strong>Contributing</strong></a> ·
-  <a href="#license"><strong>License</strong></a>
+  <a href="./LICENSE.md"><strong>License</strong></a>
 </p>
 <br/>
 
 ## Introduction
 
-OTelBin is a configuration tool for [OpenTelemetry collector pipelines](https://opentelemetry.io/docs/collector).
+OTelBin is a configuration tool to help you get the most out of the [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/).
+
+OTelBin hosted with :heart: by the [dash0](https://github.com/dash0hq) people at https://www.otelbin.com.
 
 ## Features
 
-- Edit OpenTelemetry collector configuration files and share them with colleagues and friends!
-- Validate the configuration.
-- Learn about supported receivers, processors, exporters and connectors.
+OTelBin will enable you to:
+
+1. Visualize for you the configured OpenTelemetry Collector pipelines as swimlanes
+1. Validate your configuration and highlight errors
+1. Enable you to share your OpenTelemetry Collector configurations online (requires login with a GitHub or Google account)
 
 ## Tech Stack
 
@@ -56,16 +60,3 @@ We love our contributors! Here's how you can contribute:
   <img src="https://contrib.rocks/image?repo=dash0hq/otelbin" />
 </a>
 
-## License
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.

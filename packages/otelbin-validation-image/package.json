@@ -1,0 +1,29 @@
+{
+  "name": "otelbin-validation-handler",
+  "version": "0.0.1",
+  "description": "AWS Lambda handler to run validation requests",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dash0hq/otelbin.git"
+  },
+  "author": "",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/dash0hq/otelbin/issues"
+  },
+  "homepage": "https://github.com/dash0hq/otelbin#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.122",
+    "esbuild": "^0.19.4"
+  },
+  "dependencies": {
+    "aws-lambda": "^1.0.7",
+    "@expo/spawn-async": "^1.7.2",
+    "js-yaml": "^4.1.0"
+  }
+}

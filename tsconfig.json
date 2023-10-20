@@ -42,6 +42,9 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "packages/otelbin-validation",
+    "packages/otelbin-validation-image",
+    ".github/workflows/scripts/list-releases"
   ]
 }

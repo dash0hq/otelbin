@@ -7,6 +7,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { type NextRequest, NextResponse } from "next/server";
 import * as process from "process";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
+import { getUserIdentifier } from "~/lib/userIdentifier";
 
 const redis = Redis.fromEnv();
 
@@ -41,8 +42,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		);
 	}
 
-	const userIdentifier = request.ip || request.headers.get("user-agent") || "unknown-client";
-
+	const userIdentifier = getUserIdentifier(request);
 	const { success } = await rateLimit.blockUntilReady(userIdentifier, 1000 * 60);
 	if (!success) {
 		return NextResponse.json(

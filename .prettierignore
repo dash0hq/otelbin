@@ -6,3 +6,5 @@
 *.md
 coverage
 .storybook/public/mockServiceWorker.js
+packages/otelbin-validation
+packages/otelbin-validation-image

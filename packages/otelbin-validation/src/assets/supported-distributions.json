@@ -1,0 +1,104 @@
+{
+  "otelcol-core": {
+    "provider": "OpenTelemetry Community - Core",
+    "description": "OpenTelemetry Collector core community builds",
+    "website": "https://opentelemetry.io",
+    "repository": "open-telemetry/opentelemetry-collector-releases",
+    "releases": [
+      {
+        "version": "v0.87.0",
+        "artifact": "otelcol_0.87.0_linux_amd64.rpm",
+        "released_at": "2023-10-11T06:06:02.000Z"
+      },
+      {
+        "version": "v0.86.0",
+        "artifact": "otelcol_0.86.0_linux_amd64.rpm",
+        "released_at": "2023-09-26T19:39:42.000Z"
+      },
+      {
+        "version": "v0.85.0",
+        "artifact": "otelcol_0.85.0_linux_amd64.rpm",
+        "released_at": "2023-09-12T16:36:03.000Z"
+      },
+      {
+        "version": "v0.84.0",
+        "artifact": "otelcol_0.84.0_linux_amd64.rpm",
+        "released_at": "2023-08-30T01:17:34.000Z"
+      },
+      {
+        "version": "v0.83.0",
+        "artifact": "otelcol_0.83.0_linux_amd64.rpm",
+        "released_at": "2023-08-15T16:13:06.000Z"
+      },
+      {
+        "version": "v0.82.0",
+        "artifact": "otelcol_0.82.0_linux_amd64.rpm",
+        "released_at": "2023-07-31T19:10:40.000Z"
+      }
+    ],
+    "ignoredReleases": "<v0.82.0"
+  },
+  "otelcol-contrib": {
+    "provider": "OpenTelemetry Community - Contrib",
+    "description": "OpenTelemetry Collector contrib community builds",
+    "website": "https://opentelemetry.io",
+    "repository": "open-telemetry/opentelemetry-collector-releases",
+    "releases": [
+      {
+        "version": "v0.87.0",
+        "artifact": "otelcol-contrib_0.87.0_linux_amd64.rpm",
+        "released_at": "2023-10-11T06:06:04.000Z"
+      },
+      {
+        "version": "v0.86.0",
+        "artifact": "otelcol-contrib_0.86.0_linux_amd64.rpm",
+        "released_at": "2023-09-26T19:39:44.000Z"
+      },
+      {
+        "version": "v0.85.0",
+        "artifact": "otelcol-contrib_0.85.0_linux_amd64.rpm",
+        "released_at": "2023-09-12T16:36:07.000Z"
+      },
+      {
+        "version": "v0.84.0",
+        "artifact": "otelcol-contrib_0.84.0_linux_amd64.rpm",
+        "released_at": "2023-08-30T01:17:37.000Z"
+      },
+      {
+        "version": "v0.83.0",
+        "artifact": "otelcol-contrib_0.83.0_linux_amd64.rpm",
+        "released_at": "2023-08-15T16:13:09.000Z"
+      },
+      {
+        "version": "v0.82.0",
+        "artifact": "otelcol-contrib_0.82.0_linux_amd64.rpm",
+        "released_at": "2023-07-31T19:10:42.000Z"
+      }
+    ],
+    "ignoredReleases": "<v0.82.0"
+  },
+  "adot": {
+    "provider": "Amazon Web Services (AWS)",
+    "description": "AWS Distro for OpenTelemetry",
+    "website": "https://aws.amazon.com/otel",
+    "repository": "aws-observability/aws-otel-collector",
+    "releases": [
+      {
+        "version": "v0.33.2",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.33.2/aws-otel-collector.rpm",
+        "released_at": "2023-10-07T19:44:56.000Z"
+      },
+      {
+        "version": "v0.33.1",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.33.1/aws-otel-collector.rpm",
+        "released_at": "2023-09-18T16:02:23.000Z"
+      },
+      {
+        "version": "v0.33.0",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.33.0/aws-otel-collector.rpm",
+        "released_at": "2023-09-07T19:55:40.000Z"
+      }
+    ],
+    "ignoredReleases": "<v0.33.0"
+  }
+}
