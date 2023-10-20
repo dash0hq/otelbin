@@ -37,9 +37,9 @@
     "*.js",
     "*.d.ts",
     "node_modules/",
-    "images/",
     "*.generated.ts",
     "coverage",
+    "./src/images/otelcol-validator/",
     "!.projenrc.js"
   ],
   "rules": {
