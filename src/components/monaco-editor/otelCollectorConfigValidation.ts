@@ -29,6 +29,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	monacoRef: MonacoRefType
 ) {
 	const ajv = new Ajv({ allErrors: true });
+	require("ajv-errors")(ajv)
 	const model = editorRef.current?.getModel();
 	const ajvError: IAjvError[] = [];
 	const totalErrors: IError = { ajvErrors: ajvError, customErrors: [], customWarnings: [] };
@@ -68,7 +69,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		}
 	} catch (error: unknown) {
 		const knownError = error as IJsYamlError;
-		const errorLineNumber = knownError.mark.line;
+		const errorLineNumber = knownError.mark?.line;
 		const errorMessage = knownError.reason || "Unknown error";
 		const errorMarker = {
 			startLineNumber: errorLineNumber || 0,

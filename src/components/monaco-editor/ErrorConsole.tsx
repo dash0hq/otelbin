@@ -38,7 +38,7 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 			setIsOpenErrorConsole(false);
 		}
 	}, [errorCount]);
-
+	console.log(errors);
 	return (
 		<div
 			className={`absolute bottom-0 left-0 z-10 ${
@@ -78,7 +78,7 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 							errors.customErrors.map((error: string, index: number) => {
 								return <Error key={index} customErrors={error} font={font} />;
 							})}
-						{errors?.jsYamlError?.mark.line !== null && (
+						{errors?.jsYamlError?.mark?.line !== undefined && (
 							<Error jsYamlError={errors && errors.jsYamlError} font={font} />
 						)}
 					</div>
