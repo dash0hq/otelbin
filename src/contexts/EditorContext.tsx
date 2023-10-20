@@ -14,7 +14,6 @@ import { getParsedValue } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter } from "monaco-worker-manager";
 import { createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
-import { track } from "@vercel/analytics";
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;
@@ -240,10 +239,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 			findSymbols(docObject, "", wordAtCursor.word, cursorOffset);
-		});
-
-		editorRef.current.onDidPaste(() => {
-			track("Paste", { location: "Editor" });
 		});
 	}
 
