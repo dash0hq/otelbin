@@ -14,8 +14,8 @@ const project = new awscdk.AwsCdkTypeScriptApp({
       'node_modules/',
       '*.generated.ts',
       'coverage',
-      './src/images/otelcol-validator/'
-    ]
-  }
+      'src/images/otelcol-validator/',
+    ],
+  },
 });
 project.synth();

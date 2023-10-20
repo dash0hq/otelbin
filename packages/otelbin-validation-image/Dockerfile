@@ -29,7 +29,7 @@ FROM public.ecr.aws/lambda/nodejs:18 AS builder
 WORKDIR /usr/app    
 COPY package.json package.json
 COPY src/ src/
-RUN npm install
+RUN npm install --production
 RUN npm run build
 
 FROM public.ecr.aws/lambda/nodejs:18

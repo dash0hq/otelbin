@@ -7,7 +7,10 @@ const config: Config = {
 		"^.+\\.ts?$": "ts-jest",
 	},
 	transformIgnorePatterns: ["<rootDir>/node_modules/"],
-	testPathIgnorePatterns: ["packages/otelbin-validation/*"],
+	testPathIgnorePatterns: [
+		"packages/otelbin-validation/*",
+		"packages/otelbin-validation-image/*"
+	],
 };
 
 export default config;

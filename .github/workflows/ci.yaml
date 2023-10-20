@@ -145,7 +145,7 @@ jobs:
         run: |
           npm ci
 
-      - name: Retrieve API Key for Validation API
+      - name: Retrieve API Key for Validation API and run tests
         shell: bash
         working-directory: packages/otelbin-validation
         env:

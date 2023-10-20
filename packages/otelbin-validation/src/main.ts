@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
 import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { ApiKeySourceType, AwsIntegration, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
@@ -145,7 +145,7 @@ export class OTelBinValidationStack extends Stack {
         const releaseLambda = new DockerImageFunction(this, `${distributionName}-${release.version}`, {
           description: `Configuration validation for the the '${distributionName}' distribution, version '${release.version}'`,
           architecture: Architecture.X86_64,
-          code: DockerImageCode.fromImageAsset(join(__dirname, 'images', 'otelcol-validator'), {
+          code: DockerImageCode.fromImageAsset(join(dirname(__dirname), 'otelcol-validator-image'), {
             platform: Platform.LINUX_AMD64,
             buildArgs: {
               DISTRO_NAME: distributionName,
