@@ -25,6 +25,7 @@ import { useClerk } from "@clerk/nextjs";
 import { PanelLeftOpen } from "lucide-react";
 import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
+import { track } from "@vercel/analytics";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -71,6 +72,13 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const handleEditorChange: OnChange = (value) => {
 		setCurrentConfig(value || "");
 	};
+
+	useEffect(() => {
+		if (config !== editorBinding.fallback) {
+			track("Opened with non-default config");
+		}
+		// eslint-disable-next-line
+	}, []);
 
 	useEffect(() => {
 		// This is done to support config restoration when signing in. See the
