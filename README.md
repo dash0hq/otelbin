@@ -29,7 +29,7 @@
 
 OTelBin is a configuration tool to help you get the most out of the [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/).
 
-OTelBin hosted with :heart: by the [dash0](https://github.com/dash0hq) people at https://www.otelbin.com.
+OTelBin hosted with :heart: by the [Dash0](https://github.com/dash0hq) people at https://www.otelbin.com.
 
 ## Features
 
