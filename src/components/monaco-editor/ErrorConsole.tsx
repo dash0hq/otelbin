@@ -38,7 +38,7 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 			setIsOpenErrorConsole(false);
 		}
 	}, [errorCount]);
-	console.log(errors);
+
 	return (
 		<div
 			className={`absolute bottom-0 left-0 z-10 ${
