@@ -17,6 +17,7 @@ import {
 	extractServiceItems,
 	findLeafs,
 	findLineAndColumn,
+	findPipelinesKeyValues,
 } from "./parseYaml";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
@@ -44,6 +45,8 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		serviceItemsData
 	);
 
+
+	console.log(docObject)
 	try {
 		const jsonData = JsYaml.load(configData);
 		const valid = ajv.validate(schema, jsonData);
@@ -51,6 +54,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			const errors = ajv.errors;
 
 			if (errors) {
+				console.log(errors);
 				const validationErrors = errors.map((error: ErrorObject) => {
 					const errorInfo = {
 						line: null as number | null,
