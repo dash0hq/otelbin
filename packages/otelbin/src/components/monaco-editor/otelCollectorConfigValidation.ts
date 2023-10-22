@@ -45,7 +45,6 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		serviceItemsData
 	);
 
-	console.log(docObject);
 	try {
 		const jsonData = JsYaml.load(configData);
 		const valid = ajv.validate(schema, jsonData);
