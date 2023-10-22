@@ -17,7 +17,6 @@ import {
 	extractServiceItems,
 	findLeafs,
 	findLineAndColumn,
-	findPipelinesKeyValues,
 } from "./parseYaml";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
@@ -30,7 +29,8 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	monacoRef: MonacoRefType
 ) {
 	const ajv = new Ajv({ allErrors: true });
-	require("ajv-errors")(ajv)
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	require("ajv-errors")(ajv);
 	const model = editorRef.current?.getModel();
 	const ajvError: IAjvError[] = [];
 	const totalErrors: IError = { ajvErrors: ajvError, customErrors: [], customWarnings: [] };
@@ -45,8 +45,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		serviceItemsData
 	);
 
-
-	console.log(docObject)
+	console.log(docObject);
 	try {
 		const jsonData = JsYaml.load(configData);
 		const valid = ajv.validate(schema, jsonData);

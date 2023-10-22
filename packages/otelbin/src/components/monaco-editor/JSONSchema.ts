@@ -92,8 +92,8 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 						required: ["receivers", "exporters"],
 						errorMessage: {
 							required: {
-								receivers: 'receivers property is required',
-								exporters: 'exporters property is required',
+								receivers: "receivers property is required",
+								exporters: "exporters property is required",
 							},
 						},
 					},
