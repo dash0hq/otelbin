@@ -34,6 +34,7 @@
 		"ajv-errors": "^3.0.0",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
+		"fetch-retry": "^5.0.6",
 		"js-yaml": "^4.1.0",
 		"lodash": "^4.17.21",
 		"lucide-react": "^0.284.0",
