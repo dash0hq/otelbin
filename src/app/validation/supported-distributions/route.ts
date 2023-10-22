@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import retryFetch from "fetch-retry";
 import { NextResponse } from "next/server";
 import { assertValue } from "~/lib/env";
 
 export async function GET(): Promise<NextResponse> {
-	const response = await fetch(
+	const response = await retryFetch(fetch)(
 		`${assertValue(
 			process.env.COLLECTOR_CONFIGURATION_VALIDATION_URL,
 			"COLLECTOR_CONFIGURATION_VALIDATION_URL env var is not configured"
@@ -17,6 +18,9 @@ export async function GET(): Promise<NextResponse> {
 					"COLLECTOR_CONFIGURATION_VALIDATION_API_KEY env var is not configured"
 				),
 			},
+			retries: 3,
+			retryDelay: 1000,
+			retryOn: [500, 503],
 		}
 	);
 

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import retryFetch from "fetch-retry";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import { type NextRequest, NextResponse } from "next/server";
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		);
 	}
 
-	const response = await fetch(
+	const response = await retryFetch(fetch)(
 		`${assertValue(
 			process.env.COLLECTOR_CONFIGURATION_VALIDATION_URL,
 			"COLLECTOR_CONFIGURATION_VALIDATION_URL env var is not configured"
@@ -66,6 +67,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				),
 			},
 			body: config,
+			retries: 3,
+			retryDelay: 1000,
+			retryOn: [500, 503],
 		}
 	);
 
