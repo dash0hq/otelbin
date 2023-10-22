@@ -45,102 +45,134 @@ const enumerateTestCases = () => {
 
 const assetFolderPath = join(__dirname, 'assets');
 
+const readConfig = (testConfigFilename: string) => readFileSync(join(assetFolderPath, testConfigFilename)).toString();
+
+const defaultTimeout = 10_000; // 10 seconds
+
+const otelcolConfigValid = readConfig('config-default.yaml');
+const otelcolConfigInvalidNoReceivers = readConfig('config-no-receivers.yaml');
+const otelcolConfigInvalidUndeclaredExtension = readConfig('config-undeclared-extension.yaml');
+const otelcolConfigInvalidUndeclaredReceiver = readConfig('config-undeclared-receiver.yaml');
+
 describe.each(enumerateTestCases())('Validation API', (distributionName, release) => {
 
   const validationReleasePath = `validation/${distributionName}/${release}`;
   const validationUrl = `${apiUrl}/${validationReleasePath}`;
 
-  const otelcolConfigValid = readFileSync(join(assetFolderPath, 'config-default.yaml')).toString();
+  const supportedDistributionsPath = 'validation/supported-distributions';
+  const supportedDistributionsUrl = `${apiUrl}/${supportedDistributionsPath}`;
 
-  const otelcolConfigInvalidNoReceivers = readFileSync(join(assetFolderPath, 'config-no-receivers.yaml')).toString();
+  describe(`for release ${distributionName}/${release}`, () => {
 
-  const otelcolConfigInvalidUndeclaredExtension = readFileSync(join(assetFolderPath, 'config-undeclared-extension.yaml')).toString();
+    describe(`GET ${supportedDistributionsPath}`, () => {
 
-  const otelcolConfigInvalidUndeclaredReceiver = readFileSync(join(assetFolderPath, 'config-undeclared-receiver.yaml')).toString();
+      test(`has data about ${distributionName}/${release}`, async () => {
+        const res = await axios.get(supportedDistributionsUrl, {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        });
 
-  const defaultTimeout = 10_000; // 10 seconds
+        const distro = res.data[distributionName];
 
-  describe(`POST ${validationReleasePath}`, () => {
+        expect(distro).toMatchObject({
+          provider: expect.any(String),
+          description: expect.any(String),
+          website: expect.any(String),
+          releases: expect.arrayContaining([
+            expect.objectContaining({
+              version: release,
+            }),
+          ]),
+        });
+      }, defaultTimeout);
 
-    axios.defaults.baseURL = validationUrl;
+    });
 
-    test('rejects unauthenticated requests', async () => {
-      await expect(axios.post(validationUrl, otelcolConfigValid)).rejects.toThrow();
-    }, defaultTimeout);
+    describe(`POST ${validationReleasePath}`, () => {
 
-    test('accepts valid configuration', async () => {
-      await expect(axios.post(validationUrl, otelcolConfigValid, {
-        headers: {
-          'Content-Type': 'application/yaml',
-          'X-Api-Key': apiKey,
-        },
-      })).resolves.toMatchObject({
-        status: 200,
-        data: {
-          message: 'Configuration is valid',
-        },
-      });
-    }, defaultTimeout);
+      axios.defaults.baseURL = validationUrl;
 
-    test('rejects empty configuration', async () => {
-      await expect(axios.post(validationUrl, '', {
-        headers: {
-          'Content-Type': 'application/yaml',
-          'X-Api-Key': apiKey,
-        },
-      })).resolves.toMatchObject({
-        status: 200,
-        data: {
-          message: 'The provided configuration is invalid',
-          error: 'the provided configuration is empty',
-        },
-      });
-    }, defaultTimeout);
+      test('rejects unauthenticated requests', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigValid)).rejects.toThrow();
+      }, defaultTimeout);
 
-    test('rejects configuration without declared receivers', async () => {
-      await expect(axios.post(validationUrl, otelcolConfigInvalidNoReceivers, {
-        headers: {
-          'Content-Type': 'application/yaml',
-          'X-Api-Key': apiKey,
-        },
-      })).resolves.toMatchObject({
-        status: 200,
-        data: {
-          message: 'The provided configuration is invalid',
-          error: 'no receiver configuration specified in config',
-        },
-      });
-    }, defaultTimeout);
+      test('accepts valid configuration', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigValid, {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'Configuration is valid',
+          },
+        });
+      }, defaultTimeout);
 
-    test('rejects configuration with undeclared receiver', async () => {
-      await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredReceiver, {
-        headers: {
-          'Content-Type': 'application/yaml',
-          'X-Api-Key': apiKey,
-        },
-      })).resolves.toMatchObject({
-        status: 200,
-        data: {
-          message: 'The provided configuration is invalid',
-          error: 'service::pipelines::traces: references receiver "jaeger" which is not configured',
-        },
-      });
-    }, defaultTimeout);
+      test('rejects empty configuration', async () => {
+        await expect(axios.post(validationUrl, '', {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'The provided configuration is invalid',
+            error: 'the provided configuration is empty',
+          },
+        });
+      }, defaultTimeout);
 
-    test('rejects configuration with undeclared extension', async () => {
-      await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredExtension, {
-        headers: {
-          'Content-Type': 'application/yaml',
-          'X-Api-Key': apiKey,
-        },
-      })).resolves.toMatchObject({
-        status: 200,
-        data: {
-          message: 'The provided configuration is invalid',
-          error: 'service::extensions: references extension "health_check" which is not configured',
-        },
-      });
-    }, defaultTimeout);
+      test('rejects configuration without declared receivers', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigInvalidNoReceivers, {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'The provided configuration is invalid',
+            error: 'no receiver configuration specified in config',
+          },
+        });
+      }, defaultTimeout);
+
+      test('rejects configuration with undeclared receiver', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredReceiver, {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'The provided configuration is invalid',
+            error: 'service::pipelines::traces: references receiver "jaeger" which is not configured',
+          },
+        });
+      }, defaultTimeout);
+
+      test('rejects configuration with undeclared extension', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredExtension, {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'The provided configuration is invalid',
+            error: 'service::extensions: references extension "health_check" which is not configured',
+          },
+        });
+      }, defaultTimeout);
+
+    });
 
   });
 
