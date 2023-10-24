@@ -5,6 +5,7 @@ import Love from "~/components/assets/svg/love.svg";
 import Dash0 from "~/components/assets/svg/dash0.svg";
 import { Github, Slack } from "lucide-react";
 import React from "react";
+import { Legal } from "~/components/legal/Legal";
 
 export function AppFooter() {
 	return (
@@ -37,6 +38,7 @@ export function AppFooter() {
 					<Github size="0.875rem" />
 					GitHub
 				</a>
+				<Legal />
 			</div>
 			<a
 				href="https://www.dash0.com/?utm_source=otelbin&utm_medium=footer&utm_campaign=otelbin"
