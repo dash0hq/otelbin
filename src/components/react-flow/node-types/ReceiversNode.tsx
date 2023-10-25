@@ -8,6 +8,7 @@ import { FlowClick } from "../FlowClick";
 import type { IData } from "../FlowClick";
 import ReceiverIcon from "~/components/assets/svg/receiver.svg";
 import ConnectorIcon from "~/components/assets/svg/connector.svg";
+import { iconColor } from "./ExportersNode";
 
 const ReceiversNode = ({ data }: { data: IData }) => {
 	const [hovered, setHovered] = useState(false);
@@ -32,10 +33,6 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 		borderLeft: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
 		borderRight: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
 		borderBottom: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
-	};
-
-	const iconColor = {
-		color: hovered ? "#F3F5F6" : "#9CA2AB",
 	};
 
 	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -70,7 +67,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 						splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
 					}`}
 				>
-					<div style={iconColor}>{isConnector ? <ConnectorIcon /> : <ReceiverIcon />}</div>
+					<div style={iconColor(hovered)}>{isConnector ? <ConnectorIcon /> : <ReceiverIcon />}</div>
 					{splitLabel.length > 1 && (
 						<div
 							className={`${
