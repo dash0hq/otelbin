@@ -1,5 +1,5 @@
 <a href="https://www.otelbin.io">
-  <img width="1355" alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/596443/788d15af-1620-4eaa-9b39-3dba355c6399">
+  <img width="1355" alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/596443/aec4969b-bbf0-4c85-8668-70857834b885">
   <h1 align="center">OTelBin</h1>
 </a>
 
@@ -29,7 +29,7 @@
 
 OTelBin is a configuration tool to help you get the most out of the [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/).
 
-OTelBin hosted with :heart: by the [Dash0](https://github.com/dash0hq) people at https://www.otelbin.com.
+OTelBin hosted with :heart: by the [Dash0](https://github.com/dash0hq) people at [otelbin.io](https://www.otelbin.io).
 
 ## Features
 
