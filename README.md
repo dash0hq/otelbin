@@ -12,7 +12,7 @@
     <img src="https://img.shields.io/twitter/follow/dash0hq?style=flat&label=%40dash0hq&logo=twitter&color=0bf&logoColor=fff" alt="Twitter" />
   </a>
   <a href="https://github.com/dash0hq/otelbin/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/dash0hq/otelbin?label=license&logo=github&color=f80&logoColor=fff" alt="License" />
+    <img src="https://img.shields.io/github/license/dash0hq/otelbin?label=license&logo=github&logoColor=fff&color=f80" alt="License" />
   </a>
 </p>
 
@@ -57,6 +57,6 @@ We love our contributors! Here's how you can contribute:
 - Make a [pull request](https://github.com/dash0hq/otelbin/pull) to add new features/make quality-of-life improvements/fix bugs.
 
 <a href="https://github.com/dash0hq/otelbin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=dash0hq/otelbin" />
+  <img src="https://contrib.rocks/image?repo=dash0hq/otelbin&cache=bust" />
 </a>
 
