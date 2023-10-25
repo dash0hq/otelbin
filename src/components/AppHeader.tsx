@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import Down from "./assets/svg/down.svg";
 import Logo from "./assets/svg/otelbin_logo_white.svg";
 import { LogIn } from "lucide-react";
 import { Share } from "~/components/share/Share";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "~/components/button";
+import InfoBox from "./validation-type/InfoBox";
+import ValidationType from "./validation-type/ValidationType";
 
 export default function AppHeader() {
 	return (
@@ -19,9 +20,9 @@ export default function AppHeader() {
 
 				<div className="w-px bg-neutral-350 h-full">&nbsp;</div>
 
-				<Button size="xs" variant="cta">
-					Validation: <strong>OTel Collector Contrib – v0.87.0</strong> <Down />
-				</Button>
+				<ValidationType />
+
+				<InfoBox />
 			</div>
 			<div className="flex gap-x-2">
 				<Share />
