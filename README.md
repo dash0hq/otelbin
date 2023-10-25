@@ -1,5 +1,5 @@
 <a href="https://www.otelbin.io">
-  <img width="1355" alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/596443/aec4969b-bbf0-4c85-8668-70857834b885">
+  <img alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/596443/eb9bacb0-e94e-4ccb-af5a-f245adf19615">
   <h1 align="center">OTelBin</h1>
 </a>
 
