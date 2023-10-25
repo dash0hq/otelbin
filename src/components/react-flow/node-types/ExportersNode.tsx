@@ -6,7 +6,8 @@ import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "../FlowClick";
 import type { IData } from "../FlowClick";
-import { Upload, Unplug } from "lucide-react";
+import ExporterIcon from "~/components/assets/svg/exporter.svg";
+import ConnectorIcon from "~/components/assets/svg/connector.svg";
 
 const ExportersNode = ({ data }: { data: IData }) => {
 	const [hovered, setHovered] = useState(false);
@@ -33,13 +34,16 @@ const ExportersNode = ({ data }: { data: IData }) => {
 		borderBottom: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
 	};
 
+	const iconColor = {
+		color: hovered ? "#F3F5F6" : "#9CA2AB",
+	};
+
 	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		FlowClick(event, data, editorRef);
 	}
 
 	const label = data.label || "";
 	const splitLabel = label.includes("/") ? label.split("/") : [label];
-	const iconColor = hovered ? "#F3F5F6" : "#9CA2AB";
 	const isConnector = data.type?.includes("connectors");
 	return (
 		<div
@@ -67,7 +71,7 @@ const ExportersNode = ({ data }: { data: IData }) => {
 						splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
 					}`}
 				>
-					{isConnector ? <Unplug color={iconColor} width={20} /> : <Upload color={iconColor} width={20} />}
+					<div style={iconColor}>{isConnector ? <ConnectorIcon /> : <ExporterIcon />}</div>
 					{splitLabel.length > 1 && (
 						<div
 							className={`${
