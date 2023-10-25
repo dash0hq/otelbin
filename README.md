@@ -1,5 +1,5 @@
 <a href="https://www.otelbin.io">
-  <img width="1355" alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/596443/788d15af-1620-4eaa-9b39-3dba355c6399">
+  <img alt="OTelBin is a configuration tool for OpenTelemetry collector pipelines" src="https://github.com/dash0hq/otelbin/assets/596443/eb9bacb0-e94e-4ccb-af5a-f245adf19615">
   <h1 align="center">OTelBin</h1>
 </a>
 
@@ -8,12 +8,8 @@
 </p>
 
 <p align="center">
-  <a href="https://twitter.com/dash0hq">
-    <img src="https://img.shields.io/twitter/follow/dash0hq?style=flat&label=%40dash0hq&logo=twitter&color=0bf&logoColor=fff" alt="Twitter" />
-  </a>
-  <a href="https://github.com/dash0hq/otelbin/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/dash0hq/otelbin?label=license&logo=github&color=f80&logoColor=fff" alt="License" />
-  </a>
+  <a href="https://twitter.com/dash0hq"><img src="https://img.shields.io/twitter/follow/dash0hq?style=flat&label=%40dash0hq&logo=twitter&color=0bf&logoColor=fff" alt="Twitter" /></a>
+  <a href="https://github.com/dash0hq/otelbin/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dash0hq/otelbin?label=license&logo=github&logoColor=fff&color=f80" alt="License" /></a>
 </p>
 
 <p align="center">
@@ -29,7 +25,7 @@
 
 OTelBin is a configuration tool to help you get the most out of the [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/).
 
-OTelBin hosted with :heart: by the [Dash0](https://github.com/dash0hq) people at https://www.otelbin.com.
+OTelBin hosted with :heart: by the [Dash0](https://github.com/dash0hq) people at [otelbin.io](https://www.otelbin.io).
 
 ## Features
 
@@ -57,6 +53,6 @@ We love our contributors! Here's how you can contribute:
 - Make a [pull request](https://github.com/dash0hq/otelbin/pull) to add new features/make quality-of-life improvements/fix bugs.
 
 <a href="https://github.com/dash0hq/otelbin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=dash0hq/otelbin" />
+  <img src="https://contrib.rocks/image?repo=dash0hq/otelbin&cache=bust" />
 </a>
 
