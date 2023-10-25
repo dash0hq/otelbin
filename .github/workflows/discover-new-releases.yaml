@@ -160,4 +160,4 @@ jobs:
           add-paths: packages/otelbin-validation/src/assets/supported-distributions.json
           branch: update-supported-versions
           reviewers: mmanciop,bripkens
-          author: 41898282+github-actions[bot]@users.noreply.github.com
+          author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
