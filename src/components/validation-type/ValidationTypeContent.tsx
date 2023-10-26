@@ -72,7 +72,7 @@ export function ContentRow({
 				<p className="text-[13px] font-normal text-neutral-600">
 					{description}
 					{backend && (
-						<a href="#" className="text-neutral-600">
+						<a href="https://github.com/dash0hq/otelbin" className="text-neutral-600" target="_blank">
 							{"( "}
 							<span className="text-[11px] font-normal text-neutral-950">
 								{"see code"}

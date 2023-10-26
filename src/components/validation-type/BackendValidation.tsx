@@ -122,12 +122,11 @@ export default function BackendValidation({
 										</Select>
 										<Button
 											onClick={() => {
-												setCurrentVersion("");
 												const distro = key;
 												const initialVersion =
 													initialDistroItems?.find((distro) => distro.provider === data[key]?.provider)?.version || "";
-
-												setCurrent({ provider: data[key]?.provider || "", version: currentVersion, distro: key });
+												const version = currentVersion ? currentVersion : initialVersion;
+												setCurrent({ provider: data[key]?.provider || "", version: version, distro: key });
 
 												const updateUrl = `&distro=${distro}&distroVersion=${
 													currentVersion ? currentVersion : initialVersion
