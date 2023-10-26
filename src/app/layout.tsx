@@ -33,6 +33,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 			<html lang="en" className="dark overflow-hidden">
 				<head>
 					<meta name="viewport" content="initial-scale=1" />
+					<link rel="preload" href="/validation/supported-distributions" as="fetch" crossOrigin="anonymous" />
 				</head>
 				<body
 					className={cn("max-h-screen min-h-screen min-w-[64rem] bg-background font-sans antialiased", inter.className)}

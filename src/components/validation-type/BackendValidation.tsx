@@ -8,15 +8,10 @@ import { useDistributions } from "../validation/useDistributions";
 import OtelLogo from "./../assets/svg/otel.svg";
 import { Github, Globe } from "lucide-react";
 import { Button } from "../button";
-import { preload } from "swr";
 import { IconButton } from "../icon-button";
 import { CurrentBadge } from "./ValidationTypeContent";
 import type { ICurrentValidation } from "./ValidationType";
 import { useState } from "react";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-preload(`https://www.otelbin.io/validation/supported-distributions`, fetcher);
 
 export default function BackendValidation({
 	current,
