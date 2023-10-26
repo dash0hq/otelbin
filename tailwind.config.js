@@ -71,11 +71,21 @@ module.exports = {
 						border: "none",
 					},
 				},
+				"accordion-down": {
+					from: { height: "0" },
+					to: { height: "var(--radix-accordion-content-height)" },
+				},
+				"accordion-up": {
+					from: { height: "var(--radix-accordion-content-height)" },
+					to: { height: "0" },
+				},
 			},
 			animation: {
 				focus: "focus 2s ease-out",
 				processorFocus: "processorFocus 2s ease-out",
 				connectorFocus: "connectorFocus 2s ease-out",
+				"accordion-down": "accordion-down 0.2s ease-out",
+				"accordion-up": "accordion-up 0.2s ease-out",
 			},
 			transitionProperty: {
 				shape: "width, height, border-radius",
