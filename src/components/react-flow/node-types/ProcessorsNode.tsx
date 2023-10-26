@@ -6,7 +6,8 @@ import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "../FlowClick";
 import type { IData } from "../FlowClick";
-import { FileCog } from "lucide-react";
+import ProcessorIcon from "~/components/assets/svg/processor.svg";
+import { iconColor } from "./ExportersNode";
 
 const ProcessorsNode = ({ data }: { data: IData }) => {
 	const [hovered, setHovered] = useState(false);
@@ -74,7 +75,9 @@ const ProcessorsNode = ({ data }: { data: IData }) => {
 							splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
 						}`}
 					>
-						<FileCog color={hovered ? "#F3F5F6" : "#9CA2AB"} width={20} />
+						<div style={iconColor(hovered)}>
+							<ProcessorIcon />
+						</div>
 						{hasSlash && (
 							<div
 								className={`${
