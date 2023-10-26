@@ -14,7 +14,7 @@ export default function ValidationTypeContent({
 	setCurrent: (current: ICurrentValidation) => void;
 }) {
 	return (
-		<div className="bg-neutral-150 flex flex-col divide-solid divide-y">
+		<div className="bg-neutral-150 flex flex-col divide-solid divide-y rounded-md">
 			<ContentRow
 				isCurrent={current.provider === "Browser-only"}
 				title="Browser-only validation"
