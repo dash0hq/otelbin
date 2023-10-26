@@ -6,7 +6,9 @@ import { Handle, Position } from "reactflow";
 import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "../FlowClick";
 import type { IData } from "../FlowClick";
-import { Download, Unplug } from "lucide-react";
+import ReceiverIcon from "~/components/assets/svg/receiver.svg";
+import ConnectorIcon from "~/components/assets/svg/connector.svg";
+import { iconColor } from "./ExportersNode";
 
 const ReceiversNode = ({ data }: { data: IData }) => {
 	const [hovered, setHovered] = useState(false);
@@ -38,7 +40,6 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 	}
 	const label = data.label || "";
 	const splitLabel = label.includes("/") ? label.split("/") : [label];
-	const iconColor = hovered ? "#F3F5F6" : "#9CA2AB";
 	const isConnector = data.type?.includes("connectors");
 	return (
 		<div
@@ -66,8 +67,7 @@ const ReceiversNode = ({ data }: { data: IData }) => {
 						splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
 					}`}
 				>
-					{isConnector ? <Unplug color={iconColor} width={20} /> : <Download color={iconColor} width={20} />}
-
+					<div style={iconColor(hovered)}>{isConnector ? <ConnectorIcon /> : <ReceiverIcon />}</div>
 					{splitLabel.length > 1 && (
 						<div
 							className={`${

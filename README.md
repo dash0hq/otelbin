@@ -43,6 +43,7 @@ OTelBin will enable you to:
 - [Upstash](https://upstash.com/) – redis
 - [Clerk](https://clerk.com/) – auth
 - [Vercel](https://vercel.com/) – hosting and privacy-friendly analytics
+- [AWS Lambda](https://aws.amazon.com/lambda/) – validation of configs against OpenTelemetry collectors
 
 ## Contributing
 
