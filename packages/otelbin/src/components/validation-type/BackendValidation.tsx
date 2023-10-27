@@ -8,27 +8,50 @@ import { useDistributions } from "../validation/useDistributions";
 import OtelLogo from "./../assets/svg/otel.svg";
 import { Github, Globe } from "lucide-react";
 import { Button } from "../button";
+import { preload } from "swr";
 import { IconButton } from "../icon-button";
 import { CurrentBadge } from "./ValidationTypeContent";
 import type { ICurrentValidation } from "./ValidationType";
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { useRouter } from "next/navigation";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+preload(`https://www.otelbin.io/validation/supported-distributions`, fetcher);
 
 export default function BackendValidation({
-	current,
-	setCurrent,
+	currentDistro,
+	setCurrentDistro,
 }: {
-	current: ICurrentValidation;
-	setCurrent: (current: ICurrentValidation) => void;
+	currentDistro: ICurrentValidation;
+	setCurrentDistro: (current: ICurrentValidation) => void;
 }) {
 	const { data } = useDistributions();
-	const [currentVersion, setCurrentVersion] = useState<string>("");
-	const initialDistroItems = data
-		? Object.keys(data).map((key) => ({
-				provider: data[key]?.provider || "",
-				distro: key || "",
-				version: (data && Array.isArray(data[key]?.releases) && data[key]?.releases[0]?.version) || "",
-		  }))
-		: [];
+	const [{}, getUrl] = useUrlState([distroBinding, distroVersionBinding]);
+
+	const router = useRouter();
+
+	const initialDistroItems = useMemo(
+		() =>
+			data
+				? Object.keys(data).map((key) => ({
+						provider: data[key]?.provider || "",
+						distro: key || "",
+						version: (data && Array.isArray(data[key]?.releases) && data[key]?.releases[0]?.version) || "",
+				  }))
+				: [],
+		[data]
+	);
+
+	useEffect(() => {
+		setCurrentDistro({
+			...currentDistro,
+			initialDistroItems: initialDistroItems,
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data]);
 
 	function formatVersionsRange(versions?: string[] | string) {
 		if (typeof versions === "string") {
@@ -56,7 +79,7 @@ export default function BackendValidation({
 									<div className="flex flex-col items-start">
 										<div className="flex items-center gap-x-3">
 											<p className="text-[13px] font-semibold text-neutral-950">{data[key]?.provider}</p>
-											{current.provider === data[key]?.provider && <CurrentBadge />}
+											{currentDistro.title.provider === data[key]?.provider && <CurrentBadge />}
 										</div>
 										<p className="text-xs font-normal text-neutral-600">{`${
 											Array.isArray(data[key]?.releases) &&
@@ -90,11 +113,21 @@ export default function BackendValidation({
 									</div>
 									<div className="flex items-center gap-x-2 border-t-1 border-solid border-neutral-250 pt-4">
 										<Select
-											defaultValue={
-												initialDistroItems?.find((distro) => distro.provider === data[key]?.provider)?.version
-											}
+											defaultValue={data[key]?.releases[0]?.version.toString()}
 											onValueChange={(value) => {
-												setCurrentVersion(value);
+												setCurrentDistro({
+													...currentDistro,
+													initialDistroItems: currentDistro.initialDistroItems?.map((distro) => {
+														if (distro.provider === data[key]?.provider) {
+															return {
+																...distro,
+																version: value,
+															};
+														}
+														return distro;
+													}),
+												});
+												console.log(currentDistro);
 											}}
 										>
 											<SelectTrigger className="h-6 w-max bg-neutral-350">
@@ -118,18 +151,19 @@ export default function BackendValidation({
 										<Button
 											onClick={() => {
 												const distro = key;
-												const initialVersion =
-													initialDistroItems?.find((distro) => distro.provider === data[key]?.provider)?.version || "";
-												const version = currentVersion ? currentVersion : initialVersion;
-												setCurrent({ provider: data[key]?.provider || "", version: version, distro: key });
-
-												const updateUrl = `&distro=${distro}&distroVersion=${
-													currentVersion ? currentVersion : initialVersion
-												}`;
-
-												if (typeof window !== "undefined") {
-													window.history.pushState(null, "", updateUrl);
-												}
+												const defaultVersion = data[key]?.releases[0]?.version.toString() || "";
+												const currentVersion =
+													currentDistro.initialDistroItems?.find((distro) => distro.distro === key)?.version || "";
+												const version = currentVersion || defaultVersion;
+												setCurrentDistro({
+													...currentDistro,
+													title: { provider: data[key]?.provider || "", version: version, distro: key },
+												});
+												const newUrl = getUrl({
+													distro: distro,
+													distroVersion: version,
+												});
+												router.push(newUrl);
 											}}
 											size={"xs"}
 											variant={"cta"}

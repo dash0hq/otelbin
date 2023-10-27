@@ -20,4 +20,5 @@ export interface Release {
 
 export interface ServerSideValidationResult {
 	message: string;
+	error: string;
 }

@@ -8,16 +8,26 @@ import Down from "./../assets/svg/down.svg";
 import ValidationTypeContent from "./ValidationTypeContent";
 
 export interface ICurrentValidation {
-	provider: string;
-	version: string;
-	distro: string;
+	title: {
+		provider: string;
+		version: string;
+		distro: string;
+	};
+	initialDistroItems: {
+		provider: string;
+		distro: string;
+		version: string;
+	}[];
 }
 
 export default function ValidationType() {
-	const [current, setCurrent] = useState<ICurrentValidation>({
-		provider: "Browser-only",
-		version: "",
-		distro: "",
+	const [currentDistro, setCurrentDistro] = useState<ICurrentValidation>({
+		title: {
+			provider: "Browser-only",
+			version: "",
+			distro: "",
+		},
+		initialDistroItems: [],
 	});
 
 	return (
@@ -25,14 +35,14 @@ export default function ValidationType() {
 			<PopoverTrigger asChild>
 				<Button size="xs" variant="cta">
 					Validation:{" "}
-					<strong>{`${current.provider} ${current.provider !== "Browser-only" ? " – " : ""} ${
-						current.version
+					<strong>{`${currentDistro.title.provider} ${currentDistro.title.provider !== "Browser-only" ? " – " : ""} ${
+						currentDistro.title.version
 					}`}</strong>{" "}
 					<Down />
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent align="start" className="p-0 max-w-[480px]">
-				<ValidationTypeContent current={current} setCurrent={setCurrent} />
+				<ValidationTypeContent currentDistro={currentDistro} setCurrentDistro={setCurrentDistro} />
 			</PopoverContent>
 		</Popover>
 	);

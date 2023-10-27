@@ -5,25 +5,39 @@ import { AppWindow, Cloud, Github } from "lucide-react";
 import { Button } from "../button";
 import BackendValidation from "./BackendValidation";
 import type { ICurrentValidation } from "./ValidationType";
+import { useRouter } from "next/navigation";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
 
 export default function ValidationTypeContent({
-	current,
-	setCurrent,
+	currentDistro,
+	setCurrentDistro,
 }: {
-	current: ICurrentValidation;
-	setCurrent: (current: ICurrentValidation) => void;
+	currentDistro: ICurrentValidation;
+	setCurrentDistro: (current: ICurrentValidation) => void;
 }) {
+	const [{}, getUrl] = useUrlState([distroBinding, distroVersionBinding]);
+	const router = useRouter();
+
 	return (
 		<div className="bg-neutral-150 flex flex-col divide-solid divide-y rounded-md">
 			<ContentRow
-				isCurrent={current.provider === "Browser-only"}
+				isCurrent={currentDistro.title.provider === "Browser-only"}
 				title="Browser-only validation"
 				description="Limited syntax checks run in your browser. It may not recognize receivers, exporters or other components."
 				icon={<AppWindow height={16} color="#9CA2AB" />}
 			>
-				{current.provider !== "Browser-only" && (
+				{currentDistro.title.provider !== "Browser-only" && (
 					<Button
-						onClick={() => setCurrent({ provider: "Browser-only", version: "", distro: "" })}
+						onClick={() => {
+							setCurrentDistro({ ...currentDistro, title: { provider: "Browser-only", version: "", distro: "" } });
+							router.push(
+								getUrl({
+									distro: "",
+									distroVersion: "",
+								})
+							);
+						}}
 						size={"xs"}
 						className="w-max"
 						variant={"default"}
@@ -38,7 +52,7 @@ export default function ValidationTypeContent({
 				description="Comprehensive validation performed in a backend against actual distribution binaries. The configuration sent to the backend are not stored and are used exclusively for the validation "
 				icon={<Cloud height={16} color="#9CA2AB" />}
 			>
-				<BackendValidation current={current} setCurrent={setCurrent} />
+				<BackendValidation currentDistro={currentDistro} setCurrentDistro={setCurrentDistro} />
 			</ContentRow>
 		</div>
 	);
