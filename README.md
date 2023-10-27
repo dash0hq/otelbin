@@ -54,6 +54,6 @@ We love our contributors! Here's how you can contribute:
 - Make a [pull request](https://github.com/dash0hq/otelbin/pull) to add new features/make quality-of-life improvements/fix bugs.
 
 <a href="https://github.com/dash0hq/otelbin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=dash0hq/otelbin&cache=bust" />
+  <img src="https://contrib.rocks/image?repo=dash0hq/otelbin&cache=bust2" />
 </a>
 
