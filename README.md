@@ -17,7 +17,7 @@
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
   <a href="#contributing"><strong>Contributing</strong></a> ·
-  <a href="./LICENSE.md"><strong>License</strong></a>
+  <a href="./LICENSE"><strong>License</strong></a>
 </p>
 <br/>
 
