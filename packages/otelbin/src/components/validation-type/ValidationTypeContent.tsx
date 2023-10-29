@@ -8,13 +8,16 @@ import type { ICurrentValidation } from "./ValidationType";
 import { useRouter } from "next/navigation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
+import type { Distributions } from "~/types";
 
 export default function ValidationTypeContent({
 	currentDistro,
 	setCurrentDistro,
+	data,
 }: {
 	currentDistro: ICurrentValidation;
 	setCurrentDistro: (current: ICurrentValidation) => void;
+	data?: Distributions;
 }) {
 	const [{}, getUrl] = useUrlState([distroBinding, distroVersionBinding]);
 	const router = useRouter();
@@ -52,7 +55,7 @@ export default function ValidationTypeContent({
 				description="Comprehensive validation performed in a backend against actual distribution binaries. The configuration sent to the backend are not stored and are used exclusively for the validation "
 				icon={<Cloud height={16} color="#9CA2AB" />}
 			>
-				<BackendValidation currentDistro={currentDistro} setCurrentDistro={setCurrentDistro} />
+				<BackendValidation currentDistro={currentDistro} setCurrentDistro={setCurrentDistro} data={data} />
 			</ContentRow>
 		</div>
 	);
