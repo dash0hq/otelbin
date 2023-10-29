@@ -18,5 +18,6 @@ export function SignedInUrlSharing({ fullURL }: SignedInUrlSharingProps) {
 		},
 		fetcher
 	);
+
 	return <UrlCopy url={data?.shortLink ?? fullURL} />;
 }

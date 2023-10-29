@@ -19,7 +19,7 @@ export function UrlCopy({ url }: UrlCopyProps) {
 			<Input type="url" readOnly value={url} size="xs" />
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<IconButton size="xs" onClick={copyToClipboard}>
+					<IconButton size="xs" onClick={copyToClipboard} autoFocus>
 						<Copy />
 					</IconButton>
 				</TooltipTrigger>
