@@ -93,19 +93,19 @@ export default function BackendValidation({
 									</div>
 									<div className="flex items-center gap-x-2 border-t-1 border-solid border-neutral-250 pt-4">
 										<Select
-											defaultValue={data[key]?.releases[0]?.version.toString()}
+											defaultValue={
+												currentDistro.selected.distro === key
+													? currentDistro.selected.version
+													: data[key]?.releases[0]?.version.toString()
+											}
 											onValueChange={(value) => {
 												setCurrentDistro({
 													...currentDistro,
-													initialDistroItems: currentDistro.initialDistroItems?.map((distro) => {
-														if (distro.provider === data[key]?.provider) {
-															return {
-																...distro,
-																version: value,
-															};
-														}
-														return distro;
-													}),
+													selected: {
+														provider: data[key]?.provider || "",
+														distro: key,
+														version: value,
+													},
 												});
 											}}
 										>
@@ -129,20 +129,23 @@ export default function BackendValidation({
 										</Select>
 										<Button
 											onClick={() => {
-												const distro = key;
-												const defaultVersion = data[key]?.releases[0]?.version.toString() || "";
-												const currentVersion =
-													currentDistro.initialDistroItems?.find((distro) => distro.distro === key)?.version || "";
-												const version = currentVersion || defaultVersion;
+												const version =
+													currentDistro.selected.distro === key
+														? currentDistro.selected.version
+														: data[key]?.releases[0]?.version.toString() || "";
 
 												setCurrentDistro({
 													...currentDistro,
-													title: { provider: data[key]?.provider || "", version: version, distro: key },
+													title: {
+														provider: data[key]?.provider || "",
+														version: version,
+														distro: key,
+													},
 												});
 
 												router.push(
 													getUrl({
-														distro: distro,
+														distro: key,
 														distroVersion: version,
 													})
 												);

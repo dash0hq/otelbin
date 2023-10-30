@@ -26,7 +26,7 @@ export interface IError {
 
 export default function ErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
 	const serverSideValidationResult = useServerSideValidation();
-	// console.log({ serverSideValidationResult });
+
 	const errorCount =
 		(errors?.ajvErrors?.length ?? 0) +
 		(errors?.jsYamlError != null ? 1 : 0) +

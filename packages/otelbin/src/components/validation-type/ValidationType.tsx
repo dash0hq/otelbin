@@ -16,11 +16,11 @@ export interface ICurrentValidation {
 		version: string;
 		distro: string;
 	};
-	initialDistroItems: {
+	selected: {
 		provider: string;
 		distro: string;
 		version: string;
-	}[];
+	};
 }
 
 export default function ValidationType() {
@@ -31,26 +31,18 @@ export default function ValidationType() {
 			version: "",
 			distro: "",
 		},
-		initialDistroItems: [],
+		selected: { provider: "", distro: "", version: "" },
 	});
 
 	const { data } = useDistributions();
 
 	const initialDistroItems = useMemo(() => {
 		if (data && distro && distroVersion) {
-			return [
-				{
-					provider: data[distro]?.provider || "",
-					distro: distro || "",
-					version: distroVersion || "",
-				},
-			];
-		} else if (data) {
-			return Object.keys(data).map((key) => ({
-				provider: data[key]?.provider || "",
-				distro: key || "",
-				version: (data && Array.isArray(data[key]?.releases) && data[key]?.releases[0]?.version) || "",
-			}));
+			return {
+				provider: data[distro]?.provider || "",
+				distro: distro || "",
+				version: distroVersion || "",
+			};
 		}
 	}, [data, distro, distroVersion]);
 
@@ -62,7 +54,7 @@ export default function ValidationType() {
 					version: distroVersion || "",
 					distro: distro || "",
 				},
-				initialDistroItems: initialDistroItems || [],
+				selected: initialDistroItems || { provider: "", distro: "", version: "" },
 			});
 		} else if (data) {
 			setCurrentDistro({
@@ -71,11 +63,10 @@ export default function ValidationType() {
 					version: "",
 					distro: "",
 				},
-				initialDistroItems: initialDistroItems || [],
+				selected: { provider: "", distro: "", version: "" },
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data]);
+	}, [data, distro, distroVersion, initialDistroItems]);
 
 	return (
 		<Popover>
