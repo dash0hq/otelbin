@@ -132,7 +132,6 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 
 		const addEdgesToNodes = (nodes: Node[]) => {
 			const exportersNodes = nodes.filter((node) => node.type === "exportersNode");
-			console.log("exportersNodes", exportersNodes);
 			const processorsNodes = nodes.filter((node) => node.type === "processorsNode");
 			const receiversNodes = nodes.filter((node) => node.type === "receiversNode");
 			const firstProcessorsNode = processorsNodes[0] as Node;
