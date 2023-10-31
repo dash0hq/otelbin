@@ -24,21 +24,27 @@ export const useHashSearchParams = () => {
 	// There is unfortunately no other reliable way to observe hash changes...
 	useEffect(() => {
 		let previousHref = window.location.href;
-		const observer = new MutationObserver(() => {
-			if (previousHref !== window.location.href) {
-				previousHref = window.location.href;
-				setHash(getHashSearchParams());
-			}
-		});
-
+		const observer = new MutationObserver(onChange);
 		observer.observe(document.body, {
 			childList: true,
 			subtree: true,
 		});
 
+		window.addEventListener("hashchange", onChange);
+		window.addEventListener("popstate", onChange);
+
 		return () => {
 			observer.disconnect();
+			window.removeEventListener("hashchange", onChange);
+			window.removeEventListener("popstate", onChange);
 		};
+
+		function onChange() {
+			if (previousHref !== window.location.href) {
+				previousHref = window.location.href;
+				setHash(getHashSearchParams());
+			}
+		}
 	}, []);
 
 	return hash;

@@ -25,11 +25,16 @@ export default function ValidationTile({
 	id: string;
 	setOpen: (open: boolean) => void;
 	currentDistro?: ICurrentDistro;
-	data?: Distribution;
+	data: Distribution;
 }) {
+	const isDistroActive = id === currentDistro?.provider;
+
 	const [, getUrl] = useUrlState([distroBinding, distroVersionBinding]);
-	const [version, setVersion] = useState(currentDistro?.version ?? data?.releases[0]?.version.toString());
+	const [version, setVersion] = useState<string>(
+		isDistroActive ? currentDistro.version : data.releases[0]?.version ?? ""
+	);
 	const router = useRouter();
+
 	function formatVersionsRange(versions?: string[] | string) {
 		if (typeof versions === "string") {
 			return versions;
@@ -111,8 +116,8 @@ export default function ValidationTile({
 								onClick={() => {
 									router.push(
 										getUrl({
-											distro: currentDistro?.distro === id ? currentDistro.distro : id,
-											distroVersion: currentDistro?.distro === id ? version : data?.releases[0]?.version,
+											distro: id,
+											distroVersion: version,
 										})
 									);
 									setOpen(false);

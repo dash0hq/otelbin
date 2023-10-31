@@ -17,8 +17,8 @@ export default function BackendValidation({
 	return (
 		<>
 			{data ? (
-				Object.keys(data).map((key) => (
-					<ValidationTile data={data[key]} id={key} key={key} setOpen={setOpen} currentDistro={currentDistro} />
+				Object.entries(data).map(([provider, distro]) => (
+					<ValidationTile data={distro} id={provider} key={provider} setOpen={setOpen} currentDistro={currentDistro} />
 				))
 			) : (
 				<p>No Data is available</p>
