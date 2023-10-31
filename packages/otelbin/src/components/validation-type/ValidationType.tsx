@@ -28,7 +28,7 @@ export default function ValidationType() {
 			: undefined;
 
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
+		<Popover open={open} onOpenChange={setOpen} modal={true}>
 			<PopoverTrigger asChild>
 				<Button size="xs" variant="cta">
 					Validation:{" "}
@@ -38,7 +38,7 @@ export default function ValidationType() {
 					<Down />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent align="start" className="p-0 max-w-[480px]">
+			<PopoverContent align="start" className="p-0 max-w-[480px] overflow-y-auto max-h-[90vh]">
 				<ValidationTypeContent currentDistro={currentDistro} data={data} setOpen={setOpen} />
 			</PopoverContent>
 		</Popover>
