@@ -46,7 +46,12 @@ export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen
 							</a>
 						</DialogTitle>
 					</DialogHeader>
-					<Image src={welcomeModalData[step]?.image || ""} alt="Welcome Modal Slide Image" />
+					<Image
+						src={welcomeModalData[step]?.image || ""}
+						alt="Welcome Modal Slide Image"
+						quality={100}
+						className="border rounded-md border-neutral-300"
+					/>
 					<div className="flex flex-col gap-y-2">
 						<DialogTitle className="text-center">{welcomeModalData[step]?.title}</DialogTitle>
 						<DialogDescription className="text-center">{welcomeModalData[step]?.description}</DialogDescription>

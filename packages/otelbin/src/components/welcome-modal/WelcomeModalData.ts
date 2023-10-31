@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { StaticImageData } from "next/image";
-import WelcomeModal1 from "~/components/assets/png/welcome-modal-slide-1.png";
-import WelcomeModal2 from "~/components/assets/png/welcome-modal-slide-2.png";
-import WelcomeModal3 from "~/components/assets/png/welcome-modal-slide-3.png";
-import WelcomeModal4 from "~/components/assets/png/welcome-modal-slide-4.png";
+import ErrorImg from "~/components/assets/png/errors.png";
+import BackendValidationImg from "~/components/assets/png/backend-validation.png";
+import ShareImg from "~/components/assets/png/share.png";
+import VisualizationImg from "~/components/assets/png/visualization.png";
 
 interface WelcomeModal {
 	title: string;
@@ -15,23 +15,25 @@ interface WelcomeModal {
 
 export const welcomeModalData: WelcomeModal[] = [
 	{
-		title: "Welcome to OTelBin!",
-		description: "A simple tool to visualize your OpenTelemetry collector configurations",
-		image: WelcomeModal1,
+		title: "Welcome to OTelBin",
+		description:
+			"OTelBin is a free editing, visualization and validation tool for OpenTelemetry collector configurations.",
+		image: VisualizationImg,
 	},
 	{
-		title: "Visualize your configs.",
-		description: "Visualize your collector configuration to understand its pipelines",
-		image: WelcomeModal4,
-	},
-	{
-		title: "Write your config in the editor with live syntax validation.",
+		title: "Code editor with syntax highlighting & code completion",
 		description: "Craft your configuration seamlessly in the editor with real-time syntax and schema validation!",
-		image: WelcomeModal2,
+		image: ErrorImg,
 	},
 	{
-		title: "Easily find your config errors.",
-		description: "Effortlessly pinpoint and rectify configuration errors with simplicity.",
-		image: WelcomeModal3,
+		title: "Validate against your distribution",
+		description: "Go beyond schema checks through validation in a backend against actual distribution binaries.",
+		image: BackendValidationImg,
+	},
+	{
+		title: "Collaborate with others",
+		description:
+			"The config is persisted within the URL so that you can always share what you are working on. Use this to get or provide help. In need of a short URL? Use our URL shortener.",
+		image: ShareImg,
 	},
 ];
