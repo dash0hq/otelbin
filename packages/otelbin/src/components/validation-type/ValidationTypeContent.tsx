@@ -4,26 +4,43 @@
 import { AppWindow, Cloud, Github } from "lucide-react";
 import { Button } from "../button";
 import BackendValidation from "./BackendValidation";
-import type { ICurrentValidation } from "./ValidationType";
+import type { ICurrentDistro } from "./ValidationType";
+import { useRouter } from "next/navigation";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
+import type { Distributions } from "~/types";
 
 export default function ValidationTypeContent({
-	current,
-	setCurrent,
+	setOpen,
+	currentDistro,
+	data,
 }: {
-	current: ICurrentValidation;
-	setCurrent: (current: ICurrentValidation) => void;
+	setOpen: (open: boolean) => void;
+	currentDistro?: ICurrentDistro;
+	data?: Distributions;
 }) {
+	const [, getUrl] = useUrlState([distroBinding, distroVersionBinding]);
+	const router = useRouter();
+
 	return (
 		<div className="bg-neutral-150 flex flex-col divide-solid divide-y rounded-md">
 			<ContentRow
-				isCurrent={current.provider === "Browser-only"}
+				isCurrent={!currentDistro}
 				title="Browser-only validation"
 				description="Limited syntax checks run in your browser. It may not recognize receivers, exporters or other components."
 				icon={<AppWindow height={16} color="#9CA2AB" />}
 			>
-				{current.provider !== "Browser-only" && (
+				{currentDistro && (
 					<Button
-						onClick={() => setCurrent({ provider: "Browser-only", version: "", distro: "" })}
+						onClick={() => {
+							router.push(
+								getUrl({
+									distro: "",
+									distroVersion: "",
+								})
+							);
+							setOpen(false);
+						}}
 						size={"xs"}
 						className="w-max"
 						variant={"default"}
@@ -38,7 +55,7 @@ export default function ValidationTypeContent({
 				description="Comprehensive validation performed in a backend against actual distribution binaries. The configuration sent to the backend are not stored and are used exclusively for the validation "
 				icon={<Cloud height={16} color="#9CA2AB" />}
 			>
-				<BackendValidation current={current} setCurrent={setCurrent} />
+				<BackendValidation currentDistro={currentDistro} data={data} setOpen={setOpen} />
 			</ContentRow>
 		</div>
 	);

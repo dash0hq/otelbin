@@ -25,13 +25,16 @@ export interface IError {
 }
 
 export default function ErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
+	const serverSideValidationResult = useServerSideValidation();
+
 	const errorCount =
-		(errors?.ajvErrors?.length ?? 0) + (errors?.jsYamlError != null ? 1 : 0) + (errors?.customErrors?.length ?? 0);
+		(errors?.ajvErrors?.length ?? 0) +
+		(errors?.jsYamlError != null ? 1 : 0) +
+		(errors?.customErrors?.length ?? 0) +
+		(serverSideValidationResult.result?.error ? 1 : 0);
+
 	const warningsCount = errors?.customWarnings?.length ?? 0;
 	const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false);
-
-	const serverSideValidationResult = useServerSideValidation();
-	console.log({ serverSideValidationResult });
 
 	useEffect(() => {
 		if (errorCount === 0) {
@@ -68,6 +71,14 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 							errors.customWarnings.map((warning: string, index: number) => {
 								return <Error key={index} customWarnings={warning} font={font} />;
 							})}
+						{serverSideValidationResult.result?.error && (
+							<Error
+								serverSideError={
+									serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
+								}
+								font={font}
+							/>
+						)}
 						{errors?.ajvErrors &&
 							errors.ajvErrors?.length > 0 &&
 							errors.ajvErrors.map((error: IAjvError, index: number) => {
@@ -91,12 +102,14 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 export function Error({
 	error,
 	jsYamlError,
+	serverSideError,
 	customErrors,
 	customWarnings,
 	font,
 }: {
 	error?: IAjvError;
 	jsYamlError?: IJsYamlError;
+	serverSideError?: string;
 	customErrors?: string;
 	customWarnings?: string;
 	font: NextFont;
@@ -123,6 +136,13 @@ export function Error({
 			{jsYamlError ? (
 				<div className={`${font.className} ${errorsStyle}`}>
 					<p>{`${jsYamlError.reason} ${jsYamlError.mark && `(Line ${jsYamlError.mark.line})`}`}</p>
+				</div>
+			) : (
+				<></>
+			)}
+			{serverSideError ? (
+				<div className={`${font.className} ${errorsStyle}`}>
+					<p>{`Server-side: ${serverSideError}`}</p>
 				</div>
 			) : (
 				<></>
