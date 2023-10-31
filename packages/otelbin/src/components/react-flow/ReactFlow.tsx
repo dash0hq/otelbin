@@ -10,9 +10,6 @@ import useEdgeCreator from "./useEdgeCreator";
 import { useFocus } from "~/contexts/EditorContext";
 import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
 import ParentsNode from "./node-types/ParentsNode";
-// import ReceiversNode from "./node-types/ReceiversNode1";
-// import ProcessorsNode from "./node-types/ProcessorsNode1";
-// import ExportersNode from "./node-types/ExportersNode1";
 import EmptyStateNode, { EmptyStateNodeData } from "./node-types/EmptyStateNode";
 import { useNodes } from "./useNodes";
 import type { editor } from "monaco-editor";
@@ -20,7 +17,6 @@ import { ButtonGroup } from "~/components/button-group";
 import { Button } from "~/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import type { IItem, Document } from "../monaco-editor/parseYaml";
-
 import ExportersNode from "./node-types/ExportersNode";
 import ReceiversNode from "./node-types/ReceiversNode";
 import ProcessorsNode from "./node-types/ProcessorsNode";
