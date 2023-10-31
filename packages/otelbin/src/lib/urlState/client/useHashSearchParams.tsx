@@ -30,11 +30,13 @@ export const useHashSearchParams = () => {
 			subtree: true,
 		});
 
+		const intervalHandle = setInterval(onChange, 200);
 		window.addEventListener("hashchange", onChange);
 		window.addEventListener("popstate", onChange);
 
 		return () => {
 			observer.disconnect();
+			clearInterval(intervalHandle);
 			window.removeEventListener("hashchange", onChange);
 			window.removeEventListener("popstate", onChange);
 		};
