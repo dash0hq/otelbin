@@ -165,10 +165,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		);
 
 		let value = editorRef.current?.getValue() ?? "";
-		let docObject = getParsedValue(value);
+		let docElements = getParsedValue(value);
 		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
-			docObject = getParsedValue(value);
+			docElements = getParsedValue(value);
 		});
 
 		function correctKey(value: string, key?: string, key2?: string) {
@@ -238,7 +238,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				startColumn: 0,
 				endColumn: 0,
 			};
-			findSymbols(docObject, "", wordAtCursor.word, cursorOffset);
+			findSymbols(docElements, "", wordAtCursor.word, cursorOffset);
 		});
 	}
 

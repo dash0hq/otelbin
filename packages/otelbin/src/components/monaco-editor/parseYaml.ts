@@ -74,20 +74,20 @@ export const getParsedValue = (editorValue: string) => {
 	const value = editorValue;
 	const parsedYaml = Array.from(new Parser().parse(value));
 	const doc = parsedYaml.find((token) => token.type === "document") as Document;
-	const docObject: IItem[] = doc?.value?.items ?? [];
-	return docObject;
+	const docElements: IItem[] = doc?.value?.items ?? [];
+	return docElements;
 };
 
-export function extractMainItemsData(docObject: IItem[]) {
+export function extractMainItemsData(docElements: IItem[]) {
 	const mainItemsData: IValidateItem = {};
 
-	const mainKeys = docObject
+	const mainKeys = docElements
 		.filter((item: IItem) => item.key.source !== "service")
 		.map((item: IItem) => item.key.source);
 
 	mainKeys.forEach((key: string) => {
 		mainItemsData[key] =
-			docObject
+			docElements
 				.filter((item: IItem) => item.key.source === key)[0]
 				?.value?.items?.map((item: IItem) => {
 					return { source: item.key.source, offset: item.key.offset };
@@ -96,11 +96,11 @@ export function extractMainItemsData(docObject: IItem[]) {
 	return mainItemsData;
 }
 
-export function extractServiceItems(docObject: IItem[]) {
+export function extractServiceItems(docElements: IItem[]) {
 	const serviceItems =
-		(Array.isArray(docObject) &&
-			docObject.length > 0 &&
-			docObject.filter((item: IItem) => item.key.source === "service")[0]?.value?.items) ||
+		(Array.isArray(docElements) &&
+			docElements.length > 0 &&
+			docElements.filter((item: IItem) => item.key.source === "service")[0]?.value?.items) ||
 		[];
 	return serviceItems;
 }
