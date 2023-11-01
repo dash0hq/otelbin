@@ -52,7 +52,6 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			const errors = ajv.errors;
 
 			if (errors) {
-				console.log(errors);
 				const validationErrors = errors.map((error: ErrorObject) => {
 					const errorInfo = {
 						line: null as number | null,
