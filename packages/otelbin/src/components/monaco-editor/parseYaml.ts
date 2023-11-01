@@ -90,7 +90,7 @@ export function extractMainItemsData(docElements: IItem[]) {
 			docElements
 				.filter((item: IItem) => item.key.source === key)[0]
 				?.value?.items?.map((item: IItem) => {
-					return { source: item.key.source, offset: item.key.offset };
+					return { source: item.key?.source, offset: item.key?.offset };
 				}) || [];
 	});
 	return mainItemsData;

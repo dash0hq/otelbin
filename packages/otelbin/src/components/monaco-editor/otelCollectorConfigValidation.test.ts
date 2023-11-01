@@ -80,6 +80,14 @@ describe("extractMainItemsData", () => {
 
 		expect(result).toEqual(expectedOutput);
 	});
+
+	it("should should return empty object with empty array input", () => {
+		const result = extractMainItemsData([]);
+
+		const expectedOutput: IValidateItem = {};
+
+		expect(result).toEqual(expectedOutput);
+	});
 });
 
 // Tested with brief editorBinding.fallback
