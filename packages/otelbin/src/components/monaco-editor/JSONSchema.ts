@@ -117,7 +117,7 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 		},
 	},
 	errorMessage: {
-		type: "Must be a a valid OpenTelemetry Collector configuration",
+		type: "Must be a valid OpenTelemetry Collector configuration",
 		required: "service property is required",
 	},
 	required: ["service"],
