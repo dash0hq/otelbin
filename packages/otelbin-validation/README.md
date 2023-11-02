@@ -12,6 +12,48 @@ The API Gateway, which exposes routes using the `/validation/${distribution_name
 Each such route is routed to a different AWS Lambda function using a [Docker image](./src/images/otelcol-validator), which is dedicated to validating a particular version of a particular distro.
 The AWS Lambda function has a [Node.js handler](./src/images/otelcol-validator/src/index.ts), which is responsible to receive the API Gateway events, extract from the the YAML of the configuration to validate, save that to a file, start the collector with the provided configuration, and return the outcome as API Gateway reponse.
 
+## How to add support for a new distribution
+
+1. Make sure the distribution has
+   1. RPM packages...
+   1. ... listed as artifacts or mentioned as links in the body of a GitHub release in a `<github_org>/<repo_name>` repository
+1. Add the initial metadata about your distro in the [`supported-distributions.json`](./src/assets/supported-distributions.json) file, e.g.:
+   ```json
+   {
+      ...,
+      "my-distro": {
+         "provider": "My company",
+         "description": "Much wow",
+         "website": "https://my-company.io",
+         "repository": "<github_org>/<repo_name>",
+         "releases": []
+      }
+   }
+   ```
+1. Fill in data about one release manually to run tests:
+   ```json
+   {
+      ...,
+      "my-distro": {
+         "provider": "My company",
+         "description": "Much wow",
+         "website": "https://my-company.io",
+         "repository": "<github_org>/<repo_name>",
+         "releases": [
+            {
+               "version": "v0.88.0", # Tag name to be shown in OTelBin, keep it SemVer please
+               "artifact": "otelcol_0.88.0_linux_amd64.rpm", # Name of the artifact attached to the release; could also be a full URL to download the package
+               "released_at": "2023-10-24T11:24:58.000Z"
+            }
+      }
+   }
+   ```
+1. If you distribution does not support the [`validate` command](https://github.com/open-telemetry/opentelemetry-collector/blob/2e44da36e2c666db35884dca2c4df543b56a6aba/otelcol/command_validate.go#L14) of the community releases, you will need to write some bespoke logic to detect that the OpenTelemetry collector bootstrapped correctly with the given configuration.
+   ADOT is currently such an example, see the [`otelbin-validation-handler`](../otelbin-validation-image/src/index.ts).
+1. [Deploy the backend validation](#deployment) in an AWS account, and [run the tests](#testing-the-validation-api).
+1. Extend the nightly automation to [discover new releases](../../.github/workflows/discover-new-releases.yaml) to automatically track new releases of your distro.
+1. Open a great PR :-)
+
 ## Deployment
 
 1. Log in with the [`AWS cli`](https://aws.amazon.com/cli/) to the account you want to deploy.
