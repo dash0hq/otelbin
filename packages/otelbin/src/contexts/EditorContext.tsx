@@ -14,6 +14,7 @@ import { getParsedValue } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter } from "monaco-worker-manager";
 import { createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
+import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;
@@ -114,6 +115,13 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		};
 
 		monacoRef.current = monaco;
+
+		validateOtelCollectorConfigurationAndSetMarkers(
+			editorRef.current.getModel()?.getValue() || "",
+			editorRef,
+			monacoRef
+		);
+
 		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
 		});
