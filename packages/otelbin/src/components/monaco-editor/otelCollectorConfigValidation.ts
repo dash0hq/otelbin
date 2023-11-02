@@ -29,17 +29,19 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	monacoRef: MonacoRefType
 ) {
 	const ajv = new Ajv({ allErrors: true });
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	require("ajv-errors")(ajv);
 	const model = editorRef.current?.getModel();
 	const ajvError: IAjvError[] = [];
 	const totalErrors: IError = { ajvErrors: ajvError, customErrors: [], customWarnings: [] };
 	const errorMarkers: editor.IMarkerData[] = [];
-	const docObject = getParsedValue(configData);
-	const mainItemsData: IValidateItem = extractMainItemsData(docObject);
-	const serviceItems: IItem[] | undefined = extractServiceItems(docObject);
+	const docElements = getParsedValue(configData);
+	const mainItemsData: IValidateItem = extractMainItemsData(docElements);
+	const serviceItems: IItem[] | undefined = extractServiceItems(docElements);
 	serviceItemsData = {};
 	serviceItemsData = findLeafs(
 		serviceItems,
-		docObject.filter((item: IItem) => item.key.source === "service")[0],
+		docElements.filter((item: IItem) => item.key.source === "service")[0],
 		serviceItemsData
 	);
 
@@ -68,7 +70,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		}
 	} catch (error: unknown) {
 		const knownError = error as IJsYamlError;
-		const errorLineNumber = knownError.mark.line;
+		const errorLineNumber = knownError.mark?.line;
 		const errorMessage = knownError.reason || "Unknown error";
 		const errorMarker = {
 			startLineNumber: errorLineNumber || 0,

@@ -25,16 +25,16 @@ export interface IData {
 export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null) {
 	event.stopPropagation();
 	const config = editorRef?.current?.getModel()?.getValue() || "";
-	const docObject = getParsedValue(config);
-	const mainItemsData: IValidateItem = extractMainItemsData(docObject);
+	const docElements = getParsedValue(config);
+	const mainItemsData: IValidateItem = extractMainItemsData(docElements);
 	let pipelinesKeyValues: IValidateItem | undefined = {};
-	const serviceItems: IItem[] | undefined = extractServiceItems(docObject);
+	const serviceItems: IItem[] | undefined = extractServiceItems(docElements);
 	const pipeLineItems: IItem[] | undefined = serviceItems?.filter((item: IItem) => item.key.source === "pipelines");
 
 	pipelinesKeyValues = findPipelinesKeyValues(
 		pipeLineItems,
-		docObject.filter((item: IItem) => item.key.source === "pipelines")[0],
-		docObject.filter((item: IItem) => item.key.source === "service")[0],
+		docElements.filter((item: IItem) => item.key.source === "pipelines")[0],
+		docElements.filter((item: IItem) => item.key.source === "service")[0],
 		pipelinesKeyValues
 	);
 

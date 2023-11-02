@@ -37,18 +37,30 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 		receivers: {
 			type: "object",
 			additionalProperties: true,
+			errorMessage: {
+				type: "receivers property must be yaml map/dictionary",
+			},
 		},
 		processors: {
 			type: "object",
 			additionalProperties: true,
+			errorMessage: {
+				type: "processors property must be yaml map/dictionary",
+			},
 		},
 		exporters: {
 			type: "object",
 			additionalProperties: true,
+			errorMessage: {
+				type: "exporters property must be yaml map/dictionary",
+			},
 		},
 		extensions: {
 			type: "object",
 			additionalProperties: true,
+			errorMessage: {
+				type: "extensions property must be yaml map/dictionary",
+			},
 		},
 		service: {
 			type: "object",
@@ -62,6 +74,9 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 							receivers: {
 								type: "array",
 								minItems: 1,
+								errorMessage: {
+									minItems: "At least one receiver is required",
+								},
 							},
 							processors: {
 								type: "array",
@@ -69,18 +84,41 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 							exporters: {
 								type: "array",
 								minItems: 1,
+								errorMessage: {
+									minItems: "At least one exporter is required",
+								},
 							},
 						},
 						required: ["receivers", "exporters"],
+						errorMessage: {
+							required: {
+								receivers: "receivers property is required",
+								exporters: "exporters property is required",
+							},
+						},
+					},
+					errorMessage: {
+						type: "pipelines property must be yaml map/dictionary",
 					},
 				},
 			},
 			required: ["pipelines"],
+			errorMessage: {
+				required: "pipelines property is required",
+				type: "service property must be yaml map/dictionary",
+			},
 		},
 		connectors: {
 			type: "object",
 			additionalProperties: true,
+			errorMessage: {
+				type: "connectors property must be yaml map/dictionary",
+			},
 		},
+	},
+	errorMessage: {
+		type: "Must be a a valid OpenTelemetry Collector configuration",
+		required: "service property is required",
 	},
 	required: ["service"],
 };

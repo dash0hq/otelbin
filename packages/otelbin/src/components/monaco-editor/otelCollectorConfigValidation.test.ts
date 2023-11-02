@@ -70,13 +70,21 @@ test("find Line And Column of the given offset in a string", () => {
 describe("extractMainItemsData", () => {
 	it("should correctly extract level 1 and leve2 key value pairs with level2 offset", () => {
 		const yaml = editorBinding.fallback;
-		const docObject = getParsedValue(yaml);
-		const result = extractMainItemsData(docObject);
+		const docElements = getParsedValue(yaml);
+		const result = extractMainItemsData(docElements);
 
 		const expectedOutput: IValidateItem = {
 			receivers: [{ source: "otlp", offset: 13 }],
 			processors: [{ source: "batch", offset: 33 }],
 		};
+
+		expect(result).toEqual(expectedOutput);
+	});
+
+	it("should should return empty object with empty array input", () => {
+		const result = extractMainItemsData([]);
+
+		const expectedOutput: IValidateItem = {};
 
 		expect(result).toEqual(expectedOutput);
 	});
@@ -86,10 +94,10 @@ describe("extractMainItemsData", () => {
 describe("findLeafs", () => {
 	it("should return leaf level and the parent of the leaf with offsets for the given yaml item", () => {
 		const yaml = editorBinding.fallback;
-		const docObject = getParsedValue(yaml);
-		const yamlItems = extractServiceItems(docObject);
+		const docElements = getParsedValue(yaml);
+		const yamlItems = extractServiceItems(docElements);
 
-		const result = findLeafs(yamlItems, docObject.filter((item: IItem) => item.key.source === "service")[0], {});
+		const result = findLeafs(yamlItems, docElements.filter((item: IItem) => item.key.source === "service")[0], {});
 		expect(result).toEqual({
 			extensions: [
 				{ source: "health_check", offset: 64 },
