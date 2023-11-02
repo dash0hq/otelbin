@@ -53,6 +53,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const onChangeConfig = useCallback(
 		(newConfig: string) => {
 			if (typeof window !== "undefined") {
+				console.log("damn");
 				window.history.pushState(null, "", getLink({ config: newConfig }));
 			}
 		},
@@ -87,15 +88,15 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		localStorage.setItem("config-restore", config);
 	}, [config]);
 
-	useEffect(() => {
-		// This useEffect is used to detect changes in the "currentConfig" state
-		// and trigger the "onChangeConfig" function when it differs from the "config"
-		// to prevent the conflict with monaco editor's "onChange" event that makes sudden
-		// movements of the cursor
-		if (currentConfig !== config) {
-			onChangeConfig(currentConfig);
-		}
-	}, [onChangeConfig, currentConfig, config]);
+	// useEffect(() => {
+	// 	// This useEffect is used to detect changes in the "currentConfig" state
+	// 	// and trigger the "onChangeConfig" function when it differs from the "config"
+	// 	// to prevent the conflict with monaco editor's "onChange" event that makes sudden
+	// 	// movements of the cursor
+	// 	if (currentConfig !== config) {
+	// 		onChangeConfig(currentConfig);
+	// 	}
+	// }, [onChangeConfig, currentConfig, config]);
 
 	useEffect(() => {
 		if (clerk.loaded) {

@@ -40,3 +40,13 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlp]
+
+###
+# Call LLM-based fix endpoint
+POST http://localhost:3000/validation/fix
+Content-Type: application/json
+
+{
+  "issues": "The provided configuration is invalid - receivers::prometheus: no Prometheus scrape_configs or target_allocator set",
+  "config": "receivers:\n  otlp:\n    protocols:\n      grpc:\n      http:\n  prometheus:\n    trim_metric_suffixes: false\n    use_start_time_metric: false\n    start_time_metric_regex: \n    report_extra_scrape_metrics: false\n\nprocessors:\n  batch:\n\nexporters:\n  otlp:\n    endpoint: otelcol:4317\n\nextensions:\n  health_check:\n  pprof:\n  zpages:\n\nservice:\n  extensions: [health_check, pprof, zpages]\n  pipelines:\n    traces:\n      receivers: [otlp]\n      processors: [batch]\n      exporters: [otlp]\n    metrics:\n      receivers: [otlp]\n      processors: [batch]\n      exporters: [otlp]\n    logs:\n      receivers: [otlp]\n      processors: [batch]\n      exporters: [otlp]"
+}

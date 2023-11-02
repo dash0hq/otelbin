@@ -10,7 +10,7 @@ import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { useEffect, useMemo, useState } from "react";
 import { type ServerSideValidationResult } from "~/types";
 
-interface ValidationState {
+export interface ValidationState {
 	isLoading: boolean;
 	// the config that was/is being validated
 	config: string;

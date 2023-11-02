@@ -2,9 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useEffect, useState } from "react";
-import { ChevronDown, XCircle, AlertTriangle } from "lucide-react";
+import { ChevronDown, XCircle, AlertTriangle, Wand2, Copy } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
+import { IconButton } from "~/components/icon-button";
+import { useFix } from "~/components/monaco-editor/useFix";
 
 export interface IAjvError {
 	message: string;
@@ -25,13 +28,14 @@ export interface IError {
 }
 
 export default function ErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
-	const serverSideValidationResult = useServerSideValidation();
+	const serverSideValidationState = useServerSideValidation();
+	const [fixIndication, triggerFix] = useFix({ errors, serverSideValidationState });
 
 	const errorCount =
 		(errors?.ajvErrors?.length ?? 0) +
 		(errors?.jsYamlError != null ? 1 : 0) +
 		(errors?.customErrors?.length ?? 0) +
-		(serverSideValidationResult.result?.error ? 1 : 0);
+		(serverSideValidationState.result?.error ? 1 : 0);
 
 	const warningsCount = errors?.customWarnings?.length ?? 0;
 	const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false);
@@ -63,6 +67,16 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 						isOpen={isOpenErrorConsole}
 						setOpen={setIsOpenErrorConsole}
 					/>
+					{errorCount > 0 || warningsCount > 0 ? (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<IconButton variant={"transparent"} size={"xs"} className="shrink-0 mr-3 mb-1" onClick={triggerFix}>
+									<Wand2 />
+								</IconButton>
+							</TooltipTrigger>
+							<TooltipContent>Attempt automatic configuration fix using ChatGPT.</TooltipContent>
+						</Tooltip>
+					) : null}
 				</div>
 				{isOpenErrorConsole && (
 					<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-[25px]">
@@ -71,10 +85,10 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 							errors.customWarnings.map((warning: string, index: number) => {
 								return <Error key={index} customWarnings={warning} font={font} />;
 							})}
-						{serverSideValidationResult.result?.error && (
+						{serverSideValidationState.result?.error && (
 							<Error
 								serverSideError={
-									serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
+									serverSideValidationState.result?.message + " - " + serverSideValidationState.result?.error
 								}
 								font={font}
 							/>
@@ -172,7 +186,7 @@ export function ErrorCount({
 						}
 					}}
 					className={`${warningsCount ? `cursor-pointer text-yellow-300` : `text-subtl`}
-			min-h-[32px] w-full bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
+			min-h-[32px] w-full shrink bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
 				>
 					<AlertTriangle height={14.67} />
 					<div className="flex w-full items-center justify-between">
