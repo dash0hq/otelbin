@@ -43,3 +43,6 @@ To update the JSON schema for this project, follow these steps:
 7. __Create a Pull Request:__
 * Visit your forked repository on GitHub and create a pull request (PR) to merge your changes into the main repository's JSON schema.
 
+## Adding support for a new distribution
+
+See the [dedicated documentation](./packages/otelbin-validation/README.md).
