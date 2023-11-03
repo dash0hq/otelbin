@@ -4,6 +4,25 @@
 import { useMemo } from "react";
 import { MarkerType, type Edge, type Node } from "reactflow";
 
+function createEdge(sourceNode: Node, targetNode: Node): Edge {
+	const edgeId = `edge-${sourceNode.id}-${targetNode.id}`;
+	return {
+		id: edgeId,
+		source: sourceNode.id,
+		target: targetNode.id,
+		type: "default",
+		markerEnd: {
+			type: MarkerType.Arrow,
+			color: "#9CA2AB",
+			width: 20,
+			height: 25,
+		},
+		style: {
+			stroke: "#9CA2AB",
+		},
+	};
+}
+
 function useEdgeCreator(nodeIdsArray: Node[]) {
 	return useMemo(() => {
 		const edges: Edge[] = [];
@@ -13,24 +32,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 				if (!processorsNode || !targetNode) {
 					return;
 				}
-				const sourceNodeId = processorsNode.id;
-				const targetNodeId = targetNode.id;
-				const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
-				const edge: Edge = {
-					id: edgeId,
-					source: sourceNodeId,
-					target: targetNodeId,
-					type: "default",
-					markerEnd: {
-						type: MarkerType.Arrow,
-						color: "#9CA2AB",
-						width: 20,
-						height: 25,
-					},
-					style: {
-						stroke: "#9CA2AB",
-					},
-				};
+				const edge = createEdge(processorsNode, targetNode);
 				edges.push(edge);
 			});
 		};
@@ -41,24 +43,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 				if (!sourceNode || !targetNode) {
 					continue;
 				}
-				const sourceNodeId = sourceNode.id;
-				const targetNodeId = targetNode.id;
-				const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
-				const edge: Edge = {
-					id: edgeId,
-					source: sourceNodeId,
-					target: targetNodeId,
-					type: "default",
-					markerEnd: {
-						type: MarkerType.Arrow,
-						color: "#9CA2AB",
-						width: 20,
-						height: 25,
-					},
-					style: {
-						stroke: "#9CA2AB",
-					},
-				};
+				const edge = createEdge(sourceNode, targetNode);
 				edges.push(edge);
 			}
 		};
@@ -73,31 +58,11 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 					if (!sourceNode) {
 						return;
 					}
-
-					const sourceNodeId = sourceNode.id;
-
 					exportersNodes.forEach((exporterNode) => {
 						if (!exporterNode) {
 							return;
 						}
-
-						const targetNodeId = exporterNode.id;
-						const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
-						const edge: Edge = {
-							id: edgeId,
-							source: sourceNodeId,
-							target: targetNodeId,
-							type: "default",
-							markerEnd: {
-								type: MarkerType.Arrow,
-								color: "#9CA2AB",
-								width: 20,
-								height: 25,
-							},
-							style: {
-								stroke: "#9CA2AB",
-							},
-						};
+						const edge = createEdge(sourceNode, exporterNode);
 						edges.push(edge);
 					});
 				});
@@ -106,25 +71,7 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 					if (!sourceNode) {
 						return;
 					}
-
-					const sourceNodeId = sourceNode.id;
-					const targetNodeId = firstProcessorsNode.id;
-					const edgeId = `edge-${sourceNodeId}-${targetNodeId}`;
-					const edge: Edge = {
-						id: edgeId,
-						source: sourceNodeId,
-						target: targetNodeId,
-						type: "default",
-						markerEnd: {
-							type: MarkerType.Arrow,
-							color: "#9CA2AB",
-							width: 20,
-							height: 25,
-						},
-						style: {
-							stroke: "#9CA2AB",
-						},
-					};
+					const edge = createEdge(sourceNode, firstProcessorsNode);
 					edges.push(edge);
 				});
 			}
