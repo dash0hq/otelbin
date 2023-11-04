@@ -51,6 +51,8 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 		return { x: processorLength, y: positionY !== undefined ? positionY : parentHeight / 2 };
 	};
 	const processors = parentNode.processors;
+	const receivers = parentNode.receivers;
+	const exporters = parentNode.exporters;
 	keyTraces.forEach((traceItem) => {
 		switch (traceItem) {
 			case "processors":
@@ -76,16 +78,12 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 						});
 					});
 				break;
-
 			case "receivers":
-				const receivers = parentNode.receivers;
 				Array.isArray(receivers) &&
 					receivers.length > 0 &&
 					receivers.map((receiver, index) => {
-						let isConnector = false;
-						if (connectors && Object.keys(connectors).includes(receiver)) {
-							isConnector = true;
-						}
+						const isConnector = connectors && Object.keys(connectors).includes(receiver);
+
 						const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
 
 						nodesToAdd.push({
@@ -105,15 +103,9 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 						});
 					});
 				break;
-
 			case "exporters":
-				const exporters = parentNode.exporters;
 				exporters?.map((exporter, index) => {
-					let isConnector = false;
-					if (connectors && Object.keys(connectors).includes(exporter)) {
-						isConnector = true;
-					}
-
+					const isConnector = connectors && Object.keys(connectors).includes(exporter);
 					const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 					nodesToAdd.push({
 						id: id,
