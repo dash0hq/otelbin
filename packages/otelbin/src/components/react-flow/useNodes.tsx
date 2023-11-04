@@ -50,86 +50,88 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 		const processorLength = (processors?.length ?? 0) * 200 + 260;
 		return { x: processorLength, y: positionY !== undefined ? positionY : parentHeight / 2 };
 	};
+	const processors = parentNode.processors;
+	keyTraces.forEach((traceItem) => {
+		switch (traceItem) {
+			case "processors":
+				Array.isArray(processors) &&
+					processors.length > 0 &&
+					processors.map((processor, index) => {
+						const id = `${pipelineName}-Processor-processorNode-${processor}`;
 
-	keyTraces.map((traceItem) => {
-		if (traceItem === "processors") {
-			const processors = parentNode.processors;
-			Array.isArray(processors) &&
-				processors.length > 0 &&
-				processors.map((processor, index) => {
-					const id = `${pipelineName}-Processor-processorNode-${processor}`;
-
-					nodesToAdd.push({
-						id: id,
-						parentNode: pipelineName,
-						extent: "parent",
-						type: "processorsNode",
-						position: processorPosition(index, height || 100, processors),
-						data: {
-							label: processor,
-							parentNode: pipelineName,
-							type: "processors",
-							height: childNodesHeight,
+						nodesToAdd.push({
 							id: id,
-						},
-						draggable: false,
+							parentNode: pipelineName,
+							extent: "parent",
+							type: "processorsNode",
+							position: processorPosition(index, height || 100, processors),
+							data: {
+								label: processor,
+								parentNode: pipelineName,
+								type: "processors",
+								height: childNodesHeight,
+								id: id,
+							},
+							draggable: false,
+						});
 					});
-				});
-		}
-		if (traceItem === "receivers") {
-			const receivers = parentNode.receivers;
-			Array.isArray(receivers) &&
-				receivers.length > 0 &&
-				receivers.map((receiver, index) => {
+				break;
+
+			case "receivers":
+				const receivers = parentNode.receivers;
+				Array.isArray(receivers) &&
+					receivers.length > 0 &&
+					receivers.map((receiver, index) => {
+						let isConnector = false;
+						if (connectors && Object.keys(connectors).includes(receiver)) {
+							isConnector = true;
+						}
+						const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
+
+						nodesToAdd.push({
+							id: id,
+							parentNode: pipelineName,
+							extent: "parent",
+							type: "receiversNode",
+							position: receiverPosition(index, height || 100, receivers),
+							data: {
+								label: receiver,
+								parentNode: pipelineName,
+								type: isConnector ? "connectors/receivers" : "receivers",
+								height: childNodesHeight,
+								id: id,
+							},
+							draggable: false,
+						});
+					});
+				break;
+
+			case "exporters":
+				const exporters = parentNode.exporters;
+				exporters?.map((exporter, index) => {
 					let isConnector = false;
-					if (connectors && Object.keys(connectors).includes(receiver)) {
+					if (connectors && Object.keys(connectors).includes(exporter)) {
 						isConnector = true;
 					}
-					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
 
+					const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
 						extent: "parent",
-						type: "receiversNode",
-						position: receiverPosition(index, height || 100, receivers),
+						type: "exportersNode",
+						position: exporterPosition(index, height || 100, exporters, processors ?? []),
 						data: {
-							label: receiver,
+							label: exporter,
 							parentNode: pipelineName,
-							type: isConnector ? "connectors/receivers" : "receivers",
+							type: isConnector ? "connectors/exporters" : "exporters",
 							height: childNodesHeight,
 							id: id,
 						},
 						draggable: false,
 					});
 				});
-		}
-		if (traceItem === "exporters") {
-			const exporters = parentNode.exporters;
-			const processors = parentNode.processors;
-			exporters?.map((exporter, index) => {
-				let isConnector = false;
-				if (connectors && Object.keys(connectors).includes(exporter)) {
-					isConnector = true;
-				}
-
-				const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
-				nodesToAdd.push({
-					id: id,
-					parentNode: pipelineName,
-					extent: "parent",
-					type: "exportersNode",
-					position: exporterPosition(index, height || 100, exporters, processors ?? []),
-					data: {
-						label: exporter,
-						parentNode: pipelineName,
-						type: isConnector ? "connectors/exporters" : "exporters",
-						height: childNodesHeight,
-						id: id,
-					},
-					draggable: false,
-				});
-			});
+				break;
 		}
 	});
 	return nodesToAdd;

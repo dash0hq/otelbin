@@ -53,7 +53,7 @@ const Node = ({
 		borderBottom: `1px solid ${hovered ? "#6D737D" : "#40454E"}`,
 	};
 
-	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+	function handleClickNode(event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.KeyboardEvent<HTMLDivElement>) {
 		FlowClick(event, data, editorRef);
 	}
 
@@ -86,6 +86,11 @@ const Node = ({
 				style={customNodeStyles}
 				className="cursor-pointer flex-col"
 				onClick={handleClickNode}
+				onKeyDown={(e) => {
+					if (e.key === "Space") {
+						handleClickNode(e);
+					}
+				}}
 				onMouseEnter={() => setHovered(true)}
 				onMouseLeave={() => setHovered(false)}
 			>

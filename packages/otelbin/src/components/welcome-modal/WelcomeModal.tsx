@@ -65,6 +65,10 @@ export default function WelcomeModal({ open, setOpen }: { open: boolean; setOpen
 								activeStep={index === step}
 								isClickable={index < step}
 								handleClick={() => setStep(index)}
+								handleKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+									e.key === "Enter" && setStep(index);
+									setStep(index);
+								}}
 							/>
 						))}
 					</div>
@@ -90,10 +94,12 @@ function StepDiv({
 	activeStep,
 	isClickable,
 	handleClick,
+	handleKeyDown,
 }: {
 	activeStep: boolean;
 	isClickable: boolean;
 	handleClick: () => void;
+	handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }) {
 	return (
 		<>
@@ -104,6 +110,7 @@ function StepDiv({
 						: `w-[10px] bg-neutral-350 ${isClickable ? "cursor-pointer hover:bg-neutral-400" : "cursor-default"}`
 				} `}
 				onClick={isClickable ? handleClick : undefined}
+				onKeyDown={isClickable ? handleKeyDown : undefined}
 			/>
 		</>
 	);
