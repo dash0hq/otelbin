@@ -184,7 +184,7 @@ export function CountErrorMessages({
 						<p className="text-xs font-medium">{`${warningsCount} ${
 							(warningsCount || 0) === 1 ? `Warning` : `Warnings`
 						}`}</p>
-						{(warningsCount || errorsCount) && <ChevronDown width={12} color="#64748b" />}
+						{Boolean(warningsCount) || Boolean(errorsCount) ? <ChevronDown width={12} color="#64748b" /> : <></>}
 					</div>
 				</div>
 			) : (
