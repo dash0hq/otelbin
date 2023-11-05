@@ -24,7 +24,7 @@ export interface IError {
 	customWarnings?: string[];
 }
 
-export default function ErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
+export default function ValidationErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
 	const serverSideValidationResult = useServerSideValidation();
 
 	const errorCount =
@@ -37,10 +37,10 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 	const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false);
 
 	useEffect(() => {
-		if (errorCount === 0) {
+		if (errorCount === 0 && warningsCount === 0) {
 			setIsOpenErrorConsole(false);
 		}
-	}, [errorCount]);
+	}, [errorCount, warningsCount]);
 
 	return (
 		<div
@@ -50,13 +50,13 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 		>
 			<div className="flex flex-col h-full">
 				<div className="flex items-center">
-					<ErrorCount
+					<ErrorAndWarningCounter
 						errorsCount={errorCount}
 						warningsCount={0}
 						isOpen={isOpenErrorConsole}
 						setOpen={setIsOpenErrorConsole}
 					/>
-					<ErrorCount
+					<ErrorAndWarningCounter
 						isWarning
 						errorsCount={0}
 						warningsCount={warningsCount}
@@ -69,10 +69,10 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 						{errors?.customWarnings &&
 							errors.customWarnings?.length > 0 &&
 							errors.customWarnings.map((warning: string, index: number) => {
-								return <Error key={index} customWarnings={warning} font={font} />;
+								return <ErrorMessage key={index} customWarnings={warning} font={font} />;
 							})}
 						{serverSideValidationResult.result?.error && (
-							<Error
+							<ErrorMessage
 								serverSideError={
 									serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
 								}
@@ -82,14 +82,14 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 						{errors?.ajvErrors &&
 							errors.ajvErrors?.length > 0 &&
 							errors.ajvErrors.map((error: IAjvError, index: number) => {
-								return <Error key={index} error={error} font={font} />;
+								return <ErrorMessage key={index} ajvError={error} font={font} />;
 							})}
 						{errors?.customErrors &&
 							errors.customErrors?.length > 0 &&
 							errors.customErrors.map((error: string, index: number) => {
-								return <Error key={index} customErrors={error} font={font} />;
+								return <ErrorMessage key={index} customErrors={error} font={font} />;
 							})}
-						{errors?.jsYamlError?.mark?.line && <Error jsYamlError={errors && errors.jsYamlError} font={font} />}
+						{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors && errors.jsYamlError} font={font} />}
 					</div>
 				)}
 			</div>
@@ -97,15 +97,15 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 	);
 }
 
-export function Error({
-	error,
+export function ErrorMessage({
+	ajvError,
 	jsYamlError,
 	serverSideError,
 	customErrors,
 	customWarnings,
 	font,
 }: {
-	error?: IAjvError;
+	ajvError?: IAjvError;
 	jsYamlError?: IJsYamlError;
 	serverSideError?: string;
 	customErrors?: string;
@@ -121,9 +121,9 @@ export function Error({
 					<p>{`${customWarnings}`}</p>
 				</div>
 			)}
-			{error && (
+			{ajvError && (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`${error.message}`}</p>
+					<p>{`${ajvError.message}`}</p>
 				</div>
 			)}
 			{customErrors && (
@@ -149,7 +149,7 @@ export function Error({
 	);
 }
 
-export function ErrorCount({
+export function ErrorAndWarningCounter({
 	errorsCount,
 	warningsCount,
 	isOpen,
@@ -167,7 +167,12 @@ export function ErrorCount({
 			{isWarning ? (
 				<div
 					onClick={() => {
-						if (errorsCount > 0 || warningsCount || 0 > 0) {
+						if (errorsCount || warningsCount) {
+							setOpen(!isOpen);
+						}
+					}}
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
 							setOpen(!isOpen);
 						}
 					}}
@@ -179,13 +184,18 @@ export function ErrorCount({
 						<p className="text-xs font-medium">{`${warningsCount} ${
 							(warningsCount || 0) === 1 ? `Warning` : `Warnings`
 						}`}</p>
-						{((warningsCount || 0) > 0 || errorsCount > 0) && <ChevronDown width={12} color="#64748b" />}
+						{Boolean(warningsCount) || Boolean(errorsCount) ? <ChevronDown width={12} color="#64748b" /> : <></>}
 					</div>
 				</div>
 			) : (
 				<div
 					onClick={() => {
-						if (errorsCount > 0 || warningsCount || 0 > 0) {
+						if (errorsCount || warningsCount) {
+							setOpen(!isOpen);
+						}
+					}}
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
 							setOpen(!isOpen);
 						}
 					}}

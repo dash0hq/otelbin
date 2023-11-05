@@ -22,7 +22,11 @@ export interface IData {
 	id: string;
 }
 
-export function FlowClick(event: React.MouseEvent, data: IData, editorRef: EditorRefType | null) {
+export function FlowClick(
+	event: React.MouseEvent | React.KeyboardEvent<HTMLDivElement>,
+	data: IData,
+	editorRef: EditorRefType | null
+) {
 	event.stopPropagation();
 	const config = editorRef?.current?.getModel()?.getValue() || "";
 	const docElements = getParsedValue(config);

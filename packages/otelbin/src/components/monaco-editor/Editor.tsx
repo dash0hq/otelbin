@@ -5,8 +5,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
-import type { IError } from "./ErrorConsole";
-import ErrorConsole from "./ErrorConsole";
+import type { IError } from "./ValidationErrorConsole";
+import ValidationErrorConsole from "./ValidationErrorConsole";
 import EditorTopBar from "../EditorTopBar";
 import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
 import MonacoEditor, { loader, type OnChange } from "@monaco-editor/react";
@@ -59,7 +59,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		[getLink]
 	);
 
-	const errors = useMemo((): IError => {
+	const totalValidationErrors = useMemo((): IError => {
 		if (editorRef && monacoRef) {
 			return validateOtelCollectorConfigurationAndSetMarkers(currentConfig, editorRef, monacoRef);
 		} else {
@@ -67,7 +67,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}, [currentConfig, editorRef, monacoRef]);
 
-	const isValidConfig = errors.jsYamlError == null && (errors.ajvErrors?.length ?? 0) === 0;
+	const isValidConfig =
+		totalValidationErrors.jsYamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
 
 	const handleEditorChange: OnChange = (value) => {
 		setCurrentConfig(value || "");
@@ -167,7 +168,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 								</AutoSizer>
 							)}
 						</div>
-						{viewMode !== "pipeline" && <ErrorConsole errors={errors} font={firaCode} />}
+						{viewMode !== "pipeline" && <ValidationErrorConsole errors={totalValidationErrors} font={firaCode} />}
 						{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 					</div>
 					<div className="z-0 min-h-full w-full shrink grow relative">
