@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { schema } from "./JSONSchema";
-import type { IAjvError, IError, IJsYamlError } from "./ErrorConsole";
+import type { IAjvError, IError, IJsYamlError } from "./ValidationErrorConsole";
 import JsYaml from "js-yaml";
 import Ajv from "ajv";
 import type { ErrorObject } from "ajv";

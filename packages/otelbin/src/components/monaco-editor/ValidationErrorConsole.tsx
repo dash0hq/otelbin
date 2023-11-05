@@ -24,7 +24,7 @@ export interface IError {
 	customWarnings?: string[];
 }
 
-export default function ErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
+export default function ValidationErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
 	const serverSideValidationResult = useServerSideValidation();
 
 	const errorCount =
@@ -50,13 +50,13 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 		>
 			<div className="flex flex-col h-full">
 				<div className="flex items-center">
-					<CountErrorMessages
+					<ErrorAndWarningCounter
 						errorsCount={errorCount}
 						warningsCount={0}
 						isOpen={isOpenErrorConsole}
 						setOpen={setIsOpenErrorConsole}
 					/>
-					<CountErrorMessages
+					<ErrorAndWarningCounter
 						isWarning
 						errorsCount={0}
 						warningsCount={warningsCount}
@@ -82,7 +82,7 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 						{errors?.ajvErrors &&
 							errors.ajvErrors?.length > 0 &&
 							errors.ajvErrors.map((error: IAjvError, index: number) => {
-								return <ErrorMessage key={index} error={error} font={font} />;
+								return <ErrorMessage key={index} ajvError={error} font={font} />;
 							})}
 						{errors?.customErrors &&
 							errors.customErrors?.length > 0 &&
@@ -98,14 +98,14 @@ export default function ErrorConsole({ errors, font }: { errors?: IError; font: 
 }
 
 export function ErrorMessage({
-	error,
+	ajvError,
 	jsYamlError,
 	serverSideError,
 	customErrors,
 	customWarnings,
 	font,
 }: {
-	error?: IAjvError;
+	ajvError?: IAjvError;
 	jsYamlError?: IJsYamlError;
 	serverSideError?: string;
 	customErrors?: string;
@@ -121,9 +121,9 @@ export function ErrorMessage({
 					<p>{`${customWarnings}`}</p>
 				</div>
 			)}
-			{error && (
+			{ajvError && (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`${error.message}`}</p>
+					<p>{`${ajvError.message}`}</p>
 				</div>
 			)}
 			{customErrors && (
@@ -149,7 +149,7 @@ export function ErrorMessage({
 	);
 }
 
-export function CountErrorMessages({
+export function ErrorAndWarningCounter({
 	errorsCount,
 	warningsCount,
 	isOpen,
