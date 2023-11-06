@@ -41,7 +41,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	serviceItemsData = {};
 	serviceItemsData = findLeafs(
 		serviceItems,
-		docElements.filter((item: IItem) => item.key.source === "service")[0],
+		docElements.filter((item: IItem) => item.key?.source === "service")[0],
 		serviceItemsData
 	);
 
