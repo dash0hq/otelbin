@@ -82,13 +82,13 @@ export function extractMainItemsData(docElements: IItem[]) {
 	const mainItemsData: IValidateItem = {};
 
 	const mainKeys = docElements
-		.filter((item: IItem) => item.key.source !== "service")
-		.map((item: IItem) => item.key.source);
+		.filter((item: IItem) => item.key?.source !== "service")
+		.map((item: IItem) => item.key?.source);
 
 	mainKeys.forEach((key: string) => {
 		mainItemsData[key] =
 			docElements
-				.filter((item: IItem) => item.key.source === key)[0]
+				.filter((item: IItem) => item.key?.source === key)[0]
 				?.value?.items?.map((item: IItem) => {
 					return { source: item.key?.source, offset: item.key?.offset };
 				}) || [];
@@ -100,7 +100,7 @@ export function extractServiceItems(docElements: IItem[]) {
 	const serviceItems =
 		(Array.isArray(docElements) &&
 			docElements.length > 0 &&
-			docElements.filter((item: IItem) => item.key.source === "service")[0]?.value?.items) ||
+			docElements.filter((item: IItem) => item.key?.source === "service")[0]?.value?.items) ||
 		[];
 	return serviceItems;
 }
@@ -114,7 +114,7 @@ export function findLeafs(yamlItems?: IItem[], parent?: IItem, serviceItemsData?
 				if (item.value.source && parent) {
 					const source = item.value.source;
 					const offset = item.value.offset;
-					const parentKey = parent.key.source;
+					const parentKey = parent.key?.source;
 
 					if (!serviceItemsData) return;
 					if (!serviceItemsData[parentKey]) {
@@ -148,8 +148,8 @@ export function findPipelinesKeyValues(
 				if (item.value.source && parent) {
 					const source = item.value.source;
 					const offset = item.value.offset;
-					const parentKey = parent.key.source;
-					const level1ParentKey = level1Parent?.key.source;
+					const parentKey = parent.key?.source;
+					const level1ParentKey = level1Parent?.key?.source;
 					if (!serviceItemsData) return;
 					if (!serviceItemsData[parentKey]) {
 						serviceItemsData[parentKey] = [];

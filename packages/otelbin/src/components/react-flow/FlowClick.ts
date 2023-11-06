@@ -33,12 +33,12 @@ export function FlowClick(
 	const mainItemsData: IValidateItem = extractMainItemsData(docElements);
 	let pipelinesKeyValues: IValidateItem | undefined = {};
 	const serviceItems: IItem[] | undefined = extractServiceItems(docElements);
-	const pipeLineItems: IItem[] | undefined = serviceItems?.filter((item: IItem) => item.key.source === "pipelines");
+	const pipeLineItems: IItem[] | undefined = serviceItems?.filter((item: IItem) => item.key?.source === "pipelines");
 
 	pipelinesKeyValues = findPipelinesKeyValues(
 		pipeLineItems,
-		docElements.filter((item: IItem) => item.key.source === "pipelines")[0],
-		docElements.filter((item: IItem) => item.key.source === "service")[0],
+		docElements.filter((item: IItem) => item.key?.source === "pipelines")[0],
+		docElements.filter((item: IItem) => item.key?.source === "service")[0],
 		pipelinesKeyValues
 	);
 

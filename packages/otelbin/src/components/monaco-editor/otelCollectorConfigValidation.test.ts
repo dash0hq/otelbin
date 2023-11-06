@@ -97,7 +97,7 @@ describe("findLeafs", () => {
 		const docElements = getParsedValue(yaml);
 		const yamlItems = extractServiceItems(docElements);
 
-		const result = findLeafs(yamlItems, docElements.filter((item: IItem) => item.key.source === "service")[0], {});
+		const result = findLeafs(yamlItems, docElements.filter((item: IItem) => item.key?.source === "service")[0], {});
 		expect(result).toEqual({
 			extensions: [
 				{ source: "health_check", offset: 64 },

@@ -42,8 +42,8 @@ export default function Flow({
 		const parsedYaml = Array.from(new Parser().parse(value));
 		const doc = parsedYaml.find((token) => token.type === "document") as Document;
 		const docItems = doc?.value?.items ?? [];
-		const docService = docItems.find((item: IItem) => item.key.source === "service");
-		return docService?.value.items.find((item: IItem) => item.key.source === "pipelines");
+		const docService = docItems.find((item: IItem) => item.key?.source === "service");
+		return docService?.value.items.find((item: IItem) => item.key?.source === "pipelines");
 	}, [value]);
 	const initNodes = useNodes(jsonData);
 	const [nodes, setNodes] = useNodesState(initNodes !== undefined ? initNodes : []);
@@ -127,8 +127,8 @@ export default function Flow({
 										(pipelines.value.items[i]?.value.items[j]?.value.items[0]?.value.offset || 0) +
 											(pipelines.value.items[i]?.value.items[j]?.value.items[0]?.value.source?.length || 0)
 								) {
-									const level2 = pipelines.value.items[i]?.key.source || "";
-									const level3 = pipelines.value.items[i]?.value.items[j]?.key.source || "";
+									const level2 = pipelines.value.items[i]?.key?.source || "";
+									const level3 = pipelines.value.items[i]?.value.items[j]?.key?.source || "";
 									setFocusOnNode(wordAtCursor.word, level2, level3);
 									setCenter(
 										getNodePositionX(wordAtCursor.word, level2, level3) + 50,
@@ -143,8 +143,8 @@ export default function Flow({
 												(pipelines.value.items[i]?.value.items[j]?.value.items[k]?.value.offset || 0) +
 													(pipelines.value.items[i]?.value.items[j]?.value.items[k]?.value.source?.length || 0)
 										) {
-											const level2 = pipelines.value.items[i]?.key.source || "";
-											const level3 = pipelines.value.items[i]?.value.items[j]?.key.source || "";
+											const level2 = pipelines.value.items[i]?.key?.source || "";
+											const level3 = pipelines.value.items[i]?.value.items[j]?.key?.source || "";
 											setFocusOnNode(wordAtCursor.word, level2, level3);
 											setCenter(
 												getNodePositionX(wordAtCursor.word, level2, level3) + 50,
