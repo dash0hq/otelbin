@@ -10,6 +10,7 @@
 <p align="center">
   <a href="https://twitter.com/dash0hq"><img src="https://img.shields.io/twitter/follow/dash0hq?style=flat&label=%40dash0hq&logo=twitter&color=0bf&logoColor=fff" alt="Twitter" /></a>
   <a href="https://github.com/dash0hq/otelbin/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dash0hq/otelbin?label=license&logo=github&logoColor=fff&color=f80" alt="License" /></a>
+  <a href="https://sonarcloud.io/project/overview?id=dash0hq_otelbin"><img src="https://sonarcloud.io/api/project_badges/measure?project=dash0hq_otelbin&metric=alert_status" alt="SonarCloud" /></a>
 </p>
 
 <p align="center">
