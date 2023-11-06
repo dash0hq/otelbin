@@ -6,13 +6,14 @@ import type { RefObject } from "react";
 import "./decorationStyles.css";
 import {
 	type IValidateItem,
+	type IItem,
+	type ILeaf,
 	extractMainItemsData,
 	extractServiceItems,
-	type ILeaf,
 	findLineAndColumn,
 	findPipelinesKeyValues,
+	getParsedValue,
 } from "../monaco-editor/parseYaml";
-import { type IItem, getParsedValue } from "../monaco-editor/parseYaml";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
 export interface IData {
@@ -43,7 +44,7 @@ export function FlowClick(
 	);
 
 	const isConnector = data.type.includes("connectors");
-	const dataType = (event.altKey ? (isConnector ? data.type.split("/")[1] : data.type) : data.type.split("/")[0]) || "";
+	const dataType = (event.altKey ? (isConnector ? data.type.split("/")[1] : data.type) : data.type.split("/")[0]) ?? "";
 	const clickedItem = findClickedItem(data.label, dataType, mainItemsData, pipelinesKeyValues);
 
 	if (clickedItem) {
@@ -84,10 +85,10 @@ export function FlowClick(
 
 		const highlightDecoration: editor.IModelDeltaDecoration = {
 			range: {
-				startLineNumber: line || 0,
-				startColumn: column || 0,
-				endLineNumber: line || 0,
-				endColumn: column + (clickedItem?.source?.length || 0),
+				startLineNumber: line ?? 0,
+				startColumn: column ?? 0,
+				endLineNumber: line ?? 0,
+				endColumn: column + (clickedItem?.source?.length ?? 0),
 			},
 			options: {
 				isWholeLine: true,
@@ -96,7 +97,7 @@ export function FlowClick(
 			},
 		};
 
-		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) || [""];
+		const newDecorations = editorRef?.current?.getModel()?.deltaDecorations([], [highlightDecoration]) ?? [""];
 		oldDecoration = newDecorations;
 		setTimeout(() => {
 			editorRef?.current?.getModel()?.deltaDecorations(oldDecoration, []);

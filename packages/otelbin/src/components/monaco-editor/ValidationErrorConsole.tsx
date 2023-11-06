@@ -89,7 +89,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 							errors.customErrors.map((error: string, index: number) => {
 								return <ErrorMessage key={index} customErrors={error} font={font} />;
 							})}
-						{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors && errors.jsYamlError} font={font} />}
+						{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors?.jsYamlError} font={font} />}
 					</div>
 				)}
 			</div>

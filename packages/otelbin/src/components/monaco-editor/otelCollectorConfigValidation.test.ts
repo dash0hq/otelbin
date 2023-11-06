@@ -7,10 +7,11 @@ import {
 	extractMainItemsData,
 	extractServiceItems,
 	findLeafs,
+	getParsedValue,
 	type IValidateItem,
+	type IItem,
 } from "./parseYaml";
 import { capitalize, customValidate } from "./otelCollectorConfigValidation";
-import { type IItem, getParsedValue } from "./parseYaml";
 import type { editor } from "monaco-editor";
 
 const editorBinding = {
@@ -117,7 +118,7 @@ describe("findLeafs", () => {
 	});
 
 	it("should return an empty object if yamlItems is undefined", () => {
-		const result = findLeafs(undefined);
+		const result = findLeafs();
 
 		expect(result).toEqual({});
 	});

@@ -37,7 +37,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 
 	const receiverPosition = (index: number, parentHeight: number, receivers: string[]): XYPosition => {
 		const positionY = calcYPosition(index, parentHeight, receivers);
-		return { x: 50, y: positionY !== undefined ? positionY : parentHeight / 2 };
+		return { x: 50, y: positionY ?? parentHeight / 2 };
 	};
 
 	const exporterPosition = (
@@ -48,7 +48,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 	): XYPosition => {
 		const positionY = calcYPosition(index, parentHeight, exporters);
 		const processorLength = (processors?.length ?? 0) * 200 + 260;
-		return { x: processorLength, y: positionY !== undefined ? positionY : parentHeight / 2 };
+		return { x: processorLength, y: positionY ?? parentHeight / 2 };
 	};
 	const processors = parentNode.processors;
 	const receivers = parentNode.receivers;
@@ -143,7 +143,7 @@ export const useNodes = (value: IConfig) => {
 		for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
 			const receivers = pipeline.receivers?.length ?? 0;
 			const exporters = pipeline.exporters?.length ?? 0;
-			const maxNodes = Math.max(receivers, exporters) || 1;
+			const maxNodes = Math.max(receivers, exporters) ?? 1;
 			const spaceBetweenParents = 40;
 			const spaceBetweenNodes = 90;
 			const totalSpacing = maxNodes * spaceBetweenNodes;

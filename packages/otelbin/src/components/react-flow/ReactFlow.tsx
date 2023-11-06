@@ -90,7 +90,7 @@ export default function Flow({
 	};
 
 	useEffect(() => {
-		if (editorRef && editorRef.current && nodeInfo) {
+		if (editorRef?.current && nodeInfo) {
 			const cursorChangeEventListener = editorRef.current.onDidChangeCursorPosition(handleCursorPositionChange);
 			return () => {
 				cursorChangeEventListener.dispose();

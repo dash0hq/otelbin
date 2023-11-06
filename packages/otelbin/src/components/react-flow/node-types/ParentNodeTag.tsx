@@ -3,7 +3,7 @@
 
 import { parentNodesConfig } from "./ParentsNode";
 
-export default function ParentNodeTag({ tag }: { findIndex: number; tag: string }) {
+export default function ParentNodeTag({ tag }: { tag: string }) {
 	function FormatTag(tagName: string) {
 		const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 		let resultString = [""];

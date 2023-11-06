@@ -91,7 +91,7 @@ export function extractMainItemsData(docElements: IItem[]) {
 				.filter((item: IItem) => item.key?.source === key)[0]
 				?.value?.items?.map((item: IItem) => {
 					return { source: item.key?.source, offset: item.key?.offset };
-				}) || [];
+				}) ?? [];
 	});
 	return mainItemsData;
 }
@@ -108,8 +108,7 @@ export function extractServiceItems(docElements: IItem[]) {
 export function findLeafs(yamlItems?: IItem[], parent?: IItem, serviceItemsData?: IValidateItem) {
 	if (yamlItems?.length === 0 || yamlItems === undefined) return {};
 	else if (Array.isArray(yamlItems) && yamlItems.length > 0) {
-		for (let i = 0; i < yamlItems.length; i++) {
-			const item = yamlItems[i];
+		for (const item of yamlItems) {
 			if (item?.value) {
 				if (item.value.source && parent) {
 					const source = item.value.source;
@@ -142,8 +141,7 @@ export function findPipelinesKeyValues(
 ) {
 	if (yamlItems?.length === 0 || yamlItems === undefined) return {};
 	else if (Array.isArray(yamlItems) && yamlItems.length > 0) {
-		for (let i = 0; i < yamlItems.length; i++) {
-			const item = yamlItems[i];
+		for (const item of yamlItems) {
 			if (item?.value) {
 				if (item.value.source && parent) {
 					const source = item.value.source;
@@ -181,11 +179,11 @@ export function findLineAndColumn(config: string, targetOffset?: number) {
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-		const lineLength = line?.length || 0;
+		const lineLength = line?.length ?? 0;
 
 		if (currentOffset + lineLength >= (targetOffset || 0)) {
 			lineIndex = i + 1;
-			column = (targetOffset || 0) - currentOffset + 1;
+			column = (targetOffset ?? 0) - currentOffset + 1;
 			break;
 		}
 
