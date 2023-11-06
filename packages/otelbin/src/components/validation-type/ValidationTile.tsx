@@ -11,7 +11,6 @@ import { IconButton } from "../icon-button";
 import { CurrentBadge } from "./ValidationTypeContent";
 import type { Distribution } from "~/types";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
 import type { ICurrentDistro } from "./ValidationType";
@@ -29,11 +28,10 @@ export default function ValidationTile({
 }) {
 	const isDistroActive = id === currentDistro?.provider;
 
-	const [, getUrl] = useUrlState([distroBinding, distroVersionBinding]);
+	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
 	const [version, setVersion] = useState<string>(
 		isDistroActive ? currentDistro.version : data.releases[0]?.version ?? ""
 	);
-	const router = useRouter();
 
 	function formatVersionsRange(versions?: string[] | string) {
 		if (typeof versions === "string") {
@@ -114,12 +112,9 @@ export default function ValidationTile({
 							</Select>
 							<Button
 								onClick={() => {
-									router.push(
-										getUrl({
-											distro: id,
-											distroVersion: version,
-										})
-									);
+									if (typeof window !== "undefined") {
+										window.history.pushState(null, "", getLink({ distro: id, distroVersion: version }));
+									}
 									setOpen(false);
 								}}
 								size={"xs"}
