@@ -139,8 +139,23 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
         });
       }, defaultTimeout);
 
-      test('rejects empty configuration', async () => {
+      test('rejects empty validation payload', async () => {
         await expect(axios.post(validationUrl, '', {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'The provided configuration is invalid',
+            error: 'the provided configuration is empty',
+          },
+        });
+      }, defaultTimeout);
+
+      test('rejects empty configuration', async () => {
+        await expect(axios.post(validationUrl, '{"config":"", env: {"foo":"bar"}}', {
           headers: {
             'Content-Type': 'application/yaml',
             'X-Api-Key': apiKey,

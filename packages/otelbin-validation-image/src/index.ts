@@ -125,8 +125,9 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
   const env = validationPayload.env;
 
   if (
-    !config || // Empty string
-    !config?.trim().length || // Blank string (only whitespaces)
+    !validationPayload || // Empty event
+    !config || // Empty configuration string
+    !config?.trim().length || // Blank configuration string (only whitespaces)
     !Object.keys(yaml.load(config) as Object).length // Empty YAML
   ) {
     return {
