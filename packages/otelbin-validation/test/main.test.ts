@@ -8,6 +8,10 @@ import { describe, expect, jest, test } from '@jest/globals';
 import axios from 'axios';
 import { Distributions } from '../src/main';
 
+interface Env {
+  [key: string]: string;
+}
+
 const apiUrl = process.env.API_GATEWAY_URL?.replace(/[\/\\]+$/, '');
 const apiKey = process.env.VALIDATION_API_KEY;
 
@@ -45,7 +49,7 @@ const enumerateTestCases = () => {
 
 const assetFolderPath = join(__dirname, 'assets');
 
-const prepareValidationPayload = (testConfigFilename: string, env?: Map<string, string>) => ({
+const prepareValidationPayload = (testConfigFilename: string, env?: Env) => ({
   config: readFileSync(join(assetFolderPath, testConfigFilename)).toString(),
   env,
 });
@@ -53,6 +57,9 @@ const prepareValidationPayload = (testConfigFilename: string, env?: Map<string, 
 const defaultTimeout = 10_000; // 10 seconds
 
 const otelcolConfigValid = prepareValidationPayload('config-default.yaml');
+const otelcolConfigValidEnvInterpolation = prepareValidationPayload('config-default.yaml', {
+  'OTLP_ENDPOINT': 'otelcol:4317',
+});
 const otelcolConfigInvalidNoReceivers = prepareValidationPayload('config-no-receivers.yaml');
 const otelcolConfigInvalidUndeclaredExtension = prepareValidationPayload('config-undeclared-extension.yaml');
 const otelcolConfigInvalidUndeclaredReceiver = prepareValidationPayload('config-undeclared-receiver.yaml');
@@ -106,6 +113,20 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
 
       test('accepts valid configuration', async () => {
         await expect(axios.post(validationUrl, otelcolConfigValid, {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'Configuration is valid',
+          },
+        });
+      }, defaultTimeout);
+
+      test('accepts valid configuration with env var interpolation', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigValidEnvInterpolation, {
           headers: {
             'Content-Type': 'application/yaml',
             'X-Api-Key': apiKey,

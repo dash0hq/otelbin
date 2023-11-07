@@ -10,14 +10,6 @@ import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      TEST_ENVIRONMENT_NAME: string;
-    }
-  }
-}
-
 export interface Distributions {
   [key: string]: Distribution;
 }

@@ -12,14 +12,6 @@ interface SpawnError extends Error {
   signal: string;
 }
 
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      DISTRO_NAME: string;
-    }
-  }
-}
-
 interface ValidationPayload {
   config: string;
   env: Env;
@@ -34,7 +26,7 @@ const distroName = process.env.DISTRO_NAME;
 const defaultErrorPrefix = 'Error: ';
 const adotInvalidConfigPrefix = 'Error: invalid configuration: ';
 
-export const validateAdot = async (otelcolRealPath: string, configPath: string): Promise<void> => {
+export const validateAdot = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
   /*
 	 * ADOT does not support the `validate` subcommand
 	 * (see https://github.com/aws-observability/aws-otel-collector/issues/2391),
@@ -54,7 +46,12 @@ export const validateAdot = async (otelcolRealPath: string, configPath: string):
    * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
    * increases the reliability.
    */
-  const otelcol = spawn('/bin/sh', ['-c', `${otelcolRealPath} --config=${configPath}`]);
+  const otelcol = spawn('/bin/sh', ['-c', `${otelcolRealPath} --config=${configPath}`], {
+    env: {
+      ...process.env, // Ensure $PATH, terminal env vars and other basic niceties are set
+      ...env
+    },
+  });
 
   let stdout = '';
   let stderr = '';
@@ -100,7 +97,7 @@ export const validateAdot = async (otelcolRealPath: string, configPath: string):
     });
 };
 
-export const validateOtelCol = async (otelcolRealPath: string, configPath: string): Promise<void> => {
+export const validateOtelCol = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
   /*
    * Node.js spawn is unreliable in terms of collecting stdout and stderr through the spawn call
    * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
@@ -125,6 +122,7 @@ const extractErrorPath = (errorMessage: string) => {
 export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   const validationPayload = JSON.parse(event.body!) as ValidationPayload;
   const config = validationPayload.config;
+  const env = validationPayload.env;
 
   if (
     !config || // Empty string
@@ -153,10 +151,10 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
 
     switch (distroName) {
       case 'adot':
-        await validateAdot(otelcolRealPath, configPath);
+        await validateAdot(otelcolRealPath, configPath, env);
         break;
       default:
-        await validateOtelCol(otelcolRealPath, configPath);
+        await validateOtelCol(otelcolRealPath, configPath, env);
     }
 
     return {
