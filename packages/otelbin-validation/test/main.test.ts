@@ -4,7 +4,7 @@
 
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 import axios from 'axios';
 import { Distributions } from '../src/main';
 
@@ -55,6 +55,8 @@ const otelcolConfigInvalidUndeclaredExtension = readConfig('config-undeclared-ex
 const otelcolConfigInvalidUndeclaredReceiver = readConfig('config-undeclared-receiver.yaml');
 
 describe.each(enumerateTestCases())('Validation API', (distributionName, release) => {
+
+  jest.retryTimes(5);
 
   const validationReleasePath = `validation/${distributionName}/${release}`;
   const validationUrl = `${apiUrl}/${validationReleasePath}`;

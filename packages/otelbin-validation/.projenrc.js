@@ -4,7 +4,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   defaultReleaseBranch: 'main',
   name: 'otelbin-validation',
   deps: ['aws-lambda'],
-  devDeps: ['@jest/globals', '@types/aws-lambda', 'axios', 'esbuild'],
+  devDeps: ['@jest/globals', '@types/aws-lambda', 'axios', 'esbuild', 'jest-circus'],
   github: false, // Skip GitHub integration, as this CDK app is not in the repo's root
   packageManager: 'npm',
   eslintOptions: {
@@ -16,6 +16,11 @@ const project = new awscdk.AwsCdkTypeScriptApp({
       'coverage',
       'src/images/otelcol-validator/',
     ],
+  },
+  jestOptions: {
+    jestConfig: {
+      testRunner: 'jest-circus/runner',
+    },
   },
 });
 project.synth();
