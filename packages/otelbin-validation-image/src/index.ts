@@ -120,7 +120,14 @@ const extractErrorPath = (errorMessage: string) => {
 };
 
 export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
-  const validationPayload = JSON.parse(event.body!) as ValidationPayload;
+  let body = event.body!;
+
+  if (event.isBase64Encoded) {
+    let buff = Buffer.from(body, 'base64');
+    body = buff.toString('ascii');
+  }
+
+  const validationPayload = JSON.parse(body) as ValidationPayload;
   const config = validationPayload.config;
   const env = validationPayload.env;
 
