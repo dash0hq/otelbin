@@ -45,15 +45,18 @@ const enumerateTestCases = () => {
 
 const assetFolderPath = join(__dirname, 'assets');
 
-const readConfig = (testConfigFilename: string) => readFileSync(join(assetFolderPath, testConfigFilename)).toString();
+const prepareValidationPayload = (testConfigFilename: string, env?: Map<string, string>) => ({
+  config: readFileSync(join(assetFolderPath, testConfigFilename)).toString(),
+  env,
+});
 
 const defaultTimeout = 10_000; // 10 seconds
 
-const otelcolConfigValid = readConfig('config-default.yaml');
-const otelcolConfigInvalidNoReceivers = readConfig('config-no-receivers.yaml');
-const otelcolConfigInvalidUndeclaredExtension = readConfig('config-undeclared-extension.yaml');
-const otelcolConfigInvalidUndeclaredReceiver = readConfig('config-undeclared-receiver.yaml');
-const otelcolConfigInvalidUndeclaredReceiverNamedPipeline = readConfig('config-undeclared-receiver-named-pipelines.yaml');
+const otelcolConfigValid = prepareValidationPayload('config-default.yaml');
+const otelcolConfigInvalidNoReceivers = prepareValidationPayload('config-no-receivers.yaml');
+const otelcolConfigInvalidUndeclaredExtension = prepareValidationPayload('config-undeclared-extension.yaml');
+const otelcolConfigInvalidUndeclaredReceiver = prepareValidationPayload('config-undeclared-receiver.yaml');
+const otelcolConfigInvalidUndeclaredReceiverNamedPipeline = prepareValidationPayload('config-undeclared-receiver-named-pipelines.yaml');
 
 describe.each(enumerateTestCases())('Validation API', (distributionName, release) => {
 

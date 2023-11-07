@@ -66,7 +66,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 					"COLLECTOR_CONFIGURATION_VALIDATION_API_KEY env var is not configured"
 				),
 			},
-			body: config,
+			body: {
+				config,
+			},
 			retries: 3,
 			retryDelay: 1000,
 			retryOn: [500, 503],
