@@ -132,7 +132,6 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
   ) {
     return {
       statusCode: 200,
-      // Unfortunately the collector returns one validation error at the time
       body: JSON.stringify({
         message: 'The provided configuration is invalid',
         error: 'the provided configuration is empty',

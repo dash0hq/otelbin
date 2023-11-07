@@ -49,7 +49,7 @@ const enumerateTestCases = () => {
 
 const assetFolderPath = join(__dirname, 'assets');
 
-const prepareValidationPayload = (testConfigFilename: string, env?: Env) => ({
+const prepareValidationPayload = (testConfigFilename: string, env?: Env) => JSON.stringify({
   config: readFileSync(join(assetFolderPath, testConfigFilename)).toString(),
   env,
 });
