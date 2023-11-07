@@ -5,6 +5,7 @@ import { ApiKeySourceType, AwsIntegration, LambdaIntegration, RestApi, UsagePlan
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Architecture, DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
@@ -166,6 +167,7 @@ export class OTelBinValidationStack extends Stack {
 					 */
           memorySize: 1024,
           timeout: Duration.seconds(15),
+          logRetention: RetentionDays.THREE_DAYS,
         });
 
         const releaseResource = distributionResource.addResource(release.version);
