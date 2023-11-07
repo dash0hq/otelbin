@@ -60,6 +60,12 @@ export interface Document {
 	end?: SourceToken[];
 }
 
+export interface IYamlElement {
+	key: string;
+	offset: number;
+	value?: IYamlElement | IYamlElement[] | string;
+}
+
 export interface ILeaf {
 	source?: string;
 	offset: number;
@@ -70,13 +76,29 @@ export interface IValidateItem {
 	[key: string]: ILeaf[];
 }
 
-export const getParsedValue = (editorValue: string) => {
+export const getYamlDocument = (editorValue: string) => {
 	const value = editorValue;
 	const parsedYaml = Array.from(new Parser().parse(value));
 	const doc = parsedYaml.find((token) => token.type === "document") as Document;
 	const docElements: IItem[] = doc?.value?.items ?? [];
 	return docElements;
 };
+
+export function parseYaml(yamlItems: IItem[]) {
+	const parsedYamlConfig: IYamlElement[] = [];
+	if (!yamlItems) return;
+	else if (Array.isArray(yamlItems)) {
+		for (const item of yamlItems) {
+			if (item) {
+				const key = item.key?.source ?? item.value?.source;
+				const keyOffset = item.key?.offset ?? item.value?.offset;
+				const value = parseYaml(item.value?.items) ?? item.value?.source;
+				parsedYamlConfig.push({ key: key, offset: keyOffset, value: value });
+			}
+		}
+	}
+	return parsedYamlConfig;
+}
 
 export function extractMainItemsData(docElements: IItem[]) {
 	const mainItemsData: IValidateItem = {};

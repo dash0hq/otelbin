@@ -10,7 +10,7 @@ import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import type { IItem } from "../components/monaco-editor/parseYaml";
-import { getParsedValue } from "../components/monaco-editor/parseYaml";
+import { getYamlDocument } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
@@ -172,10 +172,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		);
 
 		let value = editorRef.current?.getValue() ?? "";
-		let docElements = getParsedValue(value);
+		let docElements = getYamlDocument(value);
 		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
-			docElements = getParsedValue(value);
+			docElements = getYamlDocument(value);
 		});
 
 		function correctKey(value: string, key?: string, key2?: string) {

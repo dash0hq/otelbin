@@ -12,7 +12,7 @@ import {
 	extractServiceItems,
 	findLineAndColumn,
 	findPipelinesKeyValues,
-	getParsedValue,
+	getYamlDocument,
 } from "../monaco-editor/parseYaml";
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -30,7 +30,7 @@ export function FlowClick(
 ) {
 	event.stopPropagation();
 	const config = editorRef?.current?.getModel()?.getValue() || "";
-	const docElements = getParsedValue(config);
+	const docElements = getYamlDocument(config);
 	const mainItemsData: IValidateItem = extractMainItemsData(docElements);
 	let pipelinesKeyValues: IValidateItem | undefined = {};
 	const serviceItems: IItem[] | undefined = extractServiceItems(docElements);

@@ -8,6 +8,7 @@ import { useServerSideValidation } from "../validation/useServerSideValidation";
 
 export interface IAjvError {
 	message: string;
+	line?: number | null;
 }
 
 export interface IJsYamlError {
@@ -26,7 +27,6 @@ export interface IError {
 
 export default function ValidationErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
 	const serverSideValidationResult = useServerSideValidation();
-
 	const errorCount =
 		(errors?.ajvErrors?.length ?? 0) +
 		(errors?.jsYamlError != null ? 1 : 0) +
@@ -123,7 +123,7 @@ export function ErrorMessage({
 			)}
 			{ajvError && (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`${ajvError.message}`}</p>
+					<p>{`${ajvError.message} ${(ajvError.line ?? 0) > 1 ? `(Line ${ajvError.line})` : ""}`}</p>
 				</div>
 			)}
 			{customErrors && (

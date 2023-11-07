@@ -3,15 +3,17 @@
 
 import { describe, expect, test, it } from "@jest/globals";
 import {
+	type IValidateItem,
+	type IItem,
+	type IYamlElement,
 	findLineAndColumn,
 	extractMainItemsData,
 	extractServiceItems,
 	findLeafs,
-	getParsedValue,
-	type IValidateItem,
-	type IItem,
+	getYamlDocument,
+	parseYaml,
 } from "./parseYaml";
-import { capitalize, customValidate } from "./otelCollectorConfigValidation";
+import { capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
 import type { editor } from "monaco-editor";
 
 const editorBinding = {
@@ -71,7 +73,7 @@ test("find Line And Column of the given offset in a string", () => {
 describe("extractMainItemsData", () => {
 	it("should correctly extract level 1 and leve2 key value pairs with level2 offset", () => {
 		const yaml = editorBinding.fallback;
-		const docElements = getParsedValue(yaml);
+		const docElements = getYamlDocument(yaml);
 		const result = extractMainItemsData(docElements);
 
 		const expectedOutput: IValidateItem = {
@@ -95,7 +97,7 @@ describe("extractMainItemsData", () => {
 describe("findLeafs", () => {
 	it("should return leaf level and the parent of the leaf with offsets for the given yaml item", () => {
 		const yaml = editorBinding.fallback;
-		const docElements = getParsedValue(yaml);
+		const docElements = getYamlDocument(yaml);
 		const yamlItems = extractServiceItems(docElements);
 
 		const result = findLeafs(yamlItems, docElements.filter((item: IItem) => item.key?.source === "service")[0], {});
@@ -183,5 +185,47 @@ describe("customValidate", () => {
 			customErrors: ['Extension "item5E" is not defined. (line 1)', 'Receiver "item6" is not defined. (line 1)'],
 			customWarnings: ['Extension "item5" is unused. (line 1)', 'Receiver "item6E" is unused. (line 1)'],
 		});
+	});
+});
+
+// Tested with brief editorBinding.fallback
+describe("findErrorElement", () => {
+	const yaml = editorBinding.fallback;
+	const docElements = getYamlDocument(yaml);
+	const parsedYaml = parseYaml(docElements);
+	const exampleAjvErrorPath = ["service", "pipelines", "traces", "exporters"];
+
+	it("should correctly find last element of ajv validation errorPath from a yaml file that parsed with parseYaml function", () => {
+		const result = findErrorElement(exampleAjvErrorPath, parsedYaml);
+
+		const expectedOutput: IYamlElement = {
+			key: "exporters",
+			offset: 174,
+			value: [
+				{
+					key: "otlp",
+					offset: 186,
+					value: "otlp",
+				},
+			],
+		};
+
+		expect(result).toEqual(expectedOutput);
+	});
+
+	it("with empty error path should return undefined", () => {
+		const result = findErrorElement([], parsedYaml);
+
+		const expectedOutput = undefined;
+
+		expect(result).toEqual(expectedOutput);
+	});
+
+	it("with empty parsed yaml doc should return undefined", () => {
+		const result = findErrorElement(exampleAjvErrorPath, []);
+
+		const expectedOutput = undefined;
+
+		expect(result).toEqual(expectedOutput);
 	});
 });
