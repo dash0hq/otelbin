@@ -1,5 +1,5 @@
 import { realpath, writeFile } from 'fs/promises';
-import { spawn } from 'node:child_process';
+import { spawn } from 'child_process';
 import spawnAsync from '@expo/spawn-async';
 import { APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 import * as yaml from 'js-yaml';

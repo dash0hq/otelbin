@@ -19,11 +19,13 @@
   "homepage": "https://github.com/dash0hq/otelbin#readme",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.122",
+    "@types/js-yaml": "^4.0.8",
+    "@types/node": "^20.8.10",
     "esbuild": "^0.19.4"
   },
   "dependencies": {
-    "aws-lambda": "^1.0.7",
     "@expo/spawn-async": "^1.7.2",
+    "aws-lambda": "^1.0.7",
     "js-yaml": "^4.1.0"
   }
 }
