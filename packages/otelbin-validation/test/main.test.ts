@@ -82,7 +82,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test(`has data about ${distributionName}/${release}`, async () => {
         const res = await axios.get(supportedDistributionsUrl, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         });
@@ -114,7 +114,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('accepts valid configuration', async () => {
         await expect(axios.post(validationUrl, otelcolConfigValid, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -128,7 +128,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('accepts valid configuration with env var interpolation', async () => {
         await expect(axios.post(validationUrl, otelcolConfigValidEnvInterpolation, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -140,9 +140,9 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       }, defaultTimeout);
 
       test('rejects empty validation payload', async () => {
-        await expect(axios.post(validationUrl, '', {
+        await expect(axios.post(validationUrl, '{}', {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -157,7 +157,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('rejects empty configuration', async () => {
         await expect(axios.post(validationUrl, '{"config":"", env: {"foo":"bar"}}', {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -172,7 +172,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('rejects configuration without declared receivers', async () => {
         await expect(axios.post(validationUrl, otelcolConfigInvalidNoReceivers, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -187,7 +187,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('rejects configuration with undeclared receiver', async () => {
         await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredReceiver, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -219,7 +219,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('rejects configuration with undeclared extension', async () => {
         await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredExtension, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({

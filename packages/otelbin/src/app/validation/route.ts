@@ -59,7 +59,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		{
 			method: "POST",
 			headers: {
-				"Content-Type": "application/yaml",
+				"Content-Type": "application/json",
 				Accept: "application/json",
 				"X-API-KEY": assertValue(
 					process.env.COLLECTOR_CONFIGURATION_VALIDATION_API_KEY,
