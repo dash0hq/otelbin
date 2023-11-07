@@ -102,16 +102,14 @@ function StepDiv({
 	handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }) {
 	return (
-		<>
-			<div
-				className={`h-[10px] rounded-full ${
-					activeStep
-						? "w-[30px] bg-neutral-500"
-						: `w-[10px] bg-neutral-350 ${isClickable ? "cursor-pointer hover:bg-neutral-400" : "cursor-default"}`
-				} `}
-				onClick={isClickable ? handleClick : undefined}
-				onKeyDown={isClickable ? handleKeyDown : undefined}
-			/>
-		</>
+		<div
+			className={`h-[10px] rounded-full ${
+				activeStep
+					? "w-[30px] bg-neutral-500"
+					: `w-[10px] bg-neutral-350 ${isClickable ? "cursor-pointer hover:bg-neutral-400" : "cursor-default"}`
+			} `}
+			onClick={isClickable ? handleClick : undefined}
+			onKeyDown={isClickable ? handleKeyDown : undefined}
+		/>
 	);
 }

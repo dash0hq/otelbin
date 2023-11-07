@@ -4,7 +4,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import React from "react";
 import type { IError } from "./ValidationErrorConsole";
 import ValidationErrorConsole from "./ValidationErrorConsole";
 import EditorTopBar from "../EditorTopBar";
@@ -37,7 +36,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const editorDidMount = useEditorDidMount();
 	const editorRef = useEditorRef();
 	const monacoRef = useMonacoRef();
-	const [width, setWidth] = useState(Number(localStorage.getItem("width") || 440));
+	const [width, setWidth] = useState(Number(localStorage.getItem("width") ?? 440));
 	const { setViewMode, viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
@@ -127,6 +126,17 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}, [clerk.loaded]);
 
+	function calculateViewWidth(viewMode: string, width: number) {
+		switch (viewMode) {
+			case "code":
+				return "100%";
+			case "pipeline":
+				return "0px";
+			default:
+				return `${width}px`;
+		}
+	}
+
 	return (
 		<>
 			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
@@ -136,7 +146,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 					<div
 						className={`relative flex shrink-0 select-none flex-col`}
 						style={{
-							width: viewMode === "code" ? "100%" : viewMode === "pipeline" ? "0px" : `${width}px`,
+							width: calculateViewWidth(viewMode, width),
 						}}
 					>
 						<EditorTopBar config={currentConfig} font={firaCode} />

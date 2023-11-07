@@ -138,7 +138,7 @@ describe("findPipelinesKeyValues", () => {
 	});
 
 	it("should return an empty object if yamlItems is undefined", () => {
-		const result = findPipelinesKeyValues(undefined);
+		const result = findPipelinesKeyValues();
 
 		expect(result).toEqual({});
 	});

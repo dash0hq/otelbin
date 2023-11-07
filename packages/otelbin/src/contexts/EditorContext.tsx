@@ -11,8 +11,7 @@ import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import type { IItem } from "../components/monaco-editor/parseYaml";
 import { getParsedValue } from "../components/monaco-editor/parseYaml";
-import { type WorkerGetter } from "monaco-worker-manager";
-import { createWorkerManager } from "monaco-worker-manager";
+import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 
@@ -188,9 +187,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		function findSymbols(yamlItems: IItem[], currentPath: string, searchFilter: string, cursorOffset: number) {
 			if (yamlItems.length === 0) return;
 			else if (Array.isArray(yamlItems)) {
-				for (let i = 0; i < yamlItems.length; i++) {
-					const item = yamlItems[i];
-
+				for (const item of yamlItems) {
 					if (item?.key && item.key.source.includes(searchFilter)) {
 						const keyOffset = item.key.offset;
 						const keyLength = item.key.source.length;
@@ -198,18 +195,18 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 						if (cursorOffset >= keyOffset && cursorOffset <= sepNewLineOffset) {
 							setTimeout(() => {
-								setPath(correctKey(currentPath, item.key.source) as string);
+								setPath(correctKey(currentPath, item.key.source));
 							}, 10);
 							return;
 						}
 					}
 					if (item?.value) {
-						if (item.value.source && item.value.source.includes(searchFilter)) {
+						if (item?.value?.source?.includes(searchFilter)) {
 							const valueOffset = item.value.offset;
 							const valueLength = item.value.source.length;
 							const valueEndOffset =
-								item.value.end && item.value.end.length > 0 && item.value.end[0] && item.value.end[0].offset
-									? item.value.end[0].offset
+								item?.value?.end?.length && item.value.end?.[0]?.offset
+									? item.value.end?.[0].offset
 									: valueLength + valueOffset;
 
 							if (cursorOffset >= valueOffset && cursorOffset <= valueEndOffset) {
@@ -240,7 +237,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		}
 
 		editorRef.current.onDidChangeCursorPosition((e) => {
-			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) || 0;
+			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) ?? 0;
 			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || {
 				word: "",
 				startColumn: 0,

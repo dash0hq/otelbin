@@ -43,7 +43,7 @@ export default function ValidationTile({
 			case 1:
 				return versions[0];
 			default:
-				return `${versions && versions[versions.length - 1]} - ${versions && versions[0]}`;
+				return `${versions && versions[versions.length - 1]} - ${versions?.[0]}`;
 		}
 	}
 

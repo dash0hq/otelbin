@@ -71,10 +71,10 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	} catch (error: unknown) {
 		const knownError = error as IJsYamlError;
 		const errorLineNumber = knownError.mark?.line;
-		const errorMessage = knownError.reason || "Unknown error";
+		const errorMessage = knownError.reason ?? "Unknown error";
 		const errorMarker = {
-			startLineNumber: errorLineNumber || 0,
-			endLineNumber: errorLineNumber || 0,
+			startLineNumber: errorLineNumber ?? 0,
+			endLineNumber: errorLineNumber ?? 0,
 			startColumn: 0,
 			endColumn: 0,
 			severity: 8,
@@ -101,7 +101,7 @@ export function customValidate(
 	if (!mainItemsData) return totalErrors;
 	for (const key of Object.keys(mainItemsData)) {
 		const mainItems = mainItemsData[key];
-		const serviceItems = serviceItemsData && serviceItemsData[key];
+		const serviceItems = serviceItemsData?.[key];
 
 		if (!serviceItems) continue;
 
@@ -112,7 +112,7 @@ export function customValidate(
 			) {
 				const errorMessage = `${capitalize(key)} "${item.source}" is not defined.`;
 				const { line, column } = findLineAndColumn(configData, item.offset);
-				const endColumn = column + (item.source?.length || 0);
+				const endColumn = column + (item.source?.length ?? 0);
 
 				const errorMarker = {
 					startLineNumber: line || 0,
@@ -130,12 +130,12 @@ export function customValidate(
 			if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
 				const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
 				const { line, column } = findLineAndColumn(configData, item.offset);
-				const endColumn = column + (item.source?.length || 0);
+				const endColumn = column + (item.source?.length ?? 0);
 
 				const errorMarker = {
-					startLineNumber: line || 0,
+					startLineNumber: line ?? 0,
 					endLineNumber: 0,
-					startColumn: column || 0,
+					startColumn: column ?? 0,
 					endColumn: endColumn,
 					severity: 4,
 					message: errorMessage,

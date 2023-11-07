@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo } from "react";
+import { memo } from "react";
 import ParentNodeTag from "./ParentNodeTag";
-import { useNodes, useReactFlow } from "reactflow";
+import { useNodes } from "reactflow";
 import { BarChart4, ListTree, Workflow } from "lucide-react";
 
 interface IData {
@@ -47,17 +47,10 @@ export const parentNodesConfig = [
 ];
 
 const ParentsNode = ({ data }: { data: IData }) => {
-	const rectaFlowInstance = useReactFlow();
 	const nodes = useNodes();
 	const childNodes = nodes.filter((node) => node.parentNode === data.label);
 	const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
 	const maxWidth = childProcessorsNodes.length * 200 + 430;
-
-	const parentNodes = rectaFlowInstance
-		.getNodes()
-		.filter((node) => node.type === "parentNodeType")
-		.map((node) => node.data.label);
-	const findIndex = parentNodes.findIndex((node) => node === data.label);
 
 	return (
 		<>
@@ -76,7 +69,7 @@ const ParentsNode = ({ data }: { data: IData }) => {
 							}}
 							className="rounded-[4px] text-[10px] text-black"
 						>
-							<ParentNodeTag findIndex={findIndex} tag={data.label} />
+							<ParentNodeTag tag={data.label} />
 						</div>
 					);
 				})}
