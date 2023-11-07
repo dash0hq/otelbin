@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # Ensure test name is not long enough to break restrictions on length names in AWS (e.g., role-name length)
 # This logic ensures test envs have max length 18. Names of length 13 to 17 will become of length 18 to ensure
