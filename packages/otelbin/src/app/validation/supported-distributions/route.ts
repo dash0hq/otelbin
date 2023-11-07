@@ -24,6 +24,7 @@ export async function GET(): Promise<NextResponse> {
 				retries: 3,
 				retryDelay: 1000,
 				retryOn: [500, 503],
+				next: { revalidate: 120 },
 			}
 		);
 	} catch (e) {
