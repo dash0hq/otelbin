@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { describe, expect, it } from "@jest/globals";
-import type { IItem } from "./parseYaml";
-import { getParsedValue, extractServiceItems, findPipelinesKeyValues } from "./parseYaml";
+import type { IItem, IYamlElement } from "./parseYaml";
+import { getYamlDocument, extractServiceItems, findPipelinesKeyValues, parseYaml } from "./parseYaml";
 
 //The example contains pipelines with duplicated names (otlp and batch)
 const editorBinding = {
@@ -49,10 +49,87 @@ testItem2:
 } as const;
 
 // Tested with brief serviceTest.fallback
+describe("parseYaml", () => {
+	it("should return a minimal version of npm yaml Document consists all of the key values of yaml string with related offsets", () => {
+		const yaml = serviceTest.fallback;
+		const docElements = getYamlDocument(yaml);
+		const result: IYamlElement[] | undefined = parseYaml(docElements);
+
+		expect(result).toEqual([
+			{
+				key: "receivers",
+				offset: 0,
+				value: [
+					{
+						key: "otlp",
+						offset: 13,
+						value: undefined,
+					},
+				],
+			},
+			{
+				key: "processors",
+				offset: 19,
+				value: [
+					{
+						key: "batch",
+						offset: 33,
+						value: undefined,
+					},
+				],
+			},
+			{
+				key: "service",
+				offset: 40,
+				value: [
+					{
+						key: "extensions",
+						offset: 51,
+						value: [
+							{
+								key: "health_check",
+								offset: 64,
+								value: "health_check",
+							},
+							{
+								key: "pprof",
+								offset: 78,
+								value: "pprof",
+							},
+							{
+								key: "zpages",
+								offset: 85,
+								value: "zpages",
+							},
+						],
+					},
+				],
+			},
+			{
+				key: "testItem1",
+				offset: 93,
+				value: undefined,
+			},
+			{
+				key: "testItem2",
+				offset: 104,
+				value: undefined,
+			},
+		]);
+	});
+
+	it("should return an empty array if docElements is empty", () => {
+		const result = parseYaml([]);
+
+		expect(result).toEqual([]);
+	});
+});
+
+// Tested with brief serviceTest.fallback
 describe("extractServiceItems", () => {
 	it("should return service item in the doc object of the yaml parser", () => {
 		const yaml = serviceTest.fallback;
-		const docElements = getParsedValue(yaml);
+		const docElements = getYamlDocument(yaml);
 		const result: IItem[] | undefined = extractServiceItems(docElements);
 
 		expect(result).toEqual([
@@ -105,7 +182,7 @@ describe("extractServiceItems", () => {
 describe("findPipelinesKeyValues", () => {
 	it("should return return main key values (also with duplicated names) under service.pipelines with their offset in the config", () => {
 		const yaml = editorBinding.fallback;
-		const docElements = getParsedValue(yaml);
+		const docElements = getYamlDocument(yaml);
 		const serviceItems: IItem[] | undefined = extractServiceItems(docElements);
 		const pipeLineItems: IItem[] | undefined = serviceItems?.filter((item: IItem) => item.key?.source === "pipelines");
 

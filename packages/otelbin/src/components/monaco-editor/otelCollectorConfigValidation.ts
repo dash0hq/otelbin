@@ -11,12 +11,14 @@ import type { editor } from "monaco-editor";
 import { type Monaco } from "@monaco-editor/react";
 import {
 	type IItem,
-	getParsedValue,
+	type IYamlElement,
 	type IValidateItem,
+	getYamlDocument,
 	extractMainItemsData,
 	extractServiceItems,
 	findLeafs,
 	findLineAndColumn,
+	parseYaml,
 } from "./parseYaml";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
@@ -35,7 +37,8 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	const ajvError: IAjvError[] = [];
 	const totalErrors: IError = { ajvErrors: ajvError, customErrors: [], customWarnings: [] };
 	const errorMarkers: editor.IMarkerData[] = [];
-	const docElements = getParsedValue(configData);
+	const docElements = getYamlDocument(configData);
+	const parsedYamlConfig = parseYaml(docElements);
 	const mainItemsData: IValidateItem = extractMainItemsData(docElements);
 	const serviceItems: IItem[] | undefined = extractServiceItems(docElements);
 	serviceItemsData = {};
@@ -53,12 +56,22 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 
 			if (errors) {
 				const validationErrors = errors.map((error: ErrorObject) => {
+					const errorPath = error.instancePath.split("/").slice(1);
+					const errorElement = findErrorElement(errorPath, parsedYamlConfig);
+					const { line, column } = findLineAndColumn(configData, errorElement?.offset);
 					const errorInfo = {
-						line: null as number | null,
-						column: null as number | null,
+						line: line as number | null,
+						column: column as number | null,
 						message: error.message || "Unknown error",
 					};
-
+					errorMarkers.push({
+						startLineNumber: errorInfo.line ?? 0,
+						endLineNumber: 0,
+						startColumn: errorInfo.column ?? 0,
+						endColumn: errorInfo.column ?? 0,
+						severity: 8,
+						message: errorInfo.message,
+					});
 					if (error instanceof JsYaml.YAMLException) {
 						errorInfo.line = error.mark.line + 1;
 						errorInfo.column = error.mark.column + 1;
@@ -160,3 +173,22 @@ export function capitalize(input: string): string {
 
 	return capitalized;
 }
+
+export const findErrorElement = (path: string[], data?: IYamlElement[]): IYamlElement | undefined => {
+	if (!path.length || !data) {
+		return undefined;
+	}
+
+	const [head, ...tail] = path;
+
+	for (const item of data) {
+		if (item.key === head) {
+			if (tail.length === 0 || !Array.isArray(item.value)) {
+				return item;
+			}
+
+			return findErrorElement(tail, item.value);
+		}
+	}
+	return undefined;
+};
