@@ -75,7 +75,8 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 								type: "array",
 								minItems: 1,
 								errorMessage: {
-									minItems: "The pipeline must reference at least one receiver, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
+									minItems:
+										"The pipeline must reference at least one receiver, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 								},
 							},
 							processors: {
@@ -85,15 +86,18 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 								type: "array",
 								minItems: 1,
 								errorMessage: {
-									minItems: "The pipeline must reference at least one exporter, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
+									minItems:
+										"The pipeline must reference at least one exporter, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 								},
 							},
 						},
 						required: ["receivers", "exporters"],
 						errorMessage: {
 							required: {
-								receivers: "The pipeline must reference at least one receiver, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
-								exporters: "The pipeline must reference at least one exporter, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
+								receivers:
+									"The pipeline must reference at least one receiver, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
+								exporters:
+									"The pipeline must reference at least one exporter, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 							},
 						},
 					},
@@ -104,7 +108,8 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 			},
 			required: ["pipelines"],
 			errorMessage: {
-				required: "At least one pipeline must be specified, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
+				required:
+					"At least one pipeline must be specified, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 				type: "The 'pipeline' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 			},
 		},
@@ -118,7 +123,8 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 	},
 	errorMessage: {
 		type: "The configuration must be a map, see https://opentelemetry.io/docs/collector/configuration",
-		required: "The configuration must specify at least the 'receivers', 'exporters, and 'service' entries, see https://opentelemetry.io/docs/collector/configuration",
+		required:
+			"The configuration must specify at least the 'receivers', 'exporters, and 'service' entries, see https://opentelemetry.io/docs/collector/configuration",
 	},
 	required: ["service", "receivers", "exporters"],
 };
