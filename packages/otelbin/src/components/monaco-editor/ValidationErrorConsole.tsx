@@ -112,8 +112,8 @@ export function ErrorMessage({
 	customWarnings?: string;
 	font: NextFont;
 }) {
-	const errorsStyle = "flex items-center gap-x-1 text-xs font-normal text-red-600";
-	const warningStyle = "flex items-center gap-x-1 text-xs font-normal text-yellow-300";
+	const errorsStyle = "flex items-center gap-x-1 text-xs font-normal text-red-600 select-text";
+	const warningStyle = "flex items-center gap-x-1 text-xs font-normal text-yellow-300 select-text";
 	return (
 		<>
 			{customWarnings && (
