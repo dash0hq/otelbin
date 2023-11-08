@@ -77,18 +77,13 @@ jobs:
       - name: Get test environment name
         id: get_test_env_name
         shell: bash
+        env:
+          REF_NAME: ${{ github.head_ref || github.ref_name }}
         # When the trigger is a pull event, use the PR's branch name (`github.head_ref`), which
         # is available only for pull trigger. Otherwise, use the branch on which the commit was pushed.
         # (Ref names in pull requests are in the shape of `<pr_id>/merge` and those will break CDK.)
         run: |
-          export REF_NAME="${{ github.head_ref || github.ref_name }}"
-          # Ensure test name is not long enough to break restrictions on length names in AWS (e.g., role-name length)
-          # This logic ensures test envs have max length 18. Names of length 13 to 17 will become of length 18 to ensure
-          # no accidental clashes.
-          if [[ ${#REF_NAME} -gt 12 ]]; then
-            REF_NAME="${REF_NAME:0:12}-$(echo "${REF_NAME:12}" | md5sum | awk '{print $1}' | cut -c 1-5 | tr -d '\n')"
-          fi
-          echo "test_env_name=${REF_NAME}" >> $GITHUB_OUTPUT || exit 1
+          echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> $GITHUB_OUTPUT || exit 1
 
       - name: Deploy validation backend
         shell: bash
