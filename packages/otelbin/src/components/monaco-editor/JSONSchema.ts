@@ -104,7 +104,7 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 			},
 			required: ["pipelines"],
 			errorMessage: {
-				required: "the “service” configuration must define pipelines",
+				required: "The “service” configuration must define pipelines",
 				type: "service property must be yaml map/dictionary",
 			},
 		},
@@ -118,7 +118,7 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 	},
 	errorMessage: {
 		type: "Must be a valid OpenTelemetry Collector configuration",
-		required: "the configuration must specify a “service” entry to define pipelines",
+		required: "The configuration must specify a “service” entry to define pipelines",
 	},
 	required: ["service"],
 };
