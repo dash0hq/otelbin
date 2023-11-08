@@ -38,28 +38,28 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 			type: "object",
 			additionalProperties: true,
 			errorMessage: {
-				type: "receivers property must be yaml map/dictionary",
+				type: "The 'receivers' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#receivers",
 			},
 		},
 		processors: {
 			type: "object",
 			additionalProperties: true,
 			errorMessage: {
-				type: "processors property must be yaml map/dictionary",
+				type: "The 'processors' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#processors",
 			},
 		},
 		exporters: {
 			type: "object",
 			additionalProperties: true,
 			errorMessage: {
-				type: "exporters property must be yaml map/dictionary",
+				type: "The 'exporters' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#exporters",
 			},
 		},
 		extensions: {
 			type: "object",
 			additionalProperties: true,
 			errorMessage: {
-				type: "extensions property must be yaml map/dictionary",
+				type: "The 'extensions' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#extensions",
 			},
 		},
 		service: {
@@ -75,7 +75,7 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 								type: "array",
 								minItems: 1,
 								errorMessage: {
-									minItems: "At least one receiver is required",
+									minItems: "The pipeline must reference at least one receiver, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 								},
 							},
 							processors: {
@@ -85,40 +85,40 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 								type: "array",
 								minItems: 1,
 								errorMessage: {
-									minItems: "At least one exporter is required",
+									minItems: "The pipeline must reference at least one exporter, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 								},
 							},
 						},
 						required: ["receivers", "exporters"],
 						errorMessage: {
 							required: {
-								receivers: "receivers property is required",
-								exporters: "exporters property is required",
+								receivers: "The pipeline must reference at least one receiver, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
+								exporters: "The pipeline must reference at least one exporter, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 							},
 						},
 					},
 					errorMessage: {
-						type: "pipelines property must be yaml map/dictionary",
+						type: "The 'pipeline' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 					},
 				},
 			},
 			required: ["pipelines"],
 			errorMessage: {
-				required: "pipelines property is required",
-				type: "service property must be yaml map/dictionary",
+				required: "At least one pipeline must be specified, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
+				type: "The 'pipeline' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#pipelines",
 			},
 		},
 		connectors: {
 			type: "object",
 			additionalProperties: true,
 			errorMessage: {
-				type: "connectors property must be yaml map/dictionary",
+				type: "The 'connectors' entry must be a map, see https://opentelemetry.io/docs/collector/configuration/#connectors",
 			},
 		},
 	},
 	errorMessage: {
-		type: "Must be a valid OpenTelemetry Collector configuration",
-		required: "service property is required",
+		type: "The configuration must be a map, see https://opentelemetry.io/docs/collector/configuration",
+		required: "The configuration must specify at least the 'receivers', 'exporters, and 'service' entries, see https://opentelemetry.io/docs/collector/configuration",
 	},
-	required: ["service"],
+	required: ["service", "receivers", "exporters"],
 };
