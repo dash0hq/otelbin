@@ -56,6 +56,7 @@ jobs:
       validation_api_apigateway_name: ${{ steps.parse_cdk_output.outputs.api_gateway_name }}
       validation_api_apigateway_url: ${{ steps.parse_cdk_output.outputs.api_gateway_url }}\
       validation_api_apigateway_key_id: ${{ steps.parse_cdk_output.outputs.api_gateway_key_id }}
+      test_env_name: ${{ steps.get_test_env_name.outputs.test_env_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -158,6 +159,20 @@ jobs:
         working-directory: packages/otelbin-validation
         run: |
           npm ci
+
+      - name: Select credentials
+        id: select_credentials
+        shell: bash
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
+        run: |
+          if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
+            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+          else
+            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+          fi
 
       - name: Retrieve API Key for Validation API and run tests
         shell: bash
