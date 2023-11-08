@@ -56,6 +56,7 @@ jobs:
       validation_api_apigateway_name: ${{ steps.parse_cdk_output.outputs.api_gateway_name }}
       validation_api_apigateway_url: ${{ steps.parse_cdk_output.outputs.api_gateway_url }}\
       validation_api_apigateway_key_id: ${{ steps.parse_cdk_output.outputs.api_gateway_key_id }}
+      test_env_name: ${{ steps.get_test_env_name.outputs.test_env_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -85,14 +86,30 @@ jobs:
         run: |
           echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> $GITHUB_OUTPUT || exit 1
 
+      - name: Select credentials
+        id: select_credentials
+        shell: bash
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+        run: |
+          if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
+            echo 'aws_account=${{secrets.AWS_ACCOUNT_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+          else
+            echo 'aws_account=${{secrets.AWS_ACCOUNT_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+          fi
+
       - name: Deploy validation backend
         shell: bash
         working-directory: packages/otelbin-validation
         env:
-          AWS_ACCESS_KEY_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV }}
-          AWS_SECRET_ACCESS_KEY: ${{ github.ref == 'refs/heads/main' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_ACCESS_KEY_ID: ${{ steps.select_credentials.outputs.aws_access_key }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           AWS_DEFAULT_REGION: 'us-east-2'
-          CDK_DEPLOY_ACCOUNT: ${{ github.ref == 'refs/heads/main' && '462608073829' || '622203989445' }}
+          CDK_DEPLOY_ACCOUNT: ${{ steps.select_credentials.outputs.aws_account }}
           CDK_DEPLOY_REGION: 'us-east-2'
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
@@ -143,12 +160,26 @@ jobs:
         run: |
           npm ci
 
+      - name: Select credentials
+        id: select_credentials
+        shell: bash
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
+        run: |
+          if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
+            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+          else
+            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+          fi
+
       - name: Retrieve API Key for Validation API and run tests
         shell: bash
         working-directory: packages/otelbin-validation
         env:
-          AWS_ACCESS_KEY_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID_PROD || secrets.AWS_ACCESS_KEY_ID_DEV }}
-          AWS_SECRET_ACCESS_KEY: ${{ github.ref == 'refs/heads/main' && secrets.AWS_SECRET_ACCESS_KEY_PROD || secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_ACCESS_KEY_ID: ${{ steps.select_credentials.outputs.aws_access_key }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           AWS_DEFAULT_REGION: 'us-east-2'
           API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
           API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
