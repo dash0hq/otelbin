@@ -172,13 +172,11 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
 
       console.log(`Error: ${error}`);
       let path: String | undefined;
-      const errorPathMatch = error.match(/^(?:((?:\w+\:\:)+(?:\w+):)\s+)(.*)/);
+      const errorPathMatch = error.match(/^(?:((?:\w+\:\:)+(?:\w+))\:\s+).*/);
       if (errorPathMatch) {
         // We have a prefix for the error that specified a path
         const errorPath = errorPathMatch[1];
         path = errorPath.replace(/::/g, '/');
-
-        error = errorPathMatch[2];
       }
 
       return {
