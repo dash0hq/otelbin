@@ -105,6 +105,15 @@ export const validateOtelCol = async (otelcolRealPath: string, configPath: strin
   });
 };
 
+const extractErrorPath = (errorMessage: string) => {
+  const errorPathMatch = errorMessage.match(/^(?:((?:\w+\:\:)+(?:\w+))\:\s+).*/);
+  if (errorPathMatch) {
+    // We have a prefix for the error that specified a path
+    const errorPath = errorPathMatch[1];
+    return errorPath.replace(/::/g, '/');
+  }
+};
+
 export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   const config = event.body;
 
@@ -170,13 +179,7 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
         error = error.substring(defaultErrorPrefix.length);
       }
 
-      let path: String | undefined;
-      const errorPathMatch = error.match(/^(?:((?:\w+\:\:)+(?:\w+))\:\s+).*/);
-      if (errorPathMatch) {
-        // We have a prefix for the error that specified a path
-        const errorPath = errorPathMatch[1];
-        path = errorPath.replace(/::/g, '/');
-      }
+      const path = extractErrorPath(error);
 
       return {
         statusCode: 200,
