@@ -53,6 +53,7 @@ const otelcolConfigValid = readConfig('config-default.yaml');
 const otelcolConfigInvalidNoReceivers = readConfig('config-no-receivers.yaml');
 const otelcolConfigInvalidUndeclaredExtension = readConfig('config-undeclared-extension.yaml');
 const otelcolConfigInvalidUndeclaredReceiver = readConfig('config-undeclared-receiver.yaml');
+const otelcolConfigInvalidUndeclaredReceiverNamedPipeline = readConfig('config-undeclared-receiver-named-pipelines.yaml');
 
 describe.each(enumerateTestCases())('Validation API', (distributionName, release) => {
 
@@ -153,9 +154,25 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
         })).resolves.toMatchObject({
           status: 200,
           data: {
-            path: 'service/pipelines/traces',
+            path: ['service', 'pipelines', 'traces'],
             message: 'The provided configuration is invalid',
             error: 'service::pipelines::traces: references receiver "jaeger" which is not configured',
+          },
+        });
+      }, defaultTimeout);
+
+      test('rejects configuration with undeclared receiver in named pipeline', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredReceiverNamedPipeline, {
+          headers: {
+            'Content-Type': 'application/yaml',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            path: ['service', 'pipelines', 'traces/dash0'],
+            message: 'The provided configuration is invalid',
+            error: 'service::pipelines::traces/dash0: references receiver "jaeger" which is not configured',
           },
         });
       }, defaultTimeout);
@@ -169,7 +186,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
         })).resolves.toMatchObject({
           status: 200,
           data: {
-            path: 'service/extensions',
+            path: ['service', 'extensions'],
             message: 'The provided configuration is invalid',
             error: 'service::extensions: references extension "health_check" which is not configured',
           },

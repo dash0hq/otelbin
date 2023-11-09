@@ -106,11 +106,10 @@ export const validateOtelCol = async (otelcolRealPath: string, configPath: strin
 };
 
 const extractErrorPath = (errorMessage: string) => {
-  const errorPathMatch = errorMessage.match(/^(?:((?:\w+\:\:)+(?:\w+))\:\s+).*/);
+  const errorPathMatch = errorMessage.match(/^((?:(?:[\w\/]+)(?:\:\:)?)+):[^:]/);
   if (errorPathMatch) {
     // We have a prefix for the error that specified a path
-    const errorPath = errorPathMatch[1];
-    return errorPath.replace(/::/g, '/');
+    return errorPathMatch[1]?.split('::');
   }
 };
 
