@@ -153,6 +153,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
         })).resolves.toMatchObject({
           status: 200,
           data: {
+            path: 'service/pipelines/traces',
             message: 'The provided configuration is invalid',
             error: 'service::pipelines::traces: references receiver "jaeger" which is not configured',
           },
@@ -168,6 +169,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
         })).resolves.toMatchObject({
           status: 200,
           data: {
+            path: 'service/extensions',
             message: 'The provided configuration is invalid',
             error: 'service::extensions: references extension "health_check" which is not configured',
           },
