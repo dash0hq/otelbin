@@ -6,7 +6,6 @@ import { LogIn } from "lucide-react";
 import { Share } from "~/components/share/Share";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "~/components/button";
-import InfoBox from "./validation-type/InfoBox";
 import ValidationType from "./validation-type/ValidationType";
 
 export default function AppHeader() {
@@ -21,8 +20,6 @@ export default function AppHeader() {
 				<div className="w-px bg-neutral-350 h-full">&nbsp;</div>
 
 				<ValidationType />
-
-				<InfoBox />
 			</div>
 			<div className="flex gap-x-2">
 				<Share />
