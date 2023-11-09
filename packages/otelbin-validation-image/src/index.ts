@@ -170,7 +170,6 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
         error = error.substring(defaultErrorPrefix.length);
       }
 
-      console.log(`Error: ${error}`);
       let path: String | undefined;
       const errorPathMatch = error.match(/^(?:((?:\w+\:\:)+(?:\w+))\:\s+).*/);
       if (errorPathMatch) {
