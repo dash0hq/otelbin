@@ -20,6 +20,7 @@ import {
 	findLineAndColumn,
 	parseYaml,
 } from "./parseYaml";
+import type { ValidationState } from "../validation/useServerSideValidation";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
@@ -28,7 +29,8 @@ let serviceItemsData: IValidateItem | undefined = {};
 export function validateOtelCollectorConfigurationAndSetMarkers(
 	configData: string,
 	editorRef: EditorRefType,
-	monacoRef: MonacoRefType
+	monacoRef: MonacoRefType,
+	serverSideValidationResult?: ValidationState
 ) {
 	const ajv = new Ajv({ allErrors: true });
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -47,6 +49,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		docElements.filter((item: IItem) => item.key?.source === "service")[0],
 		serviceItemsData
 	);
+	const serverSideValidationPath = serverSideValidationResult?.result?.path ?? [];
 
 	try {
 		const jsonData = JsYaml.load(configData);
@@ -99,6 +102,27 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	}
 	if (!totalErrors.jsYamlError) {
 		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData);
+		const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
+		const { line, column } = findLineAndColumn(configData, serverSideErrorElement?.offset);
+		totalErrors.serverSideError = {
+			message: serverSideValidationResult?.result?.message ?? "",
+			error: serverSideValidationResult?.result?.error ?? "",
+			line: line,
+			path: serverSideValidationPath,
+		};
+		errorMarkers.push({
+			startLineNumber: line ?? 0,
+			endLineNumber: 0,
+			startColumn: column ?? 0,
+			endColumn: column ?? 0,
+			severity: 8,
+			message:
+				"Server-side:" +
+					" " +
+					serverSideValidationResult?.result?.message +
+					" - " +
+					serverSideValidationResult?.result?.error ?? "Unknown error",
+		});
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	}
 	return totalErrors;
