@@ -110,19 +110,20 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			line: line,
 			path: serverSideValidationPath,
 		};
-		errorMarkers.push({
-			startLineNumber: line ?? 0,
-			endLineNumber: 0,
-			startColumn: column ?? 0,
-			endColumn: column ?? 0,
-			severity: 8,
-			message:
-				"Server-side:" +
+		serverSideValidationPath.length > 0 &&
+			errorMarkers.push({
+				startLineNumber: line ?? 0,
+				endLineNumber: 0,
+				startColumn: column ?? 0,
+				endColumn: column ?? 0,
+				severity: 8,
+				message:
+					"Server-side:" +
 					" " +
 					serverSideValidationResult?.result?.message +
 					" - " +
-					serverSideValidationResult?.result?.error ?? "Unknown error",
-		});
+					serverSideValidationResult?.result?.error,
+			});
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	}
 	return totalErrors;
