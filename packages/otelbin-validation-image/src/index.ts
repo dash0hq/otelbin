@@ -105,6 +105,14 @@ export const validateOtelCol = async (otelcolRealPath: string, configPath: strin
   });
 };
 
+const extractErrorPath = (errorMessage: string) => {
+  const errorPathMatch = errorMessage.match(/^((?:(?:[\w\/]+)(?:\:\:)?)+):[^:]/);
+  if (errorPathMatch) {
+    // We have a prefix for the error that specified a path
+    return errorPathMatch[1]?.split('::');
+  }
+};
+
 export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   const config = event.body;
 
@@ -170,10 +178,13 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
         error = error.substring(defaultErrorPrefix.length);
       }
 
+      const path = extractErrorPath(error);
+
       return {
         statusCode: 200,
         // Unfortunately the collector returns one validation error at the time
         body: JSON.stringify({
+          path,
           message: 'The provided configuration is invalid',
           error,
         }),
