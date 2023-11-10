@@ -144,7 +144,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 				<AppHeader />
 				<div className="flex h-full w-full shrink grow">
 					<div
-						className={`relative flex shrink-0 select-none flex-col`}
+						className={`relative flex shrink-0 flex-col`}
 						style={{
 							width: calculateViewWidth(viewMode, width),
 						}}

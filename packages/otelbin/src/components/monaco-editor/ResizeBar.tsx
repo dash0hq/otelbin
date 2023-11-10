@@ -22,7 +22,6 @@ export function ResizeBar({ onWidthChange }: ResizeBarProps) {
 		};
 
 		const onMouseMove = (e: MouseEvent) => {
-			e.preventDefault();
 			e.stopPropagation();
 			if (state.current.dragging && e.pageX > 400) {
 				onWidthChange(e.pageX);
