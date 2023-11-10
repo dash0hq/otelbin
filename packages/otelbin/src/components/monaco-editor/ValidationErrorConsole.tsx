@@ -139,7 +139,7 @@ export function ErrorMessage({
 			)}
 			{serverSideError ? (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`Server-side: ${serverSideError.message} - ${serverSideError.error} ${
+					<p>{`${serverSideError.message} - ${serverSideError.error} ${
 						(serverSideError.line ?? 0) > 1 ? `(Line ${serverSideError.line})` : ""
 					}`}</p>
 				</div>

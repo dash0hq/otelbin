@@ -117,12 +117,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 				startColumn: column ?? 0,
 				endColumn: column ?? 0,
 				severity: 8,
-				message:
-					"Server-side:" +
-					" " +
-					serverSideValidationResult?.result?.message +
-					" - " +
-					serverSideValidationResult?.result?.error,
+				message: serverSideValidationResult?.result?.message + " - " + serverSideValidationResult?.result?.error,
 			});
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	}
