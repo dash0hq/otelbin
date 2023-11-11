@@ -179,7 +179,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							)}
 						</div>
 						{viewMode !== "pipeline" && <ValidationErrorConsole errors={totalValidationErrors} font={firaCode} />}
-						{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
+						<ResizeBar onWidthChange={onWidthChange} />
 					</div>
 					<div className="z-0 min-h-full w-full shrink grow relative">
 						<ReactFlowProvider>

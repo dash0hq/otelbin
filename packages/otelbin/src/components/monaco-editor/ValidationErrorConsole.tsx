@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { ChevronDown, XCircle, AlertTriangle } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
@@ -25,7 +25,15 @@ export interface IError {
 	customWarnings?: string[];
 }
 
+interface State {
+	dragging: boolean;
+	initialY: number;
+	initialHeight: number;
+}
+
 export default function ValidationErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
+	const validationConsoleDiv = useRef<HTMLDivElement>(null);
+	const [height, setHeight] = useState(120);
 	const serverSideValidationResult = useServerSideValidation();
 	const errorCount =
 		(errors?.ajvErrors?.length ?? 0) +
@@ -42,14 +50,58 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 		}
 	}, [errorCount, warningsCount]);
 
+	const onHeightChange = useCallback((newHeight: number) => {
+		setHeight(newHeight);
+	}, []);
+
+	const state = useRef<State>({
+		dragging: false,
+		initialY: 0,
+		initialHeight: 0,
+	});
+
+	useEffect(() => {
+		const onMouseUp = () => {
+			state.current.dragging = false;
+		};
+
+		const onMouseMove = (e: MouseEvent) => {
+			e.stopPropagation();
+			if (state.current.dragging && e.clientY < 700 && e.clientY > 300) {
+				const deltaY = state.current.initialY - e.clientY;
+				const newHeight = state.current.initialHeight + deltaY;
+				onHeightChange(newHeight);
+			}
+		};
+
+		window.addEventListener("mouseup", onMouseUp);
+		window.addEventListener("mousemove", onMouseMove);
+
+		return () => {
+			window.removeEventListener("mouseup", onMouseUp);
+			window.removeEventListener("mousemove", onMouseMove);
+		};
+	}, [state, onHeightChange]);
+
 	return (
 		<div
-			className={`absolute bottom-0 left-0 z-10 ${
-				isOpenErrorConsole ? "h-[120px]" : "h-[37px]"
-			} w-full border-t-1 border-subtle bg-default pb-1 pt-1 transition-all`}
+			ref={validationConsoleDiv}
+			style={{
+				height: isOpenErrorConsole ? `${height}px` : `37px`,
+				cursor: isOpenErrorConsole ? `row-resize` : `auto`,
+			}}
+			onMouseDown={(e) => {
+				const rect = validationConsoleDiv.current?.getBoundingClientRect();
+				if (e.button === 0 && isOpenErrorConsole && rect && e.clientY < rect.top + 10) {
+					state.current.dragging = true;
+					state.current.initialY = e.clientY;
+					state.current.initialHeight = height;
+				}
+			}}
+			className={`absolute bottom-0 left-0 z-10 w-full border-t-1 border-subtle bg-default pb-1 pt-1 transition-all`}
 		>
-			<div className="flex flex-col h-full">
-				<div className="flex items-center">
+			<div className="flex flex-col h-full cursor-auto">
+				<div className="flex items-center z-50">
 					<ErrorAndWarningCounter
 						errorsCount={errorCount}
 						warningsCount={0}
