@@ -101,7 +101,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 			className={`absolute bottom-0 left-0 z-10 w-full border-t-1 border-subtle bg-default pb-1 pt-1 transition-all`}
 		>
 			<div className="flex flex-col h-full cursor-auto">
-				<div className="flex items-center z-50">
+				<div className="flex items-center">
 					<ErrorAndWarningCounter
 						errorsCount={errorCount}
 						warningsCount={0}
