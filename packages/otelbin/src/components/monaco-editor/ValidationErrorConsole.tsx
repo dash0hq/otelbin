@@ -67,7 +67,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 
 		const onMouseMove = (e: MouseEvent) => {
 			e.stopPropagation();
-			if (state.current.dragging && e.clientY < 700 && e.clientY > 300) {
+			if (state.current.dragging && e.clientY < 800 && e.clientY > 300) {
 				const deltaY = state.current.initialY - e.clientY;
 				const newHeight = state.current.initialHeight + deltaY;
 				onHeightChange(newHeight);
@@ -89,6 +89,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 			style={{
 				height: isOpenErrorConsole ? `${height}px` : `37px`,
 				cursor: isOpenErrorConsole ? `row-resize` : `auto`,
+				transition: "height 0.2s ease-out",
 			}}
 			onMouseDown={(e) => {
 				const rect = validationConsoleDiv.current?.getBoundingClientRect();
@@ -98,7 +99,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 					state.current.initialHeight = height;
 				}
 			}}
-			className={`absolute bottom-0 left-0 z-10 w-full border-t-1 border-subtle bg-default pb-1 pt-1 transition-all`}
+			className={`absolute bottom-0 left-0 z-10 w-full border-t-1 border-subtle bg-default pb-1 pt-1`}
 		>
 			<div className="flex flex-col h-full cursor-auto">
 				<div className="flex items-center">
