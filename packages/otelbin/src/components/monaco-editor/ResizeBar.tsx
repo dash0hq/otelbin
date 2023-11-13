@@ -45,6 +45,8 @@ export function ResizeBar({ onWidthChange }: ResizeBarProps) {
 					state.current.dragging = true;
 				}
 			}}
-		></div>
+		>
+			<div className="absolute bottom-0 left-0 top-0 w-px bg-divider-subtle" />
+		</div>
 	);
 }

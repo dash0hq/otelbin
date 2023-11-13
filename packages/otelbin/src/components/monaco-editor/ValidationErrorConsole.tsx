@@ -71,7 +71,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 		const onMouseMove = (e: MouseEvent) => {
 			e.stopPropagation();
 			const minHeight = 300;
-			const maxHeight = 800;
+			const maxHeight = 850;
 			const { dragging, initialY, initialHeight } = state.current;
 
 			if (dragging && e.clientY < maxHeight && e.clientY > minHeight) {
@@ -97,6 +97,8 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 				style={{
 					height: isOpenErrorConsole ? `${height}px` : `37px`,
 					cursor: isOpenErrorConsole ? `row-resize` : `auto`,
+					paddingTop: isOpenErrorConsole ? `8px` : `0px`,
+					marginRight: isOpenErrorConsole ? `0px` : `8px`,
 					transition: state.current.dragging ? "none" : "height 0.2s ease-out",
 				}}
 				onMouseDown={(e) => {
@@ -106,7 +108,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 						state.current.dragging = true;
 					}
 				}}
-				className="absolute bottom-2 left-0 z-0 bg-transparent w-full pt-3 pr-2 select-none overflow-hidden"
+				className="absolute bottom-0 left-0 bg-transparent w-full select-none overflow-hidden"
 			>
 				<AutoSizer>
 					{({ height }) => (
@@ -250,7 +252,7 @@ export function ErrorAndWarningCounter({
 						}
 					}}
 					className={`${warningsCount ? `cursor-pointer text-yellow-300` : `text-subtl`}
-			min-h-[35px] w-full bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
+			min-h-[34px] w-full bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
 				>
 					<AlertTriangle height={14.67} />
 					<div className="flex w-full items-center justify-between">
