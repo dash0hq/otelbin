@@ -52,9 +52,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 	}, [errorCount, warningsCount]);
 
 	const onHeightChange = useCallback((newHeight: number) => {
-		requestAnimationFrame(() => {
-			setHeight(newHeight);
-		});
+		setHeight(newHeight);
 	}, []);
 
 	const state = useRef<State>({
@@ -72,9 +70,13 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 
 		const onMouseMove = (e: MouseEvent) => {
 			e.stopPropagation();
-			if (state.current.dragging && e.clientY < 800 && e.clientY > 300) {
-				const deltaY = state.current.initialY - e.clientY;
-				const newHeight = state.current.initialHeight + deltaY;
+			const minHeight = 300;
+			const maxHeight = 800;
+			const { dragging, initialY, initialHeight } = state.current;
+
+			if (dragging && e.clientY < maxHeight && e.clientY > minHeight) {
+				const deltaY = initialY - e.clientY;
+				const newHeight = initialHeight + deltaY;
 				onHeightChange(newHeight);
 			}
 		};
@@ -89,78 +91,82 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 	}, [state, onHeightChange]);
 
 	return (
-		<div
-			ref={validationConsoleDiv}
-			style={{
-				height: isOpenErrorConsole ? `${height}px` : `37px`,
-				cursor: isOpenErrorConsole ? `row-resize` : `auto`,
-				transition: "height 0.2s ease-out",
-			}}
-			onMouseDown={(e) => {
-				const rect = validationConsoleDiv.current?.getBoundingClientRect();
-				if (e.button === 0 && isOpenErrorConsole && rect && e.clientY < rect.top + 10) {
-					state.current.dragging = true;
-					state.current.initialY = e.clientY;
-					state.current.initialHeight = height;
-				}
-			}}
-			className={`absolute bottom-0 left-0 z-10 w-full border-t-2 border-subtle bg-default pb-1 pt-1 box-content`}
-		>
-			<AutoSizer>
-				{({ height }) => (
-					<div
-						style={{
-							height: `${height}px`,
-						}}
-						className="flex flex-col cursor-auto"
-					>
-						<div className="flex items-center">
-							<ErrorAndWarningCounter
-								errorsCount={errorCount}
-								warningsCount={0}
-								isOpen={isOpenErrorConsole}
-								setOpen={setIsOpenErrorConsole}
-							/>
-							<ErrorAndWarningCounter
-								isWarning
-								errorsCount={0}
-								warningsCount={warningsCount}
-								isOpen={isOpenErrorConsole}
-								setOpen={setIsOpenErrorConsole}
-							/>
-						</div>
-						{isOpenErrorConsole && (
-							<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-[25px]">
-								{errors?.customWarnings &&
-									errors.customWarnings?.length > 0 &&
-									errors.customWarnings.map((warning: string, index: number) => {
-										return <ErrorMessage key={index} customWarnings={warning} font={font} />;
-									})}
-								{serverSideValidationResult.result?.error && (
-									<ErrorMessage
-										serverSideError={
-											serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
-										}
-										font={font}
+		<>
+			<div
+				ref={validationConsoleDiv}
+				style={{
+					height: isOpenErrorConsole ? `${height}px` : `37px`,
+					cursor: isOpenErrorConsole ? `row-resize` : `auto`,
+					transition: state.current.dragging ? "none" : "height 0.2s ease-out",
+				}}
+				onMouseDown={(e) => {
+					if (e.button === 0 && isOpenErrorConsole) {
+						state.current.initialY = e.clientY;
+						state.current.initialHeight = height;
+						state.current.dragging = true;
+					}
+				}}
+				className="absolute bottom-2 left-0 z-0 bg-transparent w-full pt-3 pr-2 select-none overflow-hidden"
+			>
+				<AutoSizer>
+					{({ height }) => (
+						<div
+							style={{
+								height: `${height}px`,
+							}}
+							className={`relative w-full bg-default border-t-1 border-subtle cursor-auto`}
+						>
+							<div className="flex flex-col cursor-auto">
+								<div className="flex items-center">
+									<ErrorAndWarningCounter
+										errorsCount={errorCount}
+										warningsCount={0}
+										isOpen={isOpenErrorConsole}
+										setOpen={setIsOpenErrorConsole}
 									/>
+									<ErrorAndWarningCounter
+										isWarning
+										errorsCount={0}
+										warningsCount={warningsCount}
+										isOpen={isOpenErrorConsole}
+										setOpen={setIsOpenErrorConsole}
+									/>
+								</div>
+
+								{isOpenErrorConsole && (
+									<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-[25px]">
+										{errors?.customWarnings &&
+											errors.customWarnings?.length > 0 &&
+											errors.customWarnings.map((warning: string, index: number) => {
+												return <ErrorMessage key={index} customWarnings={warning} font={font} />;
+											})}
+										{serverSideValidationResult.result?.error && (
+											<ErrorMessage
+												serverSideError={
+													serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
+												}
+												font={font}
+											/>
+										)}
+										{errors?.ajvErrors &&
+											errors.ajvErrors?.length > 0 &&
+											errors.ajvErrors.map((error: IAjvError, index: number) => {
+												return <ErrorMessage key={index} ajvError={error} font={font} />;
+											})}
+										{errors?.customErrors &&
+											errors.customErrors?.length > 0 &&
+											errors.customErrors.map((error: string, index: number) => {
+												return <ErrorMessage key={index} customErrors={error} font={font} />;
+											})}
+										{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors?.jsYamlError} font={font} />}
+									</div>
 								)}
-								{errors?.ajvErrors &&
-									errors.ajvErrors?.length > 0 &&
-									errors.ajvErrors.map((error: IAjvError, index: number) => {
-										return <ErrorMessage key={index} ajvError={error} font={font} />;
-									})}
-								{errors?.customErrors &&
-									errors.customErrors?.length > 0 &&
-									errors.customErrors.map((error: string, index: number) => {
-										return <ErrorMessage key={index} customErrors={error} font={font} />;
-									})}
-								{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors?.jsYamlError} font={font} />}
 							</div>
-						)}
-					</div>
-				)}
-			</AutoSizer>
-		</div>
+						</div>
+					)}
+				</AutoSizer>
+			</div>
+		</>
 	);
 }
 
@@ -244,7 +250,7 @@ export function ErrorAndWarningCounter({
 						}
 					}}
 					className={`${warningsCount ? `cursor-pointer text-yellow-300` : `text-subtl`}
-			min-h-[32px] w-full bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
+			min-h-[35px] w-full bg-default flex items-center gap-x-[1px] pr-3 pl-5 pb-1`}
 				>
 					<AlertTriangle height={14.67} />
 					<div className="flex w-full items-center justify-between">
