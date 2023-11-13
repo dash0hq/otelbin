@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChevronDown, XCircle, AlertTriangle } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
@@ -51,10 +51,6 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 		}
 	}, [errorCount, warningsCount]);
 
-	const onHeightChange = useCallback((newHeight: number) => {
-		setHeight(newHeight);
-	}, []);
-
 	const state = useRef<State>({
 		dragging: false,
 		initialY: 0,
@@ -77,7 +73,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 			if (dragging && e.clientY < maxHeight && e.clientY > minHeight) {
 				const deltaY = initialY - e.clientY;
 				const newHeight = initialHeight + deltaY;
-				onHeightChange(newHeight);
+				setHeight(newHeight);
 			}
 		};
 
@@ -88,86 +84,84 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 			window.removeEventListener("mouseup", onMouseUp);
 			window.removeEventListener("mousemove", onMouseMove);
 		};
-	}, [state, onHeightChange]);
+	}, [state]);
 
 	return (
-		<>
-			<div
-				ref={validationConsoleDiv}
-				style={{
-					height: isOpenErrorConsole ? `${height}px` : `37px`,
-					cursor: isOpenErrorConsole ? `row-resize` : `auto`,
-					paddingTop: isOpenErrorConsole ? `8px` : `0px`,
-					transition: state.current.dragging ? "none" : "height 0.2s ease-out",
-				}}
-				onMouseDown={(e) => {
-					if (e.button === 0 && isOpenErrorConsole) {
-						state.current.initialY = e.clientY;
-						state.current.initialHeight = height;
-						state.current.dragging = true;
-					}
-				}}
-				className="absolute bottom-0 left-0 bg-transparent w-full select-none overflow-hidden"
-			>
-				<AutoSizer>
-					{({ height }) => (
-						<div
-							style={{
-								height: `${height}px`,
-							}}
-							className={`relative w-full bg-default border-t-1 border-subtle cursor-auto`}
-						>
-							<div className="flex flex-col cursor-auto">
-								<div className="flex items-center">
-									<ErrorAndWarningCounter
-										errorsCount={errorCount}
-										warningsCount={0}
-										isOpen={isOpenErrorConsole}
-										setOpen={setIsOpenErrorConsole}
-									/>
-									<ErrorAndWarningCounter
-										isWarning
-										errorsCount={0}
-										warningsCount={warningsCount}
-										isOpen={isOpenErrorConsole}
-										setOpen={setIsOpenErrorConsole}
-									/>
-								</div>
-
-								{isOpenErrorConsole && (
-									<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-[25px]">
-										{errors?.customWarnings &&
-											errors.customWarnings?.length > 0 &&
-											errors.customWarnings.map((warning: string, index: number) => {
-												return <ErrorMessage key={index} customWarnings={warning} font={font} />;
-											})}
-										{serverSideValidationResult.result?.error && (
-											<ErrorMessage
-												serverSideError={
-													serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
-												}
-												font={font}
-											/>
-										)}
-										{errors?.ajvErrors &&
-											errors.ajvErrors?.length > 0 &&
-											errors.ajvErrors.map((error: IAjvError, index: number) => {
-												return <ErrorMessage key={index} ajvError={error} font={font} />;
-											})}
-										{errors?.customErrors &&
-											errors.customErrors?.length > 0 &&
-											errors.customErrors.map((error: string, index: number) => {
-												return <ErrorMessage key={index} customErrors={error} font={font} />;
-											})}
-										{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors?.jsYamlError} font={font} />}
-									</div>
-								)}
+		<div
+			ref={validationConsoleDiv}
+			style={{
+				height: isOpenErrorConsole ? `${height}px` : `37px`,
+				cursor: isOpenErrorConsole ? `row-resize` : `auto`,
+				paddingTop: isOpenErrorConsole ? `8px` : `0px`,
+				transition: state.current.dragging ? "none" : "height 0.2s ease-out",
+			}}
+			onMouseDown={(e) => {
+				if (e.button === 0 && isOpenErrorConsole) {
+					state.current.initialY = e.clientY;
+					state.current.initialHeight = height;
+					state.current.dragging = true;
+				}
+			}}
+			className="absolute bottom-0 left-0 bg-transparent w-full select-none overflow-hidden"
+		>
+			<AutoSizer>
+				{({ height }) => (
+					<div
+						style={{
+							height: `${height}px`,
+						}}
+						className={`relative w-full bg-default border-t-1 pt-[2px] border-subtle cursor-auto`}
+					>
+						<div className="flex flex-col cursor-auto">
+							<div className="flex items-center">
+								<ErrorAndWarningCounter
+									errorsCount={errorCount}
+									warningsCount={0}
+									isOpen={isOpenErrorConsole}
+									setOpen={setIsOpenErrorConsole}
+								/>
+								<ErrorAndWarningCounter
+									isWarning
+									errorsCount={0}
+									warningsCount={warningsCount}
+									isOpen={isOpenErrorConsole}
+									setOpen={setIsOpenErrorConsole}
+								/>
 							</div>
+
+							{isOpenErrorConsole && (
+								<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto px-[25px]">
+									{errors?.customWarnings &&
+										errors.customWarnings?.length > 0 &&
+										errors.customWarnings.map((warning: string, index: number) => {
+											return <ErrorMessage key={index} customWarnings={warning} font={font} />;
+										})}
+									{serverSideValidationResult.result?.error && (
+										<ErrorMessage
+											serverSideError={
+												serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
+											}
+											font={font}
+										/>
+									)}
+									{errors?.ajvErrors &&
+										errors.ajvErrors?.length > 0 &&
+										errors.ajvErrors.map((error: IAjvError, index: number) => {
+											return <ErrorMessage key={index} ajvError={error} font={font} />;
+										})}
+									{errors?.customErrors &&
+										errors.customErrors?.length > 0 &&
+										errors.customErrors.map((error: string, index: number) => {
+											return <ErrorMessage key={index} customErrors={error} font={font} />;
+										})}
+									{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors?.jsYamlError} font={font} />}
+								</div>
+							)}
 						</div>
-					)}
-				</AutoSizer>
-			</div>
-		</>
+					</div>
+				)}
+			</AutoSizer>
+		</div>
 	);
 }
 
