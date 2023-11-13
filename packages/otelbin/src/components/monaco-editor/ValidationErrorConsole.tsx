@@ -98,7 +98,6 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 					height: isOpenErrorConsole ? `${height}px` : `37px`,
 					cursor: isOpenErrorConsole ? `row-resize` : `auto`,
 					paddingTop: isOpenErrorConsole ? `8px` : `0px`,
-					marginRight: isOpenErrorConsole ? `0px` : `8px`,
 					transition: state.current.dragging ? "none" : "height 0.2s ease-out",
 				}}
 				onMouseDown={(e) => {
