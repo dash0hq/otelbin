@@ -4,7 +4,6 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, XCircle, AlertTriangle } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
-import { useServerSideValidation } from "../validation/useServerSideValidation";
 
 export interface IAjvError {
 	message: string;
@@ -18,20 +17,27 @@ export interface IJsYamlError {
 	reason: string | null;
 }
 
+export interface IServerSideError {
+	message: string;
+	error: string;
+	line: number | null;
+	path?: string[];
+}
+
 export interface IError {
 	jsYamlError?: IJsYamlError;
 	ajvErrors?: IAjvError[];
 	customErrors?: string[];
 	customWarnings?: string[];
+	serverSideError?: IServerSideError;
 }
 
 export default function ValidationErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
-	const serverSideValidationResult = useServerSideValidation();
 	const errorCount =
 		(errors?.ajvErrors?.length ?? 0) +
 		(errors?.jsYamlError != null ? 1 : 0) +
 		(errors?.customErrors?.length ?? 0) +
-		(serverSideValidationResult.result?.error ? 1 : 0);
+		(errors?.serverSideError?.error ? 1 : 0);
 
 	const warningsCount = errors?.customWarnings?.length ?? 0;
 	const [isOpenErrorConsole, setIsOpenErrorConsole] = useState(false);
@@ -71,14 +77,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 							errors.customWarnings.map((warning: string, index: number) => {
 								return <ErrorMessage key={index} customWarnings={warning} font={font} />;
 							})}
-						{serverSideValidationResult.result?.error && (
-							<ErrorMessage
-								serverSideError={
-									serverSideValidationResult.result?.message + " - " + serverSideValidationResult.result?.error
-								}
-								font={font}
-							/>
-						)}
+						{errors?.serverSideError?.error && <ErrorMessage serverSideError={errors.serverSideError} font={font} />}
 						{errors?.ajvErrors &&
 							errors.ajvErrors?.length > 0 &&
 							errors.ajvErrors.map((error: IAjvError, index: number) => {
@@ -107,7 +106,7 @@ export function ErrorMessage({
 }: {
 	ajvError?: IAjvError;
 	jsYamlError?: IJsYamlError;
-	serverSideError?: string;
+	serverSideError?: IServerSideError;
 	customErrors?: string;
 	customWarnings?: string;
 	font: NextFont;
@@ -140,7 +139,9 @@ export function ErrorMessage({
 			)}
 			{serverSideError ? (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`Server-side: ${serverSideError}`}</p>
+					<p>{`${serverSideError.message} - ${serverSideError.error} ${
+						(serverSideError.line ?? 0) > 1 ? `(Line ${serverSideError.line})` : ""
+					}`}</p>
 				</div>
 			) : (
 				<></>
