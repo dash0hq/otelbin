@@ -33,7 +33,7 @@ interface State {
 
 export default function ValidationErrorConsole({ errors, font }: { errors?: IError; font: NextFont }) {
 	const validationConsoleDiv = useRef<HTMLDivElement>(null);
-	const [height, setHeight] = useState(120);
+	const [height, setHeight] = useState(170);
 	const serverSideValidationResult = useServerSideValidation();
 	const errorCount =
 		(errors?.ajvErrors?.length ?? 0) +
@@ -65,8 +65,9 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 
 		const onMouseMove = (e: MouseEvent) => {
 			e.stopPropagation();
-			const minHeight = 300;
-			const maxHeight = 850;
+			const viewportHeight = window.innerHeight;
+			const minHeight = 0.3 * viewportHeight;
+			const maxHeight = 0.8 * viewportHeight;
 			const { dragging, initialY, initialHeight } = state.current;
 
 			if (dragging && e.clientY < maxHeight && e.clientY > minHeight) {
@@ -95,7 +96,9 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 				transition: state.current.dragging ? "none" : "height 0.2s ease-out",
 			}}
 			onMouseDown={(e) => {
-				if (e.button === 0 && isOpenErrorConsole) {
+				const rect = validationConsoleDiv.current?.getBoundingClientRect();
+				const isTop = rect && e.clientY - rect?.top <= 15;
+				if (e.button === 0 && isTop && isOpenErrorConsole) {
 					state.current.initialY = e.clientY;
 					state.current.initialHeight = height;
 					state.current.dragging = true;
@@ -103,7 +106,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 			}}
 			className="absolute bottom-0 left-0 bg-transparent w-full select-none overflow-hidden"
 		>
-			<div className={`relative w-full bg-default border-t-1 pt-[2px] border-subtle cursor-auto h-full px-[20px]`}>
+			<div className={`relative w-full bg-default z-10 border-t-1 pt-[2px] border-subtle h-full pl-[25px]`}>
 				<div className="flex flex-col cursor-auto h-full">
 					<div className="flex items-center">
 						<ErrorAndWarningCounter
@@ -121,7 +124,10 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 						/>
 					</div>
 					{isOpenErrorConsole && (
-						<div className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-auto">
+						<div
+							style={{ wordWrap: "break-word" }}
+							className="mt-2 flex h-[calc(100%-45px)] flex-col gap-y-1 overflow-y-auto overflow-x-hidden"
+						>
 							{errors?.customWarnings &&
 								errors.customWarnings?.length > 0 &&
 								errors.customWarnings.map((warning: string, index: number) => {
@@ -169,35 +175,39 @@ export function ErrorMessage({
 	customWarnings?: string;
 	font: NextFont;
 }) {
-	const errorsStyle = "flex items-center gap-x-1 text-xs font-normal text-red-600 select-text";
-	const warningStyle = "flex items-center gap-x-1 text-xs font-normal text-yellow-300 select-text";
+	const errorsStyle = "flex items-center gap-x-1 text-xs font-normal text-red-600 select-text mr-[20px]";
+	const warningStyle = "flex items-center gap-x-1 text-xs font-normal text-yellow-300 select-text mr-[20px]";
 	return (
 		<>
 			{customWarnings && (
 				<div className={`${font.className} ${warningStyle}`}>
-					<p>{`${customWarnings}`}</p>
+					<p className="max-w-[100%]">{`${customWarnings}`}</p>
 				</div>
 			)}
 			{ajvError && (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`${ajvError.message} ${(ajvError.line ?? 0) > 1 ? `(Line ${ajvError.line})` : ""}`}</p>
+					<p className="max-w-[100%]">{`${ajvError.message} ${
+						(ajvError.line ?? 0) > 1 ? `(Line ${ajvError.line})` : ""
+					}`}</p>
 				</div>
 			)}
 			{customErrors && (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`${customErrors}`}</p>
+					<p className="max-w-[100%]">{`${customErrors}`}</p>
 				</div>
 			)}
 			{jsYamlError ? (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`${jsYamlError.reason} ${jsYamlError.mark && `(Line ${jsYamlError.mark.line})`}`}</p>
+					<p className="max-w-[100%]">{`${jsYamlError.reason} ${
+						jsYamlError.mark && `(Line ${jsYamlError.mark.line})`
+					}`}</p>
 				</div>
 			) : (
 				<></>
 			)}
 			{serverSideError ? (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p>{`Server-side: ${serverSideError}`}</p>
+					<p className="max-w-[100%]">{`Server-side: ${serverSideError}`}</p>
 				</div>
 			) : (
 				<></>
