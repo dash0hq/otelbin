@@ -37,6 +37,7 @@
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
 		"fetch-retry": "^5.0.6",
+		"html-to-image": "^1.11.11",
 		"js-yaml": "^4.1.0",
 		"lodash": "^4.17.21",
 		"lucide-react": "^0.285.0",
