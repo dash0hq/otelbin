@@ -5,7 +5,6 @@ import { AppWindow, Cloud, Github } from "lucide-react";
 import { Button } from "../button";
 import BackendValidation from "./BackendValidation";
 import type { ICurrentDistro } from "./ValidationType";
-import { useRouter } from "next/navigation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
 import type { Distributions } from "~/types";
@@ -19,9 +18,7 @@ export default function ValidationTypeContent({
 	currentDistro?: ICurrentDistro;
 	data?: Distributions;
 }) {
-	const [, getUrl] = useUrlState([distroBinding, distroVersionBinding]);
-	const router = useRouter();
-
+	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
 	return (
 		<div className="bg-neutral-150 flex flex-col divide-solid divide-y rounded-md">
 			<ContentRow
@@ -33,12 +30,9 @@ export default function ValidationTypeContent({
 				{currentDistro && (
 					<Button
 						onClick={() => {
-							router.push(
-								getUrl({
-									distro: "",
-									distroVersion: "",
-								})
-							);
+							if (typeof window !== "undefined") {
+								window.history.pushState(null, "", getLink({ distro: "", distroVersion: "" }));
+							}
 							setOpen(false);
 						}}
 						size={"xs"}
