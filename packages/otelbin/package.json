@@ -48,7 +48,7 @@
 		"projen": "^0.73.37",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"reactflow": "^11.9.2",
+		"reactflow": "^11.10.1",
 		"swr": "^2.2.2",
 		"tailwind-merge": "^1.13.2",
 		"tailwindcss-animate": "^1.0.6",
