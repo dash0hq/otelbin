@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from 'react';
-import { useReactFlow, getRectOfNodes, getTransformForBounds } from 'reactflow';
+import { useReactFlow, getNodesBounds, getViewportForBounds } from 'reactflow';
 import { ImageDown } from "lucide-react";
 import { Button } from "~/components/button";
 import { toPng } from 'html-to-image';
@@ -15,19 +15,6 @@ const downloadImage = (dataUrl: string) => {
   a.click();
 };
 
-const calculateImageDimensions = (nodeCount: number) => {
-  const baseWidth = 1024;
-  const baseHeight = 768;
-  const widthPerNode = 100; 
-
-  const calculatedWidth = Math.max(baseWidth, widthPerNode * nodeCount);
-
-  return {
-    width: calculatedWidth,
-    height: baseHeight,
-  };
-}
-
 export function DownloadImageButton() {
   const { getNodes } = useReactFlow();
 
@@ -39,19 +26,18 @@ export function DownloadImageButton() {
 
   const onClick = () => {
     const nodes = getNodes()
-    const nodesBounds = getRectOfNodes(nodes)
-    const { width, height } = calculateImageDimensions(nodes.length);
-    const transform = getTransformForBounds(nodesBounds, width, height, 0.5, 2)
+    const nodesBounds = getNodesBounds(nodes)
+    const {x, y, zoom} = getViewportForBounds(nodesBounds, nodesBounds.width, nodesBounds.height, 0.5, 2)
 
     toPng(document.querySelector('.react-flow__viewport') as HTMLElement, {
       backgroundColor: '#333333',
       pixelRatio: 2,
-      width: width,
-      height: height,
+      width: nodesBounds.width,
+      height: nodesBounds.height,
       style: {
-        width: width.toString() ,
-        height: height.toString(),
-        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+        width: nodesBounds.width.toString() ,
+        height: nodesBounds.height.toString(),
+        transform: `translate(${x}px, ${y}px) scale(${zoom})`,
       },
     }).then(downloadImage);
   };
