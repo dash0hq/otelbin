@@ -49,7 +49,7 @@
   "dependencies": {
     "aws-cdk-lib": "^2.99.1",
     "aws-lambda": "^1.0.7",
-    "constructs": "^10.0.5"
+    "constructs": "^10.3.0"
   },
   "license": "Apache-2.0",
   "version": "0.0.0",
