@@ -31,6 +31,12 @@ const calculateImageDimensions = (nodeCount: number) => {
 export function DownloadButton() {
   const { getNodes } = useReactFlow();
 
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLAnchorElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      onClick();
+    }
+  };
+
   const onClick = () => {
     const nodes = getNodes()
     const nodesBounds = getRectOfNodes(nodes)
@@ -52,7 +58,7 @@ export function DownloadButton() {
 
   return (
     <Button asChild size="xs">
-      <a style={{cursor: 'pointer'}} onClick={onClick}>
+      <a style={{cursor: 'pointer'}} onClick={onClick} onKeyDown={handleKeyPress} tabIndex={0}>
         <ImageDown className="mr-1" />
         Download Image
       </a>
