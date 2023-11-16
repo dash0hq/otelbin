@@ -28,7 +28,7 @@ const calculateImageDimensions = (nodeCount: number) => {
   };
 }
 
-export function DownloadButton() {
+export function DownloadImageButton() {
   const { getNodes } = useReactFlow();
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLAnchorElement>) => {

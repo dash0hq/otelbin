@@ -8,7 +8,7 @@ import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { UrlCopy } from "~/components/share/UrlCopy";
 import { SignedInUrlSharing } from "~/components/share/SignedInUrlSharing";
-import { DownloadButton } from "~/components/share/DownloadButton";
+import { DownloadImageButton } from "~/components/share/DownloadImageButton";
 import { track } from "@vercel/analytics";
 
 export function ShareContent() {
@@ -44,7 +44,7 @@ export function ShareContent() {
 						Download YAML
 					</a>
 				</Button>
-				<DownloadButton />
+				<DownloadImageButton />
 			</div>
 		</div>
 	);
