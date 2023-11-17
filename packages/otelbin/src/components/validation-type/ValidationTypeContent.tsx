@@ -4,30 +4,30 @@
 import { AppWindow, Cloud, Github } from "lucide-react";
 import { Button } from "../button";
 import BackendValidation from "./BackendValidation";
-import type { ICurrentDistro } from "./ValidationType";
+import type { ICurrentDistributionVersion } from "./ValidationType";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
 import type { Distributions } from "~/types";
 
 export default function ValidationTypeContent({
 	setOpen,
-	currentDistro,
-	data,
+	currentDistributionVersion,
+	distributions,
 }: {
 	setOpen: (open: boolean) => void;
-	currentDistro?: ICurrentDistro;
-	data?: Distributions;
+	currentDistributionVersion?: ICurrentDistributionVersion;
+	distributions?: Distributions;
 }) {
 	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
 	return (
 		<div className="bg-neutral-150 flex flex-col divide-solid divide-y rounded-md">
 			<ContentRow
-				isCurrent={!currentDistro}
+				isCurrent={!currentDistributionVersion}
 				title="Browser-only validation"
 				description="Limited syntax checks run in your browser. It may not recognize receivers, exporters or other components."
 				icon={<AppWindow height={16} color="#9CA2AB" />}
 			>
-				{currentDistro && (
+				{currentDistributionVersion && (
 					<Button
 						onClick={() => {
 							if (typeof window !== "undefined") {
@@ -49,7 +49,11 @@ export default function ValidationTypeContent({
 				description="Comprehensive validation performed in a backend against actual distribution binaries. The configuration sent to the backend are not stored and are used exclusively for the validation "
 				icon={<Cloud height={16} color="#9CA2AB" />}
 			>
-				<BackendValidation currentDistro={currentDistro} data={data} setOpen={setOpen} />
+				<BackendValidation
+					currentDistributionVersion={currentDistributionVersion}
+					distributions={distributions}
+					setOpen={setOpen}
+				/>
 			</ContentRow>
 		</div>
 	);

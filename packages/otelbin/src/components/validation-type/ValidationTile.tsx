@@ -4,7 +4,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/accordion";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
-import OtelLogo from "./../assets/svg/otel.svg";
+import AdotLogo from "./../assets/svg/distro-icons/adot.svg";
+import OtelLogo from "./../assets/svg/distro-icons/otel.svg";
 import { Github, Globe } from "lucide-react";
 import { Button } from "../button";
 import { IconButton } from "../icon-button";
@@ -13,24 +14,24 @@ import type { Distribution } from "~/types";
 import { useState } from "react";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
-import type { ICurrentDistro } from "./ValidationType";
+import type { ICurrentDistributionVersion } from "./ValidationType";
 
 export default function ValidationTile({
-	id,
+	distributionId,
 	setOpen,
-	currentDistro,
-	data,
+	currentDistributionVersion,
+	distribution,
 }: {
-	id: string;
+	distributionId: string;
 	setOpen: (open: boolean) => void;
-	currentDistro?: ICurrentDistro;
-	data: Distribution;
+	currentDistributionVersion?: ICurrentDistributionVersion;
+	distribution: Distribution;
 }) {
-	const isDistroActive = id === currentDistro?.provider;
+	const isDistroActive = distributionId === currentDistributionVersion?.distro;
 
 	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
 	const [version, setVersion] = useState<string>(
-		isDistroActive ? currentDistro.version : data.releases[0]?.version ?? ""
+		isDistroActive ? currentDistributionVersion.version : distribution.releases[0]?.version ?? ""
 	);
 
 	function formatVersionsRange(versions?: string[] | string) {
@@ -52,55 +53,62 @@ export default function ValidationTile({
 			<AccordionItem value="item-1" className="border-1 border-solid border-neutral-350 rounded-md">
 				<AccordionTrigger className="hover:no-underline px-3 hover:bg-button-hover rounded-md">
 					<div className="flex items-center gap-x-3 w-full">
-						<OtelLogo />
+						{distribution?.icon === "adot" ? <AdotLogo /> : <OtelLogo />}
 						<div className="flex flex-col items-start">
 							<div className="flex items-center gap-x-3">
-								<p className="text-[13px] font-semibold text-neutral-950">{data?.provider}</p>
-								{currentDistro?.distro === id && <CurrentBadge />}
+								<p className="text-[13px] font-semibold text-neutral-950">{distribution?.name}</p>
+								{currentDistributionVersion?.distro === distributionId && <CurrentBadge />}
 							</div>
 							<p className="text-xs font-normal text-neutral-600">{`${
-								Array.isArray(data?.releases) && formatVersionsRange(data?.releases.map((release) => release.version))
+								Array.isArray(distribution?.releases) &&
+								formatVersionsRange(distribution?.releases.map((release) => release.version))
 							}`}</p>
 						</div>
 					</div>
 				</AccordionTrigger>
 				<AccordionContent>
 					<div className="flex flex-col gap-y-3 py-3 px-3">
-						<p className="text-[13px] text-neutral-600">{data?.description}</p>
+						<p className="text-[13px] text-neutral-600">{distribution?.description}</p>
 						<div className="flex items-center gap-x-1">
-							<a href={data?.website} target="_blank" className="text-neutral-950">
+							<a href={distribution?.website} target="_blank" className="text-neutral-950">
 								<IconButton variant={"outline"} size={"xs"} className="w-full px-2 flex items-center gap-x-2">
 									<Globe height={12} color="#9CA2AB" />
-									{data?.website}
+									{distribution?.website}
 								</IconButton>
 							</a>
-							{data?.repository && (
+							{distribution?.repository && (
 								<Tooltip>
 									<TooltipTrigger asChild>
-										<a href={`https://github.com/${data?.repository}`} target="_blank">
+										<a href={`https://github.com/${distribution?.repository}`} target="_blank">
 											<IconButton variant={"outline"} size={"xs"}>
 												<Github height={10} color="#9CA2AB" />
 											</IconButton>
 										</a>
 									</TooltipTrigger>
-									<TooltipContent>{`https://github.com/${data?.repository}`}</TooltipContent>
+									<TooltipContent>{`https://github.com/${distribution?.repository}`}</TooltipContent>
 								</Tooltip>
 							)}
 						</div>
 						<div className="flex items-center gap-x-2 border-t-1 border-solid border-neutral-250 pt-4">
 							<Select
-								defaultValue={currentDistro?.distro === id ? currentDistro.version || "" : data?.releases[0]?.version}
+								defaultValue={
+									currentDistributionVersion?.distro === distributionId
+										? currentDistributionVersion.version || ""
+										: distribution?.releases[0]?.version
+								}
 								onValueChange={(value) => {
 									setVersion(value);
 								}}
 							>
 								<SelectTrigger className="h-6 w-max bg-neutral-350">
-									<SelectValue placeholder={Array.isArray(data?.releases) && data?.releases[0]?.version} />
+									<SelectValue
+										placeholder={Array.isArray(distribution?.releases) && distribution?.releases[0]?.version}
+									/>
 								</SelectTrigger>
 								<SelectContent>
 									<SelectGroup>
-										{Array.isArray(data?.releases) &&
-											data?.releases
+										{Array.isArray(distribution?.releases) &&
+											distribution?.releases
 												.map((release) => release.version)
 												.map((version) => (
 													<SelectItem key={version} value={version}>
@@ -113,7 +121,7 @@ export default function ValidationTile({
 							<Button
 								onClick={() => {
 									if (typeof window !== "undefined") {
-										window.history.pushState(null, "", getLink({ distro: id, distroVersion: version }));
+										window.history.pushState(null, "", getLink({ distro: distributionId, distroVersion: version }));
 									}
 									setOpen(false);
 								}}

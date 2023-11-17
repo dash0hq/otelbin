@@ -1,7 +1,9 @@
 {
   "otelcol-core": {
-    "provider": "OpenTelemetry Community - Core",
+    "name": "OpenTelemetry Collector Core",
+    "provider": "OpenTelemetry Community",
     "description": "OpenTelemetry Collector core community builds",
+    "icon": "otel",
     "website": "https://opentelemetry.io",
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
@@ -49,8 +51,10 @@
     "ignoredReleases": "<v0.82.0"
   },
   "otelcol-contrib": {
-    "provider": "OpenTelemetry Community - Contrib",
+    "name": "OpenTelemetry Collector Contrib",
+    "provider": "OpenTelemetry Community",
     "description": "OpenTelemetry Collector contrib community builds",
+    "icon": "otel",
     "website": "https://opentelemetry.io",
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
@@ -98,8 +102,10 @@
     "ignoredReleases": "<v0.82.0"
   },
   "adot": {
-    "provider": "Amazon Web Services (AWS)",
+    "name": "AWS Distro for OpenTelemetry",
+    "provider": "Amazon Web Services",
     "description": "AWS Distro for OpenTelemetry",
+    "icon": "adot",
     "website": "https://aws.amazon.com/otel",
     "repository": "aws-observability/aws-otel-collector",
     "releases": [
