@@ -59,10 +59,17 @@ describe("parseYaml", () => {
 			{
 				key: "receivers",
 				offset: 0,
+				path: [
+					"receivers",
+				],
 				value: [
 					{
 						key: "otlp",
 						offset: 13,
+						path: [
+							"receivers",
+							"otlp",
+						],
 						value: undefined,
 					},
 				],
@@ -70,10 +77,12 @@ describe("parseYaml", () => {
 			{
 				key: "processors",
 				offset: 19,
+				path: ["processors"],
 				value: [
 					{
 						key: "batch",
 						offset: 33,
+						path: ["processors", "batch"],
 						value: undefined,
 					},
 				],
@@ -81,24 +90,29 @@ describe("parseYaml", () => {
 			{
 				key: "service",
 				offset: 40,
+				path: ["service"],
 				value: [
 					{
 						key: "extensions",
 						offset: 51,
+						path: ["service", "extensions"],
 						value: [
 							{
 								key: "health_check",
 								offset: 64,
+								path: ["service", "extensions", "health_check"],
 								value: "health_check",
 							},
 							{
 								key: "pprof",
 								offset: 78,
+								path: ["service", "extensions", "pprof"],
 								value: "pprof",
 							},
 							{
 								key: "zpages",
 								offset: 85,
+								path: ["service", "extensions", "zpages"],
 								value: "zpages",
 							},
 						],
@@ -108,11 +122,13 @@ describe("parseYaml", () => {
 			{
 				key: "testItem1",
 				offset: 93,
+				path: ["testItem1"],
 				value: undefined,
 			},
 			{
 				key: "testItem2",
 				offset: 104,
+				path: ["testItem2"],
 				value: undefined,
 			},
 		]);

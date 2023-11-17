@@ -14,6 +14,8 @@ import { getYamlDocument } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { distroBinding, distroVersionBinding } from "~/components/validation/binding";
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;
@@ -89,6 +91,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
+	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -114,11 +117,12 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		};
 
 		monacoRef.current = monaco;
-
+		const isServerValidationEnabled = distro && distroVersion ? true : false;
 		validateOtelCollectorConfigurationAndSetMarkers(
 			editorRef.current.getModel()?.getValue() || "",
 			editorRef,
-			monacoRef
+			monacoRef,
+			isServerValidationEnabled
 		);
 
 		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {

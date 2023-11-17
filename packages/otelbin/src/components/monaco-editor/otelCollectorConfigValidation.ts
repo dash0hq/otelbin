@@ -6,7 +6,7 @@ import type { IAjvError, IError, IJsYamlError } from "./ValidationErrorConsole";
 import JsYaml from "js-yaml";
 import Ajv from "ajv";
 import type { ErrorObject } from "ajv";
-import type { RefObject } from "react";
+import { type RefObject } from "react";
 import type { editor } from "monaco-editor";
 import { type Monaco } from "@monaco-editor/react";
 import {
@@ -30,6 +30,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	configData: string,
 	editorRef: EditorRefType,
 	monacoRef: MonacoRefType,
+	isServerSideValidationEnabled: boolean,
 	serverSideValidationResult?: ValidationState
 ) {
 	const ajv = new Ajv({ allErrors: true });
@@ -66,6 +67,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 						line: line as number | null,
 						column: column as number | null,
 						message: error.message || "Unknown error",
+						path: errorPath,
 					};
 					errorMarkers.push({
 						startLineNumber: errorInfo.line ?? 0,
@@ -101,7 +103,14 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		totalErrors.jsYamlError = knownError;
 	}
 	if (!totalErrors.jsYamlError) {
-		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData);
+		customValidate(
+			mainItemsData,
+			serviceItemsData,
+			errorMarkers,
+			totalErrors,
+			configData,
+			isServerSideValidationEnabled
+		);
 		const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
 		const { line, column } = findLineAndColumn(configData, serverSideErrorElement?.offset);
 		totalErrors.serverSideError = {
@@ -121,6 +130,11 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			});
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	}
+	if (isServerSideValidationEnabled) {
+		totalErrors.ajvErrors = totalErrors?.ajvErrors?.filter((error, idx) => {
+			comparePathArrays(totalErrors.serverSideError?.path ?? [], error.path) && totalErrors.ajvErrors?.splice(idx, 1);
+		});
+	}
 	return totalErrors;
 }
 
@@ -129,7 +143,8 @@ export function customValidate(
 	serviceItemsData: IValidateItem | undefined,
 	errorMarkers: editor.IMarkerData[],
 	totalErrors: IError,
-	configData: string
+	configData: string,
+	isServerSideValidationEnabled?: boolean
 ) {
 	if (!mainItemsData) return totalErrors;
 	for (const key of Object.keys(mainItemsData)) {
@@ -137,7 +152,6 @@ export function customValidate(
 		const serviceItems = serviceItemsData?.[key];
 
 		if (!serviceItems) continue;
-
 		serviceItems.forEach((item) => {
 			if (
 				!mainItems?.some((mainItem) => mainItem.source === item.source) &&
@@ -159,25 +173,27 @@ export function customValidate(
 				totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
 			}
 		});
-		mainItems?.forEach((item) => {
-			if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
-				const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
-				const { line, column } = findLineAndColumn(configData, item.offset);
-				const endColumn = column + (item.source?.length ?? 0);
 
-				const errorMarker = {
-					startLineNumber: line ?? 0,
-					endLineNumber: 0,
-					startColumn: column ?? 0,
-					endColumn: endColumn,
-					severity: 4,
-					message: errorMessage,
-				};
-				errorMarkers.push(errorMarker);
+		!isServerSideValidationEnabled &&
+			mainItems?.forEach((item) => {
+				if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
+					const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
+					const { line, column } = findLineAndColumn(configData, item.offset);
+					const endColumn = column + (item.source?.length ?? 0);
 
-				totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
-			}
-		});
+					const errorMarker = {
+						startLineNumber: line ?? 0,
+						endLineNumber: 0,
+						startColumn: column ?? 0,
+						endColumn: endColumn,
+						severity: 4,
+						message: errorMessage,
+					};
+					errorMarkers.push(errorMarker);
+
+					totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
+				}
+			});
 	}
 }
 
@@ -211,4 +227,18 @@ export const findErrorElement = (path: string[], data?: IYamlElement[]): IYamlEl
 		}
 	}
 	return undefined;
+};
+
+export const comparePathArrays = (path1: string[], path2: string[]): boolean => {
+	if (path1.length !== path2.length) {
+		return false;
+	}
+
+	for (let i = 0; i < path1.length; i++) {
+		if (path1[i] !== path2[i]) {
+			return false;
+		}
+	}
+
+	return true;
 };

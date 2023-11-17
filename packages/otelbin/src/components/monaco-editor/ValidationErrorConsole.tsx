@@ -8,6 +8,7 @@ import { type NextFont } from "next/dist/compiled/@next/font";
 export interface IAjvError {
 	message: string;
 	line?: number | null;
+	path: string[];
 }
 
 export interface IJsYamlError {

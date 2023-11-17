@@ -26,6 +26,7 @@ import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -45,6 +46,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
 	const serverSideValidationResult = useServerSideValidation();
+	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
 
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
@@ -61,17 +63,19 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	);
 
 	const totalValidationErrors = useMemo((): IError => {
+		const isServerValidationEnabled = distro && distroVersion ? true : false;
 		if (editorRef && monacoRef) {
 			return validateOtelCollectorConfigurationAndSetMarkers(
 				currentConfig,
 				editorRef,
 				monacoRef,
+				isServerValidationEnabled,
 				serverSideValidationResult
 			);
 		} else {
 			return {};
 		}
-	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult]);
+	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult, distro, distroVersion]);
 
 	const isValidConfig =
 		totalValidationErrors.jsYamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
