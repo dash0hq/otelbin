@@ -14,7 +14,7 @@ import InfoBox from "./InfoBox";
 export interface ICurrentDistro {
 	distro: string;
 	version: string;
-	provider: string;
+	name: string;
 }
 
 export default function ValidationType() {
@@ -25,7 +25,7 @@ export default function ValidationType() {
 
 	const currentDistro =
 		data && distro && distroVersion
-			? { distro: distro, version: distroVersion, provider: data[distro]?.provider || "" }
+			? { distro: distro, version: distroVersion, name: data[distro]?.name || "" }
 			: undefined;
 
 	return (
@@ -34,7 +34,7 @@ export default function ValidationType() {
 				<PopoverTrigger asChild>
 					<Button size="xs" variant="cta">
 						Validation:{" "}
-						<strong>{`${currentDistro?.provider ?? "Browser-only"} ${currentDistro ? " – " : ""} ${
+						<strong>{`${currentDistro?.name ?? "Browser-only"} ${currentDistro ? " – " : ""} ${
 							currentDistro ? currentDistro.version : ""
 						}`}</strong>{" "}
 						<Down />
