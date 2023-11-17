@@ -190,19 +190,19 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 						</div>
 						<div className="z-0 min-h-full w-full shrink grow relative">
-								<AutoSizer>
-									{({ width, height }) => (
-										<div style={{ width: `${width}px`, height: `${height}px` }}>
-											<Flow
-												value={(isValidConfig && currentConfig) || "{}"}
-												openDialog={setOpenDialog}
-												locked={locked}
-												setLocked={setLocked}
-												editorRef={editorRef}
-											/>
-										</div>
-									)}
-								</AutoSizer>
+							<AutoSizer>
+								{({ width, height }) => (
+									<div style={{ width: `${width}px`, height: `${height}px` }}>
+										<Flow
+											value={(isValidConfig && currentConfig) || "{}"}
+											openDialog={setOpenDialog}
+											locked={locked}
+											setLocked={setLocked}
+											editorRef={editorRef}
+										/>
+									</div>
+								)}
+							</AutoSizer>
 
 							{viewMode === "pipeline" && (
 								<Tooltip>
