@@ -18,7 +18,13 @@ export default function BackendValidation({
 		<>
 			{distributions ? (
 				Object.entries(distributions).map(([distributionId, distribution]) => (
-					<ValidationTile distribution={distribution} distributionId={distributionId} key={distributionId} setOpen={setOpen} currentDistributionVersion={currentDistributionVersion} />
+					<ValidationTile
+						distribution={distribution}
+						distributionId={distributionId}
+						key={distributionId}
+						setOpen={setOpen}
+						currentDistributionVersion={currentDistributionVersion}
+					/>
 				))
 			) : (
 				<p>No Data is available</p>

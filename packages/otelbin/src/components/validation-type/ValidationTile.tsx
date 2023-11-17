@@ -17,19 +17,16 @@ import { distroBinding, distroVersionBinding } from "../validation/binding";
 import type { ICurrentDistributionVersion } from "./ValidationType";
 
 export default function ValidationTile({
-	key,
 	distributionId,
 	setOpen,
 	currentDistributionVersion,
 	distribution,
 }: {
-	key: string;
 	distributionId: string;
 	setOpen: (open: boolean) => void;
 	currentDistributionVersion?: ICurrentDistributionVersion;
 	distribution: Distribution;
 }) {
-	debugger
 	const isDistroActive = distributionId === currentDistributionVersion?.distro;
 
 	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
@@ -63,7 +60,8 @@ export default function ValidationTile({
 								{currentDistributionVersion?.distro === distributionId && <CurrentBadge />}
 							</div>
 							<p className="text-xs font-normal text-neutral-600">{`${
-								Array.isArray(distribution?.releases) && formatVersionsRange(distribution?.releases.map((release) => release.version))
+								Array.isArray(distribution?.releases) &&
+								formatVersionsRange(distribution?.releases.map((release) => release.version))
 							}`}</p>
 						</div>
 					</div>
@@ -93,13 +91,19 @@ export default function ValidationTile({
 						</div>
 						<div className="flex items-center gap-x-2 border-t-1 border-solid border-neutral-250 pt-4">
 							<Select
-								defaultValue={currentDistributionVersion?.distro === distributionId ? currentDistributionVersion.version || "" : distribution?.releases[0]?.version}
+								defaultValue={
+									currentDistributionVersion?.distro === distributionId
+										? currentDistributionVersion.version || ""
+										: distribution?.releases[0]?.version
+								}
 								onValueChange={(value) => {
 									setVersion(value);
 								}}
 							>
 								<SelectTrigger className="h-6 w-max bg-neutral-350">
-									<SelectValue placeholder={Array.isArray(distribution?.releases) && distribution?.releases[0]?.version} />
+									<SelectValue
+										placeholder={Array.isArray(distribution?.releases) && distribution?.releases[0]?.version}
+									/>
 								</SelectTrigger>
 								<SelectContent>
 									<SelectGroup>

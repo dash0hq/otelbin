@@ -34,14 +34,18 @@ export default function ValidationType() {
 				<PopoverTrigger asChild>
 					<Button size="xs" variant="cta">
 						Validation:{" "}
-						<strong>{`${currentDistributionVersion?.name ?? "Browser-only"} ${currentDistributionVersion ? " – " : ""} ${
-							currentDistributionVersion ? currentDistributionVersion.version : ""
-						}`}</strong>{" "}
+						<strong>{`${currentDistributionVersion?.name ?? "Browser-only"} ${
+							currentDistributionVersion ? " – " : ""
+						} ${currentDistributionVersion ? currentDistributionVersion.version : ""}`}</strong>{" "}
 						<Down />
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent align="start" className="p-0 max-w-[480px] overflow-y-auto max-h-[90vh]">
-					<ValidationTypeContent currentDistributionVersion={currentDistributionVersion} distributions={distributions} setOpen={setOpen} />
+					<ValidationTypeContent
+						currentDistributionVersion={currentDistributionVersion}
+						distributions={distributions}
+						setOpen={setOpen}
+					/>
 				</PopoverContent>
 			</Popover>
 			{distro === null && distroVersion === null && <InfoBox />}
