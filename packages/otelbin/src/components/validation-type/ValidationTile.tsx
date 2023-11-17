@@ -53,11 +53,7 @@ export default function ValidationTile({
 			<AccordionItem value="item-1" className="border-1 border-solid border-neutral-350 rounded-md">
 				<AccordionTrigger className="hover:no-underline px-3 hover:bg-button-hover rounded-md">
 					<div className="flex items-center gap-x-3 w-full">
-						{data?.icon === "adot" ? (
-							<AdotLogo />
-						) : (
-							<OtelLogo />
-						)}
+						{data?.icon === "adot" ? <AdotLogo /> : <OtelLogo />}
 						<div className="flex flex-col items-start">
 							<div className="flex items-center gap-x-3">
 								<p className="text-[13px] font-semibold text-neutral-950">{data?.name}</p>
