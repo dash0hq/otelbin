@@ -27,7 +27,7 @@ export default function ValidationTile({
 	currentDistro?: ICurrentDistro;
 	data: Distribution;
 }) {
-	const isDistroActive = id === currentDistro?.provider;
+	const isDistroActive = id === currentDistro?.name;
 
 	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
 	const [version, setVersion] = useState<string>(
