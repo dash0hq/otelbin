@@ -4,7 +4,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/accordion";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
-import OtelLogo from "./../assets/svg/otel.svg";
+import AdotLogo from "./../assets/svg/distro-icons/adot.svg";
+import OtelLogo from "./../assets/svg/distro-icons/otel.svg";
 import { Github, Globe } from "lucide-react";
 import { Button } from "../button";
 import { IconButton } from "../icon-button";
@@ -52,10 +53,14 @@ export default function ValidationTile({
 			<AccordionItem value="item-1" className="border-1 border-solid border-neutral-350 rounded-md">
 				<AccordionTrigger className="hover:no-underline px-3 hover:bg-button-hover rounded-md">
 					<div className="flex items-center gap-x-3 w-full">
-						<OtelLogo />
+						{data?.icon === "adot" ? (
+							<AdotLogo />
+						) : (
+							<OtelLogo />
+						)}
 						<div className="flex flex-col items-start">
 							<div className="flex items-center gap-x-3">
-								<p className="text-[13px] font-semibold text-neutral-950">{data?.provider}</p>
+								<p className="text-[13px] font-semibold text-neutral-950">{data?.name}</p>
 								{currentDistro?.distro === id && <CurrentBadge />}
 							</div>
 							<p className="text-xs font-normal text-neutral-600">{`${
