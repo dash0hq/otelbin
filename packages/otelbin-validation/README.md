@@ -24,12 +24,14 @@ The AWS Lambda function has a [Node.js handler](./src/images/otelcol-validator/s
       "my-distro": {
          "provider": "My company",
          "description": "Much wow",
+         "icon": "my-icon",
          "website": "https://my-company.io",
          "repository": "<github_org>/<repo_name>",
          "releases": []
       }
    }
    ```
+   The `icon` field uses an identifier that must be wired in the frontend via the [`ValidationTile.tsx`](../otelbin/src/components/validation-type/ValidationTile.tsx), using an SVG icon with width and height of 24px saved in the [`distro-icons`](../otelbin/src/components/assets/svg/distro-icons/) folder.
 1. Fill in data about one release manually to run tests:
    ```json
    {
@@ -38,6 +40,7 @@ The AWS Lambda function has a [Node.js handler](./src/images/otelcol-validator/s
          "provider": "My company",
          "description": "Much wow",
          "website": "https://my-company.io",
+         "icon": "my-icon",
          "repository": "<github_org>/<repo_name>",
          "releases": [
             {

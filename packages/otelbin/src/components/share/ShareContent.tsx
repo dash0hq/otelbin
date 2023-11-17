@@ -8,6 +8,7 @@ import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { UrlCopy } from "~/components/share/UrlCopy";
 import { SignedInUrlSharing } from "~/components/share/SignedInUrlSharing";
+import { DownloadImageButton } from "~/components/share/DownloadImageButton";
 import { track } from "@vercel/analytics";
 
 export function ShareContent() {
@@ -33,7 +34,7 @@ export function ShareContent() {
 			</SignedOut>
 
 			<div className="mt-3 border-t-1 border-subtle px-4 py-3">
-				<Button asChild size="xs">
+				<Button asChild size="xs" className="mr-2">
 					<a
 						href={`data:text/plain;base64,${btoa(config)}`}
 						download="config.yaml"
@@ -43,6 +44,7 @@ export function ShareContent() {
 						Download YAML
 					</a>
 				</Button>
+				<DownloadImageButton />
 			</div>
 		</div>
 	);
