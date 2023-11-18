@@ -26,6 +26,7 @@ import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
+import { extractRelayFromK8sConfigMap, isK8sConfigMap } from "./parseYaml";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -77,7 +78,9 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		totalValidationErrors.jsYamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
 
 	const handleEditorChange: OnChange = (value) => {
-		setCurrentConfig(value || "");
+		isK8sConfigMap(value ?? "")
+			? editorRef?.current?.getModel()?.setValue(extractRelayFromK8sConfigMap(value ?? "") ?? "")
+			: setCurrentConfig(value ?? "");
 	};
 
 	useEffect(() => {

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Parser } from "yaml";
-
+import JsYaml from "js-yaml";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -74,6 +74,13 @@ export interface ILeaf {
 
 export interface IValidateItem {
 	[key: string]: ILeaf[];
+}
+
+export interface IK8sObject {
+	kind?: string;
+	data?: {
+		relay?: string;
+	};
 }
 
 export const getYamlDocument = (editorValue: string) => {
@@ -213,4 +220,15 @@ export function findLineAndColumn(config: string, targetOffset?: number) {
 	}
 
 	return { line: lineIndex, column };
+}
+
+export function isK8sConfigMap(config: string) {
+	const jsonData = JsYaml.load(config) as IK8sObject;
+	const isConfigMap = jsonData?.kind === "ConfigMap";
+	return jsonData && jsonData?.data?.relay && isConfigMap ? true : false;
+}
+
+export function extractRelayFromK8sConfigMap(config: string): string | undefined {
+	const jsonData = JsYaml.load(config) as IK8sObject;
+	return isK8sConfigMap(config) ? jsonData?.data?.relay : config;
 }
