@@ -224,7 +224,7 @@ export function findLineAndColumn(config: string, targetOffset?: number) {
 
 export function isK8sConfigMap(config: string) {
 	const jsonData = JsYaml.load(config) as IK8sObject;
-	const isConfigMap = jsonData?.kind === "ConfigMap";
+	const isConfigMap = jsonData?.kind?.toLocaleLowerCase() === "configmap";
 	return jsonData && jsonData?.data?.relay && isConfigMap ? true : false;
 }
 
