@@ -1,24 +1,30 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ICurrentDistro } from "./ValidationType";
+import type { ICurrentDistributionVersion } from "./ValidationType";
 import type { Distributions } from "~/types";
 import ValidationTile from "./ValidationTile";
 
 export default function BackendValidation({
 	setOpen,
-	currentDistro,
-	data,
+	currentDistributionVersion,
+	distributions,
 }: {
 	setOpen: (open: boolean) => void;
-	currentDistro?: ICurrentDistro;
-	data?: Distributions;
+	currentDistributionVersion?: ICurrentDistributionVersion;
+	distributions?: Distributions;
 }) {
 	return (
 		<>
-			{data ? (
-				Object.entries(data).map(([provider, distro]) => (
-					<ValidationTile data={distro} id={provider} key={provider} setOpen={setOpen} currentDistro={currentDistro} />
+			{distributions ? (
+				Object.entries(distributions).map(([distributionId, distribution]) => (
+					<ValidationTile
+						distribution={distribution}
+						distributionId={distributionId}
+						key={distributionId}
+						setOpen={setOpen}
+						currentDistributionVersion={currentDistributionVersion}
+					/>
 				))
 			) : (
 				<p>No Data is available</p>

@@ -11,21 +11,21 @@ import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
 import InfoBox from "./InfoBox";
 
-export interface ICurrentDistro {
+export interface ICurrentDistributionVersion {
 	distro: string;
 	version: string;
-	provider: string;
+	name: string;
 }
 
 export default function ValidationType() {
 	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
 	const [open, setOpen] = useState(false);
 
-	const { data } = useDistributions();
+	const { data: distributions } = useDistributions();
 
-	const currentDistro =
-		data && distro && distroVersion
-			? { distro: distro, version: distroVersion, provider: data[distro]?.provider || "" }
+	const currentDistributionVersion =
+		distributions && distro && distroVersion
+			? { distro: distro, version: distroVersion, name: distributions[distro]?.name || "" }
 			: undefined;
 
 	return (
@@ -34,14 +34,18 @@ export default function ValidationType() {
 				<PopoverTrigger asChild>
 					<Button size="xs" variant="cta">
 						Validation:{" "}
-						<strong>{`${currentDistro?.provider ?? "Browser-only"} ${currentDistro ? " – " : ""} ${
-							currentDistro ? currentDistro.version : ""
-						}`}</strong>{" "}
+						<strong>{`${currentDistributionVersion?.name ?? "Browser-only"} ${
+							currentDistributionVersion ? " – " : ""
+						} ${currentDistributionVersion ? currentDistributionVersion.version : ""}`}</strong>{" "}
 						<Down />
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent align="start" className="p-0 max-w-[480px] overflow-y-auto max-h-[90vh]">
-					<ValidationTypeContent currentDistro={currentDistro} data={data} setOpen={setOpen} />
+					<ValidationTypeContent
+						currentDistributionVersion={currentDistributionVersion}
+						distributions={distributions}
+						setOpen={setOpen}
+					/>
 				</PopoverContent>
 			</Popover>
 			{distro === null && distroVersion === null && <InfoBox />}

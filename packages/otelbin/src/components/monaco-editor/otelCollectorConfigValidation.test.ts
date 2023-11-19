@@ -228,4 +228,12 @@ describe("findErrorElement", () => {
 
 		expect(result).toEqual(expectedOutput);
 	});
+
+	it("with both empty parsed yaml doc and empty error path should return undefined", () => {
+		const result = findErrorElement([], []);
+
+		const expectedOutput = undefined;
+
+		expect(result).toEqual(expectedOutput);
+	});
 });

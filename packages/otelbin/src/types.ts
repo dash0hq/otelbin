@@ -6,8 +6,10 @@ export interface Distributions {
 }
 
 export interface Distribution {
+	name: string;
 	provider: string;
 	description: string;
+	icon: string;
 	website: string;
 	repository: string;
 	releases: Release[];
@@ -21,4 +23,5 @@ export interface Release {
 export interface ServerSideValidationResult {
 	message: string;
 	error: string;
+	path?: string[];
 }
