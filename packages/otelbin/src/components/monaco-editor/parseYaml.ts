@@ -228,7 +228,7 @@ export function isK8sConfigMap(config: string) {
 	return jsonData && jsonData?.data?.relay && isConfigMap ? true : false;
 }
 
-export function extractRelayFromK8sConfigMap(config: string): string | undefined {
+export function extractRelayFromK8sConfigMap(config: string) {
 	const jsonData = JsYaml.load(config) as IK8sObject;
 	return isK8sConfigMap(config) ? jsonData?.data?.relay : config;
 }

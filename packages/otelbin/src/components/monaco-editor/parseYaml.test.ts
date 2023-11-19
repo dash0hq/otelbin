@@ -3,7 +3,13 @@
 
 import { describe, expect, it } from "@jest/globals";
 import type { IItem, IYamlElement } from "./parseYaml";
-import { getYamlDocument, extractServiceItems, findPipelinesKeyValues, parseYaml } from "./parseYaml";
+import {
+	getYamlDocument,
+	extractServiceItems,
+	findPipelinesKeyValues,
+	parseYaml,
+	extractRelayFromK8sConfigMap,
+} from "./parseYaml";
 
 //The example contains pipelines with duplicated names (otlp and batch)
 const editorBinding = {
@@ -218,5 +224,35 @@ describe("findPipelinesKeyValues", () => {
 		const result = findPipelinesKeyValues();
 
 		expect(result).toEqual({});
+	});
+});
+
+describe("extractRelayFromK8sConfigMap", () => {
+	it("should return relay data if the config is a valid K8s ConfigMap", () => {
+		const config = `
+kind: ConfigMap
+data:
+  relay: testRelay
+    `;
+		expect(extractRelayFromK8sConfigMap(config)).toBe("testRelay");
+	});
+
+	it('should return relay data if the config is a valid K8s ConfigMap with case insensitive "kind: configmap"', () => {
+		const config = `
+kind: configmap
+data:
+  relay: testRelay
+    `;
+		expect(extractRelayFromK8sConfigMap(config)).toBe("testRelay");
+	});
+
+	it("should return the original config if it is not a valid K8s ConfigMap", () => {
+		const config = "invalidConfig";
+		expect(extractRelayFromK8sConfigMap(config)).toBe(config);
+	});
+
+	it("should return empty string if the config is empty", () => {
+		const config = "";
+		expect(extractRelayFromK8sConfigMap(config)).toBe("");
 	});
 });
