@@ -5,25 +5,25 @@ import { Parser } from "yaml";
 import JsYaml from "js-yaml";
 export interface SourceToken {
 	type:
-		| "byte-order-mark"
-		| "doc-mode"
-		| "doc-start"
-		| "space"
-		| "comment"
-		| "newline"
-		| "directive-line"
-		| "anchor"
-		| "tag"
-		| "seq-item-ind"
-		| "explicit-key-ind"
-		| "map-value-ind"
-		| "flow-map-start"
-		| "flow-map-end"
-		| "flow-seq-start"
-		| "flow-seq-end"
-		| "flow-error-end"
-		| "comma"
-		| "block-scalar-header";
+	| "byte-order-mark"
+	| "doc-mode"
+	| "doc-start"
+	| "space"
+	| "comment"
+	| "newline"
+	| "directive-line"
+	| "anchor"
+	| "tag"
+	| "seq-item-ind"
+	| "explicit-key-ind"
+	| "map-value-ind"
+	| "flow-map-start"
+	| "flow-map-end"
+	| "flow-seq-start"
+	| "flow-seq-end"
+	| "flow-error-end"
+	| "comma"
+	| "block-scalar-header";
 	offset: number;
 	indent: number;
 	source: string;
@@ -224,7 +224,7 @@ export function findLineAndColumn(config: string, targetOffset?: number) {
 
 export function isK8sConfigMap(config: string) {
 	const jsonData = JsYaml.load(config) as IK8sObject;
-	const isConfigMap = jsonData?.kind?.toLocaleLowerCase() === "configmap";
+	const isConfigMap = jsonData?.kind?.toLowerCase() === "configmap";
 	return jsonData && jsonData?.data?.relay && isConfigMap ? true : false;
 }
 
