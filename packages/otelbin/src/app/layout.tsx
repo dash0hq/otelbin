@@ -18,6 +18,23 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
 	title: "OTelBin – by Dash0",
 	description: "Edit, visualize and share OpenTelemetry Collector configurations",
+	metadataBase: new URL("https://otelbin.io/"),
+
+	openGraph: {
+		title: "Next.js",
+		description: "The React Framework for the Web",
+		url: "/",
+		siteName: "OTelBin",
+		images: [
+			{
+				url: "/opengraph-image",
+				width: 1200,
+				height: 630,
+			},
+		],
+		locale: "en_US",
+		type: "website",
+	},
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
