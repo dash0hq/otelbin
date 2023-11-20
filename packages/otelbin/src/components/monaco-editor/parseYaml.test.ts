@@ -8,7 +8,7 @@ import {
 	extractServiceItems,
 	findPipelinesKeyValues,
 	parseYaml,
-	extractRelayFromK8sConfigMap,
+	selectConfigType,
 } from "./parseYaml";
 
 //The example contains pipelines with duplicated names (otlp and batch)
@@ -227,32 +227,27 @@ describe("findPipelinesKeyValues", () => {
 	});
 });
 
-describe("extractRelayFromK8sConfigMap", () => {
-	it("should return relay data if the config is a valid K8s ConfigMap", () => {
+describe('selectConfigType', () => {
+	it('should return relay.data if the config is a valid K8s ConfigMap', () => {
 		const config = `
-kind: ConfigMap
-data:
-  relay: testRelay
+      kind: ConfigMap
+      data:
+        relay: testRelay
     `;
-		expect(extractRelayFromK8sConfigMap(config)).toBe("testRelay");
+		expect(selectConfigType(config)).toBe('testRelay');
 	});
 
-	it('should return relay data if the config is a valid K8s ConfigMap with case insensitive "kind: configmap"', () => {
+	it('should return spec.config if the config is a valid OpenTelemetryCollector CRD', () => {
 		const config = `
-kind: configmap
-data:
-  relay: testRelay
+      kind: OpenTelemetryCollector
+      spec:
+        config: testConfig
     `;
-		expect(extractRelayFromK8sConfigMap(config)).toBe("testRelay");
+		expect(selectConfigType(config)).toBe('testConfig');
 	});
 
-	it("should return the original config if it is not a valid K8s ConfigMap", () => {
-		const config = "invalidConfig";
-		expect(extractRelayFromK8sConfigMap(config)).toBe(config);
-	});
-
-	it("should return empty string if the config is empty", () => {
-		const config = "";
-		expect(extractRelayFromK8sConfigMap(config)).toBe("");
+	it('should return the original config if it is not a valid K8s ConfigMap or OpenTelemetryCollector CRD', () => {
+		const config = 'invalidConfig';
+		expect(selectConfigType(config)).toBe(config);
 	});
 });

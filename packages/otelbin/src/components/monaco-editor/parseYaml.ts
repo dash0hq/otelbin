@@ -5,25 +5,25 @@ import { Parser } from "yaml";
 import JsYaml from "js-yaml";
 export interface SourceToken {
 	type:
-	| "byte-order-mark"
-	| "doc-mode"
-	| "doc-start"
-	| "space"
-	| "comment"
-	| "newline"
-	| "directive-line"
-	| "anchor"
-	| "tag"
-	| "seq-item-ind"
-	| "explicit-key-ind"
-	| "map-value-ind"
-	| "flow-map-start"
-	| "flow-map-end"
-	| "flow-seq-start"
-	| "flow-seq-end"
-	| "flow-error-end"
-	| "comma"
-	| "block-scalar-header";
+		| "byte-order-mark"
+		| "doc-mode"
+		| "doc-start"
+		| "space"
+		| "comment"
+		| "newline"
+		| "directive-line"
+		| "anchor"
+		| "tag"
+		| "seq-item-ind"
+		| "explicit-key-ind"
+		| "map-value-ind"
+		| "flow-map-start"
+		| "flow-map-end"
+		| "flow-seq-start"
+		| "flow-seq-end"
+		| "flow-error-end"
+		| "comma"
+		| "block-scalar-header";
 	offset: number;
 	indent: number;
 	source: string;
@@ -80,6 +80,13 @@ export interface IK8sObject {
 	kind?: string;
 	data?: {
 		relay?: string;
+	};
+}
+
+export interface IOtelColCRD {
+	kind?: string;
+	spec?: {
+		config?: string;
 	};
 }
 
@@ -222,13 +229,24 @@ export function findLineAndColumn(config: string, targetOffset?: number) {
 	return { line: lineIndex, column };
 }
 
-export function isK8sConfigMap(config: string) {
-	const jsonData = JsYaml.load(config) as IK8sObject;
+export function isK8sConfigMap(jsonData: IK8sObject) {
 	const isConfigMap = jsonData?.kind?.toLowerCase() === "configmap";
 	return jsonData && jsonData?.data?.relay && isConfigMap ? true : false;
 }
 
-export function extractRelayFromK8sConfigMap(config: string) {
-	const jsonData = JsYaml.load(config) as IK8sObject;
-	return isK8sConfigMap(config) ? jsonData?.data?.relay : config;
+export function isOtelColCRD(jsonData: IOtelColCRD) {
+	const isOtelColCRD = jsonData?.kind === "OpenTelemetryCollector";
+	return jsonData && jsonData?.spec?.config && isOtelColCRD ? true : false;
+}
+
+export function selectConfigType(config: string) {
+	const jsonData = JsYaml.load(config) as any;
+
+	if (isK8sConfigMap(jsonData)) {
+		return jsonData.data.relay;
+	} else if (isOtelColCRD(jsonData)) {
+		return jsonData.spec.config;
+	} else {
+		return config;
+	}
 }
