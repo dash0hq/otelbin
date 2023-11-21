@@ -15,7 +15,6 @@ import {
 } from "./parseYaml";
 import { capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
 import type { editor } from "monaco-editor";
-import { trace } from "console";
 
 const editorBinding = {
 	prefix: "",
@@ -202,23 +201,12 @@ describe("findErrorElement", () => {
 		const expectedOutput: IYamlElement = {
 			key: "exporters",
 			offset: 174,
-			path: [
-				"service",
-				"pipelines",
-				"traces",
-				"exporters",
-			],
+			path: ["service", "pipelines", "traces", "exporters"],
 			value: [
 				{
 					key: "otlp",
 					offset: 186,
-					path: [
-						'service',
-						'pipelines',
-						'traces',
-						'exporters',
-						'otlp'
-					],
+					path: ["service", "pipelines", "traces", "exporters", "otlp"],
 					value: "otlp",
 				},
 			],

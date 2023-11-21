@@ -59,17 +59,12 @@ describe("parseYaml", () => {
 			{
 				key: "receivers",
 				offset: 0,
-				path: [
-					"receivers",
-				],
+				path: ["receivers"],
 				value: [
 					{
 						key: "otlp",
 						offset: 13,
-						path: [
-							"receivers",
-							"otlp",
-						],
+						path: ["receivers", "otlp"],
 						value: undefined,
 					},
 				],
