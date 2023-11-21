@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Parser } from "yaml";
-
+import JsYaml from "js-yaml";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -75,6 +75,20 @@ export interface ILeaf {
 
 export interface IValidateItem {
 	[key: string]: ILeaf[];
+}
+
+export interface IK8sObject {
+	kind?: string;
+	data?: {
+		relay?: string;
+	};
+}
+
+export interface IOtelColCRD {
+	kind?: string;
+	spec?: {
+		config?: string;
+	};
 }
 
 export const getYamlDocument = (editorValue: string) => {
@@ -215,4 +229,26 @@ export function findLineAndColumn(config: string, targetOffset?: number) {
 	}
 
 	return { line: lineIndex, column };
+}
+
+export function isK8sConfigMap(jsonData: IK8sObject) {
+	const isConfigMap = jsonData?.kind?.toLowerCase() === "configmap";
+	return jsonData && jsonData?.data?.relay && isConfigMap ? true : false;
+}
+
+export function isOtelColCRD(jsonData: IOtelColCRD) {
+	const isOtelColCRD = jsonData?.kind === "OpenTelemetryCollector";
+	return jsonData && jsonData?.spec?.config && isOtelColCRD ? true : false;
+}
+
+export function selectConfigType(config: string) {
+	const jsonData = JsYaml.load(config) as any;
+
+	if (isK8sConfigMap(jsonData)) {
+		return jsonData.data.relay;
+	} else if (isOtelColCRD(jsonData)) {
+		return jsonData.spec.config;
+	} else {
+		return config;
+	}
 }

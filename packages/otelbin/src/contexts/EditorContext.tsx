@@ -10,7 +10,7 @@ import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import type { IItem } from "../components/monaco-editor/parseYaml";
-import { getYamlDocument } from "../components/monaco-editor/parseYaml";
+import { getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
@@ -248,6 +248,12 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 			findSymbols(docElements, "", wordAtCursor.word, cursorOffset);
+		});
+
+		editorRef.current.onDidPaste(() => {
+			const currentConfig = editorRef.current?.getModel()?.getValue() || "";
+			const configType = selectConfigType(currentConfig);
+			editorRef.current?.getModel()?.setValue((configType as string) ?? "");
 		});
 	}
 

@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "@jest/globals";
 import type { IItem, IYamlElement } from "./parseYaml";
-import { getYamlDocument, extractServiceItems, findPipelinesKeyValues, parseYaml } from "./parseYaml";
+import { getYamlDocument, extractServiceItems, findPipelinesKeyValues, parseYaml, selectConfigType } from "./parseYaml";
 
 //The example contains pipelines with duplicated names (otlp and batch)
 const editorBinding = {
@@ -234,5 +234,30 @@ describe("findPipelinesKeyValues", () => {
 		const result = findPipelinesKeyValues();
 
 		expect(result).toEqual({});
+	});
+});
+
+describe("selectConfigType", () => {
+	it("should return relay.data if the config is a valid K8s ConfigMap", () => {
+		const config = `
+      kind: ConfigMap
+      data:
+        relay: testRelay
+    `;
+		expect(selectConfigType(config)).toBe("testRelay");
+	});
+
+	it("should return spec.config if the config is a valid OpenTelemetryCollector CRD", () => {
+		const config = `
+      kind: OpenTelemetryCollector
+      spec:
+        config: testConfig
+    `;
+		expect(selectConfigType(config)).toBe("testConfig");
+	});
+
+	it("should return the original config if it is not a valid K8s ConfigMap or OpenTelemetryCollector CRD", () => {
+		const config = "invalidConfig";
+		expect(selectConfigType(config)).toBe(config);
 	});
 });
