@@ -189,7 +189,7 @@ export function customValidate(
 					};
 					errorMarkers.push(errorMarker);
 
-					totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
+					totalErrors.customWarnings?.push(errorMarker.message + " " + `(Line ${line})`);
 				}
 			});
 	}

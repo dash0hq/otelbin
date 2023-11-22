@@ -182,8 +182,8 @@ describe("customValidate", () => {
 			},
 		]);
 		expect(totalErrors).toEqual({
-			customErrors: ['Extension "item5E" is not defined. (line 1)', 'Receiver "item6" is not defined. (line 1)'],
-			customWarnings: ['Extension "item5" is unused. (line 1)', 'Receiver "item6E" is unused. (line 1)'],
+			customErrors: ['Extension "item5E" is not defined. (Line 1)', 'Receiver "item6" is not defined. (Line 1)'],
+			customWarnings: ['Extension "item5" is unused. (Line 1)', 'Receiver "item6E" is unused. (Line 1)'],
 		});
 	});
 });
