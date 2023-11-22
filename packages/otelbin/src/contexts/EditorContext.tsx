@@ -96,6 +96,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+
 	const isServerValidationEnabled = distro && distroVersion ? true : false;
 	const defaultSchema: SchemasSettings = {
 		uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
@@ -103,18 +104,18 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		schema,
 		fileMatch: ["*"],
 	};
-	useEffect(() => {
-		if (monacoRef.current) {
-			const createData: MonacoYamlOptions = {
-				enableSchemaRequest: true,
-				schemas: [defaultSchema],
-				validate: !isServerValidationEnabled,
-			};
+	const createData: MonacoYamlOptions = {
+		enableSchemaRequest: !isServerValidationEnabled,
+		schemas: isServerValidationEnabled ? [] : [defaultSchema],
+		validate: !isServerValidationEnabled,
+	};
 
-			monacoYamlRef.current = configureMonacoYaml(monacoRef?.current, createData);
+	useEffect(() => {
+		if (monacoRef.current && !isServerValidationEnabled) {
+			monacoYamlRef.current = null;
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isServerValidationEnabled]);
+	}, [isServerValidationEnabled, monacoRef.current]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -145,13 +146,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
 		});
 
-		const createData: MonacoYamlOptions = {
-			enableSchemaRequest: true,
-			schemas: [defaultSchema],
-			validate: !isServerValidationEnabled,
-		};
-
-		monacoYamlRef.current = configureMonacoYaml(monaco, createData);
+		monacoYamlRef.current = !isServerValidationEnabled && configureMonacoYaml(monaco, createData);
 
 		const worker = createWorkerManager<YAMLWorker, MonacoYamlOptions>(monaco, {
 			label: "yaml",
@@ -185,11 +180,12 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				},
 			};
 		}
-
-		monacoRef?.current?.languages.registerCompletionItemProvider(
-			"yaml",
-			createCompletionItemProvider(worker.getWorker)
-		);
+		if (!isServerValidationEnabled) {
+			monacoRef?.current?.languages.registerCompletionItemProvider(
+				"yaml",
+				createCompletionItemProvider(worker.getWorker)
+			);
+		}
 
 		let value = editorRef.current?.getValue() ?? "";
 		let docElements = getYamlDocument(value);
