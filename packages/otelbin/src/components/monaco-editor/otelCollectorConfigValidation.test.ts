@@ -201,12 +201,10 @@ describe("findErrorElement", () => {
 		const expectedOutput: IYamlElement = {
 			key: "exporters",
 			offset: 174,
-			path: ["service", "pipelines", "traces", "exporters"],
 			value: [
 				{
 					key: "otlp",
 					offset: 186,
-					path: ["service", "pipelines", "traces", "exporters", "otlp"],
 					value: "otlp",
 				},
 			],

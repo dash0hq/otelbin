@@ -13,8 +13,7 @@ import { type IItem, getYamlDocument, selectConfigType } from "../components/mon
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
-import { useUrlState } from "~/lib/urlState/client/useUrlState";
-import { distroBinding, distroVersionBinding } from "~/components/validation/binding";
+import { useServerSideValidationEnabled } from "~/components/monaco-editor/Editor";
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;
@@ -26,7 +25,6 @@ export type WorkerAccessor = WorkerGetter<YAMLWorker>;
 export const EditorContext = createContext<EditorRefType | null>(null);
 export const MonacoContext = createContext<MonacoRefType | null>(null);
 export const EditorDidMount = createContext<OnMount | undefined>(undefined);
-export const ServerSideValidationEnabled = createContext<boolean>(false);
 
 export const FocusContext = createContext<{
 	setFocused: (focus: string) => void;
@@ -84,10 +82,6 @@ export function useBreadcrumbs() {
 	return React.useContext(BreadcrumbsContext);
 }
 
-export function useServerSideValidationEnabled() {
-	return React.useContext(ServerSideValidationEnabled);
-}
-
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
@@ -95,9 +89,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
-	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
-
-	const isServerValidationEnabled = distro && distroVersion ? true : false;
+	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const defaultSchema: SchemasSettings = {
 		uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
 		// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
@@ -290,11 +282,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				<MonacoContext.Provider value={monacoRef}>
 					<FocusContext.Provider value={focusContext}>
 						<ViewModeContext.Provider value={viewModeContext}>
-							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
-								<ServerSideValidationEnabled.Provider value={isServerValidationEnabled}>
-									{children}
-								</ServerSideValidationEnabled.Provider>
-							</BreadcrumbsContext.Provider>
+							<BreadcrumbsContext.Provider value={breadcrumbsContext}>{children}</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>
 					</FocusContext.Provider>
 				</MonacoContext.Provider>

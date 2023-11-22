@@ -7,13 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { IError } from "./ValidationErrorConsole";
 import ValidationErrorConsole from "./ValidationErrorConsole";
 import EditorTopBar from "../EditorTopBar";
-import {
-	useEditorRef,
-	useEditorDidMount,
-	useMonacoRef,
-	useViewMode,
-	useServerSideValidationEnabled,
-} from "~/contexts/EditorContext";
+import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
 import MonacoEditor, { loader, type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
@@ -33,6 +27,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
 import { selectConfigType } from "./parseYaml";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -231,4 +226,9 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 			</div>
 		</>
 	);
+}
+
+export function useServerSideValidationEnabled(): boolean {
+	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+	return !!distro && !!distroVersion;
 }

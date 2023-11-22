@@ -64,7 +64,6 @@ export interface IYamlElement {
 	key: string;
 	offset: number;
 	value?: IYamlElement | IYamlElement[] | string;
-	path?: string[];
 }
 
 export interface ILeaf {
@@ -99,7 +98,7 @@ export const getYamlDocument = (editorValue: string) => {
 	return docElements;
 };
 
-export function parseYaml(yamlItems: IItem[], path: string[] = []) {
+export function parseYaml(yamlItems: IItem[]) {
 	const parsedYamlConfig: IYamlElement[] = [];
 	if (!yamlItems) return;
 	else if (Array.isArray(yamlItems)) {
@@ -107,9 +106,8 @@ export function parseYaml(yamlItems: IItem[], path: string[] = []) {
 			if (item) {
 				const key = item.key?.source ?? item.value?.source;
 				const keyOffset = item.key?.offset ?? item.value?.offset;
-				const newPath = path.concat([key]);
-				const value = parseYaml(item.value?.items, newPath) ?? item.value?.source;
-				parsedYamlConfig.push({ key: key, offset: keyOffset, value: value, path: newPath });
+				const value = parseYaml(item.value?.items) ?? item.value?.source;
+				parsedYamlConfig.push({ key: key, offset: keyOffset, value: value });
 			}
 		}
 	}

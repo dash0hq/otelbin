@@ -172,7 +172,7 @@ export function customValidate(
 			}
 		});
 
-		!isServerSideValidationEnabled &&
+		if (!isServerSideValidationEnabled) {
 			mainItems?.forEach((item) => {
 				if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
 					const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
@@ -192,6 +192,7 @@ export function customValidate(
 					totalErrors.customWarnings?.push(errorMarker.message + " " + `(Line ${line})`);
 				}
 			});
+		}
 	}
 }
 
