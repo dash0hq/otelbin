@@ -67,7 +67,6 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 						line: line as number | null,
 						column: column as number | null,
 						message: error.message || "Unknown error",
-						path: errorPath,
 					};
 					errorMarkers.push({
 						startLineNumber: errorInfo.line ?? 0,
