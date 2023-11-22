@@ -111,29 +111,27 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			configData,
 			isServerSideValidationEnabled
 		);
-		const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
-		const { line, column } = findLineAndColumn(configData, serverSideErrorElement?.offset);
-		totalErrors.serverSideError = {
-			message: serverSideValidationResult?.result?.message ?? "",
-			error: serverSideValidationResult?.result?.error ?? "",
-			line: line,
-			path: serverSideValidationPath,
-		};
-		serverSideValidationPath.length > 0 &&
-			errorMarkers.push({
-				startLineNumber: line ?? 0,
-				endLineNumber: 0,
-				startColumn: column ?? 0,
-				endColumn: column ?? 0,
-				severity: 8,
-				message: serverSideValidationResult?.result?.message + " - " + serverSideValidationResult?.result?.error,
-			});
+		const totalBrowserSideErrorsCount = (totalErrors.ajvErrors?.length ?? 0) + (totalErrors.customErrors?.length ?? 0);
+		if (!totalBrowserSideErrorsCount) {
+			const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
+			const { line, column } = findLineAndColumn(configData, serverSideErrorElement?.offset);
+			totalErrors.serverSideError = {
+				message: serverSideValidationResult?.result?.message ?? "",
+				error: serverSideValidationResult?.result?.error ?? "",
+				line: line,
+				path: serverSideValidationPath,
+			};
+			serverSideValidationPath.length > 0 &&
+				errorMarkers.push({
+					startLineNumber: line ?? 0,
+					endLineNumber: 0,
+					startColumn: column ?? 0,
+					endColumn: column ?? 0,
+					severity: 8,
+					message: serverSideValidationResult?.result?.message + " - " + serverSideValidationResult?.result?.error,
+				});
+		}
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
-	}
-	if (isServerSideValidationEnabled) {
-		totalErrors.ajvErrors = totalErrors?.ajvErrors?.filter((error, idx) => {
-			comparePathArrays(totalErrors.serverSideError?.path ?? [], error.path) && totalErrors.ajvErrors?.splice(idx, 1);
-		});
 	}
 	return totalErrors;
 }
@@ -227,18 +225,4 @@ export const findErrorElement = (path: string[], data?: IYamlElement[]): IYamlEl
 		}
 	}
 	return undefined;
-};
-
-export const comparePathArrays = (path1: string[], path2: string[]): boolean => {
-	if (path1.length !== path2.length) {
-		return false;
-	}
-
-	for (let i = 0; i < path1.length; i++) {
-		if (path1[i] !== path2[i]) {
-			return false;
-		}
-	}
-
-	return true;
 };

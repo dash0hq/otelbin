@@ -1,16 +1,15 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { createContext, useRef, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
-import { type editor } from "monaco-editor";
+import type { editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
-import type { IItem } from "../components/monaco-editor/parseYaml";
-import { getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
+import { type IItem, getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
@@ -27,6 +26,7 @@ export type WorkerAccessor = WorkerGetter<YAMLWorker>;
 export const EditorContext = createContext<EditorRefType | null>(null);
 export const MonacoContext = createContext<MonacoRefType | null>(null);
 export const EditorDidMount = createContext<OnMount | undefined>(undefined);
+export const ServerSideValidationEnabled = createContext<boolean>(false);
 
 export const FocusContext = createContext<{
 	setFocused: (focus: string) => void;
@@ -84,6 +84,10 @@ export function useBreadcrumbs() {
 	return React.useContext(BreadcrumbsContext);
 }
 
+export function useServerSideValidationEnabled() {
+	return React.useContext(ServerSideValidationEnabled);
+}
+
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
@@ -92,6 +96,25 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+	const isServerValidationEnabled = distro && distroVersion ? true : false;
+	const defaultSchema: SchemasSettings = {
+		uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
+		// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
+		schema,
+		fileMatch: ["*"],
+	};
+	useEffect(() => {
+		if (monacoRef.current) {
+			const createData: MonacoYamlOptions = {
+				enableSchemaRequest: true,
+				schemas: [defaultSchema],
+				validate: !isServerValidationEnabled,
+			};
+
+			monacoYamlRef.current = configureMonacoYaml(monacoRef?.current, createData);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isServerValidationEnabled]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -109,15 +132,8 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			},
 		};
 
-		const defaultSchema: SchemasSettings = {
-			uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
-			// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
-			schema,
-			fileMatch: ["*"],
-		};
-
 		monacoRef.current = monaco;
-		const isServerValidationEnabled = distro && distroVersion ? true : false;
+
 		validateOtelCollectorConfigurationAndSetMarkers(
 			editorRef.current.getModel()?.getValue() || "",
 			editorRef,
@@ -132,7 +148,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		const createData: MonacoYamlOptions = {
 			enableSchemaRequest: true,
 			schemas: [defaultSchema],
-			validate: true,
+			validate: !isServerValidationEnabled,
 		};
 
 		monacoYamlRef.current = configureMonacoYaml(monaco, createData);
@@ -278,7 +294,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				<MonacoContext.Provider value={monacoRef}>
 					<FocusContext.Provider value={focusContext}>
 						<ViewModeContext.Provider value={viewModeContext}>
-							<BreadcrumbsContext.Provider value={breadcrumbsContext}>{children}</BreadcrumbsContext.Provider>
+							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
+								<ServerSideValidationEnabled.Provider value={isServerValidationEnabled}>
+									{children}
+								</ServerSideValidationEnabled.Provider>
+							</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>
 					</FocusContext.Provider>
 				</MonacoContext.Provider>

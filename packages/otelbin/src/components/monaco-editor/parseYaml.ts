@@ -242,6 +242,7 @@ export function isOtelColCRD(jsonData: IOtelColCRD) {
 }
 
 export function selectConfigType(config: string) {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const jsonData = JsYaml.load(config) as any;
 
 	if (isK8sConfigMap(jsonData)) {

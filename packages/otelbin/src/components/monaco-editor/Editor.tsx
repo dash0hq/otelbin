@@ -7,7 +7,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { IError } from "./ValidationErrorConsole";
 import ValidationErrorConsole from "./ValidationErrorConsole";
 import EditorTopBar from "../EditorTopBar";
-import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
+import {
+	useEditorRef,
+	useEditorDidMount,
+	useMonacoRef,
+	useViewMode,
+	useServerSideValidationEnabled,
+} from "~/contexts/EditorContext";
 import MonacoEditor, { loader, type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
@@ -26,7 +32,6 @@ import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
-import { distroBinding, distroVersionBinding } from "../validation/binding";
 import { selectConfigType } from "./parseYaml";
 
 const firaCode = Fira_Code({
@@ -47,7 +52,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
 	const serverSideValidationResult = useServerSideValidation();
-	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+	const isServerValidationEnabled = useServerSideValidationEnabled();
 
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
@@ -64,7 +69,6 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	);
 
 	const totalValidationErrors = useMemo((): IError => {
-		const isServerValidationEnabled = distro && distroVersion ? true : false;
 		if (editorRef && monacoRef) {
 			return validateOtelCollectorConfigurationAndSetMarkers(
 				currentConfig,
@@ -76,7 +80,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		} else {
 			return {};
 		}
-	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult, distro, distroVersion]);
+	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult, isServerValidationEnabled]);
 
 	const isValidConfig =
 		totalValidationErrors.jsYamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
