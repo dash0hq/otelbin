@@ -168,7 +168,7 @@ export function customValidate(
 					message: errorMessage,
 				};
 				errorMarkers.push(errorMarker);
-				totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
+				totalErrors.customErrors?.push(errorMarker.message + " " + `(Line ${line})`);
 			}
 		});
 
