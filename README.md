@@ -16,6 +16,7 @@
 <p align="center">
   <a href="#introduction"><strong>Introduction</strong></a> ·
   <a href="#features"><strong>Features</strong></a> ·
+  <a href="#badges"><strong>Badges</strong></a> ·
   <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
   <a href="#contributing"><strong>Contributing</strong></a> ·
   <a href="./LICENSE"><strong>License</strong></a>
@@ -35,6 +36,25 @@ OTelBin will enable you to:
 1. Visualize for you the configured OpenTelemetry Collector pipelines as swimlanes
 1. Validate your configuration and highlight errors
 1. Enable you to share your OpenTelemetry Collector configurations online (requires login with a GitHub or Google account)
+
+## Badges
+
+Use [shields.io-powered](https://shields.io/) badges within documentation to reference a collector configuration.
+
+![OpenTelemetry collector configuration on OTelBin](https://www.otelbin.io/shields/collector-config)
+
+- **URL**
+  ```
+  https://www.otelbin.io/shields/collector-config
+  ```
+- **Markdown**
+  ```md
+  ![OpenTelemetry collector configuration on OTelBin](https://www.otelbin.io/shields/collector-config)
+  ```
+- **HTML**
+  ```
+  <img src="https://www.otelbin.io/shields/collector-config" alt="OpenTelemetry collector configuration on OTelBin">
+  ```
 
 ## Tech Stack
 
