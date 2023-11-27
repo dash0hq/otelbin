@@ -124,7 +124,7 @@ export const schema: JSONSchemaType<IOtelConfig> = {
 	errorMessage: {
 		type: "The configuration must be a map, see https://opentelemetry.io/docs/collector/configuration",
 		required:
-			"The configuration must specify at least the 'receivers', 'exporters, and 'service' entries, see https://opentelemetry.io/docs/collector/configuration",
+			"The configuration must specify at least the 'receivers', 'exporters', and 'service' entries, see https://opentelemetry.io/docs/collector/configuration",
 	},
 	required: ["service", "receivers", "exporters"],
 };
