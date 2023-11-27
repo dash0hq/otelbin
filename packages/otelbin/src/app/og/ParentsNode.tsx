@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { memo } from "react";
+// import ParentNodeTag from "./ParentNodeTag";
+import { calcNodes } from "../../components/react-flow/useClientNodes";
+import React from "react";
 import ParentNodeTag from "./ParentNodeTag";
-import { useNodes } from "reactflow";
 import { BarChart4, ListTree, Workflow } from "lucide-react";
 
 interface IData {
@@ -47,11 +48,16 @@ export const parentNodesConfig = [
 	},
 ];
 
-const ParentsNode = ({ data }: { data: IData }) => {
-	const nodes = useNodes();
-	const childNodes = nodes.filter((node) => node.parentNode === data.label);
-	const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
-	const maxWidth = childProcessorsNodes.length * 200 + 430;
+const ParentsNode = ({ data, jsonData, children }: { data: IData; jsonData: any; children: React.ReactNode }) => {
+	const nodes = calcNodes(jsonData);
+	const childNodes = nodes?.filter((node) => node.parentNode === data.label);
+	const processorsNodesCount = childNodes?.filter((node) => node.type === "processorsNode").length ?? 0;
+	const nodesWidth = 120;
+	const sumOfExporterAndReceiver = 240;
+	const edgesWidth = 80;
+	const totalNodesWidth = (processorsNodesCount ?? 0) * nodesWidth + sumOfExporterAndReceiver;
+	const totalEdgeWidth = edgesWidth * (processorsNodesCount + 1);
+	const maxWidth = totalNodesWidth + (processorsNodesCount + 2) * 20 + totalEdgeWidth;
 
 	return (
 		<>
@@ -63,18 +69,23 @@ const ParentsNode = ({ data }: { data: IData }) => {
 							id={"parentNode"}
 							key={idx}
 							style={{
+								display: "flex",
+								justifyContent: "space-between",
+								position: "relative",
 								backgroundColor: node.backgroundColor,
 								border: node.borderColor,
 								height: data.height,
 								width: maxWidth,
 							}}
-							className="rounded-[4px] text-[10px] text-black"
+							tw="rounded-[4px] text-[10px] text-black my-3"
 						>
 							<ParentNodeTag tag={data.label} />
+
+							<div style={{ display: "flex", justifyContent: "center" }}>{children}</div>
 						</div>
 					);
 				})}
 		</>
 	);
 };
-export default memo(ParentsNode);
+export default ParentsNode;

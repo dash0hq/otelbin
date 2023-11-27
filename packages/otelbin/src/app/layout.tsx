@@ -21,13 +21,13 @@ export const metadata: Metadata = {
 	metadataBase: new URL("https://otelbin.io/"),
 
 	openGraph: {
-		title: "Next.js",
-		description: "The React Framework for the Web",
-		url: "/",
-		siteName: "OTelBin",
+		title: "OTelBin – by Dash0",
+		description: "Pipeline Visualization",
+		url: "/og",
+		siteName: "OTelBin.io",
 		images: [
 			{
-				url: "/opengraph-image",
+				url: "/og",
 				width: 1200,
 				height: 630,
 			},

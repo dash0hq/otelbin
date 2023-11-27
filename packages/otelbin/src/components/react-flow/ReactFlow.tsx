@@ -11,7 +11,7 @@ import { useFocus } from "~/contexts/EditorContext";
 import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
 import ParentsNode from "./node-types/ParentsNode";
 import EmptyStateNode, { EmptyStateNodeData } from "./node-types/EmptyStateNode";
-import { useNodes } from "./useNodes";
+import { useClientNodes } from "./useClientNodes";
 import type { editor } from "monaco-editor";
 import { ButtonGroup } from "~/components/button-group";
 import { Button } from "~/components/button";
@@ -45,7 +45,7 @@ export default function Flow({
 		const docService = docItems.find((item: IItem) => item.key?.source === "service");
 		return docService?.value.items.find((item: IItem) => item.key?.source === "pipelines");
 	}, [value]);
-	const initNodes = useNodes(jsonData);
+	const initNodes = useClientNodes(jsonData);
 	const [nodes, setNodes] = useNodesState(initNodes !== undefined ? initNodes : []);
 	const initEdges = useEdgeCreator(nodes);
 	const [edges, setEdges] = useEdgesState(initEdges);

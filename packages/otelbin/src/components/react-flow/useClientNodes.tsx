@@ -129,44 +129,46 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 	return nodesToAdd;
 };
 
-export const useNodes = (value: IConfig) => {
-	return useMemo(() => {
-		const pipelines = value.service?.pipelines;
-		const connectors = value.connectors;
-		if (pipelines == null) {
-			return;
-		}
+export const useClientNodes = (value: IConfig) => {
+	return useMemo(() => calcNodes(value), [value]);
+};
 
-		const nodesToAdd: Node[] = [];
-		let yOffset = 0;
+export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
+	const pipelines = value.service?.pipelines;
+	const connectors = value.connectors;
+	if (pipelines == null) {
+		return;
+	}
 
-		for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
-			const receivers = pipeline.receivers?.length ?? 0;
-			const exporters = pipeline.exporters?.length ?? 0;
-			const maxNodes = Math.max(receivers, exporters) ?? 1;
-			const spaceBetweenParents = 40;
-			const spaceBetweenNodes = 90;
-			const totalSpacing = maxNodes * spaceBetweenNodes;
-			const parentHeight = totalSpacing + maxNodes * childNodesHeight;
+	const nodesToAdd: Node[] = [];
+	let yOffset = 0;
 
-			nodesToAdd.push({
-				id: pipelineName,
-				type: "parentNodeType",
-				position: { x: 0, y: yOffset },
-				data: {
-					label: pipelineName,
-					parentNode: pipelineName,
-					height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
-				},
-				draggable: false,
-				ariaLabel: pipelineName,
-				expandParent: true,
-			});
-			const heights = nodesToAdd.filter((node) => node.type === "parentNodeType").map((node) => node.data.height);
-			yOffset += heights[heights.length - 1] + spaceBetweenParents;
-			const childNodes = createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors);
-			nodesToAdd.push(...childNodes);
-		}
-		return nodesToAdd;
-	}, [value]);
+	for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
+		const receivers = pipeline.receivers?.length ?? 0;
+		const exporters = pipeline.exporters?.length ?? 0;
+		const maxNodes = Math.max(receivers, exporters) ?? 1;
+		const spaceBetweenParents = 40;
+		const spaceBetweenNodes = isServerSide ? 40 : 90;
+		const totalSpacing = maxNodes * spaceBetweenNodes;
+		const parentHeight = totalSpacing + maxNodes * childNodesHeight;
+
+		nodesToAdd.push({
+			id: pipelineName,
+			type: "parentNodeType",
+			position: { x: 0, y: yOffset },
+			data: {
+				label: pipelineName,
+				parentNode: pipelineName,
+				height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
+			},
+			draggable: false,
+			ariaLabel: pipelineName,
+			expandParent: true,
+		});
+		const heights = nodesToAdd.filter((node) => node.type === "parentNodeType").map((node) => node.data.height);
+		yOffset += heights[heights.length - 1] + spaceBetweenParents;
+		const childNodes = createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors);
+		nodesToAdd.push(...childNodes);
+	}
+	return nodesToAdd;
 };
