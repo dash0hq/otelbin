@@ -103,11 +103,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	useEffect(() => {
-		if (monacoRef.current && !isServerValidationEnabled) {
+		if (monacoRef.current && isServerValidationEnabled) {
 			monacoYamlRef.current = null;
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isServerValidationEnabled, monacoRef.current]);
+	}, [isServerValidationEnabled]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -138,7 +137,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
 		});
 
-		monacoYamlRef.current = !isServerValidationEnabled && configureMonacoYaml(monaco, createData);
+		monacoYamlRef.current = configureMonacoYaml(monaco, createData);
 
 		const worker = createWorkerManager<YAMLWorker, MonacoYamlOptions>(monaco, {
 			label: "yaml",
