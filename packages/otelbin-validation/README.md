@@ -73,7 +73,7 @@ The AWS Lambda function has a [Node.js handler](./src/images/otelcol-validator/s
    1. Get a GitHub classic token, which is needed by the automation to be able to download GitHub release artifacts using the [`gh`](https://cli.github.com) utility.
 1. Run:
    ```sh
-   GH_TOKEN=<token> npx run deploy --profile otelbin-dev
+   GH_TOKEN=<token> npm run deploy --profile otelbin-dev
    ```
    The output of the CDK will give you information you need for trying the API, e.g.:
    ```sh
