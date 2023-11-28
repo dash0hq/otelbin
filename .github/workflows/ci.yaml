@@ -93,19 +93,22 @@ jobs:
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo 'aws_account=${{secrets.AWS_ACCOUNT_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}' >> ${GITHUB_OUTPUT}
           else
-            echo 'aws_account=${{secrets.AWS_ACCOUNT_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}' >> ${GITHUB_OUTPUT}
           fi
 
       - name: Deploy validation backend
         shell: bash
         working-directory: packages/otelbin-validation
         env:
+          AWS_ROLE_ARN: ${{ steps.select_credentials.outputs.role_arn }}
           AWS_ACCESS_KEY_ID: ${{ steps.select_credentials.outputs.aws_access_key }}
           AWS_SECRET_ACCESS_KEY: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           AWS_DEFAULT_REGION: 'us-east-2'
@@ -114,7 +117,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
-          npx projen deploy --require-approval never --outputs-file ./cdk-outputs.json
+          npx projen deploy --role-arn ${AWS_ROLE_ARN} --require-approval never --outputs-file ./cdk-outputs.json
 
       - name: Read API Gateway URL
         id: parse_cdk_output
