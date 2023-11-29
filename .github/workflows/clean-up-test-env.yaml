@@ -64,7 +64,6 @@ jobs:
           mask-aws-account-id: true
           role-to-assume: ${{ steps.select_credentials.outputs.role_arn }}
 
-
       - name: Delete validation backend
         shell: bash
         working-directory: packages/otelbin-validation
