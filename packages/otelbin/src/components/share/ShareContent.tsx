@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignedIn, SignedOut, SignInButton, useAuth } from "@clerk/nextjs";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import { Button } from "~/components/button";
 import { ArrowDownToLine, Copy, LogIn } from "lucide-react";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
@@ -12,7 +12,6 @@ import { track } from "@vercel/analytics";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { IconButton } from "~/components/icon-button";
 import { useToast } from "~/components/use-toast";
-import useSWR from "swr";
 import { fetcher } from "~/lib/fetcher";
 import useSWRImmutable from "swr/immutable";
 
@@ -50,11 +49,11 @@ export function ShareContent() {
 
 			{isSignedIn && (
 				<div className="mt-3 border-t-1 border-subtle px-4 pt-3">
-					<p className="weight mb-2 text-sm font-normal text-default">Use a badge within your repository or docs.</p>
+					<p className="weight mb-2 text-sm font-normal text-default">Link to this configuration with a badge.</p>
 
 					<div className="flex gap-2 items-center">
 						<img
-							src="/shields/collector-config"
+							src="/badges/collector-config"
 							alt="OpenTelemetry collector configuration on OTelBin"
 							width={167}
 							height={20}
@@ -90,7 +89,7 @@ export function ShareContent() {
 
 	function copyToClipboard() {
 		const text = `[![OpenTelemetry collector configuration on OTelBin](${
-			window.location.origin + "/shields/collector-config"
+			window.location.origin + "/badges/collector-config"
 		})](${fullURL})`;
 		navigator.clipboard
 			.writeText(text)
@@ -105,6 +104,6 @@ export function ShareContent() {
 					description: "Failed to copy to clipboard",
 				});
 			});
-		track("Shared Link");
+		track("Copied badge markdown");
 	}
 }
