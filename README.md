@@ -41,19 +41,19 @@ OTelBin will enable you to:
 
 Use [shields.io-powered](https://shields.io/) badges within documentation to reference a collector configuration.
 
-![OpenTelemetry collector configuration on OTelBin](https://www.otelbin.io/shields/collector-config)
+![OpenTelemetry collector configuration on OTelBin](https://www.otelbin.io/badges/collector-config)
 
 - **URL**
   ```
-  https://www.otelbin.io/shields/collector-config
+  https://www.otelbin.io/badges/collector-config
   ```
 - **Markdown**
   ```md
-  ![OpenTelemetry collector configuration on OTelBin](https://www.otelbin.io/shields/collector-config)
+  ![OpenTelemetry collector configuration on OTelBin](https://www.otelbin.io/badges/collector-config)
   ```
 - **HTML**
   ```
-  <img src="https://www.otelbin.io/shields/collector-config" alt="OpenTelemetry collector configuration on OTelBin">
+  <img src="https://www.otelbin.io/badges/collector-config" alt="OpenTelemetry collector configuration on OTelBin">
   ```
 
 ## Tech Stack
