@@ -176,12 +176,12 @@ jobs:
           TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
             echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}' >> ${GITHUB_OUTPUT}
           else
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
             echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}' >> ${GITHUB_OUTPUT}
           fi
 
