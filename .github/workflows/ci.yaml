@@ -110,7 +110,6 @@ jobs:
           aws-access-key-id: ${{ steps.select_credentials.outputs.aws_access_key }}
           aws-secret-access-key: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           aws-region: 'us-east-2'
-          mask-aws-account-id: true
           role-to-assume: ${{ steps.select_credentials.outputs.role_arn }}
 
       - name: Deploy validation backend
