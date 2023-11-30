@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/dash0hq/otelbin#readme",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.122",
+    "@types/aws-lambda": "^8.10.126",
     "esbuild": "^0.19.5"
   },
   "dependencies": {
