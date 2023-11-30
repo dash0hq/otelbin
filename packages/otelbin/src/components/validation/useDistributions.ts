@@ -8,7 +8,7 @@ import { fetcher } from "~/lib/fetcher";
 export function useDistributions() {
 	return useSWR<Distributions>(
 		{
-			url: `validation/supported-distributions`,
+			url: "validation/supported-distributions",
 			method: "GET",
 		},
 		fetcher
