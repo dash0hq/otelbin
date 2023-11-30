@@ -45,7 +45,7 @@
 		"monaco-languageserver-types": "^0.2.3",
 		"monaco-yaml": "^5.1.0",
 		"next": "^13.5.4",
-		"projen": "^0.73.37",
+		"projen": "^0.76.9",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"reactflow": "^11.10.1",
