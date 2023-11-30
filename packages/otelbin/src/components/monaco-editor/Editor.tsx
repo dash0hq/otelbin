@@ -26,6 +26,7 @@ import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
+import { selectConfigType } from "./parseYaml";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -77,7 +78,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		totalValidationErrors.jsYamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
 
 	const handleEditorChange: OnChange = (value) => {
-		setCurrentConfig(value || "");
+		const configType = selectConfigType(value ?? "");
+		setCurrentConfig((configType as string) ?? "");
 	};
 
 	useEffect(() => {
