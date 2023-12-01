@@ -10,6 +10,10 @@ on:
     branches:
       - 'main'
 
+permissions:
+  id-token: write
+  contents: read
+
 # Ensure we only have one such workflow running per branch, to avoid
 # conflicts in the test env
 concurrency:
