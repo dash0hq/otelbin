@@ -10,6 +10,10 @@ on:
     branches:
       - 'main'
 
+permissions:
+  id-token: write
+  contents: read
+
 # Ensure we only have one such workflow running per branch, to avoid
 # conflicts in the test env
 concurrency:
@@ -93,21 +97,30 @@ jobs:
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo 'aws_account=${{secrets.AWS_ACCOUNT_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}' >> ${GITHUB_OUTPUT}
           else
-            echo 'aws_account=${{secrets.AWS_ACCOUNT_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}' >> ${GITHUB_OUTPUT}
           fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ steps.select_credentials.outputs.aws_access_key }}
+          aws-secret-access-key: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
+          aws-region: 'us-east-2'
+          mask-aws-account-id: true
+          role-to-assume: ${{ steps.select_credentials.outputs.role_arn }}
 
       - name: Deploy validation backend
         shell: bash
         working-directory: packages/otelbin-validation
         env:
-          AWS_ACCESS_KEY_ID: ${{ steps.select_credentials.outputs.aws_access_key }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           AWS_DEFAULT_REGION: 'us-east-2'
           CDK_DEPLOY_ACCOUNT: ${{ steps.select_credentials.outputs.aws_account }}
           CDK_DEPLOY_REGION: 'us-east-2'
@@ -167,19 +180,28 @@ jobs:
           TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
+            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}' >> ${GITHUB_OUTPUT}
           else
-            echo 'aws_access_key=${{secrets.AWS_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
+            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}' >> ${GITHUB_OUTPUT}
           fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ steps.select_credentials.outputs.aws_access_key }}
+          aws-secret-access-key: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
+          aws-region: 'us-east-2'
+          mask-aws-account-id: true
+          role-to-assume: ${{ steps.select_credentials.outputs.role_arn }}
 
       - name: Retrieve API Key for Validation API and run tests
         shell: bash
         working-directory: packages/otelbin-validation
         env:
-          AWS_ACCESS_KEY_ID: ${{ steps.select_credentials.outputs.aws_access_key }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           AWS_DEFAULT_REGION: 'us-east-2'
           API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
           API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
