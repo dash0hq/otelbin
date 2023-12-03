@@ -15,7 +15,6 @@ import { useState } from "react";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
 import type { ICurrentDistributionVersion } from "./ValidationType";
-import { useServerSideValidationEnabled } from "../monaco-editor/Editor";
 
 export default function ValidationTile({
 	distributionId,
@@ -29,7 +28,6 @@ export default function ValidationTile({
 	distribution: Distribution;
 }) {
 	const isDistroActive = distributionId === currentDistributionVersion?.distro;
-	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
 	const [version, setVersion] = useState<string>(
 		isDistroActive ? currentDistributionVersion.version : distribution.releases[0]?.version ?? ""
@@ -123,9 +121,6 @@ export default function ValidationTile({
 								onClick={() => {
 									if (typeof window !== "undefined") {
 										window.history.pushState(null, "", getLink({ distro: distributionId, distroVersion: version }));
-										if (!isServerValidationEnabled) {
-											window.location.reload();
-										}
 									}
 									setOpen(false);
 								}}

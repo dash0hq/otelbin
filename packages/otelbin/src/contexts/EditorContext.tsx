@@ -102,6 +102,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		validate: !isServerValidationEnabled,
 	};
 
+	const cursor = editorRef.current?.getPosition();
 	useEffect(() => {
 		if (monacoRef.current && isServerValidationEnabled) {
 			monacoYamlRef.current = null;
@@ -110,6 +111,8 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
+
+		editorRef.current?.setPosition(cursor ?? { lineNumber: 1, column: 1 });
 
 		window.MonacoEnvironment = {
 			getWorker(_, label) {

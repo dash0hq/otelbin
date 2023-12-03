@@ -48,7 +48,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const clerk = useClerk();
 	const serverSideValidationResult = useServerSideValidation();
 	const isServerValidationEnabled = useServerSideValidationEnabled();
-
+	const [key, setKey] = useState(0);
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
 		setWidth(newWidth);
@@ -149,6 +149,10 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}
 
+	useEffect(() => {
+		setKey((key) => key + 1);
+	}, [isServerValidationEnabled]);
+
 	return (
 		<>
 			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
@@ -168,6 +172,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 									<AutoSizer>
 										{({ width, height }) => (
 											<MonacoEditor
+												key={key}
 												defaultValue={config}
 												value={config}
 												onMount={editorDidMount}

@@ -32,7 +32,6 @@ export default function ValidationTypeContent({
 						onClick={() => {
 							if (typeof window !== "undefined") {
 								window.history.pushState(null, "", getLink({ distro: "", distroVersion: "" }));
-								window.location.reload();
 							}
 							setOpen(false);
 						}}
