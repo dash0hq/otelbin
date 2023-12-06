@@ -1,5 +1,5 @@
 import { realpath, writeFile } from 'fs/promises';
-import { spawn } from 'node:child_process';
+import { spawn } from 'child_process';
 import spawnAsync from '@expo/spawn-async';
 import { APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 import * as yaml from 'js-yaml';
@@ -12,12 +12,13 @@ interface SpawnError extends Error {
   signal: string;
 }
 
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      DISTRO_NAME: string;
-    }
-  }
+interface ValidationPayload {
+  config: string;
+  env: Env;
+}
+
+interface Env {
+  [key: string]: string;
 }
 
 const distroName = process.env.DISTRO_NAME;
@@ -25,7 +26,7 @@ const distroName = process.env.DISTRO_NAME;
 const defaultErrorPrefix = 'Error: ';
 const adotInvalidConfigPrefix = 'Error: invalid configuration: ';
 
-export const validateAdot = async (otelcolRealPath: string, configPath: string): Promise<void> => {
+export const validateAdot = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
   /*
 	 * ADOT does not support the `validate` subcommand
 	 * (see https://github.com/aws-observability/aws-otel-collector/issues/2391),
@@ -45,7 +46,12 @@ export const validateAdot = async (otelcolRealPath: string, configPath: string):
    * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
    * increases the reliability.
    */
-  const otelcol = spawn('/bin/sh', ['-c', `${otelcolRealPath} --config=${configPath}`]);
+  const otelcol = spawn('/bin/sh', ['-c', `${otelcolRealPath} --config=${configPath}`], {
+    env: {
+      ...process.env, // Ensure $PATH, terminal env vars and other basic niceties are set
+      ...env
+    },
+  });
 
   let stdout = '';
   let stderr = '';
@@ -91,7 +97,7 @@ export const validateAdot = async (otelcolRealPath: string, configPath: string):
     });
 };
 
-export const validateOtelCol = async (otelcolRealPath: string, configPath: string): Promise<void> => {
+export const validateOtelCol = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
   /*
    * Node.js spawn is unreliable in terms of collecting stdout and stderr through the spawn call
    * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
@@ -114,16 +120,25 @@ const extractErrorPath = (errorMessage: string) => {
 };
 
 export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
-  const config = event.body;
+  let body = event.body!;
+
+  if (event.isBase64Encoded) {
+    let buff = Buffer.from(body, 'base64');
+    body = buff.toString('ascii');
+  }
+
+  const validationPayload = JSON.parse(body) as ValidationPayload;
+  const config = validationPayload.config;
+  const env = validationPayload.env;
 
   if (
-    !config || // Empty string
-    !config?.trim().length || // Blank string (only whitespaces)
+    !validationPayload || // Empty event
+    !config || // Empty configuration string
+    !config?.trim().length || // Blank configuration string (only whitespaces)
     !Object.keys(yaml.load(config) as Object).length // Empty YAML
   ) {
     return {
       statusCode: 200,
-      // Unfortunately the collector returns one validation error at the time
       body: JSON.stringify({
         message: 'The provided configuration is invalid',
         error: 'the provided configuration is empty',
@@ -143,10 +158,10 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
 
     switch (distroName) {
       case 'adot':
-        await validateAdot(otelcolRealPath, configPath);
+        await validateAdot(otelcolRealPath, configPath, env);
         break;
       default:
-        await validateOtelCol(otelcolRealPath, configPath);
+        await validateOtelCol(otelcolRealPath, configPath, env);
     }
 
     return {

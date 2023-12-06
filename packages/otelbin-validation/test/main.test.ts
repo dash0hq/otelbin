@@ -8,6 +8,10 @@ import { describe, expect, jest, test } from '@jest/globals';
 import axios from 'axios';
 import { Distributions } from '../src/main';
 
+interface Env {
+  [key: string]: string;
+}
+
 const apiUrl = process.env.API_GATEWAY_URL?.replace(/[\/\\]+$/, '');
 const apiKey = process.env.VALIDATION_API_KEY;
 
@@ -45,15 +49,21 @@ const enumerateTestCases = () => {
 
 const assetFolderPath = join(__dirname, 'assets');
 
-const readConfig = (testConfigFilename: string) => readFileSync(join(assetFolderPath, testConfigFilename)).toString();
+const prepareValidationPayload = (testConfigFilename: string, env?: Env) => JSON.stringify({
+  config: readFileSync(join(assetFolderPath, testConfigFilename)).toString(),
+  env,
+});
 
 const defaultTimeout = 10_000; // 10 seconds
 
-const otelcolConfigValid = readConfig('config-default.yaml');
-const otelcolConfigInvalidNoReceivers = readConfig('config-no-receivers.yaml');
-const otelcolConfigInvalidUndeclaredExtension = readConfig('config-undeclared-extension.yaml');
-const otelcolConfigInvalidUndeclaredReceiver = readConfig('config-undeclared-receiver.yaml');
-const otelcolConfigInvalidUndeclaredReceiverNamedPipeline = readConfig('config-undeclared-receiver-named-pipelines.yaml');
+const otelcolConfigValid = prepareValidationPayload('config-default.yaml');
+const otelcolConfigValidEnvInterpolation = prepareValidationPayload('config-default.yaml', {
+  'OTLP_ENDPOINT': 'otelcol:4317',
+});
+const otelcolConfigInvalidNoReceivers = prepareValidationPayload('config-no-receivers.yaml');
+const otelcolConfigInvalidUndeclaredExtension = prepareValidationPayload('config-undeclared-extension.yaml');
+const otelcolConfigInvalidUndeclaredReceiver = prepareValidationPayload('config-undeclared-receiver.yaml');
+const otelcolConfigInvalidUndeclaredReceiverNamedPipeline = prepareValidationPayload('config-undeclared-receiver-named-pipelines.yaml');
 
 describe.each(enumerateTestCases())('Validation API', (distributionName, release) => {
 
@@ -72,7 +82,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test(`has data about ${distributionName}/${release}`, async () => {
         const res = await axios.get(supportedDistributionsUrl, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         });
@@ -104,7 +114,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('accepts valid configuration', async () => {
         await expect(axios.post(validationUrl, otelcolConfigValid, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -115,10 +125,39 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
         });
       }, defaultTimeout);
 
-      test('rejects empty configuration', async () => {
-        await expect(axios.post(validationUrl, '', {
+      test('accepts valid configuration with env var interpolation', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigValidEnvInterpolation, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'Configuration is valid',
+          },
+        });
+      }, defaultTimeout);
+
+      test('rejects empty validation payload', async () => {
+        await expect(axios.post(validationUrl, '{}', {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'The provided configuration is invalid',
+            error: 'the provided configuration is empty',
+          },
+        });
+      }, defaultTimeout);
+
+      test('rejects empty configuration', async () => {
+        await expect(axios.post(validationUrl, '{"config":"", env: {"foo":"bar"}}', {
+          headers: {
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -133,7 +172,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('rejects configuration without declared receivers', async () => {
         await expect(axios.post(validationUrl, otelcolConfigInvalidNoReceivers, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -148,7 +187,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('rejects configuration with undeclared receiver', async () => {
         await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredReceiver, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
@@ -180,7 +219,7 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
       test('rejects configuration with undeclared extension', async () => {
         await expect(axios.post(validationUrl, otelcolConfigInvalidUndeclaredExtension, {
           headers: {
-            'Content-Type': 'application/yaml',
+            'Content-Type': 'application/json',
             'X-Api-Key': apiKey,
           },
         })).resolves.toMatchObject({
