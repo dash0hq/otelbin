@@ -19,22 +19,6 @@ export const metadata: Metadata = {
 	title: "OTelBin – by Dash0",
 	description: "Edit, visualize and share OpenTelemetry Collector configurations",
 	metadataBase: new URL("https://otelbin.io/"),
-
-	openGraph: {
-		title: "OTelBin – by Dash0",
-		description: "Pipeline Visualization",
-		url: "/og",
-		siteName: "OTelBin.io",
-		images: [
-			{
-				url: "/og",
-				width: 1200,
-				height: 630,
-			},
-		],
-		locale: "en_US",
-		type: "website",
-	},
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
