@@ -46,12 +46,13 @@ export const parentNodesConfig = [
 const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) => {
 	const childNodes = nodes?.filter((node) => node.parentNode === nodeData.data.label);
 	const processorsNodesCount = childNodes?.filter((node) => node.type === "processorsNode").length ?? 0;
-	const nodesWidth = 120;
+	const nodesWidth = 110;
 	const sumOfExporterAndReceiver = 240;
 	const edgesWidth = 80;
 	const totalNodesWidth = (processorsNodesCount ?? 0) * nodesWidth + sumOfExporterAndReceiver;
 	const totalEdgeWidth = edgesWidth * (processorsNodesCount + 1);
-	const maxWidth = totalNodesWidth + (processorsNodesCount + 2) * 20 + totalEdgeWidth;
+	const totalPaddingX = 40;
+	const maxWidth = totalNodesWidth + (processorsNodesCount + 2) * 20 + totalEdgeWidth + totalPaddingX;
 
 	const receivers = nodes
 		?.filter((node) => node.type === "receiversNode")
@@ -63,7 +64,7 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 		?.filter((node) => node.type === "processorsNode")
 		.filter((processor) => processor.parentNode === nodeData.data.label);
 
-	const nodeHeight = 80;
+	const nodeHeight = 72;
 	const nodeTotalMargin = 40;
 
 	function calcSVGHeight(nodes?: Node[]) {
@@ -73,7 +74,7 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 
 	function calcSVGPath(side: string, nodes?: Node[]) {
 		const nodesCount = nodes?.length ?? 0;
-		const height = nodesCount * (nodeHeight + nodeTotalMargin) - 80;
+		const height = nodesCount * (nodeHeight + nodeTotalMargin) - 72;
 
 		return (
 			<svg style={{ marginBottom: "30px" }} width="80" height={calcSVGHeight(nodes)} xmlns="http://www.w3.org/2000/svg">
@@ -117,7 +118,7 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 								height: nodeData.data.height,
 								width: maxWidth,
 							}}
-							tw="rounded-[4px] text-[10px] text-black my-3"
+							tw="rounded-[4px] text-[10px] text-black my-3 px-5 py-2"
 						>
 							<ParentNodeTag tag={nodeData.data.label} />
 
@@ -126,7 +127,13 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 									<div tw="flex flex-col justify-center">
 										{receivers?.map((receiver, idx) => <ReceiversNode key={idx} data={receiver.data} />)}
 									</div>
-									{receivers?.length === 1 ? <ArrowRight /> : calcSVGPath("left", receivers)}
+									{processors?.length === 0 ? (
+										<></>
+									) : receivers?.length === 1 ? (
+										<ArrowRight />
+									) : (
+										calcSVGPath("left", receivers)
+									)}
 								</div>
 								<div tw="flex items-center">
 									<div tw="flex justify-center items-center">

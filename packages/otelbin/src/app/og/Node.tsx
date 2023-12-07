@@ -54,7 +54,7 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 				marginRight: "10px",
 				boxShadow: "0 2px 2px 2px rgba(7, 8, 16, 0.1",
 			}}
-			tw={`h-20 w-[120px] flex-col items-center rounded-lg my-5 `}
+			tw={`h-[72px] w-[110px] flex-col items-center rounded-lg my-5 `}
 		>
 			<div
 				style={customNodeHeaderStyle}
