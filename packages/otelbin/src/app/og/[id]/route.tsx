@@ -40,8 +40,8 @@ export async function GET(request: NextRequest) {
 	function calcScale(nodes?: Node[]) {
 		const targetHeight = 630;
 		const targetWidth = 1200;
-		const nodesHeight = nodes?.map((node) => node.data.height);
-		const totalHeight = nodesHeight?.reduce((sum, height) => sum + (height ?? 0), 0) + 4 * 24 ?? 0;
+		const nodesHeight = nodes?.map((node) => node.data.height) ?? [0];
+		const totalHeight = nodesHeight?.reduce((sum, height) => sum + (height ?? 0), 0) + 4 * 24;
 		const totalHorizontalNodesCount = (processors?.length ?? 0) + 2;
 		const totalWidth = totalHorizontalNodesCount * 140 + (totalHorizontalNodesCount - 1) * edgeWidth;
 		const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth);
