@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 		openGraph: {
 			images: [
 				{
-					url: `${process.env.DEPLOYMENT_ORIGIN}/og/${params.id}`,
+					url: new URL(`/og/${params.id}`, url.origin),
 					width: 1200,
 					height: 630,
 				},
