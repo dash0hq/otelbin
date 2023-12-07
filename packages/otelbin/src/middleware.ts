@@ -9,6 +9,10 @@ import { isBotRequest } from "~/lib/utils";
 
 export default authMiddleware({
 	apiRoutes: ["/s/new"],
+	publicRoutes: ["/s/:id"],
+	afterAuth(auth, request: NextRequest) {
+		return handleShortLinkRequest(request);
+	},
 });
 
 export const config = {
@@ -17,7 +21,7 @@ export const config = {
 
 const redis = Redis.fromEnv();
 
-export async function middleware(request: NextRequest) {
+async function handleShortLinkRequest(request: NextRequest) {
 
 	if (request.nextUrl.pathname.startsWith('/s') && !request.nextUrl.pathname.startsWith('/s/new')) {
 		const shortLink = request.url.split("/")[request.url.split("/").length - 1] ?? "";
