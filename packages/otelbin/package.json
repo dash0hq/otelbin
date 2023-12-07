@@ -49,7 +49,7 @@
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"reactflow": "^11.10.1",
-		"swr": "^2.2.2",
+		"swr": "^2.2.4",
 		"tailwind-merge": "^1.13.2",
 		"tailwindcss-animate": "^1.0.6",
 		"ts-jest": "^29.1.1",
