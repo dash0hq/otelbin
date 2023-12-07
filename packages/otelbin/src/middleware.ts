@@ -22,13 +22,12 @@ export const config = {
 const redis = Redis.fromEnv();
 
 async function handleShortLinkRequest(request: NextRequest) {
-
-	if (request.nextUrl.pathname.startsWith('/s') && !request.nextUrl.pathname.startsWith('/s/new')) {
+	if (request.nextUrl.pathname.startsWith("/s") && !request.nextUrl.pathname.startsWith("/s/new")) {
 		const shortLink = request.url.split("/")[request.url.split("/").length - 1] ?? "";
 		const fullLink = await redis.get<string>(getShortLinkPersistenceKey(shortLink));
 
 		if (isBotRequest(request)) {
-			return NextResponse.rewrite(`${process.env.DEPLOYMENT_ORIGIN}/social-preview/${shortLink}`)
+			return NextResponse.rewrite(`${process.env.DEPLOYMENT_ORIGIN}/social-preview/${shortLink}`);
 		} else {
 			return NextResponse.redirect(fullLink || "/", {
 				headers: {
@@ -37,6 +36,4 @@ async function handleShortLinkRequest(request: NextRequest) {
 			});
 		}
 	}
-
-
 }
