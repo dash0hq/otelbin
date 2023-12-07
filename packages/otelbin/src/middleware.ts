@@ -27,7 +27,7 @@ async function handleShortLinkRequest(request: NextRequest) {
 		const fullLink = await redis.get<string>(getShortLinkPersistenceKey(shortLink));
 
 		if (isBotRequest(request)) {
-			return NextResponse.rewrite(`${process.env.DEPLOYMENT_ORIGIN}/social-preview/${shortLink}`);
+			return NextResponse.rewrite(new URL(`/social-preview/${shortLink}`, request.url));
 		} else {
 			return NextResponse.redirect(fullLink || "/", {
 				headers: {
