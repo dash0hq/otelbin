@@ -2,22 +2,32 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Redis } from "@upstash/redis/nodejs";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
-import Page from "~/app/page";
+import { parse } from "~/lib/urlState/jsurl2";
 
 const redis = Redis.fromEnv();
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-	const id = params.id;
-	const shortLink = (await redis.get<string>(getShortLinkPersistenceKey(params.id))) ?? "";
-	const url = new URL(shortLink);
+	const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(params.id))) ?? "";
+	const url = new URL(fullLink);
+	const urlHash = url.hash;
+	let parsedConfig = "";
+	if (urlHash != null) {
+		try {
+			const config = urlHash.split("=")[1] ?? "";
+			const decodedConfig = decodeURIComponent(config);
+			parsedConfig = parse(decodedConfig);
+		} catch (e) {
+			console.warn("Failed to parse search param %s.", urlHash, e);
+		}
+	}
 
 	return {
-		description: shortLink,
+		description: parsedConfig,
 		openGraph: {
 			images: [
 				{
-					url: "../../og",
+					url: `${process.env.DEPLOYMENT_ORIGIN}/og/${params.id}`,
 					width: 1200,
 					height: 630,
 				},
@@ -26,6 +36,6 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 	};
 }
 
-export default function SocialPage({ params }: { params: { id: string } }) {
-	return <></>;
+export default function SocialPage() {
+	return <div className="flex justify-center items-center h-screen">Empty Page</div>;
 }
