@@ -7,6 +7,9 @@ import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import { parse } from "~/lib/urlState/jsurl2";
 
 const redis = Redis.fromEnv();
+const width = 1200;
+const height = 630;
+const ogImageAlt = "OpenTelemetry collector configuration pipeline visualization by OTelBin";
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
 	const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(params.id))) ?? "";
 	const url = new URL(fullLink);
@@ -21,15 +24,29 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 			console.warn("Failed to parse search param %s.", urlHash, e);
 		}
 	}
+	const imagesUrl = new URL(`/og/${params.id}`, url.origin);
 
 	return {
 		description: parsedConfig,
 		openGraph: {
 			images: [
 				{
-					url: new URL(`/og/${params.id}`, url.origin),
-					width: 1200,
-					height: 630,
+					url: imagesUrl,
+					width: width,
+					height: height,
+					alt: ogImageAlt,
+				},
+			],
+		},
+		twitter: {
+			title: "OTelBin – by Dash0",
+			site: "@dash0hq",
+			images: [
+				{
+					url: imagesUrl,
+					width: width,
+					height: height,
+					alt: ogImageAlt,
 				},
 			],
 		},
