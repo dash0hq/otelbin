@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 		const targetHeight = 630;
 		const targetWidth = 1200;
 		const nodesHeight = nodes?.map((node) => node.data.height) ?? [0];
-		const totalHeight = nodesHeight?.reduce((sum, height) => sum + (height ?? 0), 0) + 4 * 24;
+		const totalHeight = nodesHeight?.reduce((sum, height) => sum + (height + 50), 0) + 4 * 24;
 		const totalHorizontalNodesCount = (processors?.length ?? 0) + 2;
 		const totalWidth = totalHorizontalNodesCount * 140 + (totalHorizontalNodesCount - 1) * edgeWidth;
 		const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth);
@@ -60,6 +60,9 @@ export async function GET(request: NextRequest) {
 					alignItems: "center",
 					backgroundColor: "#151721",
 					position: "relative",
+					backgroundImage: `url(${new URL(`/dot.svg`, url.origin)})`,
+					backgroundRepeat: "repeat",
+					backgroundPosition: "center",
 				}}
 			>
 				<div
@@ -69,7 +72,7 @@ export async function GET(request: NextRequest) {
 						flexDirection: "column",
 						justifyContent: "center",
 					}}
-					tw="bg-[#151721]"
+					tw="bg-transparent"
 				>
 					{parentNodes?.map((parentNode, idx) => <ParentsNode key={idx} nodeData={parentNode} nodes={initNodes} />)}
 				</div>

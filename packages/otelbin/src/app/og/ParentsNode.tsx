@@ -4,9 +4,11 @@
 import React from "react";
 import { type Node } from "reactflow";
 import ParentNodeTag from "./ParentNodeTag";
-import { BarChart4, ListTree, Workflow } from "lucide-react";
 import ArrowRight from "./svg/move-right.svg";
 import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
+import Workflow from "./svg/workflow.svg";
+import BarChart4 from "./svg/bar-chart-4.svg";
+import ListTree from "./svg/list-tree.svg";
 
 export const parentNodesConfig = [
 	{
@@ -115,7 +117,7 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 								position: "relative",
 								backgroundColor: node.backgroundColor,
 								border: node.borderColor,
-								height: nodeData.data.height,
+								height: `${nodeData.data.height + 50}px`,
 								width: maxWidth,
 							}}
 							tw="rounded-[4px] text-[10px] text-black my-3 px-5 py-2"

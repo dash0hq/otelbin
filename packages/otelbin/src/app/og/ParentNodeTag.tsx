@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { parentNodesConfig } from "./ParentsNode";
-
 export default function ParentNodeTag({ tag }: { tag: string }) {
 	function FormatTag(tagName: string) {
 		const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -32,8 +31,9 @@ export default function ParentNodeTag({ tag }: { tag: string }) {
 								backgroundColor: node.tagBackgroundColor,
 								borderRadius: "4px 0px 4px 0px",
 								height: "20px",
+								columnGap: "4px",
 							}}
-							tw="px-2  text-xs font-semibold text-black -ml-[1px] -mt-[1px]"
+							tw="px-2 text-xs font-semibold text-black -ml-[1px] -mt-[1px] py-4"
 						>
 							{node.icon}
 							{FormatTag(tag)}
