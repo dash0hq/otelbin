@@ -3,7 +3,6 @@
 
 import { memo } from "react";
 import ParentNodeTag from "./ParentNodeTag";
-import { useNodes } from "reactflow";
 import { BarChart4, ListTree, Workflow } from "lucide-react";
 
 interface IData {
