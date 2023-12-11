@@ -9,6 +9,7 @@ import { BarChart4, ListTree, Workflow } from "lucide-react";
 interface IData {
 	label: string;
 	height: number;
+	width: number;
 }
 
 export const parentNodesConfig = [
@@ -47,11 +48,6 @@ export const parentNodesConfig = [
 ];
 
 const ParentsNode = ({ data }: { data: IData }) => {
-	const nodes = useNodes();
-	const childNodes = nodes.filter((node) => node.parentNode === data.label);
-	const childProcessorsNodes = childNodes.filter((node) => node.type === "processorsNode");
-	const maxWidth = childProcessorsNodes.length * 200 + 430;
-
 	return (
 		<>
 			{parentNodesConfig
@@ -65,7 +61,7 @@ const ParentsNode = ({ data }: { data: IData }) => {
 								backgroundColor: node.backgroundColor,
 								border: node.borderColor,
 								height: data.height,
-								width: maxWidth,
+								width: data.width,
 							}}
 							className="rounded-[4px] text-[10px] text-black"
 						>
