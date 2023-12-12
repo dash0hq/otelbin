@@ -81,6 +81,7 @@ export async function GET(request: NextRequest) {
 		{
 			width: 1200,
 			height: 630,
+			headers: { "Cache-Control": "public, max-age=3600, stale-while-revalidate=3600, stale-if-error=3600" },
 		}
 	);
 }

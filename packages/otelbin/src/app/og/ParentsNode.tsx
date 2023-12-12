@@ -105,12 +105,12 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 							key={idx}
 							d={
 								side === "left"
-									? `M10 ${(idx + 1) * (height / nodesCount) - 60} 
-				    C 20,${(idx + 1) * (height / nodesCount) - 60},35,${height / 2 - 10}  
-						 50 ${height / 2 - 10}`
-									: `M10 ${height / 2 - 10}
-						C 20,${height / 2 - 10},35,${(idx + 1) * (height / nodesCount) - 60}  
-							 50 ${(idx + 1) * (height / nodesCount) - 60}`
+									? `M10 ${(idx + 1) * (height / nodesCount) - 75} 
+				    C 20,${(idx + 1) * (height / nodesCount) - 75},35,${height / 2 - 25}  
+						 50 ${height / 2 - 25}`
+									: `M10 ${height / 2 - 25}
+						C 20,${height / 2 - 25},35,${(idx + 1) * (height / nodesCount) - 75}  
+							 50 ${(idx + 1) * (height / nodesCount) - 75}`
 							}
 							stroke="#FFFFFF"
 							fill="transparent"
