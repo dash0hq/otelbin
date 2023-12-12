@@ -76,10 +76,28 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 
 	function calcSVGPath(side: string, nodes?: Node[]) {
 		const nodesCount = nodes?.length ?? 0;
-		const height = nodesCount * (nodeHeight + nodeTotalMargin) - 72;
+		const height = nodesCount * (nodeHeight + nodeTotalMargin) - 40;
 
 		return (
 			<svg style={{ marginBottom: "30px" }} width="80" height={calcSVGHeight(nodes)} xmlns="http://www.w3.org/2000/svg">
+				<defs>
+					<marker
+						id="arrowhead"
+						viewBox="0 -5 10 10"
+						refX="5"
+						refY="0"
+						markerWidth="10"
+						markerHeight="10"
+						orient="auto"
+						fill="transparent"
+						stroke="#FFFFFF"
+					>
+						<g>
+							<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
+							<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
+						</g>
+					</marker>
+				</defs>
 				{Array.isArray(nodes) &&
 					nodes?.length > 0 &&
 					nodes.map((_, idx) => (
@@ -88,14 +106,15 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 							d={
 								side === "left"
 									? `M10 ${(idx + 1) * (height / nodesCount) - 60} 
-				    C 20,${(idx + 1) * (height / nodesCount) - 60},35,${height / 2 - 20}  
-						 50 ${height / 2 - 20}`
-									: `M10 ${height / 2 - 20}
-						C 20,${height / 2 - 20},35,${(idx + 1) * (height / nodesCount) - 60}  
+				    C 20,${(idx + 1) * (height / nodesCount) - 60},35,${height / 2 - 10}  
+						 50 ${height / 2 - 10}`
+									: `M10 ${height / 2 - 10}
+						C 20,${height / 2 - 10},35,${(idx + 1) * (height / nodesCount) - 60}  
 							 50 ${(idx + 1) * (height / nodesCount) - 60}`
 							}
 							stroke="#FFFFFF"
 							fill="transparent"
+							marker-end="url(#arrowhead)"
 						/>
 					))}
 			</svg>
