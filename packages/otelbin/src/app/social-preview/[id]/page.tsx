@@ -22,17 +22,19 @@ const ogImageAlt = "OpenTelemetry collector configuration pipeline visualization
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
 	const extendedMetadata: ExtendedMetadata = {
-		twitterLabel1: "Receivers",
+		twitterLabel1: "Components",
 		twitterData1: "",
-		twitterLabel2: "Exporters",
+		twitterLabel2: "Pipelines",
 		twitterData2: "",
 	};
 	const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(params.id))) ?? "";
 	const url = new URL(fullLink);
 	const imagesUrl = new URL(`/og/${params.id}`, url.origin);
 	const jsonData = parseUrl(url);
-	extendedMetadata.twitterData1 = sortAndDeduplicate(Object.keys(jsonData["receivers"] as string[]));
-	extendedMetadata.twitterData2 = sortAndDeduplicate(Object.keys(jsonData["exporters"] as string[]));
+	const components = extractComponents(jsonData);
+	const pipelines = Object.keys(jsonData?.service?.pipelines ?? {});
+	extendedMetadata.twitterData1 = sortAndDeduplicate(components);
+	extendedMetadata.twitterData2 = sortAndDeduplicate(pipelines);
 
 	return {
 		openGraph: {
@@ -92,4 +94,17 @@ function sortAndDeduplicate(arr: string[]) {
 	const uniqueStrings = [...new Set(modifiedStrings)];
 	const joinedStrings = uniqueStrings.join(", ");
 	return joinedStrings;
+}
+
+function extractComponents(jsonData: IConfig) {
+	const components: string[] = [];
+
+	Object.keys(jsonData).forEach((key) => {
+		if (key !== "service") {
+			const value = jsonData[key];
+			const component = Object.keys(value as string[]);
+			components.push(...component);
+		}
+	});
+	return components;
 }
