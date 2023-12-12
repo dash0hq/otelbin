@@ -3,10 +3,8 @@
 
 import { Redis } from "@upstash/redis/nodejs";
 import type { Metadata } from "next";
+import { extractComponents, parseUrl, sortAndDeduplicate } from "~/lib/metadataUtils";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
-import { parse } from "~/lib/urlState/jsurl2";
-import JsYaml from "js-yaml";
-import type { IConfig } from "~/components/react-flow/dataType";
 
 interface ExtendedMetadata {
 	twitterData1: string;
@@ -70,41 +68,4 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
 export default function SocialPage() {
 	return <div className="flex justify-center items-center h-screen">Empty Page</div>;
-}
-
-function parseUrl(url: URL) {
-	const urlHash = url.hash;
-	let parsedConfig = "";
-	if (urlHash != null) {
-		try {
-			const config = urlHash.split("=")[1] ?? "";
-			const decodedConfig = decodeURIComponent(config);
-			parsedConfig = parse(decodedConfig);
-		} catch (e) {
-			console.warn("Failed to parse search param %s.", urlHash, e);
-		}
-	}
-	const jsonData = JsYaml.load(parsedConfig) as IConfig;
-	return jsonData;
-}
-
-function sortAndDeduplicate(arr: string[]) {
-	const sortedStrings = arr.sort((a, b) => a.localeCompare(b));
-	const modifiedStrings = sortedStrings.map((str) => str.split("/")[0]);
-	const uniqueStrings = [...new Set(modifiedStrings)];
-	const joinedStrings = uniqueStrings.join(", ");
-	return joinedStrings;
-}
-
-function extractComponents(jsonData: IConfig) {
-	const components: string[] = [];
-
-	Object.keys(jsonData).forEach((key) => {
-		if (key !== "service") {
-			const value = jsonData[key];
-			const component = Object.keys(value as string[]);
-			components.push(...component);
-		}
-	});
-	return components;
 }
