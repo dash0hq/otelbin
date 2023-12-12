@@ -87,7 +87,7 @@ function parseUrl(url: URL) {
 }
 
 function sortAndDeduplicate(arr: string[]) {
-	const sortedStrings = arr.sort();
+	const sortedStrings = arr.sort((a, b) => a.localeCompare(b));
 	const modifiedStrings = sortedStrings.map((str) => str.split("/")[0]);
 	const uniqueStrings = [...new Set(modifiedStrings)];
 	const joinedStrings = uniqueStrings.join(", ");
