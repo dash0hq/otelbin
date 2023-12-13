@@ -15,7 +15,7 @@ export function isBotRequest(req: NextRequest): boolean {
 	}
 	const userAgent = req.headers.get("User-Agent");
 	if (userAgent) {
-		return /bot|teoma|yandex|baidu|WhatsApp|google|ChatGPT|bing|msn|duckduckbot|facebookexternalhit|TelegramBot|slurp|MetaInspector|Slackbot-LinkExpanding|Slack-ImgProxy|Slackbot/i.test(
+		return /bot|teoma|yandex|baidu|WhatsApp|google|ChatGPT|bing|msn|duckduckbot|facebookexternalhit|TelegramBot|slurp|MetaInspector|Slack-ImgProxy|Slackbot.*/i.test(
 			userAgent
 		);
 	}
