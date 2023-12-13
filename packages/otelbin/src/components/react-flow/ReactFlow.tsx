@@ -20,7 +20,8 @@ import type { IItem, Document } from "../monaco-editor/parseYaml";
 import ExportersNode from "./node-types/ExportersNode";
 import ReceiversNode from "./node-types/ReceiversNode";
 import ProcessorsNode from "./node-types/ProcessorsNode";
-import { useLayout } from "./layout";
+import { useLayout } from "./layout/useLayout";
+import CyclicErrorEdge from "./CyclicErrorEdge";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -77,6 +78,12 @@ export default function Flow({
 			receiversNode: ReceiversNode,
 			exportersNode: ExportersNode,
 			parentNodeType: ParentsNode,
+		}),
+		[]
+	);
+	const edgeTypes = useMemo(
+		() => ({
+			cyclicErrorEdge: CyclicErrorEdge,
 		}),
 		[]
 	);
@@ -223,6 +230,7 @@ export default function Flow({
 			edges={edges}
 			defaultEdgeOptions={edgeOptions}
 			nodeTypes={jsonData.service ? nodeTypes : EmptyStateNodeType}
+			edgeTypes={edgeTypes}
 			fitView
 			className="disable-attribution bg-default"
 			proOptions={{

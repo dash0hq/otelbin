@@ -101,15 +101,15 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 		};
 
 		const calculateConnectorsNode = (nodes: Node[]) => {
-			const connectorsAsExporter = nodes.filter((node) => node?.data?.type === "connectors/exporters")
-			const connectorsAsReceiver = nodes.filter((node) => node?.data?.type === "connectors/receivers")
+			const connectorsAsExporter = nodes.filter((node) => node?.data?.type === "connectors/exporters");
+			const connectorsAsReceiver = nodes.filter((node) => node?.data?.type === "connectors/receivers");
 			connectorsAsExporter.forEach((sourceNode) => {
 				connectorsAsReceiver.forEach((targetNode) => {
 					if (targetNode?.data?.label === sourceNode?.data?.label) {
-						const edge = createConnectorEdge(sourceNode, targetNode)
-						edges.push(edge)
+						const edge = createConnectorEdge(sourceNode, targetNode);
+						edges.push(edge);
 					}
-				})
+				});
 			});
 		};
 
@@ -139,7 +139,9 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 			addEdgesToNodes(childNode);
 		});
 
-		calculateConnectorsNode(nodeIdsArray.filter((node => node.type === "exportersNode" || node.type === "receiversNode")));
+		calculateConnectorsNode(
+			nodeIdsArray.filter((node) => node.type === "exportersNode" || node.type === "receiversNode")
+		);
 
 		return edges;
 	}, [nodeIdsArray]);
