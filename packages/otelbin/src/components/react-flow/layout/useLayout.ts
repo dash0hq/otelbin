@@ -127,7 +127,7 @@ function layoutEdgesWithCycles({
 					...edge,
 					type: "cyclicErrorEdge",
 					markerEnd: {
-						type: MarkerType.ArrowClosed,
+						type: MarkerType.Arrow,
 						width: 20,
 						height: 25,
 						color,

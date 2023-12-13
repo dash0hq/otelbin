@@ -35,8 +35,6 @@ export default function CyclicErrorEdge({
 		...pathOptions,
 	});
 
-	const [hovered, setHovered] = useState(false);
-
 	return (
 		<>
 			<BaseEdge
@@ -45,7 +43,6 @@ export default function CyclicErrorEdge({
 				{...props}
 				style={{
 					...style,
-					stroke: hovered ? "var(--color-critical-hover)" : style?.stroke,
 				}}
 			/>
 			<EdgeLabelRenderer>
@@ -55,12 +52,9 @@ export default function CyclicErrorEdge({
 						transform: `translate(50%, -100%) translate(${labelX}px, ${labelY}px)`,
 						pointerEvents: "all",
 						...style,
-						color: hovered ? "var(--color-critical-hover)" : style?.color,
 					}}
-					onMouseEnter={() => setHovered(true)}
-					onMouseLeave={() => setHovered(false)}
 				>
-					CyclicError
+					Cycle in pipeline
 				</span>
 			</EdgeLabelRenderer>
 		</>
