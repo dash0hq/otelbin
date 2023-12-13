@@ -54,7 +54,7 @@ export default function CyclicErrorEdge({
 						...style,
 					}}
 				>
-					Cycle in pipeline
+					connector cycle
 				</span>
 			</EdgeLabelRenderer>
 		</>
