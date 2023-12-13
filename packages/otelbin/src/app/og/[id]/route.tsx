@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
 					backgroundColor: "#151721",
 					position: "relative",
 					backgroundImage: `url(${new URL(`/dot.svg`, url.origin)})`,
+					backgroundSize: `${Number(calcScale(parentNodes)) * 20}px ${Number(calcScale(parentNodes)) * 20}px`,
 					backgroundRepeat: "repeat",
 					backgroundPosition: "center",
 				}}
