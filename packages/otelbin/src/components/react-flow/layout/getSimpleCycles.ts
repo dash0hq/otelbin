@@ -15,13 +15,14 @@ export function getSimpleCycles(g: Dagre.graphlib.Graph) {
 
 	let cycles = [];
 	sccs.forEach((scc) => {
-		cycles = cycles.concat(johnson_simple_cycles(g, scc));
+		cycles = cycles.concat(johnsonSimpleCycles(g, scc));
 	});
 
 	return cycles;
 }
 
-export function johnson_simple_cycles(g, scc) {
+// johnsonSimpleCycles finds all simple cycle in the strong component of the graph
+export function johnsonSimpleCycles(g, scc) {
 	const stack = [];
 	const blocked = new Set();
 	const blockedMap = new Map();
