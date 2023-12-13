@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useState } from "react";
 import { type EdgeProps, BaseEdge, getSmoothStepPath, EdgeLabelRenderer } from "reactflow";
 
 interface CyclicErrorEdgeProps extends EdgeProps {
