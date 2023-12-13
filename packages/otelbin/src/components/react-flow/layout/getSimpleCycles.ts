@@ -21,7 +21,7 @@ export function getSimpleCycles(g: Dagre.graphlib.Graph) {
 	return cycles;
 }
 
-function johnson_simple_cycles(g, scc) {
+export function johnson_simple_cycles(g, scc) {
 	const stack = [];
 	const blocked = new Set();
 	const blockedMap = new Map();
@@ -35,6 +35,7 @@ function johnson_simple_cycles(g, scc) {
 				unblock(v);
 			}
 		});
+		blockedMap.set(n, []);
 	}
 
 	function circuit(cur, start, subgraph) {
@@ -53,7 +54,7 @@ function johnson_simple_cycles(g, scc) {
 					return;
 				}
 				if (!blocked.has(node)) {
-					f = circuit(node, start, subgraph);
+					if (circuit(node, start, subgraph)) f = true;
 				}
 			});
 
@@ -76,8 +77,9 @@ function johnson_simple_cycles(g, scc) {
 
 	scc.forEach((start, i) => {
 		blocked.clear();
-		blockedMap.clear();
-
+		scc.forEach((v) => {
+			blockedMap.set(v, []);
+		});
 		circuit(start, start, scc.slice(i));
 	});
 

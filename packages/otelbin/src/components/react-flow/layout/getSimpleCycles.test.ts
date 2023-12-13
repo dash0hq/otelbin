@@ -4,7 +4,7 @@
 import { describe, expect, it } from "@jest/globals";
 
 import dagre from "@dagrejs/dagre";
-import { getSimpleCycles } from "./getSimpleCycles";
+import { getSimpleCycles, johnson_simple_cycles } from "./getSimpleCycles";
 
 describe("getSimpleCycles", () => {
 	it("should return empty list for a empyt graph", () => {
@@ -52,9 +52,34 @@ describe("getSimpleCycles", () => {
 		compareCycleArrays(cycles, want);
 	});
 
+	it("should return all cycles for a graph", () => {
+		const g = buildGraph([
+			["1", "2"],
+			["1", "5"],
+			["1", "8"],
+			["2", "3"],
+			["2", "9"],
+			["3", "1"],
+			["3", "2"],
+			["3", "4"],
+			["3", "6"],
+			["4", "5"],
+			["5", "2"],
+			["6", "4"],
+		]);
+		const want = [
+			["1", "2", "3"],
+			["1", "5", "2", "3"],
+			["2", "3"],
+			["2", "3", "4", "5"],
+			["2", "3", "6", "4", "5"],
+		];
+		const cycles = johnson_simple_cycles(g, ["1", "2", "3", "4", "5", "6"]);
+		compareCycleArrays(cycles, want);
+	});
+
 	it("should return all cycles for a complex graph", () => {
 		const g = buildGraph([
-			["9", "15"],
 			["1", "2"],
 			["1", "5"],
 			["1", "8"],
