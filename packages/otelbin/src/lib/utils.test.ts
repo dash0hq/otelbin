@@ -9,7 +9,7 @@ describe("isBotRequest", () => {
 	it("should return true for user-agent bot requests", () => {
 		const mockRequest = new Request("https://www.whatever.com/admin/check-it-out");
 		const mockNextRequest = new NextRequest(mockRequest, {});
-		mockNextRequest.headers.set("user-agent", "Slackbot 1.0 (+https://api.slack.com/robots)");
+		mockNextRequest.headers.set("User-Agent", "Slackbot 1.0 (+https://api.slack.com/robots)");
 
 		const result = isBotRequest(mockNextRequest);
 
@@ -38,7 +38,7 @@ describe("isBotRequest", () => {
 		const mockRequest = new Request("https://www.whatever.com/admin/check-it-out");
 		const mockNextRequest = new NextRequest(mockRequest, {});
 		mockNextRequest.headers.set(
-			"user-agent",
+			"User-Agent",
 			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.3029.110 Safari/537"
 		);
 

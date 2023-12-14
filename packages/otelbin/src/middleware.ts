@@ -5,7 +5,7 @@ import { authMiddleware } from "@clerk/nextjs";
 import { Redis } from "@upstash/redis/nodejs";
 import { type NextRequest, NextResponse } from "next/server";
 import { getShortLinkPersistenceKey } from "./lib/shortLink";
-import { isBotRequest } from "~/lib/utils";
+import { isBotRequest } from "./lib/utils";
 
 export default authMiddleware({
 	apiRoutes: ["/s/new"],
@@ -21,7 +21,7 @@ export const config = {
 
 const redis = Redis.fromEnv();
 
-async function handleShortLinkRequest(request: NextRequest) {
+export async function handleShortLinkRequest(request: NextRequest) {
 	if (request.nextUrl.pathname.startsWith("/s") && !request.nextUrl.pathname.startsWith("/s/new")) {
 		const shortLink = request.url.split("/")[request.url.split("/").length - 1] ?? "";
 		const fullLink = await redis.get<string>(getShortLinkPersistenceKey(shortLink));
@@ -35,5 +35,7 @@ async function handleShortLinkRequest(request: NextRequest) {
 				},
 			});
 		}
+	} else {
+		return NextResponse.next();
 	}
 }

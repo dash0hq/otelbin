@@ -7,7 +7,7 @@ import ParentsNode from "../ParentsNode";
 import { Redis } from "@upstash/redis/nodejs";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import { calcScale, parseUrlFragment } from "~/lib/metadataUtils";
-import { IConfig } from "~/components/react-flow/dataType";
+import type { IConfig } from "~/components/react-flow/dataType";
 
 export const runtime = "edge";
 

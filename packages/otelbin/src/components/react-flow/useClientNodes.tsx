@@ -134,8 +134,8 @@ export const useClientNodes = (value: IConfig) => {
 };
 
 export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
-	const pipelines = value.service?.pipelines;
-	const connectors = value.connectors;
+	const pipelines = value?.service?.pipelines;
+	const connectors = value?.connectors;
 	if (pipelines == null) {
 		return;
 	}
