@@ -3,7 +3,8 @@
 
 import { Redis } from "@upstash/redis/nodejs";
 import type { Metadata } from "next";
-import { extractComponents, parseUrl, sortAndDeduplicate } from "~/lib/metadataUtils";
+import type { IConfig } from "~/components/react-flow/dataType";
+import { extractComponents, parseUrlFragment, sortAndDeduplicate } from "~/lib/metadataUtils";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 
 interface ExtendedMetadata {
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 	const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(params.id))) ?? "";
 	const url = new URL(fullLink);
 	const imagesUrl = new URL(`/og/${params.id}`, url.origin);
-	const jsonData = parseUrl(url);
+	const jsonData = parseUrlFragment(url) as IConfig;
 	const components = extractComponents(jsonData);
 	const pipelines = Object.keys(jsonData?.service?.pipelines ?? {});
 	extendedMetadata.twitterData1 = sortAndDeduplicate(components);

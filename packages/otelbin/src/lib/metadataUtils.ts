@@ -4,12 +4,19 @@
 import { parse } from "./urlState/jsurl2";
 import JsYaml from "js-yaml";
 import type { IConfig } from "~/components/react-flow/dataType";
+import { type Node } from "reactflow";
 
-export function parseUrl(url: URL) {
+export function parseUrlFragment(url: URL) {
+	if (!url) {
+		return {};
+	}
 	const urlHash = url.hash;
 	let parsedConfig = "";
 	if (urlHash != null) {
 		try {
+			if (!urlHash.includes("#config=")) {
+				return {};
+			}
 			const config = urlHash.split("=")[1] ?? "";
 			const decodedConfig = decodeURIComponent(config);
 			parsedConfig = parse(decodedConfig);
@@ -43,4 +50,18 @@ export function extractComponents(jsonData: IConfig) {
 		}
 	});
 	return components;
+}
+
+export function calcScale(edgeWidth: number, nodes?: Node[]) {
+	if (nodes?.length === 0 || !nodes) return "1";
+	const targetHeight = 630;
+	const targetWidth = 1200;
+	const parentNodes = nodes?.filter((node) => node.type === "parentNodeType");
+	const processors = nodes?.filter((node) => node.type === "processorsNode");
+	const nodesHeight = parentNodes?.map((node) => node.data.height) ?? [0];
+	const totalHeight = nodesHeight?.reduce((sum, height) => sum + (height + 50), 0) + 4 * 24;
+	const totalHorizontalNodesCount = (processors?.length ?? 0) + 2;
+	const totalWidth = totalHorizontalNodesCount * 140 + (totalHorizontalNodesCount - 1) * edgeWidth;
+	const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth).toFixed(3);
+	return scale.toString();
 }
