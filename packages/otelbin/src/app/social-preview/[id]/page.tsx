@@ -39,22 +39,26 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 		openGraph: {
 			images: [
 				{
-					url: imagesUrl,
+					url: imagesUrl.href,
 					width: width,
 					height: height,
 					alt: ogImageAlt,
+					type: "image/png",
 				},
 			],
 		},
 		twitter: {
 			title: "OTelBin – by Dash0",
 			site: "@dash0hq",
+			card: "summary_large_image",
+			description: "Edit, visualize and share OpenTelemetry Collector configurations",
 			images: [
 				{
-					url: imagesUrl,
+					url: imagesUrl.href,
 					width: width,
 					height: height,
 					alt: ogImageAlt,
+					type: "image/png",
 				},
 			],
 		},
