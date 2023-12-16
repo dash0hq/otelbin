@@ -23,6 +23,29 @@ function createEdge(sourceNode: Node, targetNode: Node): Edge {
 	};
 }
 
+function createConnectorEdge(sourceNode: Node, targetNode: Node): Edge {
+	const edgeId = `edge-${sourceNode.id}-${targetNode.id}`;
+	return {
+		id: edgeId,
+		source: sourceNode.id,
+		target: targetNode.id,
+		type: "default",
+		markerEnd: {
+			type: MarkerType.Arrow,
+			color: "#9CA2AB",
+			width: 20,
+			height: 25,
+		},
+		style: {
+			stroke: "#9CA2AB",
+		},
+		data: {
+			sourcePipeline: sourceNode.parentNode,
+			targetPipeline: targetNode.parentNode,
+		},
+	};
+}
+
 function useEdgeCreator(nodeIdsArray: Node[]) {
 	return useMemo(() => {
 		const edges: Edge[] = [];
@@ -77,6 +100,19 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 			}
 		};
 
+		const calculateConnectorsNode = (nodes: Node[]) => {
+			const connectorsAsExporter = nodes.filter((node) => node?.data?.type === "connectors/exporters");
+			const connectorsAsReceiver = nodes.filter((node) => node?.data?.type === "connectors/receivers");
+			connectorsAsExporter.forEach((sourceNode) => {
+				connectorsAsReceiver.forEach((targetNode) => {
+					if (targetNode?.data?.label === sourceNode?.data?.label) {
+						const edge = createConnectorEdge(sourceNode, targetNode);
+						edges.push(edge);
+					}
+				});
+			});
+		};
+
 		const addEdgesToNodes = (nodes: Node[]) => {
 			const exportersNodes = nodes.filter((node) => node.type === "exportersNode");
 			const processorsNodes = nodes.filter((node) => node.type === "processorsNode");
@@ -102,6 +138,10 @@ function useEdgeCreator(nodeIdsArray: Node[]) {
 			const childNode = childNodes(parentNode);
 			addEdgesToNodes(childNode);
 		});
+
+		calculateConnectorsNode(
+			nodeIdsArray.filter((node) => node.type === "exportersNode" || node.type === "receiversNode")
+		);
 
 		return edges;
 	}, [nodeIdsArray]);
