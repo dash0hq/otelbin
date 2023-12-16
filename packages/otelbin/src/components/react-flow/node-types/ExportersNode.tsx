@@ -13,6 +13,7 @@ const ExportersNode = ({ data }: { data: IData }) => {
 			icon={<ExporterIcon />}
 			data={data}
 			type="exporter"
+			handle1={<Handle type="source" position={Position.Right} style={handleStyle} />}
 			handle2={<Handle type="target" position={Position.Left} style={handleStyle} />}
 		/>
 	);

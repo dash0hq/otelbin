@@ -138,7 +138,6 @@ export const useNodes = (value: IConfig) => {
 		}
 
 		const nodesToAdd: Node[] = [];
-		let yOffset = 0;
 
 		for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
 			const receivers = pipeline.receivers?.length ?? 0;
@@ -152,18 +151,17 @@ export const useNodes = (value: IConfig) => {
 			nodesToAdd.push({
 				id: pipelineName,
 				type: "parentNodeType",
-				position: { x: 0, y: yOffset },
+				position: { x: 0, y: 0 },
 				data: {
 					label: pipelineName,
 					parentNode: pipelineName,
+					width: 430 + 200 * (pipeline.processors?.length ?? 0),
 					height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
 				},
 				draggable: false,
 				ariaLabel: pipelineName,
 				expandParent: true,
 			});
-			const heights = nodesToAdd.filter((node) => node.type === "parentNodeType").map((node) => node.data.height);
-			yOffset += heights[heights.length - 1] + spaceBetweenParents;
 			const childNodes = createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors);
 			nodesToAdd.push(...childNodes);
 		}
