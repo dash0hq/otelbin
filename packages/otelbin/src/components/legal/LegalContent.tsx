@@ -11,7 +11,7 @@ export function LegalContent() {
 					.filter((doc) => Boolean(doc.url))
 					.map((doc) => (
 						<li key={doc.label}>
-							<a href={doc.url || ""} target="_blank" className="hover:text-default">
+							<a href={doc.url ?? ""} target="_blank" className="hover:text-default">
 								{doc.label}
 							</a>
 						</li>
