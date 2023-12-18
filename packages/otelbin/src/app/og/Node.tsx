@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import ConnectorIcon from "./svg/connector.svg";
+import ConnectorIcon from "../../components/assets/svg/connector.svg";
 
 export interface IData {
 	label: string;
@@ -10,11 +10,6 @@ export interface IData {
 	type: string;
 	id: string;
 }
-
-export const handleStyle = {
-	backgroundColor: "rgb(44 48 70 / 0%)",
-	borderColor: "rgb(44 48 70 / 0%)",
-};
 
 const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: string }) => {
 	const customNodeHeaderStyle = {

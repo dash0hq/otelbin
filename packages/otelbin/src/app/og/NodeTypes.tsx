@@ -3,9 +3,9 @@
 
 import type { IData } from "./Node";
 import Node from "./Node";
-import ExporterIcon from "./svg/exporter.svg";
-import ProcessorIcon from "./svg/processor.svg";
-import ReceiverIcon from "./svg/receiver.svg";
+import ExporterIcon from "../../components/assets/svg/exporter.svg";
+import ProcessorIcon from "../../components/assets/svg/processor.svg";
+import ReceiverIcon from "../../components/assets/svg/receiver.svg";
 
 export const ExportersNode = ({ data }: { data: IData }) => {
 	return <Node icon={<ExporterIcon />} data={data} type="exporter" />;

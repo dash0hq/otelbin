@@ -1,32 +1,11 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { parse } from "./urlState/jsurl2";
-import JsYaml from "js-yaml";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { type Node } from "reactflow";
-
-export function parseUrlFragment(url: URL) {
-	if (!url) {
-		return {};
-	}
-	const urlHash = url.hash;
-	let parsedConfig = "";
-	if (urlHash != null) {
-		try {
-			if (!urlHash.includes("#config=")) {
-				return {};
-			}
-			const config = urlHash.split("=")[1] ?? "";
-			const decodedConfig = decodeURIComponent(config);
-			parsedConfig = parse(decodedConfig);
-		} catch (e) {
-			console.warn("Failed to parse config fragment #config.", urlHash, e);
-		}
-	}
-	const jsonData = JsYaml.load(parsedConfig) as IConfig;
-	return jsonData;
-}
+import type { Binding } from "~/lib/urlState/binding";
+import { parseUrlState } from "../../lib/urlState/parseUrlState";
+import { editorBinding } from "../../components/monaco-editor/editorBinding";
 
 export function sortAndDeduplicate(arr: string[]) {
 	if (arr.length === 0) return "-";
@@ -64,4 +43,18 @@ export function calcScale(edgeWidth: number, nodes?: Node[]) {
 	const totalWidth = totalHorizontalNodesCount * 140 + (totalHorizontalNodesCount - 1) * edgeWidth;
 	const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth).toFixed(3);
 	return scale.toString();
+}
+
+export function toUrlState<T extends Binding<unknown>[]>(url: URL, binds: T): string {
+	if (!url.hash) {
+		return "";
+	}
+	let hash = url.hash;
+	if (hash.startsWith("#")) {
+		hash = hash.substring(1);
+	}
+	const hashSearchParams = new URLSearchParams(hash);
+
+	const urlState = parseUrlState(hashSearchParams, binds);
+	return (urlState as never)[editorBinding.name];
 }

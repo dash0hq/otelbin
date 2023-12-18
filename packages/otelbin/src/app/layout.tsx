@@ -18,7 +18,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
 	title: "OTelBin – by Dash0",
 	description: "Edit, visualize and share OpenTelemetry Collector configurations",
-	metadataBase: new URL("https://otelbin.io/"),
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

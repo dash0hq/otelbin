@@ -1,19 +1,10 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { parentNodesConfig } from "./ParentsNode";
-export default function ParentNodeTag({ tag }: { tag: string }) {
-	function FormatTag(tagName: string) {
-		const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-		let resultString = [""];
-		if (tagName.includes("/")) {
-			resultString = tagName.split("/");
-			return capitalize(resultString.join(" / "));
-		} else {
-			return capitalize(tagName);
-		}
-	}
+import { FormatTag } from "~/components/react-flow/node-types/ParentNodeTag";
+import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
 
+export default function ParentNodeTag({ tag }: { tag: string }) {
 	return (
 		<>
 			{parentNodesConfig

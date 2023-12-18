@@ -4,46 +4,9 @@
 import React from "react";
 import { type Node } from "reactflow";
 import ParentNodeTag from "./ParentNodeTag";
-import ArrowRight from "./svg/move-right.svg";
+import ArrowRight from "../../components/assets/svg/move-right.svg";
 import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
-import Workflow from "./svg/workflow.svg";
-import BarChart4 from "./svg/bar-chart-4.svg";
-import ListTree from "./svg/list-tree.svg";
-
-export const parentNodesConfig = [
-	{
-		type: "traces",
-		typeRegex: /^traces(\/.*)?$/i,
-		backgroundColor: "rgba(251, 191, 36, 0.05)",
-		tagBackgroundColor: "#FBBF24",
-		borderColor: "1px dashed #F59E0B",
-		icon: <Workflow width={12} />,
-	},
-	{
-		type: "metrics",
-		typeRegex: /^metrics(\/.*)?$/i,
-		backgroundColor: "rgba(56, 189, 248, 0.05)",
-		tagBackgroundColor: "#38BDF8",
-		borderColor: "1px dashed #0AA8FF",
-		icon: <BarChart4 width={12} />,
-	},
-	{
-		type: "logs",
-		typeRegex: /^logs(\/.*)?$/i,
-		backgroundColor: "rgba(52, 211, 153, 0.05)",
-		tagBackgroundColor: "#34D399",
-		borderColor: "1px dashed #40ad54",
-		icon: <ListTree width={12} />,
-	},
-	{
-		type: "spans",
-		typeRegex: /^spans(\/.*)?$/i,
-		backgroundColor: "rgba(145, 29, 201, 0.05)",
-		tagBackgroundColor: "#911dc9",
-		borderColor: "1px dashed #911dc9",
-		icon: <Workflow width={12} />,
-	},
-];
+import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
 
 const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) => {
 	const childNodes = nodes?.filter((node) => node.parentNode === nodeData.data.label);
