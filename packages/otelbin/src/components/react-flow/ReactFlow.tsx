@@ -20,6 +20,8 @@ import type { IItem, Document } from "../monaco-editor/parseYaml";
 import ExportersNode from "./node-types/ExportersNode";
 import ReceiversNode from "./node-types/ReceiversNode";
 import ProcessorsNode from "./node-types/ProcessorsNode";
+import { useLayout } from "./layout/useLayout";
+import CyclicErrorEdge from "./CyclicErrorEdge";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -46,9 +48,11 @@ export default function Flow({
 		return docService?.value.items.find((item: IItem) => item.key?.source === "pipelines");
 	}, [value]);
 	const initNodes = useNodes(jsonData);
-	const [nodes, setNodes] = useNodesState(initNodes !== undefined ? initNodes : []);
-	const initEdges = useEdgeCreator(nodes);
-	const [edges, setEdges] = useEdgesState(initEdges);
+	const initEdges = useEdgeCreator(initNodes ?? []);
+	const { nodes: layoutedNodes, edges: layoutedEdges } = useLayout(initNodes ?? [], initEdges);
+
+	const [nodes, setNodes] = useNodesState(layoutedNodes !== undefined ? layoutedNodes : []);
+	const [edges, setEdges] = useEdgesState(layoutedEdges);
 	const widthSelector = (state: { width: number }) => state.width;
 	const reactFlowWidth = useStore(widthSelector);
 
@@ -58,15 +62,15 @@ export default function Flow({
 
 	useEffect(() => {
 		if (jsonData) {
-			setEdges(initEdges);
-			setNodes(initNodes !== undefined ? initNodes : []);
+			setEdges(layoutedEdges);
+			setNodes(layoutedNodes !== undefined ? layoutedNodes : []);
 			reactFlowInstance.fitView();
 		} else {
 			setNodes(EmptyStateNodeData);
 			setEdges([]);
 			reactFlowInstance.fitView();
 		}
-	}, [initNodes, initEdges, value, jsonData, setEdges, setNodes, reactFlowInstance]);
+	}, [layoutedNodes, layoutedEdges, value, jsonData, setEdges, setNodes, reactFlowInstance]);
 
 	const nodeTypes = useMemo(
 		() => ({
@@ -74,6 +78,12 @@ export default function Flow({
 			receiversNode: ReceiversNode,
 			exportersNode: ExportersNode,
 			parentNodeType: ParentsNode,
+		}),
+		[]
+	);
+	const edgeTypes = useMemo(
+		() => ({
+			cyclicErrorEdge: CyclicErrorEdge,
 		}),
 		[]
 	);
@@ -220,6 +230,7 @@ export default function Flow({
 			edges={edges}
 			defaultEdgeOptions={edgeOptions}
 			nodeTypes={jsonData.service ? nodeTypes : EmptyStateNodeType}
+			edgeTypes={edgeTypes}
 			fitView
 			className="disable-attribution bg-default"
 			proOptions={{
