@@ -15,7 +15,7 @@
 		"licenses": "npx license-report --output=csv --fields=name --fields=installedVersion --fields=licenseType > licenses.csv"
 	},
 	"dependencies": {
-		"@clerk/nextjs": "^4.27.1",
+		"@clerk/nextjs": "^4.27.2",
 		"@clerk/themes": "^1.7.6",
 		"@dagrejs/dagre": "^1.0.4",
 		"@jest/globals": "^29.7.0",
@@ -64,10 +64,10 @@
 		"@types/eslint": "^8.44.7",
 		"@types/js-yaml": "^4.0.9",
 		"@types/lodash": "^4.14.201",
-		"@types/node": "^18.18.10",
+		"@types/node": "^18.18.13",
 		"@types/prettier": "^3.0.0",
 		"@types/react": "^18.2.37",
-		"@types/react-dom": "^18.2.15",
+		"@types/react-dom": "^18.2.17",
 		"@typescript-eslint/eslint-plugin": "^5.59.6",
 		"@typescript-eslint/parser": "^5.59.6",
 		"autoprefixer": "^10.4.16",
@@ -77,10 +77,10 @@
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"postcss": "^8.4.30",
-		"prettier": "^3.0.3",
+		"prettier": "3.1.1",
 		"prettier-plugin-tailwindcss": "^0.5.7",
 		"tailwindcss": "^3.3.5",
 		"ts-node": "^10.9.1",
-		"typescript": "^5.2.2"
+		"typescript": "^5.3.2"
 	}
 }

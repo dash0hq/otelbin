@@ -27,7 +27,7 @@ export function ShareContent() {
 					url: `/s/new`,
 					method: "POST",
 					body: fullURL,
-			  }
+				}
 			: undefined,
 		fetcher
 	);
