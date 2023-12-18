@@ -75,8 +75,8 @@ const Node = ({
 					isConnector && (type === "exporter" || type === "receiver")
 						? "bg-green-500 text-green-950"
 						: type === "processor"
-						? "bg-blue-500"
-						: "bg-violet-500"
+							? "bg-blue-500"
+							: "bg-violet-500"
 				}
                  text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center`}
 			>
