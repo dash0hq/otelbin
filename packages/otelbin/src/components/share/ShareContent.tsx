@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import Image from "next/image";
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import { Button } from "~/components/button";
 import { ArrowDownToLine, Copy, LogIn } from "lucide-react";
@@ -53,7 +52,7 @@ export function ShareContent() {
 					<p className="weight mb-2 text-sm font-normal text-default">Link to this configuration with a badge.</p>
 
 					<div className="flex gap-2 items-center">
-						<Image
+						<img
 							src="/badges/collector-config"
 							alt="OpenTelemetry collector configuration on OTelBin"
 							width={167}
