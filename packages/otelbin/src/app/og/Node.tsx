@@ -58,8 +58,8 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 							isConnector && (type === "exporter" || type === "receiver")
 								? "bg-green-500 text-black"
 								: type === "processor"
-								? "bg-blue-500"
-								: "bg-violet-500"
+									? "bg-blue-500"
+									: "bg-violet-500"
 						}
                 `}
 			>
