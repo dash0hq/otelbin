@@ -26,7 +26,7 @@ export default function ParentNodeTag({ tag }: { tag: string }) {
 							}}
 							tw="px-2 text-xs font-semibold text-black -ml-[1px] -mt-[1px] py-4"
 						>
-							{node.icon}
+							{node.serverSideIcon}
 							{FormatTag(tag)}
 						</div>
 					);

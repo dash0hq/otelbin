@@ -4,6 +4,9 @@
 import { memo } from "react";
 import ParentNodeTag from "./ParentNodeTag";
 import { BarChart4, ListTree, Workflow } from "lucide-react";
+import BarChart4Svg from "../../../components/assets/svg/bar-chart-4.svg";
+import ListTreeSvg from "../../../components/assets/svg/list-tree.svg";
+import WorkflowSvg from "../../../components/assets/svg/workflow.svg";
 
 interface IData {
 	label: string;
@@ -20,6 +23,7 @@ export const parentNodesConfig = [
 		tagBackgroundColor: "#FBBF24",
 		borderColor: "1px dashed #F59E0B",
 		icon: <Workflow width={12} />,
+		serverSideIcon: <WorkflowSvg style={{ height: 12, width: 12 }} />,
 	},
 	{
 		type: "metrics",
@@ -28,6 +32,7 @@ export const parentNodesConfig = [
 		tagBackgroundColor: "#38BDF8",
 		borderColor: "1px dashed #0AA8FF",
 		icon: <BarChart4 width={12} />,
+		serverSideIcon: <BarChart4Svg style={{ height: 12, width: 12 }} />,
 	},
 	{
 		type: "logs",
@@ -36,6 +41,7 @@ export const parentNodesConfig = [
 		tagBackgroundColor: "#34D399",
 		borderColor: "1px dashed #40ad54",
 		icon: <ListTree width={12} />,
+		serverSideIcon: <ListTreeSvg style={{ height: 12, width: 12 }} />,
 	},
 	{
 		type: "spans",
@@ -44,6 +50,7 @@ export const parentNodesConfig = [
 		tagBackgroundColor: "#911dc9",
 		borderColor: "1px dashed #911dc9",
 		icon: <Workflow width={12} />,
+		serverSideIcon: <WorkflowSvg style={{ height: 12, width: 12 }} />,
 	},
 ];
 

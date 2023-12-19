@@ -70,24 +70,24 @@ describe("calcScale", () => {
 });
 
 describe("toUrlState", () => {
-	it("should return empty string if url hash is not provided", () => {
+	it("should return empty object if url hash is not provided", () => {
 		const mockUrlWithoutHash = new URL("https://otelbin.io");
-		expect(toUrlState(mockUrlWithoutHash, [])).toBe("");
+		expect(toUrlState(mockUrlWithoutHash, [])).toStrictEqual({});
 	});
 
-	it("should parse hash from URL and return configuration value for editorBinding", () => {
+	it("should parse hash from URL and return urlState for the provided Binding", () => {
 		const mockUrlWithHash = new URL("https://otelbin.io/#config=123");
 		const result = toUrlState(mockUrlWithHash, [editorBinding]);
 
-		expect(result).toBe(123);
+		expect(result).toStrictEqual({ config: 123 });
 	});
 
-	it("should parse hash from URL and return configuration value for editorBinding with distro selected condition in the URL", () => {
+	it("should parse hash from URL and return urlState for the provided Binding with distro selected condition in the URL", () => {
 		const mockUrlWithHash = new URL(
 			"https://otelbin.io/?#distro=otelcol-core~&distroVersion=v0.91.0~&config=**H_Learn_more_about_the_OpenTelemetry_Collector_"
 		);
 		const result = toUrlState(mockUrlWithHash, [editorBinding]);
 
-		expect(result).toBe("# Learn more about the OpenTelemetry Collector ");
+		expect(result).toStrictEqual({ config: "# Learn more about the OpenTelemetry Collector " });
 	});
 });

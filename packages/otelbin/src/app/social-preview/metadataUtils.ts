@@ -6,6 +6,7 @@ import { type Node } from "reactflow";
 import type { Binding } from "~/lib/urlState/binding";
 import { parseUrlState } from "../../lib/urlState/parseUrlState";
 import { editorBinding } from "../../components/monaco-editor/editorBinding";
+import { Bindings } from "~/lib/urlState/typeMapping";
 
 export function sortAndDeduplicate(arr: string[]) {
 	if (arr.length === 0) return "-";
@@ -45,9 +46,9 @@ export function calcScale(edgeWidth: number, nodes?: Node[]) {
 	return scale.toString();
 }
 
-export function toUrlState<T extends Binding<unknown>[]>(url: URL, binds: T): string {
+export function toUrlState<T extends Binding<unknown>[]>(url: URL, binds: T): Bindings<T> {
 	if (!url.hash) {
-		return "";
+		return {} as Bindings<T>;
 	}
 	let hash = url.hash;
 	if (hash.startsWith("#")) {
@@ -55,6 +56,5 @@ export function toUrlState<T extends Binding<unknown>[]>(url: URL, binds: T): st
 	}
 	const hashSearchParams = new URLSearchParams(hash);
 
-	const urlState = parseUrlState(hashSearchParams, binds);
-	return (urlState as never)[editorBinding.name];
+	return parseUrlState(hashSearchParams, binds);
 }

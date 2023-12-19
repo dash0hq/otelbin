@@ -30,11 +30,7 @@ export async function handleShortLinkRequest(request: NextRequest) {
 		if (isBotRequest(request)) {
 			return NextResponse.rewrite(new URL(`/social-preview/${shortLink}`, request.url));
 		} else {
-			const newHeaders = new Headers(request.headers);
-			newHeaders.set("Cache-Control", "public, max-age=3600, stale-while-revalidate=3600, stale-if-error=3600");
-			return NextResponse.next({
-				request: { headers: newHeaders },
-			});
+			return NextResponse.next();
 		}
 	} else {
 		return NextResponse.next();

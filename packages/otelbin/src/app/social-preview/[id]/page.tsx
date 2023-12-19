@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 		}
 		const url = new URL(fullLink);
 		const imagesUrl = new URL(`/social-preview/${params.id}/img`, url.origin);
-		const config = toUrlState(url, [editorBinding]);
+		const { config } = toUrlState(url, [editorBinding]);
 		const jsonData = JsYaml.load(config) as IConfig;
 		const components = extractComponents(jsonData);
 		const pipelines = Object.keys(jsonData?.service?.pipelines ?? {});

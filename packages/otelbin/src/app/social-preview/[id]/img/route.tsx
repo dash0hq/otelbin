@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 	} catch (e) {
 		return new NextResponse("Invalid short link ID", { status: 400 });
 	}
-	const config = toUrlState(url, [editorBinding]);
+	const { config } = toUrlState(url, [editorBinding]);
 	const jsonData = JsYaml.load(config) as IConfig;
 	const initNodes = calcNodes(jsonData, true);
 	const parentNodes = initNodes?.filter((node) => node.type === "parentNodeType");
