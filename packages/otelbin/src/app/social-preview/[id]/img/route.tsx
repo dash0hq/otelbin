@@ -66,7 +66,9 @@ export async function GET(request: NextRequest) {
 					}}
 					tw="bg-transparent"
 				>
-					{parentNodes?.map((parentNode, idx) => <ParentsNode key={idx} nodeData={parentNode} nodes={initNodes} />)}
+					{parentNodes?.map((parentNode) => (
+						<ParentsNode key={parentNode.id} nodeData={parentNode} nodes={initNodes} />
+					))}
 				</div>
 			</div>
 		),

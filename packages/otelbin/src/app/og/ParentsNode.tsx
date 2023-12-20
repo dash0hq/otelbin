@@ -63,9 +63,9 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 				</defs>
 				{Array.isArray(nodes) &&
 					nodes?.length > 0 &&
-					nodes.map((_, idx) => (
+					nodes.map((node, idx) => (
 						<path
-							key={idx}
+							key={node.id}
 							d={
 								side === "left"
 									? `M10 ${(idx + 1) * (height / nodesCount) - 75} 
@@ -77,7 +77,7 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 							}
 							stroke="#FFFFFF"
 							fill="transparent"
-							marker-end="url(#arrowhead)"
+							markerEnd="url(#arrowhead)"
 						/>
 					))}
 			</svg>
@@ -88,11 +88,11 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 		<>
 			{parentNodesConfig
 				.filter((config) => nodeData.data.label.match(config.typeRegex))
-				.map((node, idx) => {
+				.map((node) => {
 					return (
 						<div
 							id={"parentNode"}
-							key={idx}
+							key={node.type}
 							style={{
 								display: "flex",
 								justifyContent: "space-between",
@@ -109,7 +109,7 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 							<div style={{ display: "flex", justifyContent: "center" }}>
 								<div tw="flex items-center">
 									<div tw="flex flex-col justify-center">
-										{receivers?.map((receiver, idx) => <ReceiversNode key={idx} data={receiver.data} />)}
+										{receivers?.map((receiver) => <ReceiversNode key={receiver.id} data={receiver.data} />)}
 									</div>
 									{processors?.length === 0 ? (
 										<></>
@@ -122,15 +122,15 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 								<div tw="flex items-center">
 									<div tw="flex justify-center items-center">
 										{processors?.map((processor, idx) => (
-											<div key={idx} tw="flex justify-center items-center">
+											<div key={processor.id} tw="flex justify-center items-center">
 												{idx > 0 ? <ArrowRight /> : <></>}
-												<ProcessorsNode key={idx} data={processor.data} />
+												<ProcessorsNode data={processor.data} />
 											</div>
 										))}
 									</div>
 									{exporters?.length === 1 ? <ArrowRight /> : calcSVGPath("right", exporters)}
 									<div tw="flex flex-col justify-center">
-										{exporters?.map((exporter, idx) => <ExportersNode key={idx} data={exporter.data} />)}
+										{exporters?.map((exporter) => <ExportersNode key={exporter.id} data={exporter.data} />)}
 									</div>
 								</div>
 							</div>

@@ -5,12 +5,11 @@ import type { IConfig } from "~/components/react-flow/dataType";
 import { type Node } from "reactflow";
 import type { Binding } from "~/lib/urlState/binding";
 import { parseUrlState } from "../../lib/urlState/parseUrlState";
-import { editorBinding } from "../../components/monaco-editor/editorBinding";
-import { Bindings } from "~/lib/urlState/typeMapping";
+import type { Bindings } from "~/lib/urlState/typeMapping";
 
 export function sortAndDeduplicate(arr: string[]) {
 	if (arr.length === 0) return "-";
-	const sortedStrings = arr.sort((a, b) => a.localeCompare(b));
+	const sortedStrings = arr.toSorted((a, b) => a.localeCompare(b));
 	const modifiedStrings = sortedStrings.map((str) => str.split("/")[0]);
 	const uniqueStrings = [...new Set(modifiedStrings)];
 	const joinedStrings = uniqueStrings.join(", ");

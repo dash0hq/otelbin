@@ -20,7 +20,7 @@ export const config = {
 
 export async function handleShortLinkRequest(request: NextRequest) {
 	if (request.nextUrl.pathname.startsWith("/s") && !request.nextUrl.pathname.startsWith("/s/new")) {
-		const match = request.url.match(/\/s\/([^\/]+)$/);
+		const match = request.url.match(/\/s\/([^/]+)$/);
 		const shortLink = match ? match[1] : "";
 
 		if (!shortLink) {

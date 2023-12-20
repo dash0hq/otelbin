@@ -56,8 +56,8 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 							isConnector && (type === "exporter" || type === "receiver")
 								? "bg-green-500 text-black"
 								: type === "processor"
-									? "bg-blue-500"
-									: "bg-violet-500"
+								? "bg-blue-500"
+								: "bg-violet-500"
 						}
                 `}
 			>
@@ -71,13 +71,7 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 				>
 					<div style={iconColor}>{isConnector ? <ConnectorIcon /> : icon}</div>
 					{splitLabel.length > 1 && (
-						<div
-							tw={
-								"text-neutral-600 text-[10px] font-normal  overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[90%]"
-							}
-						>
-							{splitLabel[1]}
-						</div>
+						<div tw={"text-neutral-600 text-[10px] font-normal  overflow-hidden max-w-[90%]"}>{splitLabel[1]}</div>
 					)}
 				</div>
 			</div>

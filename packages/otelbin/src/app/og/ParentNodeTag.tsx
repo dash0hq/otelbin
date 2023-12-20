@@ -8,11 +8,11 @@ export default function ParentNodeTag({ tag }: { tag: string }) {
 	return (
 		<>
 			{parentNodesConfig
-				.filter((config) => tag.match(config.typeRegex))
-				.map((node, idx) => {
+				.filter((config) => config.typeRegex.exec(tag))
+				.map((node) => {
 					return (
 						<div
-							key={idx}
+							key={node.type}
 							style={{
 								position: "absolute",
 								top: -8,
