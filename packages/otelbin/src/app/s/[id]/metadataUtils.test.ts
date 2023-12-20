@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { describe, expect, it } from "@jest/globals";
-import { sortAndDeduplicate, extractComponents, calcScale, toUrlState } from "./metadataUtils";
+import { calcScale, extractComponents, sortAndDeduplicate, toUrlState } from "./metadataUtils";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { type Node } from "reactflow";
-import { editorBinding } from "../../components/monaco-editor/editorBinding";
+import { editorBinding } from "../../../components/monaco-editor/editorBinding";
 
 describe("sortAndDeduplicate", () => {
 	it("should sort and deduplicate an array of strings and return a comma separated string of components", () => {

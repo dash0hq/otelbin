@@ -6,46 +6,30 @@ import { isBotRequest } from "./utils";
 import { NextRequest } from "next/server";
 
 describe("isBotRequest", () => {
-	const createMockRequest = (url: string, userAgent?: string) => {
-		const mockRequest = new Request(url);
-		const mockNextRequest = new NextRequest(mockRequest, {});
+	it.each([
+		["https://example.com", "Slackbot 1.0 (+https://api.slack.com/robots)", true],
+		["https://example.com", "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)", true],
+		["https://example.com", "Slack-ImgProxy (+https://api.slack.com/robots)", true],
+		[
+			"https://example.com",
+			"LinkedInBot/1.0 (compatible; Mozilla/5.0; Apache-HttpClient +http://www.linkedin.com)",
+			true,
+		],
+		[
+			"https://example.com",
+			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+			false,
+		],
+		[
+			"https://example.com?bot=true",
+			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+			true,
+		],
+	])("should identify requests to %s by %s as bot=%s", (url, userAgent, isBot) => {
+		const req = new NextRequest(new Request(url), {});
 		if (userAgent) {
-			mockNextRequest.headers.set("User-Agent", userAgent);
+			req.headers.set("User-Agent", userAgent);
 		}
-		return mockNextRequest;
-	};
-
-	it("should return true for user-agent bot requests", () => {
-		const mockNextRequest = createMockRequest(
-			"https://www.whatever.com/admin/check-it-out",
-			"Slackbot 1.0 (+https://api.slack.com/robots)"
-		);
-		const result = isBotRequest(mockNextRequest);
-
-		expect(result).toBe(true);
-	});
-
-	it("should return true for url param ?bot=true requests", () => {
-		const mockNextRequest = createMockRequest("https://www.whatever.com/admin/check-it-out?bot=true");
-		const result = isBotRequest(mockNextRequest);
-
-		expect(result).toBe(true);
-	});
-
-	it("should return true for url param ?bot=false requests", () => {
-		const mockNextRequest = createMockRequest("https://www.whatever.com/admin/check-it-out?bot=false");
-		const result = isBotRequest(mockNextRequest);
-
-		expect(result).toBe(true);
-	});
-
-	it("should return false for non-bot requests", () => {
-		const mockNextRequest = createMockRequest(
-			"https://www.whatever.com/admin/check-it-out",
-			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.3029.110 Safari/537"
-		);
-		const result = isBotRequest(mockNextRequest);
-
-		expect(result).toBe(false);
+		expect(isBotRequest(req)).toBe(isBot);
 	});
 });

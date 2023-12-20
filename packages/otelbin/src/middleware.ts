@@ -4,12 +4,11 @@
 import { authMiddleware } from "@clerk/nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 import { isBotRequest } from "./lib/utils";
-import { notFound } from "next/navigation";
 
 export default authMiddleware({
 	apiRoutes: ["/s/new"],
-	publicRoutes: ["/s/:id"],
-	afterAuth(auth, request: NextRequest) {
+	publicRoutes: (req) => req.nextUrl.pathname !== "/s/new",
+	afterAuth(_, request: NextRequest) {
 		return handleShortLinkRequest(request);
 	},
 });
@@ -19,19 +18,11 @@ export const config = {
 };
 
 export async function handleShortLinkRequest(request: NextRequest) {
-	if (request.nextUrl.pathname.startsWith("/s") && !request.nextUrl.pathname.startsWith("/s/new")) {
-		const match = request.url.match(/\/s\/([^\/]+)$/);
-		const shortLink = match ? match[1] : "";
-
-		if (!shortLink) {
-			return notFound();
-		}
-
-		if (isBotRequest(request)) {
-			return NextResponse.rewrite(new URL(`/social-preview/${shortLink}`, request.url));
-		} else {
-			return NextResponse.next();
-		}
+	const shortLinkRegExp = /\/s\/([^/]+)$/;
+	const match = request.nextUrl.pathname.match(shortLinkRegExp);
+	if (match?.[1] && isBotRequest(request)) {
+		const shortLinkID = match[1];
+		return NextResponse.rewrite(new URL(`/s/${shortLinkID}/preview`, request.url));
 	} else {
 		return NextResponse.next();
 	}

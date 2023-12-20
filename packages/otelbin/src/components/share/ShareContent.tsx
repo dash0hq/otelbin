@@ -3,7 +3,7 @@
 
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import { Button } from "~/components/button";
-import { ArrowDownToLine, Copy, LogIn } from "lucide-react";
+import { ArrowDownToLine, Copy, Loader2, LogIn } from "lucide-react";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { UrlCopy } from "~/components/share/UrlCopy";
@@ -21,7 +21,7 @@ export function ShareContent() {
 	let fullURL = window.location.origin + getLink({});
 	const { isSignedIn } = useAuth();
 
-	const { data } = useSWRImmutable<{ shortLink: string }>(
+	const { data } = useSWRImmutable<{ shortLink: string; imgURL: string }>(
 		isSignedIn
 			? {
 					url: `/s/new`,
@@ -47,11 +47,27 @@ export function ShareContent() {
 				</SignInButton>
 			)}
 
-			{isSignedIn && (
-				<div className="mt-3 border-t-1 border-subtle px-4 pt-3">
-					<p className="weight mb-2 text-sm font-normal text-default">Link to this configuration with a badge.</p>
+			{!data?.shortLink && isSignedIn && (
+				<em className="mx-4 mt-3 mb-0 text-sm font-normal text-default flex items-center gap-2">
+					<Loader2 className="motion-safe:animate-spin" size={16} /> Creating short URL…
+				</em>
+			)}
 
-					<div className="flex gap-2 items-center">
+			{data?.shortLink && (
+				<>
+					<div className="mt-3 border-t-1 border-subtle px-4 pt-1">
+						<p className="weight mb-2 text-sm font-normal text-default flex items-center justify-between">
+							Link to this configuration with a badge.
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<IconButton size="xs" onClick={copyMarkdownToClipboard}>
+										<Copy />
+									</IconButton>
+								</TooltipTrigger>
+								<TooltipContent>Copy badge markdown to clipboard</TooltipContent>
+							</Tooltip>
+						</p>
+
 						<img
 							src="/badges/collector-config"
 							alt="OpenTelemetry collector configuration on OTelBin"
@@ -59,16 +75,30 @@ export function ShareContent() {
 							height={20}
 							className="max-h-[20px] grow-0"
 						/>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<IconButton size="xs" onClick={copyToClipboard}>
-									<Copy />
-								</IconButton>
-							</TooltipTrigger>
-							<TooltipContent>Copy badge markdown to clipboard</TooltipContent>
-						</Tooltip>
 					</div>
-				</div>
+
+					<div className="mt-3 border-t-1 border-subtle px-4 pt-1">
+						<p className="weight mb-2 text-sm font-normal text-default flex items-center justify-between">
+							Link to an image of this visualization.
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<IconButton size="xs" onClick={copyImageUrlToClipboard}>
+										<Copy />
+									</IconButton>
+								</TooltipTrigger>
+								<TooltipContent>Copy image URL to clipboard</TooltipContent>
+							</Tooltip>
+						</p>
+
+						<img
+							src={data.imgURL}
+							width={280}
+							height={147}
+							alt="OpenTelemetry collector configuration on OTelBin"
+							className="grow-0"
+						/>
+					</div>
+				</>
 			)}
 
 			<div className="mt-4 border-t-1 border-subtle px-4 py-3">
@@ -87,12 +117,22 @@ export function ShareContent() {
 		</div>
 	);
 
-	function copyToClipboard() {
+	function copyMarkdownToClipboard() {
 		const text = `[![OpenTelemetry collector configuration on OTelBin](${
 			window.location.origin + "/badges/collector-config"
 		})](${fullURL})`;
+		copyToClipboard(text);
+		track("Copied badge markdown");
+	}
+
+	function copyImageUrlToClipboard() {
+		copyToClipboard(data?.imgURL ?? "");
+		track("Copied image URL");
+	}
+
+	function copyToClipboard(value: string) {
 		navigator.clipboard
-			.writeText(text)
+			.writeText(value)
 			.then(() => {
 				toast({
 					description: "Copied to clipboard.",
@@ -104,6 +144,5 @@ export function ShareContent() {
 					description: "Failed to copy to clipboard",
 				});
 			});
-		track("Copied badge markdown");
 	}
 }

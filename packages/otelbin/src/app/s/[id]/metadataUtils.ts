@@ -4,7 +4,7 @@
 import type { IConfig } from "~/components/react-flow/dataType";
 import { type Node } from "reactflow";
 import type { Binding } from "~/lib/urlState/binding";
-import { parseUrlState } from "../../lib/urlState/parseUrlState";
+import { parseUrlState } from "../../../lib/urlState/parseUrlState";
 import type { Bindings } from "~/lib/urlState/typeMapping";
 
 export function sortAndDeduplicate(arr: string[]) {

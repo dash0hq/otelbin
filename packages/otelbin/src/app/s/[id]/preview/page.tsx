@@ -7,7 +7,7 @@ import type { IConfig } from "~/components/react-flow/dataType";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import JsYaml from "js-yaml";
-import { extractComponents, sortAndDeduplicate, toUrlState } from "../metadataUtils";
+import { extractComponents, sortAndDeduplicate, toUrlState } from "~/app/s/[id]/metadataUtils";
 import { notFound } from "next/navigation";
 
 interface ExtendedMetadata {
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 			return notFound();
 		}
 		const url = new URL(fullLink);
-		const imagesUrl = new URL(`/social-preview/${params.id}/img`, url.origin);
+		const imagesUrl = new URL(`/s/${params.id}/img`, url.origin);
 		const { config } = toUrlState(url, [editorBinding]);
 		const jsonData = JsYaml.load(config) as IConfig;
 		const components = extractComponents(jsonData);

@@ -5,7 +5,6 @@ import { Redis } from "@upstash/redis";
 import * as crypto from "crypto";
 import { Ratelimit } from "@upstash/ratelimit";
 import { type NextRequest, NextResponse } from "next/server";
-import * as process from "process";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import { getUserIdentifier } from "~/lib/userIdentifier";
 
@@ -55,13 +54,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		);
 	}
 
-	const uuid = crypto.randomUUID();
-	await redis.set(getShortLinkPersistenceKey(uuid), longURL);
+	const id = crypto.createHash("sha1").update(longURL).digest("hex");
+	await redis.set(getShortLinkPersistenceKey(id), longURL);
 
-	const shortURL = `${process.env.DEPLOYMENT_ORIGIN}/s/${uuid}`;
+	const shortURL = new URL(`/s/${id}`, request.nextUrl.origin);
 	return NextResponse.json(
 		{
-			shortLink: shortURL,
+			shortLink: shortURL.href,
+			imgURL: `${shortURL.href}/img`,
 		},
 		{
 			headers: {
