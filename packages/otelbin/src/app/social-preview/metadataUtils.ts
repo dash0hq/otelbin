@@ -9,7 +9,7 @@ import type { Bindings } from "~/lib/urlState/typeMapping";
 
 export function sortAndDeduplicate(arr: string[]) {
 	if (arr.length === 0) return "-";
-	const sortedStrings = arr.toSorted((a, b) => a.localeCompare(b));
+	const sortedStrings = arr.sort((a, b) => a.localeCompare(b));
 	const modifiedStrings = sortedStrings.map((str) => str.split("/")[0]);
 	const uniqueStrings = [...new Set(modifiedStrings)];
 	const joinedStrings = uniqueStrings.join(", ");
