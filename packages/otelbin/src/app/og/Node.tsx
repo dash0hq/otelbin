@@ -28,7 +28,6 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 		width: "100%",
 		height: "65%",
 		background: "#30353D",
-		transition: "background-color 0.3s ease-in-out",
 		borderRadius: "0px 0px 8px 8px",
 		paddingBottom: "6px",
 		paddingTop: "6px",
@@ -47,7 +46,6 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 				display: "flex",
 				marginLeft: "10px",
 				marginRight: "10px",
-				boxShadow: "0 1px 1px 1px rgba(7, 8, 16, 0.1",
 			}}
 			tw={`h-[72px] w-[110px] flex-col items-center rounded-lg my-5 `}
 		>
