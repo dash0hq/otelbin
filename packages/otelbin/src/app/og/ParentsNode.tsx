@@ -68,11 +68,11 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 							key={node.id}
 							d={
 								side === "left"
-									? `M10 ${(idx + 1) * (height / nodesCount) - 75} 
-				    C 20,${(idx + 1) * (height / nodesCount) - 75},35,${height / 2 - 25}  
+									? `M10 ${(idx + 1) * (height / nodesCount) - 75}
+				    C 20,${(idx + 1) * (height / nodesCount) - 75},35,${height / 2 - 25}
 						 50 ${height / 2 - 25}`
 									: `M10 ${height / 2 - 25}
-						C 20,${height / 2 - 25},35,${(idx + 1) * (height / nodesCount) - 75}  
+						C 20,${height / 2 - 25},35,${(idx + 1) * (height / nodesCount) - 75}
 							 50 ${(idx + 1) * (height / nodesCount) - 75}`
 							}
 							stroke="#FFFFFF"

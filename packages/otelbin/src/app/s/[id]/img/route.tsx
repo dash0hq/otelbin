@@ -9,8 +9,9 @@ import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import JsYaml from "js-yaml";
-import { calcScale, toUrlState } from "../../metadataUtils";
-import Logo from "../../../../components/assets/svg/otelbin_logo_white.svg";
+import { calcScale, toUrlState } from "../metadataUtils";
+import Logo from "~/components/assets/svg/otelbin_logo_white.svg";
+import { notFound } from "next/navigation";
 
 export const runtime = "edge";
 
@@ -20,7 +21,7 @@ const edgeWidth = 80;
 export async function GET(request: NextRequest) {
 	const shortLinkId = request.nextUrl.searchParams.get("id") ?? "";
 	if (!shortLinkId) {
-		return new NextResponse("No short link ID found in the request", { status: 400 });
+		return notFound();
 	}
 	const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(shortLinkId))) ?? "";
 	let url;
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
 		{
 			width: 1200,
 			height: 630,
-			headers: { "Cache-Control": "public, max-age=3600, stale-while-revalidate=3600, stale-if-error=3600" },
+			headers: { "Cache-Control": "public, max-age=3600, stale-while-revalidate=604800, stale-if-error=604800" },
 		}
 	);
 }

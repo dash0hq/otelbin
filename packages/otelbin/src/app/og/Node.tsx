@@ -66,7 +66,7 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 			<div style={customNodeStyles} tw="flex-col">
 				<div
 					tw={`flex w-full flex-col items-center justify-center px-2 ${
-						splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
+						splitLabel[1] && splitLabel[1].length > 0 ? "mt-[2px]" : ""
 					}`}
 				>
 					<div style={iconColor}>{isConnector ? <ConnectorIcon /> : icon}</div>
