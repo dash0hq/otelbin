@@ -129,42 +129,44 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 	return nodesToAdd;
 };
 
-export const useNodes = (value: IConfig) => {
-	return useMemo(() => {
-		const pipelines = value.service?.pipelines;
-		const connectors = value.connectors;
-		if (pipelines == null) {
-			return;
-		}
+export const useClientNodes = (value: IConfig) => {
+	return useMemo(() => calcNodes(value), [value]);
+};
 
-		const nodesToAdd: Node[] = [];
+export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
+	const pipelines = value?.service?.pipelines;
+	const connectors = value?.connectors;
+	if (pipelines == null) {
+		return;
+	}
 
-		for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
-			const receivers = pipeline.receivers?.length ?? 0;
-			const exporters = pipeline.exporters?.length ?? 0;
-			const maxNodes = Math.max(receivers, exporters) ?? 1;
-			const spaceBetweenParents = 40;
-			const spaceBetweenNodes = 90;
-			const totalSpacing = maxNodes * spaceBetweenNodes;
-			const parentHeight = totalSpacing + maxNodes * childNodesHeight;
+	const nodesToAdd: Node[] = [];
 
-			nodesToAdd.push({
-				id: pipelineName,
-				type: "parentNodeType",
-				position: { x: 0, y: 0 },
-				data: {
-					label: pipelineName,
-					parentNode: pipelineName,
-					width: 430 + 200 * (pipeline.processors?.length ?? 0),
-					height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
-				},
-				draggable: false,
-				ariaLabel: pipelineName,
-				expandParent: true,
-			});
-			const childNodes = createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors);
-			nodesToAdd.push(...childNodes);
-		}
-		return nodesToAdd;
-	}, [value]);
+	for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
+		const receivers = pipeline.receivers?.length ?? 0;
+		const exporters = pipeline.exporters?.length ?? 0;
+		const maxNodes = Math.max(receivers, exporters) ?? 1;
+		const spaceBetweenParents = 40;
+		const spaceBetweenNodes = isServerSide ? 40 : 90;
+		const totalSpacing = maxNodes * spaceBetweenNodes;
+		const parentHeight = totalSpacing + maxNodes * childNodesHeight;
+
+		nodesToAdd.push({
+			id: pipelineName,
+			type: "parentNodeType",
+			position: { x: 0, y: 0 },
+			data: {
+				label: pipelineName,
+				parentNode: pipelineName,
+				width: 430 + 200 * (pipeline.processors?.length ?? 0),
+				height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
+			},
+			draggable: false,
+			ariaLabel: pipelineName,
+			expandParent: true,
+		});
+		const childNodes = createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors);
+		nodesToAdd.push(...childNodes);
+	}
+	return nodesToAdd;
 };
