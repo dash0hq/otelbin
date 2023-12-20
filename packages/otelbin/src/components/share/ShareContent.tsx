@@ -14,12 +14,15 @@ import { IconButton } from "~/components/icon-button";
 import { useToast } from "~/components/use-toast";
 import { fetcher } from "~/lib/fetcher";
 import useSWRImmutable from "swr/immutable";
+import { useState } from "react";
+import { cn } from "~/lib/utils";
 
 export function ShareContent() {
 	const { toast } = useToast();
 	const [{ config }, getLink] = useUrlState([editorBinding]);
 	let fullURL = window.location.origin + getLink({});
 	const { isSignedIn } = useAuth();
+	const [loadedImgUrl, setLoadedImgUrl] = useState<string | undefined>(undefined);
 
 	const { data } = useSWRImmutable<{ shortLink: string; imgURL: string }>(
 		isSignedIn
@@ -93,10 +96,23 @@ export function ShareContent() {
 						<img
 							src={data.imgURL}
 							width={280}
-							height={147}
+							height={loadedImgUrl === data.imgURL ? 147 : 0}
 							alt="OpenTelemetry collector configuration on OTelBin"
 							className="grow-0"
+							onLoad={() => {
+								setLoadedImgUrl(data.imgURL);
+							}}
 						/>
+
+						{loadedImgUrl !== data.imgURL && (
+							<div
+								className="bg-default animate-pulse rounded"
+								style={{
+									width: 280,
+									height: 147,
+								}}
+							/>
+						)}
 					</div>
 				</>
 			)}
