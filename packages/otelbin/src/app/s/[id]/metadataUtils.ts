@@ -33,14 +33,29 @@ export function extractComponents(jsonData: IConfig) {
 
 export function calcScale(edgeWidth: number, nodes?: Node[]) {
 	if (nodes?.length === 0 || !nodes) return "1";
+	const processorsCount = {} as Record<string, number>;
+	const nodesWidth = 140;
+	const parentNodesPadding = 40;
 	const targetHeight = 630;
 	const targetWidth = 1200;
 	const parentNodes = nodes?.filter((node) => node.type === "parentNodeType");
-	const processors = nodes?.filter((node) => node.type === "processorsNode");
+	const processors = nodes?.filter((node) => node.type === "processorsNode") ?? [];
+	const processorPipelines = processors.map((node) => node.parentNode) ?? [];
+	if (processorPipelines) {
+		processorPipelines.forEach((pipeline) => {
+			if (pipeline && pipeline in processorsCount) {
+				processorsCount[pipeline] += 1;
+			} else if (pipeline) {
+				processorsCount[pipeline] = 1;
+			}
+		});
+	}
+	const maxProcessorPipelineCount = Math.max(...Object.values(processorsCount));
 	const nodesHeight = parentNodes?.map((node) => node.data.height) ?? [0];
 	const totalHeight = nodesHeight?.reduce((sum, height) => sum + (height + 50), 0) + 4 * 24;
-	const totalHorizontalNodesCount = (processors?.length ?? 0) + 2;
-	const totalWidth = totalHorizontalNodesCount * 140 + (totalHorizontalNodesCount - 1) * edgeWidth;
+	const totalHorizontalNodesCount = maxProcessorPipelineCount + 2;
+	const totalWidth =
+		totalHorizontalNodesCount * nodesWidth + (totalHorizontalNodesCount - 1) * edgeWidth + parentNodesPadding;
 	const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth).toFixed(3);
 	return scale.toString();
 }

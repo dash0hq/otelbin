@@ -50,13 +50,19 @@ describe("calcScale", () => {
 		const nodes: Node[] = [
 			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
 			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
-			{ type: "processorsNode", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
-			{ type: "processorsNode", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
+			{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
+			{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "5" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "6" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "7" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "8" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "9" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "10" },
 		];
 
 		const edgeWidth = 10;
 		const scale = calcScale(edgeWidth, nodes);
-		expect(scale).toBe("1.270");
+		expect(scale).toBe("0.976");
 	});
 
 	it("Should return 1 if there is no node.", () => {

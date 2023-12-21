@@ -15,7 +15,6 @@ import { useToast } from "~/components/use-toast";
 import { fetcher } from "~/lib/fetcher";
 import useSWRImmutable from "swr/immutable";
 import { useState } from "react";
-import { cn } from "~/lib/utils";
 
 export function ShareContent() {
 	const { toast } = useToast();
