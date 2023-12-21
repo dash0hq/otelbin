@@ -28,7 +28,6 @@ export default function ValidationTile({
 	distribution: Distribution;
 }) {
 	const isDistroActive = distributionId === currentDistributionVersion?.distro;
-
 	const [, getLink] = useUrlState([distroBinding, distroVersionBinding]);
 	const [version, setVersion] = useState<string>(
 		isDistroActive ? currentDistributionVersion.version : distribution.releases[0]?.version ?? ""

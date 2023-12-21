@@ -27,6 +27,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
 import { selectConfigType } from "./parseYaml";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -46,7 +47,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
 	const serverSideValidationResult = useServerSideValidation();
-
+	const isServerValidationEnabled = useServerSideValidationEnabled();
+	const [key, setKey] = useState(0);
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
 		setWidth(newWidth);
@@ -67,12 +69,13 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 				currentConfig,
 				editorRef,
 				monacoRef,
+				isServerValidationEnabled,
 				serverSideValidationResult
 			);
 		} else {
 			return {};
 		}
-	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult]);
+	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult, isServerValidationEnabled]);
 
 	const isValidConfig =
 		totalValidationErrors.jsYamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
@@ -146,6 +149,10 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}
 
+	useEffect(() => {
+		setKey((key) => key + 1);
+	}, [isServerValidationEnabled]);
+
 	return (
 		<>
 			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
@@ -165,6 +172,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 									<AutoSizer>
 										{({ width, height }) => (
 											<MonacoEditor
+												key={key}
 												defaultValue={config}
 												value={config}
 												onMount={editorDidMount}
@@ -223,4 +231,9 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 			</div>
 		</>
 	);
+}
+
+export function useServerSideValidationEnabled(): boolean {
+	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+	return !!distro && !!distroVersion;
 }
