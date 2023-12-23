@@ -40,8 +40,8 @@ export function calcScale(edgeWidth: number, nodes?: Node[]) {
 	const targetWidth = 1200;
 	const parentNodes = nodes?.filter((node) => node.type === "parentNodeType");
 	const processors = nodes?.filter((node) => node.type === "processorsNode") ?? [];
-	const processorPipelines = processors.map((node) => node.parentNode) ?? [];
-	if (processorPipelines) {
+	const processorPipelines = processors.length > 0 ? processors.map((node) => node.parentNode) : [];
+	if (processorPipelines.length > 0) {
 		processorPipelines.forEach((pipeline) => {
 			if (pipeline && pipeline in processorsCount) {
 				processorsCount[pipeline] += 1;
@@ -49,6 +49,8 @@ export function calcScale(edgeWidth: number, nodes?: Node[]) {
 				processorsCount[pipeline] = 1;
 			}
 		});
+	} else {
+		processorsCount["default"] = processors.length;
 	}
 	const maxProcessorPipelineCount = Math.max(...Object.values(processorsCount));
 	const nodesHeight = parentNodes?.map((node) => node.data.height) ?? [0];
