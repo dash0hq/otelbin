@@ -57,49 +57,61 @@ describe("calcScale", () => {
 
 	runTest(
 		[
-			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
-			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
-			{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
-			{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
-			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "5" },
-			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "6" },
-			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "7" },
-			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "8" },
-			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "9" },
-			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "10" },
+			{ type: "parentNodeType", data: { height: 100 }, position: { x: 100, y: 200 }, id: "1" },
+			{ type: "parentNodeType", data: { height: 200 }, position: { x: 200, y: 300 }, id: "2" },
+			{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 200, y: 300 }, id: "3" },
+			{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 210, y: 220 }, id: "4" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 10 }, id: "5" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 200 }, position: { x: 10, y: 20 }, id: "6" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 300 }, position: { x: 20, y: 30 }, id: "7" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 400 }, position: { x: 30, y: 40 }, id: "8" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 500 }, position: { x: 40, y: 50 }, id: "9" },
+			{ type: "processorsNode", parentNode: "logs", data: { height: 600 }, position: { x: 50, y: 60 }, id: "10" },
 		],
 		"0.976"
 	);
 
 	runTest(
 		[
-			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
-			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
+			{ type: "parentNodeType", data: { height: 100 }, position: { x: 70, y: 80 }, id: "1" },
+			{ type: "parentNodeType", data: { height: 200 }, position: { x: 80, y: 90 }, id: "2" },
 			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
-			{ type: "receiversNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
+			{ type: "receiversNode", parentNode: "logs", data: { height: 200 }, position: { x: 0, y: 0 }, id: "4" },
 		],
 		"1.270"
 	);
 
 	runTest(
 		[
-			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
-			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
-			{ type: "exportersNode", parentNode: "traces", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
-			{ type: "connectors/exporters", parentNode: "traces", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
-			{ type: "receiversNode", parentNode: "traces", data: { height: 100 }, position: { x: 0, y: 0 }, id: "5" },
+			{ type: "parentNodeType", data: { height: 100 }, position: { x: 100, y: 110 }, id: "1" },
+			{ type: "parentNodeType", data: { height: 200 }, position: { x: 110, y: 120 }, id: "2" },
+			{ type: "exportersNode", parentNode: "traces", data: { height: 100 }, position: { x: 120, y: 130 }, id: "3" },
+			{
+				type: "connectors/exporters",
+				parentNode: "traces",
+				data: { height: 100 },
+				position: { x: 130, y: 140 },
+				id: "4",
+			},
+			{ type: "receiversNode", parentNode: "traces", data: { height: 100 }, position: { x: 140, y: 150 }, id: "5" },
 		],
 		"1.270"
 	);
 
 	runTest(
 		[
-			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
-			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
-			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
-			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
-			{ type: "connectors/receivers", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "5" },
-			{ type: "receiversNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "6" },
+			{ type: "parentNodeType", data: { height: 100 }, position: { x: 150, y: 160 }, id: "1" },
+			{ type: "parentNodeType", data: { height: 200 }, position: { x: 160, y: 170 }, id: "2" },
+			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 170, y: 180 }, id: "3" },
+			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 180, y: 190 }, id: "4" },
+			{
+				type: "connectors/receivers",
+				parentNode: "metrics",
+				data: { height: 100 },
+				position: { x: 190, y: 200 },
+				id: "5",
+			},
+			{ type: "receiversNode", parentNode: "metrics", data: { height: 100 }, position: { x: 200, y: 210 }, id: "6" },
 		],
 		"1.270"
 	);
