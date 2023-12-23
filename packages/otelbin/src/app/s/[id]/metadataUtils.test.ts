@@ -46,8 +46,17 @@ describe("extractComponents", () => {
 });
 
 describe("calcScale", () => {
-	it("Should calculate the correct scale based on the maximum height or width of the visualization nodes to ensure they fit within the standard 1200x630 size of the generated Open Graph image.", () => {
-		const nodes: Node[] = [
+	const edgeWidth = 10;
+
+	const runTest = (nodes: Node[], expectedScale: string) => {
+		it("Should calculate the correct scale based on the maximum height or width of the visualization nodes to ensure they fit within the standard 1200x630 size of the generated Open Graph image.", () => {
+			const scale = calcScale(edgeWidth, nodes);
+			expect(scale).toBe(expectedScale);
+		});
+	};
+
+	runTest(
+		[
 			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
 			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
 			{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
@@ -58,62 +67,44 @@ describe("calcScale", () => {
 			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "8" },
 			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "9" },
 			{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "10" },
-		];
+		],
+		"0.976"
+	);
 
-		const edgeWidth = 10;
-		const scale = calcScale(edgeWidth, nodes);
-		expect(scale).toBe("0.976");
-	});
-
-	it("Should calculate the correct scale based on the maximum height or width of the visualization nodes to ensure they fit within the standard 1200x630 size of the generated Open Graph image.", () => {
-		const nodes: Node[] = [
+	runTest(
+		[
 			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
 			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
 			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
 			{ type: "receiversNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
-		];
+		],
+		"1.270"
+	);
 
-		const edgeWidth = 10;
-		const scale = calcScale(edgeWidth, nodes);
-		expect(scale).toBe("1.270");
-	});
-
-	it("Should calculate the correct scale based on the maximum height or width of the visualization nodes to ensure they fit within the standard 1200x630 size of the generated Open Graph image.", () => {
-		const nodes: Node[] = [
+	runTest(
+		[
 			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
 			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
 			{ type: "exportersNode", parentNode: "traces", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
 			{ type: "connectors/exporters", parentNode: "traces", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
 			{ type: "receiversNode", parentNode: "traces", data: { height: 100 }, position: { x: 0, y: 0 }, id: "5" },
-		];
+		],
+		"1.270"
+	);
 
-		const edgeWidth = 10;
-		const scale = calcScale(edgeWidth, nodes);
-		expect(scale).toBe("1.270");
-	});
-
-	it("Should calculate the correct scale based on the maximum height or width of the visualization nodes to ensure they fit within the standard 1200x630 size of the generated Open Graph image.", () => {
-		const nodes: Node[] = [
+	runTest(
+		[
 			{ type: "parentNodeType", data: { height: 100 }, position: { x: 0, y: 0 }, id: "1" },
 			{ type: "parentNodeType", data: { height: 200 }, position: { x: 0, y: 0 }, id: "2" },
 			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "3" },
 			{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "4" },
 			{ type: "connectors/receivers", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "5" },
 			{ type: "receiversNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 0 }, id: "6" },
-		];
+		],
+		"1.270"
+	);
 
-		const edgeWidth = 10;
-		const scale = calcScale(edgeWidth, nodes);
-		expect(scale).toBe("1.270");
-	});
-
-	it("Should return 1 if there is no node.", () => {
-		const nodes: Node[] = [];
-
-		const edgeWidth = 10;
-		const scale = calcScale(edgeWidth, nodes);
-		expect(scale).toBe("1");
-	});
+	runTest([], "1");
 });
 
 describe("toUrlState", () => {
