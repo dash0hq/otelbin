@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Parser } from "yaml";
-import JsYaml from "js-yaml";
+import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -240,7 +240,7 @@ export function isOtelColCRD(jsonData: IOtelColCRD) {
 }
 
 export function selectConfigType(config: string) {
-	const jsonData = JsYaml.load(config) as any;
+	const jsonData = JsYaml.load(config, { schema: FAILSAFE_SCHEMA }) as any;
 
 	if (isK8sConfigMap(jsonData)) {
 		return jsonData.data.relay;
