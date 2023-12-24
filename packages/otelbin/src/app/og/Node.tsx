@@ -41,14 +41,7 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 	const isConnector = data.type.includes("connectors");
 
 	return (
-		<div
-			style={{
-				display: "flex",
-				marginLeft: "10px",
-				marginRight: "10px",
-			}}
-			tw={`h-[72px] w-[110px] flex-col items-center rounded-lg my-5 `}
-		>
+		<div tw={`h-[72px] w-[110px] flex-col items-center rounded-lg my-5 mx-[10px] flex`}>
 			<div
 				style={customNodeHeaderStyle}
 				tw={`px-3  text-xs font-medium h-[35%] w-full flex items-center justify-center text-white
