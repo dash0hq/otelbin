@@ -8,7 +8,7 @@ import { Redis } from "@upstash/redis/nodejs";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
-import JsYaml from "js-yaml";
+import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 import { calcScale, toUrlState } from "../metadataUtils";
 import Logo from "~/components/assets/svg/otelbin_logo_white.svg";
 import { notFound } from "next/navigation";
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 		return new NextResponse("Invalid short link ID", { status: 400 });
 	}
 	const { config } = toUrlState(url, [editorBinding]);
-	const jsonData = JsYaml.load(config) as IConfig;
+	const jsonData = JsYaml.load(config, { schema: FAILSAFE_SCHEMA }) as IConfig;
 	const initNodes = calcNodes(jsonData, true);
 	const parentNodes = initNodes?.filter((node) => node.type === "parentNodeType");
 
