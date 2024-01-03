@@ -9,16 +9,7 @@ import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
 import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
 
 const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) => {
-	const childNodes = nodes?.filter((node) => node.parentNode === nodeData.data.label);
-	const processorsNodesCount = childNodes?.filter((node) => node.type === "processorsNode").length ?? 0;
-	const nodesWidth = 110;
-	const sumOfExporterAndReceiver = 240;
-	const edgesWidth = 80;
-	const totalNodesWidth = (processorsNodesCount ?? 0) * nodesWidth + sumOfExporterAndReceiver;
-	const totalEdgeWidth = edgesWidth * (processorsNodesCount + 1);
-	const totalPaddingX = 40;
-	const maxWidth = totalNodesWidth + (processorsNodesCount + 2) * 20 + totalEdgeWidth + totalPaddingX;
-
+	const maxWidth = nodeData.data.width;
 	const receivers = nodes
 		?.filter((node) => node.type === "receiversNode")
 		.filter((receiver) => receiver.parentNode === nodeData.data.label);
@@ -99,10 +90,10 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 								position: "relative",
 								backgroundColor: node.backgroundColor,
 								border: node.borderColor,
-								height: `${nodeData.data.height + 50}px`,
+								height: `${nodeData.data.height}px`,
 								width: maxWidth,
 							}}
-							tw="rounded-[4px] text-[10px] text-black my-3 px-5 py-2"
+							tw="rounded-[4px] text-[10px] text-black px-6 py-2"
 						>
 							<ParentNodeTag tag={nodeData.data.label} />
 

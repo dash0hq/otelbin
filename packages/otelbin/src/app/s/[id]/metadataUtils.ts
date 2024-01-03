@@ -31,35 +31,27 @@ export function extractComponents(jsonData: IConfig) {
 	return components;
 }
 
-export function calcScale(edgeWidth: number, nodes?: Node[]) {
-	if (nodes?.length === 0 || !nodes) return "1";
-	const processorsCount = {} as Record<string, number>;
-	const nodesWidth = 140;
-	const parentNodesPadding = 40;
+export function calcScale(parentNodes?: Node[]) {
 	const targetHeight = 630;
 	const targetWidth = 1200;
-	const parentNodes = nodes?.filter((node) => node.type === "parentNodeType");
-	const processors = nodes?.filter((node) => node.type === "processorsNode") ?? [];
-	const processorPipelines = processors.length > 0 ? processors.map((node) => node.parentNode) : [];
-	if (processorPipelines.length > 0) {
-		processorPipelines.forEach((pipeline) => {
-			if (pipeline && pipeline in processorsCount) {
-				processorsCount[pipeline] += 1;
-			} else if (pipeline) {
-				processorsCount[pipeline] = 1;
-			}
-		});
-	} else {
-		processorsCount["default"] = processors.length;
+
+	if (parentNodes) {
+		const nodesX = parentNodes?.map((node) => node.position.x);
+		const nodesXMax = parentNodes?.map((node) => node.position.x + node.data.width);
+		const minX = Math.min(...nodesX);
+		const maxX = Math.max(...nodesXMax);
+		const nodesY = parentNodes?.map((node) => node.position.y);
+		const nodesYMax = parentNodes?.map((node) => node.position.y + node.data.height);
+		const minY = Math.min(...nodesY);
+		const maxY = Math.max(...nodesYMax);
+		const totalHeight = maxY - minY ?? 1;
+		const totalWidth = maxX - minX ?? 1;
+		//For add some padding multiply it by 0.98
+		const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth) * 0.98;
+		const totalXOffset = Math.max((targetWidth - totalWidth * scale) / 2 / scale, 0);
+		const totalYOffset = -(targetHeight / 2) / scale + Math.max((targetHeight - totalHeight * scale) / 2 / scale, 0);
+		return { scale: scale.toFixed(3).toString(), totalXOffset, totalYOffset };
 	}
-	const maxProcessorPipelineCount = Math.max(...Object.values(processorsCount));
-	const nodesHeight = parentNodes?.map((node) => node.data.height) ?? [0];
-	const totalHeight = nodesHeight?.reduce((sum, height) => sum + (height + 50), 0) + 4 * 24;
-	const totalHorizontalNodesCount = maxProcessorPipelineCount + 2;
-	const totalWidth =
-		totalHorizontalNodesCount * nodesWidth + (totalHorizontalNodesCount - 1) * edgeWidth + parentNodesPadding;
-	const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth).toFixed(3);
-	return scale.toString();
 }
 
 export function toUrlState<T extends Binding<unknown>[]>(url: URL, binds: T): Bindings<T> {

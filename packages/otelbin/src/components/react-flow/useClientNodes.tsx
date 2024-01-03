@@ -73,6 +73,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 								type: "processors",
 								height: childNodesHeight,
 								id: id,
+								position: processorPosition(index, height || 100, processors),
 							},
 							draggable: false,
 						});
@@ -98,6 +99,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 								type: isConnector ? "connectors/receivers" : "receivers",
 								height: childNodesHeight,
 								id: id,
+								position: receiverPosition(index, height || 100, receivers),
 							},
 							draggable: false,
 						});
@@ -119,6 +121,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 							type: isConnector ? "connectors/exporters" : "exporters",
 							height: childNodesHeight,
 							id: id,
+							position: exporterPosition(index, height || 100, exporters, processors ?? []),
 						},
 						draggable: false,
 					});
@@ -133,7 +136,7 @@ export const useClientNodes = (value: IConfig) => {
 	return useMemo(() => calcNodes(value), [value]);
 };
 
-export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
+export const calcNodes = (value: IConfig) => {
 	const pipelines = value?.service?.pipelines;
 	const connectors = value?.connectors;
 	if (pipelines == null) {
@@ -145,9 +148,16 @@ export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
 	for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
 		const receivers = pipeline.receivers?.length ?? 0;
 		const exporters = pipeline.exporters?.length ?? 0;
+		const processorsCount = pipeline.processors?.length ?? 0;
+		const receiversConnectors = pipeline.receivers?.filter((receiver) => {
+			return connectors && Object.keys(connectors).includes(receiver);
+		});
+		const exportersConnectors = pipeline.exporters?.filter((exporter) => {
+			return connectors && Object.keys(connectors).includes(exporter);
+		});
 		const maxNodes = Math.max(receivers, exporters) ?? 1;
 		const spaceBetweenParents = 40;
-		const spaceBetweenNodes = isServerSide ? 40 : 90;
+		const spaceBetweenNodes = 90;
 		const totalSpacing = maxNodes * spaceBetweenNodes;
 		const parentHeight = totalSpacing + maxNodes * childNodesHeight;
 
@@ -160,6 +170,10 @@ export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
 				parentNode: pipelineName,
 				width: 430 + 200 * (pipeline.processors?.length ?? 0),
 				height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
+				type: "parentNodeType",
+				receiversConnectors: receiversConnectors,
+				exportersConnectors: exportersConnectors,
+				processorCount: processorsCount,
 			},
 			draggable: false,
 			ariaLabel: pipelineName,

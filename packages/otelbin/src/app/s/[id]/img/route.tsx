@@ -12,11 +12,12 @@ import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 import { calcScale, toUrlState } from "../metadataUtils";
 import Logo from "~/components/assets/svg/otelbin_logo_white.svg";
 import { notFound } from "next/navigation";
+import { calcEdges } from "~/components/react-flow/useEdgeCreator";
+import { getLayoutedElements } from "~/components/react-flow/layout/useLayout";
 
 export const runtime = "edge";
 
 const redis = Redis.fromEnv();
-const edgeWidth = 80;
 
 export async function GET(request: NextRequest) {
 	const shortLinkId = request.nextUrl.searchParams.get("id") ?? "";
@@ -32,8 +33,15 @@ export async function GET(request: NextRequest) {
 	}
 	const { config } = toUrlState(url, [editorBinding]);
 	const jsonData = JsYaml.load(config, { schema: FAILSAFE_SCHEMA }) as IConfig;
-	const initNodes = calcNodes(jsonData, true);
-	const parentNodes = initNodes?.filter((node) => node.type === "parentNodeType");
+	const initNodes = calcNodes(jsonData);
+
+	const initEdges = calcEdges(initNodes ?? []);
+	const { nodes: layoutedNodes } = getLayoutedElements(initNodes ?? [], initEdges);
+	const parentNodes = layoutedNodes?.filter((node) => node.type === "parentNodeType");
+
+	const scale = calcScale(parentNodes)?.scale;
+	const totalYOffset = calcScale(parentNodes)?.totalYOffset ?? 0;
+	const totalXOffset = calcScale(parentNodes)?.totalXOffset ?? 0;
 
 	return new ImageResponse(
 		(
@@ -48,9 +56,7 @@ export async function GET(request: NextRequest) {
 					backgroundColor: "#151721",
 					position: "relative",
 					backgroundImage: `url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIiBmaWxsPSIjODI4MjhCIiBzdHJva2U9IiM4MjgyOEIiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1kb3QiPjxjaXJjbGUgY3g9IjEyLjEiIGN5PSIxMi4xIiByPSIwLjUiLz48L3N2Zz4=)`,
-					backgroundSize: `${Number(calcScale(edgeWidth, initNodes)) * 20}px ${
-						Number(calcScale(edgeWidth, initNodes)) * 20
-					}px`,
+					backgroundSize: `${Number(scale) * 20}px ${Number(scale) * 20}px`,
 					backgroundRepeat: "repeat",
 					backgroundPosition: "center",
 				}}
@@ -60,15 +66,26 @@ export async function GET(request: NextRequest) {
 				</div>
 				<div
 					style={{
-						transform: `scale(${calcScale(edgeWidth, initNodes)})`,
+						transformOrigin: "center left",
+						transform: `scale(${scale})`,
 						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
+						position: "relative",
+						width: "100%",
 					}}
 					tw="bg-transparent"
 				>
 					{parentNodes?.map((parentNode) => (
-						<ParentsNode key={parentNode.id} nodeData={parentNode} nodes={initNodes} />
+						<div
+							key={parentNode.id}
+							style={{
+								display: "flex",
+								position: "absolute",
+								top: parentNode.position.y + totalYOffset,
+								left: parentNode.position.x + totalXOffset,
+							}}
+						>
+							<ParentsNode key={parentNode.id} nodeData={parentNode} nodes={initNodes} />
+						</div>
 					))}
 				</div>
 			</div>

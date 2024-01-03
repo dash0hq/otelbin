@@ -3,12 +3,14 @@
 
 import React from "react";
 import ConnectorIcon from "../../components/assets/svg/connector.svg";
+import type { XYPosition } from "reactflow";
 
 export interface IData {
 	label: string;
 	parentNode: string;
 	type: string;
 	id: string;
+	position: XYPosition;
 }
 
 const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: string }) => {

@@ -16,7 +16,7 @@ export default function ParentNodeTag({ tag }: { tag: string }) {
 							style={{
 								position: "absolute",
 								top: -8,
-								left: -20,
+								left: -24,
 								display: "flex",
 								alignItems: "center",
 								backgroundColor: node.tagBackgroundColor,
