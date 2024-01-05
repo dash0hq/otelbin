@@ -60,7 +60,7 @@ jobs:
         run: |
           npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: releases-${{ matrix.distro.name }}
           path: .github/workflows/scripts/list-releases/releases.json
@@ -109,7 +109,7 @@ jobs:
         run: |
           npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: releases-adot
           path: .github/workflows/scripts/list-releases/releases.json
@@ -126,7 +126,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Download release artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: releases/
       - name: Merge release data
@@ -134,7 +134,7 @@ jobs:
           mv packages/otelbin-validation/src/assets/supported-distributions.json packages/otelbin-validation/src/assets/supported-distributions.json.old
           jq -rs 'reduce .[] as $item ({}; . * $item)' packages/otelbin-validation/src/assets/supported-distributions.json.old releases/*/*.json > packages/otelbin-validation/src/assets/supported-distributions.json
       - name: Upload updated releases.json artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: supported-distributions
           path: packages/otelbin-validation/src/assets/supported-distributions.json
@@ -148,7 +148,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Download updated supported distro list
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: supported-distributions
           path: packages/otelbin-validation/src/assets
