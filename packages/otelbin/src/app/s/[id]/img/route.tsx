@@ -3,7 +3,7 @@
 
 import { ImageResponse, NextResponse, type NextRequest } from "next/server";
 import { calcNodes } from "~/components/react-flow/useClientNodes";
-import ParentsNode from "../../../og/ParentsNode";
+import ParentsNode, { type IEdge } from "../../../og/ParentsNode";
 import { Redis } from "@upstash/redis/nodejs";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import type { IConfig } from "~/components/react-flow/dataType";
@@ -14,6 +14,7 @@ import Logo from "~/components/assets/svg/otelbin_logo_white.svg";
 import { notFound } from "next/navigation";
 import { calcEdges } from "~/components/react-flow/useEdgeCreator";
 import { getLayoutedElements } from "~/components/react-flow/layout/useLayout";
+import type { Edge, Node } from "reactflow";
 
 export const runtime = "edge";
 
@@ -42,6 +43,48 @@ export async function GET(request: NextRequest) {
 	const scale = calcScale(parentNodes)?.scale;
 	const totalYOffset = calcScale(parentNodes)?.totalYOffset ?? 0;
 	const totalXOffset = calcScale(parentNodes)?.totalXOffset ?? 0;
+
+	const connectorEdges = layoutedEdges?.filter((edge) => {
+		if (edge.data.type === "connector") {
+			return edge;
+		}
+	});
+
+	function drawConnectorEdges(edges: Edge[]) {
+		const edgesToDraw: IEdge[] = [];
+		const padding = 5;
+		const nodeWidth = 120 + padding;
+		const halfNodeHeight = 80 / 2;
+
+		if (edges.length > 0) {
+			edges.map((edge) => {
+				const sourceParentName = edge.data.sourcePipeline;
+				const targetParentName = edge.data.targetPipeline;
+				const sourceParent = parentNodes?.find((node) => node.data.label === sourceParentName) as Node;
+				const targetParent = parentNodes?.find((node) => node.data.label === targetParentName) as Node;
+				const sourceParentPosition = sourceParent.position;
+				const targetParentPosition = targetParent.position;
+
+				const sourceNode = sourceParent?.data?.childNodes.find((node: Node) => node.id === edge.source) as Node;
+				const targetNode = targetParent?.data?.childNodes.find((node: Node) => node.id === edge.target) as Node;
+
+				if (sourceNode && targetNode && sourceParent && targetParent) {
+					const sourcePosition = {
+						x: sourceParentPosition.x + sourceNode.position.x + nodeWidth + padding + totalXOffset,
+						y: sourceParentPosition.y + sourceNode.position.y + halfNodeHeight,
+					};
+					const targetPosition = {
+						x: targetParentPosition.x + targetNode?.position.x - padding + totalXOffset,
+						y: targetParentPosition.y + targetNode?.position.y + halfNodeHeight,
+					};
+					edgesToDraw.push({ edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition });
+				}
+			});
+		}
+		return edgesToDraw;
+	}
+
+	const connectorEdgesToDraw = drawConnectorEdges(connectorEdges ?? []);
 
 	return new ImageResponse(
 		(
@@ -86,6 +129,46 @@ export async function GET(request: NextRequest) {
 						>
 							<ParentsNode key={parentNode.id} nodeData={parentNode} nodes={layoutedNodes} edges={layoutedEdges} />
 						</div>
+					))}
+					{connectorEdgesToDraw?.map((edge) => (
+						<svg
+							key={edge.edge.id}
+							style={{ position: "absolute", top: totalYOffset }}
+							width={edge.targetPosition.x}
+							height={edge.targetPosition.y < edge.sourcePosition.y ? edge.sourcePosition.y : edge.targetPosition.y}
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<defs>
+								<marker
+									id={`arrowhead-${edge.edge.id}`}
+									viewBox="0 -5 10 10"
+									refX="5"
+									refY="0"
+									markerWidth="10"
+									markerHeight="10"
+									orient="auto"
+									fill="transparent"
+									stroke="#FFFFFF"
+								>
+									<g>
+										<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
+										<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
+									</g>
+								</marker>
+							</defs>
+							<path
+								key={edge.edge.id}
+								d={`M${edge.sourcePosition.x} ${edge.sourcePosition.y} C ${edge.sourcePosition.x + 20} ${
+									edge.sourcePosition.y
+								}, ${edge.targetPosition.x - 20} ${edge.targetPosition.y} ${edge.targetPosition.x} ${
+									edge.targetPosition.y
+								}
+										`}
+								stroke="#FFFFFF"
+								fill="transparent"
+								markerEnd={`url(#arrowhead-${edge.edge.id})`}
+							/>
+						</svg>
 					))}
 				</div>
 			</div>

@@ -148,13 +148,6 @@ export const calcNodes = (value: IConfig) => {
 	for (const [pipelineName, pipeline] of Object.entries(pipelines)) {
 		const receivers = pipeline.receivers?.length ?? 0;
 		const exporters = pipeline.exporters?.length ?? 0;
-		// const processorsCount = pipeline.processors?.length ?? 0;
-		// const receiversConnectors = pipeline.receivers?.filter((receiver) => {
-		// 	return connectors && Object.keys(connectors).includes(receiver);
-		// });
-		// const exportersConnectors = pipeline.exporters?.filter((exporter) => {
-		// 	return connectors && Object.keys(connectors).includes(exporter);
-		// });
 		const maxNodes = Math.max(receivers, exporters) ?? 1;
 		const spaceBetweenParents = 40;
 		const spaceBetweenNodes = 90;
@@ -171,9 +164,6 @@ export const calcNodes = (value: IConfig) => {
 				width: 430 + 200 * (pipeline.processors?.length ?? 0),
 				height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
 				type: "parentNodeType",
-				// receiversConnectors: receiversConnectors,
-				// exportersConnectors: exportersConnectors,
-				// processorCount: processorsCount,
 				childNodes: createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors),
 			},
 			draggable: false,

@@ -26,6 +26,7 @@ function createEdge(sourceNode: Node, targetNode: Node): Edge {
 			stroke: "#9CA2AB",
 		},
 		data: {
+			type: "edge",
 			sourceParent: sourceNode.parentNode,
 			targetParent: targetNode.parentNode,
 		},
@@ -49,6 +50,7 @@ function createConnectorEdge(sourceNode: Node, targetNode: Node): Edge {
 			stroke: "#9CA2AB",
 		},
 		data: {
+			type: "connector",
 			sourcePipeline: sourceNode.parentNode,
 			targetPipeline: targetNode.parentNode,
 		},

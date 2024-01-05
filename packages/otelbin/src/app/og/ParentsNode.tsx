@@ -7,6 +7,12 @@ import ParentNodeTag from "./ParentNodeTag";
 import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
 import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
 
+export interface IEdge {
+	edge: Edge;
+	sourcePosition: XYPosition;
+	targetPosition: XYPosition;
+}
+
 const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]; nodes?: Node[] }) => {
 	const maxWidth = nodeData.data.width;
 	const receivers = nodes
@@ -26,12 +32,6 @@ const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]
 			return edge;
 		}
 	});
-
-	interface IEdge {
-		edge: Edge;
-		sourcePosition: XYPosition;
-		targetPosition: XYPosition;
-	}
 
 	function drawSvgInsideParentNode(edges: Edge[], parentNode: Node) {
 		const padding = 10;
