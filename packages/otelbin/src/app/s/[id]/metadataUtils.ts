@@ -35,7 +35,7 @@ export function calcScale(parentNodes?: Node[]) {
 	const targetHeight = 630;
 	const targetWidth = 1200;
 
-	if (parentNodes) {
+	if (parentNodes && parentNodes?.length > 0) {
 		const nodesX = parentNodes?.map((node) => node.position.x);
 		const nodesXMax = parentNodes?.map((node) => node.position.x + node.data.width);
 		const minX = Math.min(...nodesX);
@@ -51,6 +51,8 @@ export function calcScale(parentNodes?: Node[]) {
 		const totalXOffset = Math.max((targetWidth - totalWidth * scale) / 2 / scale, 0);
 		const totalYOffset = -(targetHeight / 2) / scale + Math.max((targetHeight - totalHeight * scale) / 2 / scale, 0);
 		return { scale: scale.toFixed(3).toString(), totalXOffset, totalYOffset };
+	} else {
+		return { scale: "1", totalXOffset: 0, totalYOffset: 0 };
 	}
 }
 

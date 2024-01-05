@@ -7,11 +7,9 @@ import ParentNodeTag from "./ParentNodeTag";
 import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
 import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
 
-export interface IEdge {
-	edge: Edge;
-	sourcePosition: XYPosition;
-	targetPosition: XYPosition;
-}
+export const padding = 10;
+export const nodeWidth = 120 + padding;
+export const halfNodeHeight = 80 / 2;
 
 const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]; nodes?: Node[] }) => {
 	const maxWidth = nodeData.data.width;
@@ -34,32 +32,22 @@ const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]
 	});
 
 	function drawSvgInsideParentNode(edges: Edge[], parentNode: Node) {
-		const padding = 10;
-		const nodeWidth = 120 + padding;
-		const halfNodeHeight = 80 / 2;
-		const edgesToDraw: IEdge[] = [];
-
-		if (!parentNode) {
-			return;
-		}
-
-		edges.map((edge) => {
-			const sourceNode = parentNode?.data.childNodes.find((node: Node) => node.id === edge.source) as Node;
-			const targetNode = parentNode?.data.childNodes.find((node: Node) => node.id === edge.target) as Node;
+		return edges.map((edge) => {
+			const sourceNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.source);
+			const targetNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.target);
 
 			if (sourceNode && targetNode) {
-				const sourcePosition = {
+				const sourcePosition: XYPosition = {
 					x: sourceNode.position.x + nodeWidth ?? 0,
 					y: sourceNode.position.y + halfNodeHeight ?? 0,
 				};
-				const targetPosition = {
-					x: targetNode?.position.x - padding ?? 0,
-					y: targetNode?.position.y + halfNodeHeight ?? 0,
+				const targetPosition: XYPosition = {
+					x: targetNode.position.x - padding ?? 0,
+					y: targetNode.position.y + halfNodeHeight ?? 0,
 				};
-				edgesToDraw.push({ edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition });
+				return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
 			}
 		});
-		return edgesToDraw;
 	}
 
 	const drawEdges = drawSvgInsideParentNode(parentNodeEdges, nodeData);
@@ -88,46 +76,51 @@ const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]
 							{receivers?.map((receiver) => <ReceiversNode key={receiver.id} data={receiver.data} />)}
 							{processors?.map((processor) => <ProcessorsNode key={processor.id} data={processor.data} />)}
 							{exporters?.map((exporter) => <ExportersNode key={exporter.id} data={exporter.data} />)}
-							{drawEdges?.map((edge) => (
-								<svg
-									key={edge.edge.id}
-									style={{ position: "absolute" }}
-									width={edge.targetPosition.x}
-									height={edge.targetPosition.y < edge.sourcePosition.y ? edge.sourcePosition.y : edge.targetPosition.y}
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<defs>
-										<marker
-											id={`arrowhead-${edge.edge.id}`}
-											viewBox="0 -5 10 10"
-											refX="5"
-											refY="0"
-											markerWidth="10"
-											markerHeight="10"
-											orient="auto"
-											fill="transparent"
-											stroke="#FFFFFF"
-										>
-											<g>
-												<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
-												<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
-											</g>
-										</marker>
-									</defs>
-									<path
-										key={edge.edge.id}
-										d={`M${edge.sourcePosition.x} ${edge.sourcePosition.y} C ${edge.sourcePosition.x + 20} ${
-											edge.sourcePosition.y
-										}, ${edge.targetPosition.x - 20} ${edge.targetPosition.y} ${edge.targetPosition.x} ${
-											edge.targetPosition.y
+							{Array.isArray(drawEdges) &&
+								drawEdges.length > 0 &&
+								drawEdges?.map((edge) => (
+									<svg
+										key={edge?.edge.id}
+										style={{ position: "absolute" }}
+										width={edge?.targetPosition.x}
+										height={
+											edge && edge?.targetPosition.y < edge?.sourcePosition.y
+												? edge?.sourcePosition.y
+												: edge?.targetPosition.y
 										}
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<defs>
+											<marker
+												id={`arrowhead-${edge?.edge.id}`}
+												viewBox="0 -5 10 10"
+												refX="5"
+												refY="0"
+												markerWidth="10"
+												markerHeight="10"
+												orient="auto"
+												fill="transparent"
+												stroke="#FFFFFF"
+											>
+												<g>
+													<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
+													<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
+												</g>
+											</marker>
+										</defs>
+										<path
+											key={edge?.edge.id}
+											d={`M${edge?.sourcePosition.x} ${edge?.sourcePosition.y} C ${
+												edge && edge?.sourcePosition.x + 30
+											} ${edge?.sourcePosition.y}, ${edge && edge?.targetPosition.x - 30} ${edge?.targetPosition
+												.y} ${edge?.targetPosition.x} ${edge?.targetPosition.y}
 										`}
-										stroke="#FFFFFF"
-										fill="transparent"
-										markerEnd={`url(#arrowhead-${edge.edge.id})`}
-									/>
-								</svg>
-							))}
+											stroke="#FFFFFF"
+											fill="transparent"
+											markerEnd={`url(#arrowhead-${edge?.edge.id})`}
+										/>
+									</svg>
+								))}
 						</div>
 					);
 				})}
