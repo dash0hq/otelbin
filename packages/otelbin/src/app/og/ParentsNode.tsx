@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { type Node } from "reactflow";
+import type { XYPosition, Edge, Node } from "reactflow";
 import ParentNodeTag from "./ParentNodeTag";
-import ArrowRight from "../../components/assets/svg/move-right.svg";
 import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
 import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
 
-const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) => {
+const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]; nodes?: Node[] }) => {
 	const maxWidth = nodeData.data.width;
 	const receivers = nodes
 		?.filter((node) => node.type === "receiversNode")
@@ -20,60 +19,50 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 		?.filter((node) => node.type === "processorsNode")
 		.filter((processor) => processor.parentNode === nodeData.data.label);
 
-	const nodeHeight = 72;
-	const nodeTotalMargin = 40;
+	const parentNodeEdges = edges.filter((edge) => {
+		const sourceParent = edge.data.sourceParent;
+		const targetParent = edge.data.targetParent;
+		if (sourceParent === targetParent && sourceParent === nodeData.data.label) {
+			return edge;
+		}
+	});
 
-	function calcSVGHeight(nodes?: Node[]) {
-		const nodesCount = nodes?.length ?? 0;
-		return nodesCount * (nodeHeight + nodeTotalMargin) - nodeTotalMargin;
+	interface IEdge {
+		edge: Edge;
+		sourcePosition: XYPosition;
+		targetPosition: XYPosition;
 	}
 
-	function calcSVGPath(side: string, nodes?: Node[]) {
-		const nodesCount = nodes?.length ?? 0;
-		const height = nodesCount * (nodeHeight + nodeTotalMargin) - 40;
+	function drawSvgInsideParentNode(edges: Edge[], parentNode: Node) {
+		const padding = 10;
+		const nodeWidth = 120 + padding;
+		const halfNodeHeight = 80 / 2;
+		const edgesToDraw: IEdge[] = [];
 
-		return (
-			<svg style={{ marginBottom: "30px" }} width="80" height={calcSVGHeight(nodes)} xmlns="http://www.w3.org/2000/svg">
-				<defs>
-					<marker
-						id="arrowhead"
-						viewBox="0 -5 10 10"
-						refX="5"
-						refY="0"
-						markerWidth="10"
-						markerHeight="10"
-						orient="auto"
-						fill="transparent"
-						stroke="#FFFFFF"
-					>
-						<g>
-							<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
-							<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
-						</g>
-					</marker>
-				</defs>
-				{Array.isArray(nodes) &&
-					nodes?.length > 0 &&
-					nodes.map((node, idx) => (
-						<path
-							key={node.id}
-							d={
-								side === "left"
-									? `M10 ${(idx + 1) * (height / nodesCount) - 75}
-				    C 20,${(idx + 1) * (height / nodesCount) - 75},35,${height / 2 - 25}
-						 50 ${height / 2 - 25}`
-									: `M10 ${height / 2 - 25}
-						C 20,${height / 2 - 25},35,${(idx + 1) * (height / nodesCount) - 75}
-							 50 ${(idx + 1) * (height / nodesCount) - 75}`
-							}
-							stroke="#FFFFFF"
-							fill="transparent"
-							markerEnd="url(#arrowhead)"
-						/>
-					))}
-			</svg>
-		);
+		if (!parentNode) {
+			return;
+		}
+
+		edges.map((edge) => {
+			const sourceNode = parentNode?.data.childNodes.find((node: Node) => node.id === edge.source) as Node;
+			const targetNode = parentNode?.data.childNodes.find((node: Node) => node.id === edge.target) as Node;
+
+			if (sourceNode && targetNode) {
+				const sourcePosition = {
+					x: sourceNode.position.x + nodeWidth ?? 0,
+					y: sourceNode.position.y + halfNodeHeight ?? 0,
+				};
+				const targetPosition = {
+					x: targetNode?.position.x - padding ?? 0,
+					y: targetNode?.position.y + halfNodeHeight ?? 0,
+				};
+				edgesToDraw.push({ edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition });
+			}
+		});
+		return edgesToDraw;
 	}
+
+	const drawEdges = drawSvgInsideParentNode(parentNodeEdges, nodeData);
 
 	return (
 		<>
@@ -93,38 +82,52 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 								height: `${nodeData.data.height}px`,
 								width: maxWidth,
 							}}
-							tw="rounded-[4px] text-[10px] text-black px-6 py-2"
+							tw="rounded-[4px] text-[10px] text-black"
 						>
 							<ParentNodeTag tag={nodeData.data.label} />
-
-							<div style={{ display: "flex", justifyContent: "center" }}>
-								<div tw="flex items-center">
-									<div tw="flex flex-col justify-center">
-										{receivers?.map((receiver) => <ReceiversNode key={receiver.id} data={receiver.data} />)}
-									</div>
-									{processors?.length === 0 ? (
-										<></>
-									) : receivers?.length === 1 ? (
-										<ArrowRight />
-									) : (
-										calcSVGPath("left", receivers)
-									)}
-								</div>
-								<div tw="flex items-center">
-									<div tw="flex justify-center items-center">
-										{processors?.map((processor, idx) => (
-											<div key={processor.id} tw="flex justify-center items-center">
-												{idx > 0 ? <ArrowRight /> : <></>}
-												<ProcessorsNode data={processor.data} />
-											</div>
-										))}
-									</div>
-									{exporters?.length === 1 ? <ArrowRight /> : calcSVGPath("right", exporters)}
-									<div tw="flex flex-col justify-center">
-										{exporters?.map((exporter) => <ExportersNode key={exporter.id} data={exporter.data} />)}
-									</div>
-								</div>
-							</div>
+							{receivers?.map((receiver) => <ReceiversNode key={receiver.id} data={receiver.data} />)}
+							{processors?.map((processor) => <ProcessorsNode key={processor.id} data={processor.data} />)}
+							{exporters?.map((exporter) => <ExportersNode key={exporter.id} data={exporter.data} />)}
+							{drawEdges?.map((edge) => (
+								<svg
+									key={edge.edge.id}
+									style={{ position: "absolute" }}
+									width={edge.targetPosition.x}
+									height={edge.targetPosition.y < edge.sourcePosition.y ? edge.sourcePosition.y : edge.targetPosition.y}
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<defs>
+										<marker
+											id={`arrowhead-${edge.edge.id}`}
+											viewBox="0 -5 10 10"
+											refX="5"
+											refY="0"
+											markerWidth="10"
+											markerHeight="10"
+											orient="auto"
+											fill="transparent"
+											stroke="#FFFFFF"
+										>
+											<g>
+												<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
+												<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
+											</g>
+										</marker>
+									</defs>
+									<path
+										key={edge.edge.id}
+										d={`M${edge.sourcePosition.x} ${edge.sourcePosition.y} C ${edge.sourcePosition.x + 20} ${
+											edge.sourcePosition.y
+										}, ${edge.targetPosition.x - 20} ${edge.targetPosition.y} ${edge.targetPosition.x} ${
+											edge.targetPosition.y
+										}
+										`}
+										stroke="#FFFFFF"
+										fill="transparent"
+										markerEnd={`url(#arrowhead-${edge.edge.id})`}
+									/>
+								</svg>
+							))}
 						</div>
 					);
 				})}

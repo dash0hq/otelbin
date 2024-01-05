@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 	const initNodes = calcNodes(jsonData);
 
 	const initEdges = calcEdges(initNodes ?? []);
-	const { nodes: layoutedNodes } = getLayoutedElements(initNodes ?? [], initEdges);
+	const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(initNodes ?? [], initEdges);
 	const parentNodes = layoutedNodes?.filter((node) => node.type === "parentNodeType");
 
 	const scale = calcScale(parentNodes)?.scale;
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
 								left: parentNode.position.x + totalXOffset,
 							}}
 						>
-							<ParentsNode key={parentNode.id} nodeData={parentNode} nodes={initNodes} />
+							<ParentsNode key={parentNode.id} nodeData={parentNode} nodes={layoutedNodes} edges={layoutedEdges} />
 						</div>
 					))}
 				</div>

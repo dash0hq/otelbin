@@ -17,9 +17,6 @@ export const useLayout = (nodes: Node[], edges: Edge[]) => {
 	}, [nodes, edges]);
 };
 
-// export const useLayoutServerSide = (nodes: Node[], edges: Edge[]) => {
-// 	return getLayoutedElements(nodes, edges);
-// };
 interface ErrorEdge {
 	from: string;
 	to: string;

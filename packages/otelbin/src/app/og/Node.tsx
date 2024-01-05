@@ -3,7 +3,7 @@
 
 import React from "react";
 import ConnectorIcon from "../../components/assets/svg/connector.svg";
-import type { XYPosition } from "reactflow";
+import type { Node, XYPosition } from "reactflow";
 
 export interface IData {
 	label: string;
@@ -43,7 +43,14 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 	const isConnector = data.type.includes("connectors");
 
 	return (
-		<div tw={`h-[72px] w-[110px] flex-col items-center rounded-lg my-5 mx-[10px] flex`}>
+		<div
+			style={{
+				position: "absolute",
+				top: data.position.y,
+				left: data.position.x,
+			}}
+			tw={`h-20 w-[120px] flex-col items-center rounded-lg flex`}
+		>
 			<div
 				style={customNodeHeaderStyle}
 				tw={`px-3  text-xs font-medium h-[35%] w-full flex items-center justify-center text-white

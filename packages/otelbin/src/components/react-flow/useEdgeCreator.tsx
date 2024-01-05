@@ -25,6 +25,10 @@ function createEdge(sourceNode: Node, targetNode: Node): Edge {
 		style: {
 			stroke: "#9CA2AB",
 		},
+		data: {
+			sourceParent: sourceNode.parentNode,
+			targetParent: targetNode.parentNode,
+		},
 	};
 }
 
