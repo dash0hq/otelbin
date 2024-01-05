@@ -38,12 +38,12 @@ const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]
 
 			if (sourceNode && targetNode) {
 				const sourcePosition: XYPosition = {
-					x: sourceNode.position.x + nodeWidth ?? 0,
-					y: sourceNode.position.y + halfNodeHeight ?? 0,
+					x: sourceNode.position.x + nodeWidth,
+					y: sourceNode.position.y + halfNodeHeight,
 				};
 				const targetPosition: XYPosition = {
-					x: targetNode.position.x - padding ?? 0,
-					y: targetNode.position.y + halfNodeHeight ?? 0,
+					x: targetNode.position.x - padding,
+					y: targetNode.position.y + halfNodeHeight,
 				};
 				return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
 			}

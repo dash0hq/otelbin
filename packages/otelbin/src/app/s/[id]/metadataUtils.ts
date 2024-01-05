@@ -44,8 +44,8 @@ export function calcScale(parentNodes?: Node[]) {
 		const nodesYMax = parentNodes?.map((node) => node.position.y + node.data.height);
 		const minY = Math.min(...nodesY);
 		const maxY = Math.max(...nodesYMax);
-		const totalHeight = maxY - minY ?? 1;
-		const totalWidth = maxX - minX ?? 1;
+		const totalHeight = maxY - minY;
+		const totalWidth = maxX - minX;
 		//For add some padding multiply it by 0.98
 		const scale = Math.min(targetHeight / totalHeight, targetWidth / totalWidth) * 0.98;
 		const totalXOffset = Math.max((targetWidth - totalWidth * scale) / 2 / scale, 0);
