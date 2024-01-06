@@ -69,59 +69,51 @@ export function toUrlState<T extends Binding<unknown>[]>(url: URL, binds: T): Bi
 	return parseUrlState(hashSearchParams, binds);
 }
 
-export const padding = 10;
-export const nodeWidth = 120 + padding;
-export const halfNodeHeight = 80 / 2;
+const padding = 10;
+const nodeWidth = 120 + padding;
+const halfNodeHeight = 80 / 2;
 
 export function drawEdges(edges: Edge[], parentNode: Node) {
-	if (edges.length > 0) {
-		return edges.map((edge) => {
-			const sourceNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.source);
-			const targetNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.target);
+	return edges.map((edge) => {
+		const sourceNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.source);
+		const targetNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.target);
 
-			if (sourceNode && targetNode) {
-				const sourcePosition: XYPosition = {
-					x: sourceNode.position.x + nodeWidth,
-					y: sourceNode.position.y + halfNodeHeight,
-				};
-				const targetPosition: XYPosition = {
-					x: targetNode.position.x - padding,
-					y: targetNode.position.y + halfNodeHeight,
-				};
-				return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
-			}
-		});
-	} else {
-		return [];
-	}
+		if (sourceNode && targetNode) {
+			const sourcePosition: XYPosition = {
+				x: sourceNode.position.x + nodeWidth,
+				y: sourceNode.position.y + halfNodeHeight,
+			};
+			const targetPosition: XYPosition = {
+				x: targetNode.position.x - padding,
+				y: targetNode.position.y + halfNodeHeight,
+			};
+			return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
+		}
+	});
 }
 
 export function drawConnectorEdges(edges: Edge[], parentNodes?: Node[], totalXOffset = 0) {
-	if (edges.length > 0) {
-		return edges.map((edge) => {
-			const sourceParentName = edge.data.sourcePipeline;
-			const targetParentName = edge.data.targetPipeline;
-			const sourceParent = parentNodes?.find((node) => node.data.label === sourceParentName);
-			const targetParent = parentNodes?.find((node) => node.data.label === targetParentName);
-			const sourceParentPosition = sourceParent?.position;
-			const targetParentPosition = targetParent?.position;
+	return edges.map((edge) => {
+		const sourceParentName = edge.data.sourcePipeline;
+		const targetParentName = edge.data.targetPipeline;
+		const sourceParent = parentNodes?.find((node) => node.data.label === sourceParentName);
+		const targetParent = parentNodes?.find((node) => node.data.label === targetParentName);
+		const sourceParentPosition = sourceParent?.position;
+		const targetParentPosition = targetParent?.position;
 
-			const sourceNode = sourceParent?.data.childNodes.find((node: Node) => node.id === edge.source);
-			const targetNode = targetParent?.data.childNodes.find((node: Node) => node.id === edge.target);
+		const sourceNode = sourceParent?.data.childNodes.find((node: Node) => node.id === edge.source);
+		const targetNode = targetParent?.data.childNodes.find((node: Node) => node.id === edge.target);
 
-			if (sourceNode && targetNode && sourceParent && targetParent) {
-				const sourcePosition: XYPosition = {
-					x: sourceParentPosition?.x + sourceNode.position.x + nodeWidth + padding + totalXOffset,
-					y: sourceParentPosition?.y + sourceNode.position.y + halfNodeHeight,
-				};
-				const targetPosition: XYPosition = {
-					x: targetParentPosition?.x + targetNode?.position.x - padding + totalXOffset,
-					y: targetParentPosition?.y + targetNode?.position.y + halfNodeHeight,
-				};
-				return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
-			}
-		});
-	} else {
-		return [];
-	}
+		if (sourceNode && targetNode && sourceParent && targetParent) {
+			const sourcePosition: XYPosition = {
+				x: sourceParentPosition?.x + sourceNode.position.x + nodeWidth + padding + totalXOffset,
+				y: sourceParentPosition?.y + sourceNode.position.y + halfNodeHeight,
+			};
+			const targetPosition: XYPosition = {
+				x: targetParentPosition?.x + targetNode?.position.x - padding + totalXOffset,
+				y: targetParentPosition?.y + targetNode?.position.y + halfNodeHeight,
+			};
+			return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
+		}
+	});
 }
