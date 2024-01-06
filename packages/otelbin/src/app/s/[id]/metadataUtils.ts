@@ -74,22 +74,26 @@ export const nodeWidth = 120 + padding;
 export const halfNodeHeight = 80 / 2;
 
 export function drawEdges(edges: Edge[], parentNode: Node) {
-	return edges.map((edge) => {
-		const sourceNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.source);
-		const targetNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.target);
+	if (edges.length > 0) {
+		return edges.map((edge) => {
+			const sourceNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.source);
+			const targetNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.target);
 
-		if (sourceNode && targetNode) {
-			const sourcePosition: XYPosition = {
-				x: sourceNode.position.x + nodeWidth,
-				y: sourceNode.position.y + halfNodeHeight,
-			};
-			const targetPosition: XYPosition = {
-				x: targetNode.position.x - padding,
-				y: targetNode.position.y + halfNodeHeight,
-			};
-			return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
-		}
-	});
+			if (sourceNode && targetNode) {
+				const sourcePosition: XYPosition = {
+					x: sourceNode.position.x + nodeWidth,
+					y: sourceNode.position.y + halfNodeHeight,
+				};
+				const targetPosition: XYPosition = {
+					x: targetNode.position.x - padding,
+					y: targetNode.position.y + halfNodeHeight,
+				};
+				return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
+			}
+		});
+	} else {
+		return [];
+	}
 }
 
 export function drawConnectorEdges(edges: Edge[], parentNodes?: Node[], totalXOffset = 0) {
@@ -117,5 +121,7 @@ export function drawConnectorEdges(edges: Edge[], parentNodes?: Node[], totalXOf
 				return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
 			}
 		});
+	} else {
+		return [];
 	}
 }

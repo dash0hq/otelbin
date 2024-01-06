@@ -3,7 +3,7 @@
 
 import { ImageResponse, NextResponse, type NextRequest } from "next/server";
 import { calcNodes } from "~/components/react-flow/useClientNodes";
-import ParentsNode from "../../../og/ParentsNode";
+import ParentsNode, { svgArrowHead } from "../../../og/ParentsNode";
 import { Redis } from "@upstash/redis/nodejs";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import type { IConfig } from "~/components/react-flow/dataType";
@@ -95,48 +95,34 @@ export async function GET(request: NextRequest) {
 							<ParentsNode key={parentNode.id} nodeData={parentNode} nodes={layoutedNodes} edges={layoutedEdges} />
 						</div>
 					))}
-					{connectorEdgesToDraw?.map((edge) => (
-						<svg
-							key={edge?.edge.id}
-							style={{ position: "absolute", top: totalYOffset }}
-							width={edge?.targetPosition.x}
-							height={
-								edge && edge?.targetPosition.y < edge?.sourcePosition.y
-									? edge?.sourcePosition.y
-									: edge?.targetPosition.y
-							}
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<defs>
-								<marker
-									id={`arrowhead-${edge?.edge.id}`}
-									viewBox="0 -5 10 10"
-									refX="5"
-									refY="0"
-									markerWidth="10"
-									markerHeight="10"
-									orient="auto"
-									fill="transparent"
-									stroke="#FFFFFF"
-								>
-									<g>
-										<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
-										<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
-									</g>
-								</marker>
-							</defs>
-							<path
+					{Array.isArray(connectorEdgesToDraw) &&
+						connectorEdgesToDraw.length > 0 &&
+						connectorEdgesToDraw?.map((edge) => (
+							<svg
 								key={edge?.edge.id}
-								d={`M${edge?.sourcePosition.x} ${edge?.sourcePosition.y} C ${edge && edge?.sourcePosition.x + 40} ${edge
-									?.sourcePosition.y}, ${edge && edge?.targetPosition?.x - 40} ${edge?.targetPosition.y} ${edge
-									?.targetPosition.x} ${edge?.targetPosition.y}
+								style={{ position: "absolute", top: totalYOffset }}
+								width={edge?.targetPosition.x}
+								height={
+									edge && edge?.targetPosition.y < edge?.sourcePosition.y
+										? edge?.sourcePosition.y
+										: edge?.targetPosition.y
+								}
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								{svgArrowHead(edge?.edge.id)}
+								<path
+									key={edge?.edge.id}
+									d={`M${edge?.sourcePosition.x} ${edge?.sourcePosition.y} C ${
+										edge && edge?.sourcePosition.x + 40
+									} ${edge?.sourcePosition.y}, ${edge && edge?.targetPosition?.x - 40} ${edge?.targetPosition.y} ${edge
+										?.targetPosition.x} ${edge?.targetPosition.y}
 										`}
-								stroke="#FFFFFF"
-								fill="transparent"
-								markerEnd={`url(#arrowhead-${edge?.edge.id})`}
-							/>
-						</svg>
-					))}
+									stroke="#FFFFFF"
+									fill="transparent"
+									markerEnd={`url(#arrowhead-${edge?.edge.id})`}
+								/>
+							</svg>
+						))}
 				</div>
 			</div>
 		),

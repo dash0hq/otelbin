@@ -8,6 +8,29 @@ import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
 import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
 import { drawEdges } from "../s/[id]/metadataUtils";
 
+export function svgArrowHead(id?: string) {
+	return (
+		<defs>
+			<marker
+				id={`arrowhead-${id}`}
+				viewBox="0 -5 10 10"
+				refX="5"
+				refY="0"
+				markerWidth="10"
+				markerHeight="10"
+				orient="auto"
+				fill="transparent"
+				stroke="#FFFFFF"
+			>
+				<g>
+					<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
+					<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
+				</g>
+			</marker>
+		</defs>
+	);
+}
+
 const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]; nodes?: Node[] }) => {
 	const maxWidth = nodeData.data.width;
 	const receivers = nodes
@@ -68,24 +91,7 @@ const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]
 										}
 										xmlns="http://www.w3.org/2000/svg"
 									>
-										<defs>
-											<marker
-												id={`arrowhead-${edge?.edge.id}`}
-												viewBox="0 -5 10 10"
-												refX="5"
-												refY="0"
-												markerWidth="10"
-												markerHeight="10"
-												orient="auto"
-												fill="transparent"
-												stroke="#FFFFFF"
-											>
-												<g>
-													<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
-													<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
-												</g>
-											</marker>
-										</defs>
+										{svgArrowHead(edge?.edge.id)}
 										<path
 											key={edge?.edge.id}
 											d={`M${edge?.sourcePosition.x} ${edge?.sourcePosition.y} C ${
