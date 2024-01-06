@@ -2,7 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { describe, expect, it } from "@jest/globals";
-import { calcScale, extractComponents, sortAndDeduplicate, toUrlState } from "./metadataUtils";
+import {
+	calcScale,
+	drawConnectorEdges,
+	drawEdges,
+	extractComponents,
+	sortAndDeduplicate,
+	toUrlState,
+} from "./metadataUtils";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { editorBinding } from "../../../components/monaco-editor/editorBinding";
 import { type Node } from "reactflow";
@@ -138,4 +145,255 @@ describe("calcScale", () => {
 	);
 
 	runTest([], "1", 0, 0);
+});
+
+enum MarkerType {
+	Arrow = "arrow",
+	ArrowClosed = "arrowclosed",
+}
+
+describe("drawEdges", () => {
+	it("should calculate the correct edges and add position for each edge to draw them inside each parent node", () => {
+		const parentNode = {
+			type: "parentNodeType",
+			data: {
+				height: 100,
+				width: 250,
+				childNodes: [
+					{
+						type: "receiversNode",
+						parentNode: "metrics",
+						data: { height: 100 },
+						position: { x: 200, y: 300 },
+						id: "2",
+					},
+					{
+						type: "processorsNode",
+						parentNode: "metrics",
+						data: { height: 100 },
+						position: { x: 200, y: 300 },
+						id: "3",
+					},
+					{
+						type: "processorsNode",
+						parentNode: "metrics",
+						data: { height: 100 },
+						position: { x: 210, y: 220 },
+						id: "4",
+					},
+					{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 10 }, id: "5" },
+				],
+			},
+			position: { x: 100, y: 110 },
+			id: "1",
+			label: "metrics",
+		};
+
+		const markerEnd = { type: MarkerType.Arrow, color: "#9CA2AB", width: 20, height: 25 };
+		const style = { stroke: "#9CA2AB" };
+
+		const edges = [
+			{
+				id: "e1",
+				source: "2",
+				target: "3",
+				type: "default",
+				markerEnd: markerEnd,
+				style: style,
+				data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
+			},
+			{
+				id: "e2",
+				source: "3",
+				target: "4",
+				type: "default",
+				markerEnd: markerEnd,
+				style: style,
+				data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
+			},
+			{
+				id: "e3",
+				source: "4",
+				target: "5",
+				type: "default",
+				markerEnd: markerEnd,
+				style: style,
+				data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
+			},
+		];
+
+		const result = drawEdges(edges, parentNode);
+
+		expect(result).toEqual([
+			{
+				edge: {
+					id: "e1",
+					source: "2",
+					target: "3",
+					type: "default",
+					markerEnd: markerEnd,
+					style: style,
+					data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
+				},
+				sourcePosition: { x: 330, y: 340 },
+				targetPosition: { x: 190, y: 340 },
+			},
+			{
+				edge: {
+					id: "e2",
+					source: "3",
+					target: "4",
+					type: "default",
+					markerEnd: markerEnd,
+					style: style,
+					data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
+				},
+				sourcePosition: { x: 330, y: 340 },
+				targetPosition: { x: 200, y: 260 },
+			},
+			{
+				edge: {
+					id: "e3",
+					source: "4",
+					target: "5",
+					type: "default",
+					markerEnd: markerEnd,
+					style: style,
+					data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
+				},
+				sourcePosition: { x: 340, y: 260 },
+				targetPosition: { x: -10, y: 50 },
+			},
+		]);
+	});
+});
+
+describe("drawConnectorEdges", () => {
+	it("should calculate the correct connector edges and add position for each edge to draw them between parent nodes", () => {
+		const parentNodes = [
+			{
+				type: "parentNodeType",
+				data: {
+					height: 100,
+					width: 250,
+					label: "logs",
+					childNodes: [
+						{
+							type: "receiversNode",
+							parentNode: "logs",
+							data: { height: 100, type: "connectors/receivers" },
+							position: { x: 200, y: 300 },
+							id: "2",
+						},
+						{
+							type: "processorsNode",
+							parentNode: "logs",
+							data: { height: 100 },
+							position: { x: 200, y: 300 },
+							id: "3",
+						},
+						{
+							type: "processorsNode",
+							parentNode: "logs",
+							data: { height: 100 },
+							position: { x: 210, y: 220 },
+							id: "4",
+						},
+						{ type: "exportersNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 10 }, id: "5" },
+					],
+				},
+				position: { x: 100, y: 110 },
+				id: "1",
+				label: "logs",
+			},
+			{
+				type: "parentNodeType",
+				data: {
+					height: 200,
+					width: 400,
+					label: "metrics",
+					childNodes: [
+						{
+							type: "receiversNode",
+							parentNode: "metrics",
+							data: { height: 100 },
+							position: { x: 200, y: 300 },
+							id: "6",
+						},
+						{
+							type: "processorsNode",
+							parentNode: "metrics",
+							data: { height: 100 },
+							position: { x: 200, y: 300 },
+							id: "7",
+						},
+						{
+							type: "processorsNode",
+							parentNode: "metrics",
+							data: { height: 100 },
+							position: { x: 200, y: 300 },
+							id: "8",
+						},
+						{
+							type: "processorsNode",
+							parentNode: "metrics",
+							data: { height: 100 },
+							position: { x: 210, y: 220 },
+							id: "9",
+						},
+						{
+							type: "exportersNode",
+							parentNode: "metrics",
+							data: { height: 100 },
+							position: { x: 0, y: 10 },
+							id: "10",
+						},
+						{
+							type: "exportersNode",
+							parentNode: "metrics",
+							data: { height: 100, type: "connectors/exporters" },
+							position: { x: 0, y: 10 },
+							id: "11",
+						},
+					],
+				},
+				position: { x: 300, y: 410 },
+				id: "12",
+				label: "metrics",
+			},
+		];
+
+		const markerEnd = { type: MarkerType.Arrow, color: "#9CA2AB", width: 20, height: 25 };
+		const style = { stroke: "#9CA2AB" };
+
+		const edges = [
+			{
+				id: "ec1",
+				source: "11",
+				target: "2",
+				type: "default",
+				markerEnd: markerEnd,
+				style: style,
+				data: { type: "connector", sourcePipeline: "metrics", targetPipeline: "logs" },
+			},
+		];
+
+		const result = drawConnectorEdges(edges, parentNodes, 100);
+
+		expect(result).toEqual([
+			{
+				edge: {
+					id: "ec1",
+					source: "11",
+					target: "2",
+					type: "default",
+					markerEnd: markerEnd,
+					style: style,
+					data: { type: "connector", sourcePipeline: "metrics", targetPipeline: "logs" },
+				},
+				sourcePosition: { x: 540, y: 460 },
+				targetPosition: { x: 390, y: 450 },
+			},
+		]);
+	});
 });

@@ -2,14 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import type { XYPosition, Edge, Node } from "reactflow";
+import type { Edge, Node } from "reactflow";
 import ParentNodeTag from "./ParentNodeTag";
 import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
 import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
-
-export const padding = 10;
-export const nodeWidth = 120 + padding;
-export const halfNodeHeight = 80 / 2;
+import { drawEdges } from "../s/[id]/metadataUtils";
 
 const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]; nodes?: Node[] }) => {
 	const maxWidth = nodeData.data.width;
@@ -31,26 +28,7 @@ const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]
 		}
 	});
 
-	function drawSvgInsideParentNode(edges: Edge[], parentNode: Node) {
-		return edges.map((edge) => {
-			const sourceNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.source);
-			const targetNode = parentNode.data.childNodes.find((node: Node) => node.id === edge.target);
-
-			if (sourceNode && targetNode) {
-				const sourcePosition: XYPosition = {
-					x: sourceNode.position.x + nodeWidth,
-					y: sourceNode.position.y + halfNodeHeight,
-				};
-				const targetPosition: XYPosition = {
-					x: targetNode.position.x - padding,
-					y: targetNode.position.y + halfNodeHeight,
-				};
-				return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
-			}
-		});
-	}
-
-	const drawEdges = drawSvgInsideParentNode(parentNodeEdges, nodeData);
+	const edgesToDraw = drawEdges(parentNodeEdges, nodeData);
 
 	return (
 		<>
@@ -76,9 +54,9 @@ const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]
 							{receivers?.map((receiver) => <ReceiversNode key={receiver.id} data={receiver.data} />)}
 							{processors?.map((processor) => <ProcessorsNode key={processor.id} data={processor.data} />)}
 							{exporters?.map((exporter) => <ExportersNode key={exporter.id} data={exporter.data} />)}
-							{Array.isArray(drawEdges) &&
-								drawEdges.length > 0 &&
-								drawEdges?.map((edge) => (
+							{Array.isArray(edgesToDraw) &&
+								edgesToDraw.length > 0 &&
+								edgesToDraw?.map((edge) => (
 									<svg
 										key={edge?.edge.id}
 										style={{ position: "absolute" }}

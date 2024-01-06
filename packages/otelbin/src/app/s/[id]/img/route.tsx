@@ -3,18 +3,17 @@
 
 import { ImageResponse, NextResponse, type NextRequest } from "next/server";
 import { calcNodes } from "~/components/react-flow/useClientNodes";
-import ParentsNode, { nodeWidth, padding, halfNodeHeight } from "../../../og/ParentsNode";
+import ParentsNode from "../../../og/ParentsNode";
 import { Redis } from "@upstash/redis/nodejs";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
-import { calcScale, toUrlState } from "../metadataUtils";
+import { calcScale, drawConnectorEdges, toUrlState } from "../metadataUtils";
 import Logo from "~/components/assets/svg/otelbin_logo_white.svg";
 import { notFound } from "next/navigation";
 import { calcEdges } from "~/components/react-flow/useEdgeCreator";
 import { getLayoutedElements } from "~/components/react-flow/layout/useLayout";
-import type { Edge, Node, XYPosition } from "reactflow";
 
 export const runtime = "edge";
 
@@ -50,35 +49,7 @@ export async function GET(request: NextRequest) {
 		}
 	});
 
-	function drawConnectorEdges(edges: Edge[]) {
-		if (edges.length > 0) {
-			return edges.map((edge) => {
-				const sourceParentName = edge.data.sourcePipeline;
-				const targetParentName = edge.data.targetPipeline;
-				const sourceParent = parentNodes?.find((node) => node.data.label === sourceParentName);
-				const targetParent = parentNodes?.find((node) => node.data.label === targetParentName);
-				const sourceParentPosition = sourceParent?.position;
-				const targetParentPosition = targetParent?.position;
-
-				const sourceNode = sourceParent?.data.childNodes.find((node: Node) => node.id === edge.source);
-				const targetNode = targetParent?.data.childNodes.find((node: Node) => node.id === edge.target);
-
-				if (sourceNode && targetNode && sourceParent && targetParent) {
-					const sourcePosition: XYPosition = {
-						x: sourceParentPosition?.x + sourceNode.position.x + nodeWidth + padding + totalXOffset,
-						y: sourceParentPosition?.y + sourceNode.position.y + halfNodeHeight,
-					};
-					const targetPosition: XYPosition = {
-						x: targetParentPosition?.x + targetNode?.position.x - padding + totalXOffset,
-						y: targetParentPosition?.y + targetNode?.position.y + halfNodeHeight,
-					};
-					return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
-				}
-			});
-		}
-	}
-
-	const connectorEdgesToDraw = drawConnectorEdges(connectorEdges ?? []);
+	const connectorEdgesToDraw = drawConnectorEdges(connectorEdges ?? [], parentNodes, totalXOffset);
 
 	return new ImageResponse(
 		(
