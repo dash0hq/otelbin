@@ -40,14 +40,10 @@ export async function GET(request: NextRequest) {
 	const parentNodes = layoutedNodes?.filter((node) => node.type === "parentNodeType");
 
 	const scale = calcScale(parentNodes)?.scale;
-	const totalYOffset = calcScale(parentNodes)?.totalYOffset ?? 0;
-	const totalXOffset = calcScale(parentNodes)?.totalXOffset ?? 0;
+	const totalYOffset = calcScale(parentNodes)?.totalYOffset;
+	const totalXOffset = calcScale(parentNodes)?.totalXOffset;
 
-	const connectorEdges = layoutedEdges?.filter((edge) => {
-		if (edge.data.type === "connector") {
-			return edge;
-		}
-	});
+	const connectorEdges = layoutedEdges?.filter((edge) => edge.data.type === "connector");
 
 	const connectorEdgesToDraw = drawConnectorEdges(connectorEdges ?? [], parentNodes, totalXOffset);
 
@@ -99,27 +95,24 @@ export async function GET(request: NextRequest) {
 						connectorEdgesToDraw.length > 0 &&
 						connectorEdgesToDraw?.map((edge) => (
 							<svg
-								key={edge?.edge.id}
+								key={edge.edge.id}
 								style={{ position: "absolute", top: totalYOffset }}
-								width={edge?.targetPosition.x}
-								height={
-									edge && edge?.targetPosition.y < edge?.sourcePosition.y
-										? edge?.sourcePosition.y
-										: edge?.targetPosition.y
-								}
+								width={edge.targetPosition.x}
+								height={edge.targetPosition?.y < edge.sourcePosition.y ? edge.sourcePosition.y : edge.targetPosition.y}
 								xmlns="http://www.w3.org/2000/svg"
 							>
 								{svgArrowHead(edge?.edge.id)}
 								<path
-									key={edge?.edge.id}
-									d={`M${edge?.sourcePosition.x} ${edge?.sourcePosition.y} C ${
-										edge && edge?.sourcePosition.x + 40
-									} ${edge?.sourcePosition.y}, ${edge && edge?.targetPosition?.x - 40} ${edge?.targetPosition.y} ${edge
-										?.targetPosition.x} ${edge?.targetPosition.y}
+									key={edge.edge.id}
+									d={`M${edge.sourcePosition.x} ${edge.sourcePosition.y} C ${edge.sourcePosition.x + 40} ${
+										edge.sourcePosition.y
+									}, ${edge && edge.targetPosition?.x - 40} ${edge.targetPosition.y} ${edge.targetPosition.x} ${
+										edge.targetPosition.y
+									}
 										`}
 									stroke="#FFFFFF"
 									fill="transparent"
-									markerEnd={`url(#arrowhead-${edge?.edge.id})`}
+									markerEnd={`url(#arrowhead-${edge.edge.id})`}
 								/>
 							</svg>
 						))}

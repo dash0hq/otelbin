@@ -92,28 +92,30 @@ export function drawEdges(edges: Edge[], parentNode: Node) {
 	});
 }
 
-export function drawConnectorEdges(edges: Edge[], parentNodes?: Node[], totalXOffset = 0) {
+export function drawConnectorEdges(edges: Edge[], parentNodes: Node[], totalXOffset = 0) {
 	return edges.map((edge) => {
 		const sourceParentName = edge.data.sourcePipeline;
 		const targetParentName = edge.data.targetPipeline;
-		const sourceParent = parentNodes?.find((node) => node.data.label === sourceParentName);
-		const targetParent = parentNodes?.find((node) => node.data.label === targetParentName);
-		const sourceParentPosition = sourceParent?.position;
-		const targetParentPosition = targetParent?.position;
-
+		const sourceParent = parentNodes.find((node) => node.data.label === sourceParentName);
+		const targetParent = parentNodes.find((node) => node.data.label === targetParentName);
 		const sourceNode = sourceParent?.data.childNodes.find((node: Node) => node.id === edge.source);
 		const targetNode = targetParent?.data.childNodes.find((node: Node) => node.id === edge.target);
 
 		if (sourceNode && targetNode && sourceParent && targetParent) {
+			const sourceParentPosition = sourceParent.position;
+			const targetParentPosition = targetParent.position;
+
 			const sourcePosition: XYPosition = {
-				x: sourceParentPosition?.x + sourceNode.position.x + nodeWidth + padding + totalXOffset,
-				y: sourceParentPosition?.y + sourceNode.position.y + halfNodeHeight,
+				x: (sourceParentPosition.x ?? 0) + sourceNode.position.x + nodeWidth + padding + totalXOffset,
+				y: (sourceParentPosition.y ?? 0) + sourceNode.position.y + halfNodeHeight,
 			};
 			const targetPosition: XYPosition = {
-				x: targetParentPosition?.x + targetNode?.position.x - padding + totalXOffset,
-				y: targetParentPosition?.y + targetNode?.position.y + halfNodeHeight,
+				x: (targetParentPosition.x ?? 0) + targetNode?.position.x - padding + totalXOffset,
+				y: (targetParentPosition.y ?? 0) + targetNode?.position.y + halfNodeHeight,
 			};
 			return { edge: edge, sourcePosition: sourcePosition, targetPosition: targetPosition };
+		} else {
+			return { edge: edge, sourcePosition: { x: 0, y: 0 }, targetPosition: { x: 0, y: 0 } };
 		}
 	});
 }
