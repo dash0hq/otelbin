@@ -3,7 +3,7 @@
 
 import React from "react";
 import ConnectorIcon from "../../components/assets/svg/connector.svg";
-import type { Node, XYPosition } from "reactflow";
+import type { XYPosition } from "reactflow";
 
 export interface IData {
 	label: string;

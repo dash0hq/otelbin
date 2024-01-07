@@ -56,72 +56,67 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 	keyTraces.forEach((traceItem) => {
 		switch (traceItem) {
 			case "processors":
-				Array.isArray(processors) &&
-					processors.length > 0 &&
-					processors.map((processor, index) => {
-						const id = `${pipelineName}-Processor-processorNode-${processor}`;
+				processors?.map((processor, index) => {
+					const id = `${pipelineName}-Processor-processorNode-${processor}`;
 
-						nodesToAdd.push({
-							id: id,
+					nodesToAdd.push({
+						id: id,
+						parentNode: pipelineName,
+						extent: "parent",
+						type: "processorsNode",
+						position: processorPosition(index, height ?? 100, processors),
+						data: {
+							label: processor,
 							parentNode: pipelineName,
-							extent: "parent",
-							type: "processorsNode",
-							position: processorPosition(index, height || 100, processors),
-							data: {
-								label: processor,
-								parentNode: pipelineName,
-								type: "processors",
-								height: childNodesHeight,
-								id: id,
-								position: processorPosition(index, height || 100, processors),
-							},
-							draggable: false,
-						});
+							type: "processors",
+							height: childNodesHeight,
+							id: id,
+							position: processorPosition(index, height ?? 100, processors),
+						},
+						draggable: false,
 					});
+				});
 				break;
 			case "receivers":
-				Array.isArray(receivers) &&
-					receivers.length > 0 &&
-					receivers.map((receiver, index) => {
-						const isConnector = connectors && Object.keys(connectors).includes(receiver);
+				receivers?.map((receiver, index) => {
+					const isConnector = Object.keys(connectors ?? {}).includes(receiver) ? "connectors/receivers" : "receivers";
+					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
 
-						const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
-
-						nodesToAdd.push({
-							id: id,
+					nodesToAdd.push({
+						id: id,
+						parentNode: pipelineName,
+						extent: "parent",
+						type: "receiversNode",
+						position: receiverPosition(index, height ?? 100, receivers),
+						data: {
+							label: receiver,
 							parentNode: pipelineName,
-							extent: "parent",
-							type: "receiversNode",
-							position: receiverPosition(index, height || 100, receivers),
-							data: {
-								label: receiver,
-								parentNode: pipelineName,
-								type: isConnector ? "connectors/receivers" : "receivers",
-								height: childNodesHeight,
-								id: id,
-								position: receiverPosition(index, height || 100, receivers),
-							},
-							draggable: false,
-						});
+							type: isConnector,
+							height: childNodesHeight,
+							id: id,
+							position: receiverPosition(index, height ?? 100, receivers),
+						},
+						draggable: false,
 					});
+				});
 				break;
 			case "exporters":
 				exporters?.map((exporter, index) => {
-					const isConnector = connectors && Object.keys(connectors).includes(exporter);
+					const isConnector = Object.keys(connectors ?? {}).includes(exporter) ? "connectors/exporters" : "exporters";
 					const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
 						extent: "parent",
 						type: "exportersNode",
-						position: exporterPosition(index, height || 100, exporters, processors ?? []),
+						position: exporterPosition(index, height ?? 100, exporters, processors ?? []),
 						data: {
 							label: exporter,
 							parentNode: pipelineName,
-							type: isConnector ? "connectors/exporters" : "exporters",
+							type: isConnector,
 							height: childNodesHeight,
 							id: id,
-							position: exporterPosition(index, height || 100, exporters, processors ?? []),
+							position: exporterPosition(index, height ?? 100, exporters, processors ?? []),
 						},
 						draggable: false,
 					});
