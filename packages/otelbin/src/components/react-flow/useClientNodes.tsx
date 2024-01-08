@@ -56,69 +56,67 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 	keyTraces.forEach((traceItem) => {
 		switch (traceItem) {
 			case "processors":
-				Array.isArray(processors) &&
-					processors.length > 0 &&
-					processors.map((processor, index) => {
-						const id = `${pipelineName}-Processor-processorNode-${processor}`;
+				processors?.map((processor, index) => {
+					const id = `${pipelineName}-Processor-processorNode-${processor}`;
 
-						nodesToAdd.push({
-							id: id,
+					nodesToAdd.push({
+						id: id,
+						parentNode: pipelineName,
+						extent: "parent",
+						type: "processorsNode",
+						position: processorPosition(index, height, processors),
+						data: {
+							label: processor,
 							parentNode: pipelineName,
-							extent: "parent",
-							type: "processorsNode",
-							position: processorPosition(index, height || 100, processors),
-							data: {
-								label: processor,
-								parentNode: pipelineName,
-								type: "processors",
-								height: childNodesHeight,
-								id: id,
-							},
-							draggable: false,
-						});
+							type: "processors",
+							height: childNodesHeight,
+							id: id,
+							position: processorPosition(index, height, processors),
+						},
+						draggable: false,
 					});
+				});
 				break;
 			case "receivers":
-				Array.isArray(receivers) &&
-					receivers.length > 0 &&
-					receivers.map((receiver, index) => {
-						const isConnector = connectors && Object.keys(connectors).includes(receiver);
+				receivers?.map((receiver, index) => {
+					const isConnector = connectors?.hasOwnProperty(receiver) ? "connectors/receivers" : "receivers";
+					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
 
-						const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
-
-						nodesToAdd.push({
-							id: id,
+					nodesToAdd.push({
+						id: id,
+						parentNode: pipelineName,
+						extent: "parent",
+						type: "receiversNode",
+						position: receiverPosition(index, height, receivers),
+						data: {
+							label: receiver,
 							parentNode: pipelineName,
-							extent: "parent",
-							type: "receiversNode",
-							position: receiverPosition(index, height || 100, receivers),
-							data: {
-								label: receiver,
-								parentNode: pipelineName,
-								type: isConnector ? "connectors/receivers" : "receivers",
-								height: childNodesHeight,
-								id: id,
-							},
-							draggable: false,
-						});
+							type: isConnector,
+							height: childNodesHeight,
+							id: id,
+							position: receiverPosition(index, height, receivers),
+						},
+						draggable: false,
 					});
+				});
 				break;
 			case "exporters":
 				exporters?.map((exporter, index) => {
-					const isConnector = connectors && Object.keys(connectors).includes(exporter);
+					const isConnector = connectors?.hasOwnProperty(exporter) ? "connectors/exporters" : "exporters";
 					const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
 						extent: "parent",
 						type: "exportersNode",
-						position: exporterPosition(index, height || 100, exporters, processors ?? []),
+						position: exporterPosition(index, height, exporters, processors ?? []),
 						data: {
 							label: exporter,
 							parentNode: pipelineName,
-							type: isConnector ? "connectors/exporters" : "exporters",
+							type: isConnector,
 							height: childNodesHeight,
 							id: id,
+							position: exporterPosition(index, height, exporters, processors ?? []),
 						},
 						draggable: false,
 					});
@@ -133,7 +131,7 @@ export const useClientNodes = (value: IConfig) => {
 	return useMemo(() => calcNodes(value), [value]);
 };
 
-export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
+export const calcNodes = (value: IConfig) => {
 	const pipelines = value?.service?.pipelines;
 	const connectors = value?.connectors;
 	if (pipelines == null) {
@@ -147,7 +145,7 @@ export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
 		const exporters = pipeline.exporters?.length ?? 0;
 		const maxNodes = Math.max(receivers, exporters) ?? 1;
 		const spaceBetweenParents = 40;
-		const spaceBetweenNodes = isServerSide ? 40 : 90;
+		const spaceBetweenNodes = 90;
 		const totalSpacing = maxNodes * spaceBetweenNodes;
 		const parentHeight = totalSpacing + maxNodes * childNodesHeight;
 
@@ -160,6 +158,8 @@ export const calcNodes = (value: IConfig, isServerSide?: boolean) => {
 				parentNode: pipelineName,
 				width: 430 + 200 * (pipeline.processors?.length ?? 0),
 				height: maxNodes === 1 ? parentHeight : parentHeight + spaceBetweenParents,
+				type: "parentNodeType",
+				childNodes: createNode(pipelineName, pipeline, parentHeight + spaceBetweenParents, connectors),
 			},
 			draggable: false,
 			ariaLabel: pipelineName,

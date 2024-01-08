@@ -51,7 +51,6 @@ export default function Flow({
 	const initNodes = useClientNodes(jsonData);
 	const initEdges = useEdgeCreator(initNodes ?? []);
 	const { nodes: layoutedNodes, edges: layoutedEdges } = useLayout(initNodes ?? [], initEdges);
-
 	const [nodes, setNodes] = useNodesState(layoutedNodes !== undefined ? layoutedNodes : []);
 	const [edges, setEdges] = useEdgesState(layoutedEdges);
 	const widthSelector = (state: { width: number }) => state.width;

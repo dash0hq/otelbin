@@ -2,23 +2,37 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { type Node } from "reactflow";
+import type { Edge, Node } from "reactflow";
 import ParentNodeTag from "./ParentNodeTag";
-import ArrowRight from "../../components/assets/svg/move-right.svg";
 import { ReceiversNode, ProcessorsNode, ExportersNode } from "./NodeTypes";
 import { parentNodesConfig } from "~/components/react-flow/node-types/ParentsNode";
+import { drawEdges } from "../s/[id]/metadataUtils";
 
-const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) => {
-	const childNodes = nodes?.filter((node) => node.parentNode === nodeData.data.label);
-	const processorsNodesCount = childNodes?.filter((node) => node.type === "processorsNode").length ?? 0;
-	const nodesWidth = 110;
-	const sumOfExporterAndReceiver = 240;
-	const edgesWidth = 80;
-	const totalNodesWidth = (processorsNodesCount ?? 0) * nodesWidth + sumOfExporterAndReceiver;
-	const totalEdgeWidth = edgesWidth * (processorsNodesCount + 1);
-	const totalPaddingX = 40;
-	const maxWidth = totalNodesWidth + (processorsNodesCount + 2) * 20 + totalEdgeWidth + totalPaddingX;
+export function svgArrowHead(id?: string) {
+	return (
+		<defs>
+			<marker
+				id={`arrowhead-${id}`}
+				viewBox="0 -5 10 10"
+				refX="5"
+				refY="0"
+				markerWidth="10"
+				markerHeight="10"
+				orient="auto"
+				fill="transparent"
+				stroke="#FFFFFF"
+			>
+				<g>
+					<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
+					<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
+				</g>
+			</marker>
+		</defs>
+	);
+}
 
+const ParentsNode = ({ nodeData, edges, nodes }: { nodeData: Node; edges: Edge[]; nodes?: Node[] }) => {
+	const maxWidth = nodeData.data.width;
 	const receivers = nodes
 		?.filter((node) => node.type === "receiversNode")
 		.filter((receiver) => receiver.parentNode === nodeData.data.label);
@@ -29,60 +43,15 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 		?.filter((node) => node.type === "processorsNode")
 		.filter((processor) => processor.parentNode === nodeData.data.label);
 
-	const nodeHeight = 72;
-	const nodeTotalMargin = 40;
+	const parentNodeEdges = edges.filter((edge) => {
+		const sourceParent = edge.data.sourceParent;
+		const targetParent = edge.data.targetParent;
+		if (sourceParent === targetParent && sourceParent === nodeData.data.label) {
+			return edge;
+		}
+	});
 
-	function calcSVGHeight(nodes?: Node[]) {
-		const nodesCount = nodes?.length ?? 0;
-		return nodesCount * (nodeHeight + nodeTotalMargin) - nodeTotalMargin;
-	}
-
-	function calcSVGPath(side: string, nodes?: Node[]) {
-		const nodesCount = nodes?.length ?? 0;
-		const height = nodesCount * (nodeHeight + nodeTotalMargin) - 40;
-
-		return (
-			<svg style={{ marginBottom: "30px" }} width="80" height={calcSVGHeight(nodes)} xmlns="http://www.w3.org/2000/svg">
-				<defs>
-					<marker
-						id="arrowhead"
-						viewBox="0 -5 10 10"
-						refX="5"
-						refY="0"
-						markerWidth="10"
-						markerHeight="10"
-						orient="auto"
-						fill="transparent"
-						stroke="#FFFFFF"
-					>
-						<g>
-							<path d="M0,-4L7,0L0,4" strokeWidth={0.5}></path>
-							<path d="M-1,-3.5L6,0L-1,3.5" strokeWidth={0.5}></path>
-						</g>
-					</marker>
-				</defs>
-				{Array.isArray(nodes) &&
-					nodes?.length > 0 &&
-					nodes.map((node, idx) => (
-						<path
-							key={node.id}
-							d={
-								side === "left"
-									? `M10 ${(idx + 1) * (height / nodesCount) - 75}
-				    C 20,${(idx + 1) * (height / nodesCount) - 75},35,${height / 2 - 25}
-						 50 ${height / 2 - 25}`
-									: `M10 ${height / 2 - 25}
-						C 20,${height / 2 - 25},35,${(idx + 1) * (height / nodesCount) - 75}
-							 50 ${(idx + 1) * (height / nodesCount) - 75}`
-							}
-							stroke="#FFFFFF"
-							fill="transparent"
-							markerEnd="url(#arrowhead)"
-						/>
-					))}
-			</svg>
-		);
-	}
+	const edgesToDraw = drawEdges(parentNodeEdges, nodeData);
 
 	return (
 		<>
@@ -99,41 +68,43 @@ const ParentsNode = ({ nodeData, nodes }: { nodeData: Node; nodes?: Node[] }) =>
 								position: "relative",
 								backgroundColor: node.backgroundColor,
 								border: node.borderColor,
-								height: `${nodeData.data.height + 50}px`,
+								height: `${nodeData.data.height}px`,
 								width: maxWidth,
 							}}
-							tw="rounded-[4px] text-[10px] text-black my-3 px-5 py-2"
+							tw="rounded-[4px] text-[10px] text-black"
 						>
 							<ParentNodeTag tag={nodeData.data.label} />
-
-							<div style={{ display: "flex", justifyContent: "center" }}>
-								<div tw="flex items-center">
-									<div tw="flex flex-col justify-center">
-										{receivers?.map((receiver) => <ReceiversNode key={receiver.id} data={receiver.data} />)}
-									</div>
-									{processors?.length === 0 ? (
-										<></>
-									) : receivers?.length === 1 ? (
-										<ArrowRight />
-									) : (
-										calcSVGPath("left", receivers)
-									)}
-								</div>
-								<div tw="flex items-center">
-									<div tw="flex justify-center items-center">
-										{processors?.map((processor, idx) => (
-											<div key={processor.id} tw="flex justify-center items-center">
-												{idx > 0 ? <ArrowRight /> : <></>}
-												<ProcessorsNode data={processor.data} />
-											</div>
-										))}
-									</div>
-									{exporters?.length === 1 ? <ArrowRight /> : calcSVGPath("right", exporters)}
-									<div tw="flex flex-col justify-center">
-										{exporters?.map((exporter) => <ExportersNode key={exporter.id} data={exporter.data} />)}
-									</div>
-								</div>
-							</div>
+							{receivers?.map((receiver) => <ReceiversNode key={receiver.id} data={receiver.data} />)}
+							{processors?.map((processor) => <ProcessorsNode key={processor.id} data={processor.data} />)}
+							{exporters?.map((exporter) => <ExportersNode key={exporter.id} data={exporter.data} />)}
+							{Array.isArray(edgesToDraw) &&
+								edgesToDraw.length > 0 &&
+								edgesToDraw?.map((edge) => (
+									<svg
+										key={edge?.edge.id}
+										style={{ position: "absolute" }}
+										width={edge?.targetPosition.x}
+										height={
+											edge && edge?.targetPosition.y < edge?.sourcePosition.y
+												? edge?.sourcePosition.y
+												: edge?.targetPosition.y
+										}
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										{svgArrowHead(edge?.edge.id)}
+										<path
+											key={edge?.edge.id}
+											d={`M${edge?.sourcePosition.x} ${edge?.sourcePosition.y} C ${
+												edge && edge?.sourcePosition.x + 30
+											} ${edge?.sourcePosition.y}, ${edge && edge?.targetPosition.x - 30} ${edge?.targetPosition
+												.y} ${edge?.targetPosition.x} ${edge?.targetPosition.y}
+										`}
+											stroke="#FFFFFF"
+											fill="transparent"
+											markerEnd={`url(#arrowhead-${edge?.edge.id})`}
+										/>
+									</svg>
+								))}
 						</div>
 					);
 				})}

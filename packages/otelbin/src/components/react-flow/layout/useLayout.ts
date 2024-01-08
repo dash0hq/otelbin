@@ -3,8 +3,13 @@
 
 import Dagre from "@dagrejs/dagre";
 import { useMemo } from "react";
-import { type Node, type Edge, MarkerType } from "reactflow";
+import { type Node, type Edge } from "reactflow";
 import { getSimpleCycles } from "./getSimpleCycles";
+
+export enum MarkerType {
+	Arrow = "arrow",
+	ArrowClosed = "arrowclosed",
+}
 
 export const useLayout = (nodes: Node[], edges: Edge[]) => {
 	return useMemo(() => {
