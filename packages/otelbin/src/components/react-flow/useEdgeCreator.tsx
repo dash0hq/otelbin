@@ -61,14 +61,17 @@ export function calcEdges(nodeIdsArray: Node[]) {
 	const edges: Edge[] = [];
 
 	const calculateExportersNode = (exportersNodes: Node[], processorsNode: Node) => {
-		exportersNodes.forEach((targetNode) => {
-			if (!processorsNode || !targetNode) {
-				return;
-			}
-			const edge = createEdge(processorsNode, targetNode);
-			edges.push(edge);
-		});
+		if (!processorsNode) {
+			return;
+		}
+
+		const newEdges = exportersNodes
+			.filter((targetNode) => targetNode !== undefined)
+			.map((targetNode) => createEdge(processorsNode, targetNode));
+
+		edges.push(...newEdges);
 	};
+
 	const calculateProcessorsNode = (processorsNodes: Node[]) => {
 		for (let i = 0; i < processorsNodes.length; i++) {
 			const sourceNode = processorsNodes[i];
@@ -86,40 +89,34 @@ export function calcEdges(nodeIdsArray: Node[]) {
 		firstProcessorsNode: Node | undefined,
 		exportersNodes: Node[]
 	) => {
+		const processNode = (sourceNode: Node, targetNode: Node) => {
+			if (!sourceNode || !targetNode) {
+				return;
+			}
+
+			const edge = createEdge(sourceNode, targetNode);
+			edges.push(edge);
+		};
+
 		if (!firstProcessorsNode) {
 			receiversNodes.forEach((sourceNode) => {
-				if (!sourceNode) {
-					return;
-				}
-				exportersNodes.forEach((exporterNode) => {
-					if (!exporterNode) {
-						return;
-					}
-					const edge = createEdge(sourceNode, exporterNode);
-					edges.push(edge);
-				});
+				exportersNodes.forEach((exporterNode) => processNode(sourceNode, exporterNode));
 			});
 		} else {
-			receiversNodes.forEach((sourceNode) => {
-				if (!sourceNode) {
-					return;
-				}
-				const edge = createEdge(sourceNode, firstProcessorsNode);
-				edges.push(edge);
-			});
+			receiversNodes.forEach((sourceNode) => processNode(sourceNode, firstProcessorsNode));
 		}
 	};
 
 	const calculateConnectorsNode = (nodes: Node[]) => {
 		const connectorsAsExporter = nodes.filter((node) => node?.data?.type === "connectors/exporters");
 		const connectorsAsReceiver = nodes.filter((node) => node?.data?.type === "connectors/receivers");
+
 		connectorsAsExporter.forEach((sourceNode) => {
-			connectorsAsReceiver.forEach((targetNode) => {
-				if (targetNode?.data?.label === sourceNode?.data?.label) {
-					const edge = createConnectorEdge(sourceNode, targetNode);
-					edges.push(edge);
-				}
-			});
+			const targetNode = connectorsAsReceiver.find((node) => node?.data?.label === sourceNode?.data?.label);
+
+			if (targetNode) {
+				edges.push(createConnectorEdge(sourceNode, targetNode));
+			}
 		});
 	};
 
