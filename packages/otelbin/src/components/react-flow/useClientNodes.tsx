@@ -64,14 +64,14 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 						parentNode: pipelineName,
 						extent: "parent",
 						type: "processorsNode",
-						position: processorPosition(index, height ?? 100, processors),
+						position: processorPosition(index, height, processors),
 						data: {
 							label: processor,
 							parentNode: pipelineName,
 							type: "processors",
 							height: childNodesHeight,
 							id: id,
-							position: processorPosition(index, height ?? 100, processors),
+							position: processorPosition(index, height, processors),
 						},
 						draggable: false,
 					});
@@ -79,7 +79,7 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 				break;
 			case "receivers":
 				receivers?.map((receiver, index) => {
-					const isConnector = Object.keys(connectors ?? {}).includes(receiver) ? "connectors/receivers" : "receivers";
+					const isConnector = connectors?.hasOwnProperty(receiver) ? "connectors/receivers" : "receivers";
 					const id = `${pipelineName}-Receiver-receiverNode-${receiver}`;
 
 					nodesToAdd.push({
@@ -87,14 +87,14 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 						parentNode: pipelineName,
 						extent: "parent",
 						type: "receiversNode",
-						position: receiverPosition(index, height ?? 100, receivers),
+						position: receiverPosition(index, height, receivers),
 						data: {
 							label: receiver,
 							parentNode: pipelineName,
 							type: isConnector,
 							height: childNodesHeight,
 							id: id,
-							position: receiverPosition(index, height ?? 100, receivers),
+							position: receiverPosition(index, height, receivers),
 						},
 						draggable: false,
 					});
@@ -102,21 +102,21 @@ const createNode = (pipelineName: string, parentNode: IPipeline, height: number,
 				break;
 			case "exporters":
 				exporters?.map((exporter, index) => {
-					const isConnector = Object.keys(connectors ?? {}).includes(exporter) ? "connectors/exporters" : "exporters";
+					const isConnector = connectors?.hasOwnProperty(exporter) ? "connectors/exporters" : "exporters";
 					const id = `${pipelineName}-exporter-exporterNode-${exporter}`;
 					nodesToAdd.push({
 						id: id,
 						parentNode: pipelineName,
 						extent: "parent",
 						type: "exportersNode",
-						position: exporterPosition(index, height ?? 100, exporters, processors ?? []),
+						position: exporterPosition(index, height, exporters, processors ?? []),
 						data: {
 							label: exporter,
 							parentNode: pipelineName,
 							type: isConnector,
 							height: childNodesHeight,
 							id: id,
-							position: exporterPosition(index, height ?? 100, exporters, processors ?? []),
+							position: exporterPosition(index, height, exporters, processors ?? []),
 						},
 						draggable: false,
 					});
