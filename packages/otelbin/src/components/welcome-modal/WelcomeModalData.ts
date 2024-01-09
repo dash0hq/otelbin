@@ -33,7 +33,7 @@ export const welcomeModalData: WelcomeModal[] = [
 	{
 		title: "Collaborate with others",
 		description:
-			"The OpenTelemetry collector configuration is persisted within the URL so that you can always share what you are working on. Link your configuration in OTelBin to ask or offer help, with support for pipeline previews in Slack and other messaging platforms. In need of a short URL? Use our URL shortener.",
+			"The OpenTelemetry collector configuration is persisted within the URL so that you can always share what you are working on. Link your configuration in OTelBin to ask or offer help, with support for pipeline previews in Slack and other messaging platforms. In need of a short URL? OTelBin has a built-in URL shortener.",
 		image: ShareImg,
 	},
 ];
