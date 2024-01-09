@@ -22,7 +22,7 @@ export const welcomeModalData: WelcomeModal[] = [
 	},
 	{
 		title: "Code editor with syntax highlighting & code completion",
-		description: "Craft your configuration seamlessly in the editor with real-time syntax and schema validation!",
+		description: "Craft your configuration seamlessly in the editor with real-time syntax and schema validation.",
 		image: ErrorImg,
 	},
 	{
@@ -33,7 +33,7 @@ export const welcomeModalData: WelcomeModal[] = [
 	{
 		title: "Collaborate with others",
 		description:
-			"The config is persisted within the URL so that you can always share what you are working on. Use this to get or provide help. In need of a short URL? Use our URL shortener.",
+			"The OpenTelemetry collector configuration is persisted within the URL so that you can always share what you are working on. Link your configuration in OTelBin to ask or offer help, with support for pipeline previews in Slack and other messaging platforms. In need of a short URL? Use our URL shortener.",
 		image: ShareImg,
 	},
 ];
