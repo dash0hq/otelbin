@@ -249,7 +249,9 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		editorRef.current.onDidPaste(() => {
 			const currentConfig = editorRef.current?.getModel()?.getValue() || "";
 			const configType = selectConfigType(currentConfig);
-			editorRef.current?.getModel()?.setValue((configType as string) ?? "");
+			if (configType !== currentConfig) {
+				editorRef.current?.getModel()?.setValue((configType as string) ?? "");
+			}
 		});
 	}
 
