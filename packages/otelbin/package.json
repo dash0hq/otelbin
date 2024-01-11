@@ -55,7 +55,8 @@
 		"tailwindcss-animate": "^1.0.6",
 		"ts-jest": "^29.1.1",
 		"yaml": "^2.3.4",
-		"yaml-language-server": "^1.14.0"
+		"yaml-language-server": "^1.14.0",
+		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"@svgr/webpack": "^8.1.0",
