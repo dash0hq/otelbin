@@ -51,7 +51,10 @@ export function useServerSideValidation(): ValidationState {
 									"Content-Type": "application/json",
 									Accept: "application/json",
 								},
-								body: config,
+								body: JSON.stringify({
+									config,
+									env: {},
+								}),
 							}
 						);
 

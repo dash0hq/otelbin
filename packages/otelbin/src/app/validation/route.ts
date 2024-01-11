@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import z from "zod";
 import retryFetch from "fetch-retry";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -19,6 +20,12 @@ const rateLimit = new Ratelimit({
 	prefix: "rate-limit-validate",
 });
 
+const validationPayloadSchema = z.object({
+	config: z.string(),
+	env: z.record(z.string()).optional(),
+});
+type ValidationPayload = z.infer<typeof validationPayloadSchema>;
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
 	const distro = request.nextUrl.searchParams.get("distro");
 	const version = request.nextUrl.searchParams.get("version");
@@ -36,7 +43,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		);
 	}
 
-	const config = await request.text();
+	const reqBody = await request.json();
+	let validationPayload: ValidationPayload;
+	try {
+		validationPayload = validationPayloadSchema.parse(reqBody);
+	} catch (e: unknown) {
+		console.error('Failed to parse request body as JSON: "%s"', reqBody, e);
+		return NextResponse.json(
+			{
+				error: `Could not parse request body.`,
+			},
+			{
+				status: 400,
+			}
+		);
+	}
 
 	const userIdentifier = getUserIdentifier(request);
 	const { success } = await rateLimit.blockUntilReady(userIdentifier, 1000 * 60);
@@ -66,9 +87,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 					"COLLECTOR_CONFIGURATION_VALIDATION_API_KEY env var is not configured"
 				),
 			},
-			body: JSON.stringify({
-				config,
-			}),
+			body: JSON.stringify(validationPayload),
 			retries: 3,
 			retryDelay: 1000,
 			retryOn: [500, 503],
