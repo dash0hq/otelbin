@@ -12,3 +12,9 @@ export const distroVersionBinding = {
 	name: "distroVersion",
 	fallback: null as string | null,
 } as const;
+
+export const envVarBinding = {
+	prefix: "",
+	name: "env",
+	fallback: Object.freeze({}) as Readonly<Record<string, string>>,
+} as const;
