@@ -8,6 +8,21 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.92.0",
+        "artifact": "otelcol_0.92.0_linux_amd64.rpm",
+        "released_at": "2024-01-10T17:07:42.000Z"
+      },
+      {
+        "version": "v0.91.0",
+        "artifact": "otelcol_0.91.0_linux_amd64.rpm",
+        "released_at": "2023-12-12T02:47:06.000Z"
+      },
+      {
+        "version": "v0.90.1",
+        "artifact": "otelcol_0.90.1_linux_amd64.rpm",
+        "released_at": "2023-12-01T23:14:33.000Z"
+      },
+      {
         "version": "v0.90.0",
         "artifact": "otelcol_0.90.0_linux_amd64.rpm",
         "released_at": "2023-11-28T21:53:13.000Z"
@@ -64,6 +79,21 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.92.0",
+        "artifact": "otelcol-contrib_0.92.0_linux_amd64.rpm",
+        "released_at": "2024-01-10T17:07:44.000Z"
+      },
+      {
+        "version": "v0.91.0",
+        "artifact": "otelcol-contrib_0.91.0_linux_amd64.rpm",
+        "released_at": "2023-12-12T02:47:09.000Z"
+      },
+      {
+        "version": "v0.90.1",
+        "artifact": "otelcol-contrib_0.90.1_linux_amd64.rpm",
+        "released_at": "2023-12-01T23:14:35.000Z"
+      },
+      {
         "version": "v0.90.0",
         "artifact": "otelcol-contrib_0.90.0_linux_amd64.rpm",
         "released_at": "2023-11-28T21:53:15.000Z"
@@ -119,6 +149,16 @@
     "website": "https://aws.amazon.com/otel",
     "repository": "aws-observability/aws-otel-collector",
     "releases": [
+      {
+        "version": "v0.36.0",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.36.0/aws-otel-collector.rpm",
+        "released_at": "2023-12-08T17:58:08.000Z"
+      },
+      {
+        "version": "v0.35.1",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.35.1/aws-otel-collector.rpm",
+        "released_at": "2023-12-07T18:52:18.000Z"
+      },
       {
         "version": "v0.35.0",
         "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.35.0/aws-otel-collector.rpm",

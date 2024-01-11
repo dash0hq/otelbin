@@ -61,6 +61,7 @@ Use [shields.io-powered](https://shields.io/) badges within documentation to ref
 - [Next.js](https://nextjs.org/) – framework
 - [Typescript](https://www.typescriptlang.org/) – language
 - [Tailwind](https://tailwindcss.com/) – CSS
+- [ReactFlow](https://reactflow.dev/) – Visualization
 - [Upstash](https://upstash.com/) – redis
 - [Clerk](https://clerk.com/) – auth
 - [Vercel](https://vercel.com/) – hosting and privacy-friendly analytics

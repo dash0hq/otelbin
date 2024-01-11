@@ -5,13 +5,13 @@ import React, { type RefObject, useEffect, useMemo } from "react";
 import ReactFlow, { Background, Panel, useReactFlow, useNodesState, useEdgesState, useStore } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
-import { parse, Parser } from "yaml";
+import { Parser } from "yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useFocus } from "~/contexts/EditorContext";
 import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
 import ParentsNode from "./node-types/ParentsNode";
 import EmptyStateNode, { EmptyStateNodeData } from "./node-types/EmptyStateNode";
-import { useNodes } from "./useNodes";
+import { useClientNodes } from "./useClientNodes";
 import type { editor } from "monaco-editor";
 import { ButtonGroup } from "~/components/button-group";
 import { Button } from "~/components/button";
@@ -20,6 +20,9 @@ import type { IItem, Document } from "../monaco-editor/parseYaml";
 import ExportersNode from "./node-types/ExportersNode";
 import ReceiversNode from "./node-types/ReceiversNode";
 import ProcessorsNode from "./node-types/ProcessorsNode";
+import { useLayout } from "./layout/useLayout";
+import CyclicErrorEdge from "./CyclicErrorEdge";
+import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -37,7 +40,7 @@ export default function Flow({
 	editorRef: EditorRefType | null;
 }) {
 	const reactFlowInstance = useReactFlow();
-	const jsonData = useMemo(() => parse(value) as IConfig, [value]);
+	const jsonData = useMemo(() => JsYaml.load(value, { schema: FAILSAFE_SCHEMA }) as IConfig, [value]);
 	const pipelines = useMemo(() => {
 		const parsedYaml = Array.from(new Parser().parse(value));
 		const doc = parsedYaml.find((token) => token.type === "document") as Document;
@@ -45,10 +48,11 @@ export default function Flow({
 		const docService = docItems.find((item: IItem) => item.key?.source === "service");
 		return docService?.value.items.find((item: IItem) => item.key?.source === "pipelines");
 	}, [value]);
-	const initNodes = useNodes(jsonData);
-	const [nodes, setNodes] = useNodesState(initNodes !== undefined ? initNodes : []);
-	const initEdges = useEdgeCreator(nodes);
-	const [edges, setEdges] = useEdgesState(initEdges);
+	const initNodes = useClientNodes(jsonData);
+	const initEdges = useEdgeCreator(initNodes ?? []);
+	const { nodes: layoutedNodes, edges: layoutedEdges } = useLayout(initNodes ?? [], initEdges);
+	const [nodes, setNodes] = useNodesState(layoutedNodes !== undefined ? layoutedNodes : []);
+	const [edges, setEdges] = useEdgesState(layoutedEdges);
 	const widthSelector = (state: { width: number }) => state.width;
 	const reactFlowWidth = useStore(widthSelector);
 
@@ -58,15 +62,15 @@ export default function Flow({
 
 	useEffect(() => {
 		if (jsonData) {
-			setEdges(initEdges);
-			setNodes(initNodes !== undefined ? initNodes : []);
+			setEdges(layoutedEdges);
+			setNodes(layoutedNodes !== undefined ? layoutedNodes : []);
 			reactFlowInstance.fitView();
 		} else {
 			setNodes(EmptyStateNodeData);
 			setEdges([]);
 			reactFlowInstance.fitView();
 		}
-	}, [initNodes, initEdges, value, jsonData, setEdges, setNodes, reactFlowInstance]);
+	}, [layoutedNodes, layoutedEdges, value, jsonData, setEdges, setNodes, reactFlowInstance]);
 
 	const nodeTypes = useMemo(
 		() => ({
@@ -74,6 +78,12 @@ export default function Flow({
 			receiversNode: ReceiversNode,
 			exportersNode: ExportersNode,
 			parentNodeType: ParentsNode,
+		}),
+		[]
+	);
+	const edgeTypes = useMemo(
+		() => ({
+			cyclicErrorEdge: CyclicErrorEdge,
 		}),
 		[]
 	);
@@ -220,6 +230,7 @@ export default function Flow({
 			edges={edges}
 			defaultEdgeOptions={edgeOptions}
 			nodeTypes={jsonData.service ? nodeTypes : EmptyStateNodeType}
+			edgeTypes={edgeTypes}
 			fitView
 			className="disable-attribution bg-default"
 			proOptions={{
