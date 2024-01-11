@@ -5,7 +5,7 @@
 
 import { debounce } from "lodash";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
-import { distroBinding, distroVersionBinding } from "~/components/validation/binding";
+import { distroBinding, distroVersionBinding, envVarBinding } from "~/components/validation/binding";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { useEffect, useMemo, useState } from "react";
 import { type ServerSideValidationResult } from "~/types";
@@ -30,7 +30,12 @@ const initialValidationState: ValidationState = {
 };
 
 export function useServerSideValidation(): ValidationState {
-	const [{ config, distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding, editorBinding]);
+	const [{ config, distro, distroVersion, env }] = useUrlState([
+		distroBinding,
+		distroVersionBinding,
+		editorBinding,
+		envVarBinding,
+	]);
 	const [state, setState] = useState<ValidationState>(initialValidationState);
 
 	const validate = useMemo(
@@ -53,7 +58,7 @@ export function useServerSideValidation(): ValidationState {
 								},
 								body: JSON.stringify({
 									config,
-									env: {},
+									env,
 								}),
 							}
 						);
@@ -93,7 +98,7 @@ export function useServerSideValidation(): ValidationState {
 					trailing: true,
 				}
 			),
-		[distro, distroVersion]
+		[distro, distroVersion, env]
 	);
 
 	useEffect(() => {
