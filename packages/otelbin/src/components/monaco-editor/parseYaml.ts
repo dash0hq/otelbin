@@ -3,6 +3,8 @@
 
 import { Parser } from "yaml";
 import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
+import type { editor } from "monaco-editor";
+import type { IEnvVar } from "../EnvVarForm";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -249,4 +251,33 @@ export function selectConfigType(config: string) {
 	} else {
 		return config;
 	}
+}
+
+export function extractVariables(inputString: string): string[] {
+	const variableRegex = /\${([^}]+)}/g;
+	const matches = inputString.match(variableRegex);
+
+	return matches ? matches.map((match) => match) : [];
+}
+
+export function extractEnvVarData(
+	envVars: string[],
+	envUrlState: Record<string, string>,
+	editorRef: React.RefObject<editor.IStandaloneCodeEditor | null> | null
+) {
+	let matches: editor.FindMatch[] = [];
+	const envVarData: Record<string, IEnvVar> = {};
+
+	if (envVars && envVars.length > 0) {
+		envVars.forEach((variable) => {
+			matches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false) ?? [];
+			envVarData[variable] = {
+				name: variable.slice(2, -1),
+				linesNumber: matches.map((match) => match.range.startLineNumber),
+				value: envUrlState[variable.slice(2, -1)] ?? "",
+			};
+		});
+	}
+
+	return envVarData;
 }

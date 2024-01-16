@@ -26,7 +26,9 @@ import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
-import { selectConfigType } from "./parseYaml";
+import { extractEnvVarData, extractVariables, selectConfigType } from "./parseYaml";
+import EnvVarForm from "../EnvVarForm";
+import { envVarBinding } from "../validation/binding";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -42,10 +44,12 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const { setViewMode, viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
-	const [{ config }, getLink] = useUrlState([editorBinding]);
+	const [{ config, env }, getLink] = useUrlState([editorBinding, envVarBinding]);
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
-	const serverSideValidationResult = useServerSideValidation();
+	const [envVariables, setEnvVariables] = useState<string[]>([]);
+	const envVarData = extractEnvVarData(envVariables, env, editorRef);
+	const serverSideValidationResult = useServerSideValidation(envVarData);
 
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
@@ -146,6 +150,10 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}
 
+	useEffect(() => {
+		setEnvVariables(extractVariables(currentConfig));
+	}, [currentConfig]);
+
 	return (
 		<>
 			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
@@ -191,6 +199,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							{viewMode !== "pipeline" && <ValidationErrorConsole errors={totalValidationErrors} font={firaCode} />}
 							{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 						</div>
+						{envVariables.length > 0 && <EnvVarForm envVarData={envVarData} />}
 						<div className="z-0 min-h-full w-full shrink grow relative">
 							<AutoSizer>
 								{({ width, height }) => (

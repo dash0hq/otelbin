@@ -1,19 +1,20 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { createContext, useRef, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
-import { type editor } from "monaco-editor";
+import { type IPosition, type editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import type { IItem } from "../components/monaco-editor/parseYaml";
-import { getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
+import { extractVariables, getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
+import "../components/react-flow/decorationStyles.css";
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;
@@ -58,6 +59,16 @@ export const BreadcrumbsContext = createContext<{
 	},
 });
 
+export const EnvVarMenuContext = createContext<{
+	openEnvVarMenu: boolean;
+	setOpenEnvVarMenu: (openEnvVarMenu: boolean) => void;
+}>({
+	openEnvVarMenu: false,
+	setOpenEnvVarMenu: () => {
+		return;
+	},
+});
+
 export function useEditorRef() {
 	return React.useContext(EditorContext);
 }
@@ -82,6 +93,10 @@ export function useBreadcrumbs() {
 	return React.useContext(BreadcrumbsContext);
 }
 
+export function useEnvVarMenu() {
+	return React.useContext(EnvVarMenuContext);
+}
+
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
@@ -89,6 +104,43 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
+	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(false);
+
+	const variables = extractVariables(editorRef.current?.getModel()?.getValue() || "");
+
+	function envVarDecoration(variables: string[]) {
+		variables.forEach((variable) => {
+			const findMatches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false);
+			if (findMatches) {
+				findMatches.forEach((match) => {
+					const range = match.range;
+					const startLineNumber = range.startLineNumber;
+					const startColumn = range.startColumn;
+					const endLineNumber = range.endLineNumber;
+					const endColumn = range.endColumn;
+					const decoration = {
+						range: {
+							startLineNumber: startLineNumber,
+							startColumn: startColumn,
+							endLineNumber: endLineNumber,
+							endColumn: endColumn,
+						},
+						options: {
+							isWholeLine: false,
+							className: "envVarDecoration",
+							inlineClassName: "envVarDecoration",
+						},
+					};
+					editorRef?.current?.getModel()?.deltaDecorations([], [decoration]);
+				});
+			}
+		});
+	}
+
+	useEffect(() => {
+		const variables = extractVariables(editorRef.current?.getModel()?.getValue() || "");
+		envVarDecoration(variables);
+	}, [variables]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -122,7 +174,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		);
 
 		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
-			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
+			wordPattern: /\${([^}]+:[^}]+)}|\${([^}]+)}|(?:\w+\/[\w_]+(?:-[\w_]+)*|\w+)/,
 		});
 
 		const createData: MonacoYamlOptions = {
@@ -236,6 +288,25 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			}
 		}
 
+		console.log(variables);
+
+		editorRef.current.onMouseDown(() => {
+			const envVarRegex = /\${([^}]+)}/g;
+			const cursorOffset = editorRef?.current?.getPosition() as IPosition;
+			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(cursorOffset) || {
+				word: "",
+				startColumn: 0,
+				endColumn: 0,
+			};
+
+			envVarDecoration(variables);
+			if (wordAtCursor.word.match(envVarRegex)) {
+				setOpenEnvVarMenu(true);
+			}
+		});
+
+		envVarDecoration(variables);
+
 		editorRef.current.onDidChangeCursorPosition((e) => {
 			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) ?? 0;
 			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || {
@@ -246,12 +317,29 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			findSymbols(docElements, "", wordAtCursor.word, cursorOffset);
 		});
 
+		editorRef.current.onMouseDown(() => {
+			const envVarRegex = /\${([^}]+)}/g;
+			const cursorOffset = editorRef?.current?.getPosition() as IPosition;
+			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(cursorOffset) || {
+				word: "",
+				startColumn: 0,
+				endColumn: 0,
+			};
+
+			envVarDecoration(variables);
+			if (wordAtCursor.word.match(envVarRegex)) {
+				setOpenEnvVarMenu(true);
+			}
+		});
+
 		editorRef.current.onDidPaste(() => {
 			const currentConfig = editorRef.current?.getModel()?.getValue() || "";
 			const configType = selectConfigType(currentConfig);
 			if (configType !== currentConfig) {
 				editorRef.current?.getModel()?.setValue((configType as string) ?? "");
 			}
+			const variables = extractVariables(currentConfig);
+			envVarDecoration(variables);
 		});
 	}
 
@@ -270,13 +358,20 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		path: path,
 	};
 
+	const envVarMenuContext = {
+		openEnvVarMenu: openEnvVarMenu,
+		setOpenEnvVarMenu: setOpenEnvVarMenu,
+	};
+
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>
 			<EditorContext.Provider value={editorRef}>
 				<MonacoContext.Provider value={monacoRef}>
 					<FocusContext.Provider value={focusContext}>
 						<ViewModeContext.Provider value={viewModeContext}>
-							<BreadcrumbsContext.Provider value={breadcrumbsContext}>{children}</BreadcrumbsContext.Provider>
+							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
+								<EnvVarMenuContext.Provider value={envVarMenuContext}>{children}</EnvVarMenuContext.Provider>
+							</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>
 					</FocusContext.Provider>
 				</MonacoContext.Provider>

@@ -9,6 +9,7 @@ import { distroBinding, distroVersionBinding, envVarBinding } from "~/components
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { useEffect, useMemo, useState } from "react";
 import { type ServerSideValidationResult } from "~/types";
+import type { IEnvVar } from "../EnvVarForm";
 
 export interface ValidationState {
 	isLoading: boolean;
@@ -29,7 +30,7 @@ const initialValidationState: ValidationState = {
 	result: null,
 };
 
-export function useServerSideValidation(): ValidationState {
+export function useServerSideValidation(envVarData: Record<string, IEnvVar>): ValidationState {
 	const [{ config, distro, distroVersion, env }] = useUrlState([
 		distroBinding,
 		distroVersionBinding,
@@ -37,12 +38,13 @@ export function useServerSideValidation(): ValidationState {
 		envVarBinding,
 	]);
 	const [state, setState] = useState<ValidationState>(initialValidationState);
+	const unboundVariables = Object.values(envVarData).filter((envVar) => env[envVar.name] === undefined);
 
 	const validate = useMemo(
 		() =>
 			debounce(
 				async (config: string) => {
-					if (!distro || !distroVersion) {
+					if (!distro || !distroVersion || unboundVariables.length > 0) {
 						return;
 					}
 
@@ -98,7 +100,7 @@ export function useServerSideValidation(): ValidationState {
 					trailing: true,
 				}
 			),
-		[distro, distroVersion, env]
+		[distro, distroVersion, env, unboundVariables.length]
 	);
 
 	useEffect(() => {
