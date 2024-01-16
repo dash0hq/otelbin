@@ -132,12 +132,14 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 						</IconButton>
 					) : (
 						<IconButton
-							onClick={handleEnvVarSubmit}
+							onClick={() => {
+								setEnvVarValue("");
+							}}
 							variant={"transparent"}
 							size={"xs"}
 							className="absolute right-2 top-[6px] z-10"
 						>
-							<Check height={16} />
+							<XCircle height={16} />
 						</IconButton>
 					)}
 				</div>
