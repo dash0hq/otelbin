@@ -87,7 +87,7 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 
 	return (
 		<div className="flex flex-col gap-y-1 my-6">
-			<div className="grid w-full items-center gap-1.5 h-full">
+			<div className="flex flex-col w-full gap-1.5 h-full">
 				<div className="flex gap-x-1 items-center">
 					<Label htmlFor="envVar">{envVar.name}</Label>
 					{envVarValue === env[envVar.name] && <Check height={14} color={"#69F18E"} />}
