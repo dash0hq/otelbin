@@ -15,6 +15,8 @@ import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 import "../components/react-flow/decorationStyles.css";
+import { editorBinding } from "~/components/monaco-editor/editorBinding";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;
@@ -104,9 +106,9 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
-	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(false);
-
-	const variables = extractVariables(editorRef.current?.getModel()?.getValue() || "");
+	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(true);
+	const [envVariables, setEnvVariables] = useState<string[]>([]);
+	const [{ config }] = useUrlState([editorBinding]);
 
 	function envVarDecoration(variables: string[]) {
 		variables.forEach((variable) => {
@@ -138,9 +140,12 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	}
 
 	useEffect(() => {
-		const variables = extractVariables(editorRef.current?.getModel()?.getValue() || "");
-		envVarDecoration(variables);
-	}, [variables]);
+		setEnvVariables(extractVariables(config));
+	}, [config]);
+
+	useEffect(() => {
+		envVarDecoration(envVariables);
+	}, [envVariables]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -288,8 +293,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			}
 		}
 
-		console.log(variables);
-
 		editorRef.current.onMouseDown(() => {
 			const envVarRegex = /\${([^}]+)}/g;
 			const cursorOffset = editorRef?.current?.getPosition() as IPosition;
@@ -299,13 +302,13 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 
-			envVarDecoration(variables);
+			envVarDecoration(envVariables);
 			if (wordAtCursor.word.match(envVarRegex)) {
 				setOpenEnvVarMenu(true);
 			}
 		});
 
-		envVarDecoration(variables);
+		envVarDecoration(envVariables);
 
 		editorRef.current.onDidChangeCursorPosition((e) => {
 			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) ?? 0;
@@ -326,7 +329,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 
-			envVarDecoration(variables);
+			envVarDecoration(envVariables);
 			if (wordAtCursor.word.match(envVarRegex)) {
 				setOpenEnvVarMenu(true);
 			}
@@ -338,8 +341,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			if (configType !== currentConfig) {
 				editorRef.current?.getModel()?.setValue((configType as string) ?? "");
 			}
-			const variables = extractVariables(currentConfig);
-			envVarDecoration(variables);
+			envVarDecoration(envVariables);
 		});
 	}
 

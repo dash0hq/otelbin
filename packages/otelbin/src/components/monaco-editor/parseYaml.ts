@@ -271,10 +271,13 @@ export function extractEnvVarData(
 	if (envVars && envVars.length > 0) {
 		envVars.forEach((variable) => {
 			matches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false) ?? [];
+			const fullName = variable.slice(2, -1);
+			const splitted = fullName.split(":") ?? [];
 			envVarData[variable] = {
-				name: variable.slice(2, -1),
+				fullName: fullName,
 				linesNumber: matches.map((match) => match.range.startLineNumber),
-				value: envUrlState[variable.slice(2, -1)] ?? "",
+				name: splitted[0] ?? "",
+				value: splitted[1] ?? "",
 			};
 		});
 	}

@@ -12,9 +12,10 @@ import { envVarBinding } from "./validation/binding";
 import React from "react";
 
 export interface IEnvVar {
-	name: string;
+	fullName: string;
 	linesNumber: number[];
-	value: string;
+	name: string;
+	value?: string;
 }
 
 export default function EnvVarForm({ envVarData }: { envVarData: Record<string, IEnvVar> }) {
@@ -54,7 +55,7 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 				</div>
 				<div className="px-4">
 					{Object.values(envVarData).map((envVar) => (
-						<EnvVar key={envVar.name} envVar={envVar} />
+						<EnvVar key={envVar.fullName} envVar={envVar} />
 					))}
 				</div>
 			</div>
@@ -65,15 +66,17 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 function EnvVar({ envVar }: { envVar: IEnvVar }) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [{ env }, getLink] = useUrlState([envVarBinding]);
-	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.value);
+	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.value ?? "");
 
 	function handleEnvVarChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
 		setEnvVarValue(event.target.value);
 	}
 
 	function handleEnvVarSubmit() {
-		if (typeof window !== "undefined") {
+		if (typeof window !== "undefined" && envVar.name === "env" && envVarValue !== "") {
 			window.history.pushState(null, "", getLink({ env: { ...env, [envVar.name]: envVarValue } }));
+		} else if (typeof window !== "undefined" && envVarValue === "") {
+			window.history.pushState(null, "", getLink({ env: { ...env } }));
 		}
 	}
 
@@ -99,7 +102,7 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 						onChange={handleEnvVarChange}
 						className="placeholder:italic h-[35px] min-h-[35px] max-h-[100px] overflow-hidden resize-none w-full pr-10"
 						id="envVar"
-						placeholder={env[envVar.name] === "" ? "empty" : "enter value"}
+						placeholder={env[envVar.name] === undefined ? "empty" : "enter value"}
 					/>
 					{envVarValue === env[envVar.name] ? (
 						<IconButton
