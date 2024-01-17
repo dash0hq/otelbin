@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useEnvVarMenu } from "~/contexts/EditorContext";
 import { IconButton } from "./icon-button";
 import { Check, X, XCircle } from "lucide-react";
@@ -9,7 +9,6 @@ import { Label } from "./label";
 import { Textarea } from "./textArea";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { envVarBinding } from "./validation/binding";
-import React from "react";
 
 export interface IEnvVar {
 	fullName: string;
