@@ -39,7 +39,7 @@ export default function ValidationType() {
 
 	const [envVariables, setEnvVariables] = useState<string[]>([]);
 	const envVarData = extractEnvVarData(envVariables, env, editorRef);
-	const unboundVariables = Object.values(envVarData).filter((envVar) => env[envVar.name] === undefined);
+	const unboundVariables = Object.values(envVarData).filter((envVar) => envVar.value === undefined);
 
 	useEffect(() => {
 		setEnvVariables(extractVariables(config));

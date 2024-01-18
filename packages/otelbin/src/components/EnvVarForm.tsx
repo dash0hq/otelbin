@@ -8,10 +8,9 @@ import { Check, X, XCircle } from "lucide-react";
 import { Label } from "./label";
 import { Textarea } from "./textArea";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
-import { envVarBinding } from "./validation/binding";
+import { distroBinding, distroVersionBinding, envVarBinding } from "./validation/binding";
 
 export interface IEnvVar {
-	fullName: string;
 	linesNumber: number[];
 	name: string;
 	value?: string;
@@ -19,13 +18,12 @@ export interface IEnvVar {
 
 export default function EnvVarForm({ envVarData }: { envVarData: Record<string, IEnvVar> }) {
 	const { openEnvVarMenu, setOpenEnvVarMenu } = useEnvVarMenu();
-	const [{ env }] = useUrlState([envVarBinding]);
 
 	function handleClose() {
 		setOpenEnvVarMenu(false);
 	}
 
-	const unboundVariables = Object.values(envVarData).filter((envVar) => env[envVar.name] === undefined);
+	const unboundVariables = Object.values(envVarData).filter((envVar) => envVar.value === undefined);
 
 	return (
 		<div
@@ -54,7 +52,7 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 				</div>
 				<div className="px-4">
 					{Object.values(envVarData).map((envVar) => (
-						<EnvVar key={envVar.fullName} envVar={envVar} />
+						<EnvVar key={envVar.name} envVar={envVar} />
 					))}
 				</div>
 			</div>
@@ -66,17 +64,22 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [{ env }, getLink] = useUrlState([envVarBinding]);
 	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.value ?? "");
-
+	const isServerSideValidationEnabled = useServerSideValidationEnabled();
 	function handleEnvVarChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
 		setEnvVarValue(event.target.value);
 	}
 
 	function handleEnvVarSubmit() {
-		if (typeof window !== "undefined" && envVar.name === "env" && envVarValue !== "") {
+		if (typeof window !== "undefined" && envVarValue !== "") {
 			window.history.pushState(null, "", getLink({ env: { ...env, [envVar.name]: envVarValue } }));
 		} else if (typeof window !== "undefined" && envVarValue === "") {
-			window.history.pushState(null, "", getLink({ env: { ...env } }));
+			window.history.pushState(null, "", getLink({ env: { ...env, [envVar.name]: "" } }));
 		}
+	}
+
+	function useServerSideValidationEnabled(): boolean {
+		const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+		return !!distro && !!distroVersion;
 	}
 
 	useEffect(() => {
@@ -86,6 +89,12 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 			textAreaRef.current.style.height = scrollHeight + "px";
 		}
 	}, [envVarValue]);
+
+	useEffect(() => {
+		if (isServerSideValidationEnabled) {
+			handleEnvVarSubmit();
+		}
+	}, [isServerSideValidationEnabled]);
 
 	return (
 		<div className="flex flex-col gap-y-1 my-6">
@@ -101,7 +110,7 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 						onChange={handleEnvVarChange}
 						className="placeholder:italic h-[35px] min-h-[35px] max-h-[100px] overflow-hidden resize-none w-full pr-10"
 						id="envVar"
-						placeholder={env[envVar.name] === undefined ? "empty" : "enter value"}
+						placeholder={env[envVar.name] === "" ? "empty" : "enter value"}
 					/>
 					{envVarValue === env[envVar.name] ? (
 						<IconButton

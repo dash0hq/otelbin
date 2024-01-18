@@ -3,7 +3,7 @@
 
 import React, { createContext, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
-import { type IPosition, type editor } from "monaco-editor";
+import { type editor, type IPosition } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
@@ -131,9 +131,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 							isWholeLine: false,
 							className: "envVarDecoration",
 							inlineClassName: "envVarDecoration",
+							stickiness: monacoRef.current?.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 						},
 					};
-					editorRef?.current?.getModel()?.deltaDecorations([], [decoration]);
+					editorRef?.current?.createDecorationsCollection([decoration]);
 				});
 			}
 		});
@@ -302,7 +303,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 
-			envVarDecoration(envVariables);
 			if (wordAtCursor.word.match(envVarRegex)) {
 				setOpenEnvVarMenu(true);
 			}
@@ -320,28 +320,12 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			findSymbols(docElements, "", wordAtCursor.word, cursorOffset);
 		});
 
-		editorRef.current.onMouseDown(() => {
-			const envVarRegex = /\${([^}]+)}/g;
-			const cursorOffset = editorRef?.current?.getPosition() as IPosition;
-			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(cursorOffset) || {
-				word: "",
-				startColumn: 0,
-				endColumn: 0,
-			};
-
-			envVarDecoration(envVariables);
-			if (wordAtCursor.word.match(envVarRegex)) {
-				setOpenEnvVarMenu(true);
-			}
-		});
-
 		editorRef.current.onDidPaste(() => {
 			const currentConfig = editorRef.current?.getModel()?.getValue() || "";
 			const configType = selectConfigType(currentConfig);
 			if (configType !== currentConfig) {
 				editorRef.current?.getModel()?.setValue((configType as string) ?? "");
 			}
-			envVarDecoration(envVariables);
 		});
 	}
 
