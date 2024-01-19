@@ -10,7 +10,6 @@ import { useDistributions } from "../validation/useDistributions";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding, envVarBinding } from "../validation/binding";
 import InfoBox from "./InfoBox";
-import { useEditorRef } from "~/contexts/EditorContext";
 import { extractEnvVarData, extractVariables } from "../monaco-editor/parseYaml";
 import { editorBinding } from "../monaco-editor/editorBinding";
 import WarningBox from "./WarningBox";
@@ -28,7 +27,6 @@ export default function ValidationType() {
 		envVarBinding,
 		editorBinding,
 	]);
-	const editorRef = useEditorRef();
 	const [open, setOpen] = useState(false);
 	const { data: distributions } = useDistributions();
 
@@ -38,7 +36,7 @@ export default function ValidationType() {
 			: undefined;
 
 	const [envVariables, setEnvVariables] = useState<string[]>([]);
-	const envVarData = extractEnvVarData(envVariables, env, editorRef);
+	const envVarData = extractEnvVarData(envVariables, env);
 	const unboundVariables = Object.values(envVarData).filter((envVar) => envVar.value === undefined);
 
 	useEffect(() => {

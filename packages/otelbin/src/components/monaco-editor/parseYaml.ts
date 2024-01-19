@@ -3,7 +3,6 @@
 
 import { Parser } from "yaml";
 import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
-import type { editor } from "monaco-editor";
 import type { IEnvVar } from "../EnvVarForm";
 export interface SourceToken {
 	type:
@@ -260,11 +259,7 @@ export function extractVariables(inputString: string): string[] {
 	return matches ? matches.map((match) => match) : [];
 }
 
-export function extractEnvVarData(
-	envVars: string[],
-	envUrlState: Record<string, string>,
-	editorRef: React.RefObject<editor.IStandaloneCodeEditor | null> | null
-) {
+export function extractEnvVarData(envVars: string[], envUrlState: Record<string, string>) {
 	const envVarData: Record<string, IEnvVar> = {};
 
 	if (envVars && envVars.length > 0) {
@@ -273,7 +268,6 @@ export function extractEnvVarData(
 		const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
 
 		envVarPlaceHolder.forEach((variable) => {
-			const matches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false) ?? [];
 			const name = variable.split(":")[0] ?? variable;
 			let value: string | undefined = variable.split(":")[1] ?? "";
 
@@ -286,7 +280,6 @@ export function extractEnvVarData(
 			}
 
 			envVarData[name] = {
-				linesNumber: matches.map((match) => match.range.startLineNumber),
 				name: name,
 				value: envUrlState[name] ?? value,
 			};

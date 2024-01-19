@@ -155,8 +155,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	}, [currentConfig]);
 
 	useEffect(() => {
-		setEnvVarData(extractEnvVarData(envVariables, env, editorRef));
-	}, [envVariables, env, editorRef]);
+		setEnvVarData(extractEnvVarData(envVariables, env));
+	}, [envVariables, env]);
 
 	return (
 		<>

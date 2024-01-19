@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useEffect, useRef, useState } from "react";
-import { useEnvVarMenu } from "~/contexts/EditorContext";
+import { useEnvVarLines, useEnvVarMenu } from "~/contexts/EditorContext";
 import { IconButton } from "./icon-button";
 import { Check, X, XCircle } from "lucide-react";
 import { Label } from "./label";
@@ -11,13 +11,14 @@ import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding, envVarBinding } from "./validation/binding";
 
 export interface IEnvVar {
-	linesNumber: number[];
+	// linesNumber: number[];
 	name: string;
 	value?: string;
 }
 
 export default function EnvVarForm({ envVarData }: { envVarData: Record<string, IEnvVar> }) {
 	const { openEnvVarMenu, setOpenEnvVarMenu } = useEnvVarMenu();
+	const { envVarLines } = useEnvVarLines();
 
 	function handleClose() {
 		setOpenEnvVarMenu(false);
@@ -52,7 +53,7 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 				</div>
 				<div className="px-4">
 					{Object.values(envVarData).map((envVar) => (
-						<EnvVar key={envVar.name} envVar={envVar} />
+						<EnvVar key={envVar.name} envVar={envVar} lines={envVarLines[envVar.name]?.lines} />
 					))}
 				</div>
 			</div>
@@ -60,7 +61,7 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 	);
 }
 
-function EnvVar({ envVar }: { envVar: IEnvVar }) {
+function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: number[] }) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [{ env }, getLink] = useUrlState([envVarBinding]);
 	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.value ?? "");
@@ -128,44 +129,24 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 						>
 							<XCircle height={16} />
 						</IconButton>
-					) : envVarValue !== env[envVar.name] ? (
-						<IconButton
-							onClick={handleEnvVarSubmit}
-							variant={"transparent"}
-							size={"xs"}
-							className="absolute right-2 top-[6px] z-10"
-						>
-							<Check height={16} />
-						</IconButton>
-					) : !envVarValue ? (
-						<IconButton
-							onClick={handleEnvVarSubmit}
-							variant={"transparent"}
-							size={"xs"}
-							className="absolute right-2 top-[6px] z-10"
-						>
-							<Check height={16} />
-						</IconButton>
 					) : (
 						<IconButton
-							onClick={() => {
-								setEnvVarValue("");
-							}}
+							onClick={handleEnvVarSubmit}
 							variant={"transparent"}
 							size={"xs"}
 							className="absolute right-2 top-[6px] z-10"
 						>
-							<XCircle height={16} />
+							<Check height={16} />
 						</IconButton>
 					)}
 				</div>
 			</div>
 			<Label className="text-[12px] text-[#AFAFB2]" htmlFor="envVar">
-				{`Used ${envVar.linesNumber.length} ${envVar.linesNumber.length > 1 ? `times` : `time`} on line `}
-				{envVar.linesNumber.map((lineNumber, index) => (
+				{`Used ${lines?.length} ${lines && lines?.length > 1 ? `times` : `time`} on line `}
+				{lines?.map((lineNumber, index) => (
 					<React.Fragment key={lineNumber}>
 						<span className="text-blue-400">{lineNumber}</span>
-						{index < envVar.linesNumber.length - 1 ? ` and ` : ``}
+						{index < lines.length - 1 ? ` and ` : ``}
 					</React.Fragment>
 				))}
 			</Label>
