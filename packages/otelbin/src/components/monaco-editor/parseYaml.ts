@@ -265,21 +265,37 @@ export function extractEnvVarData(
 	envUrlState: Record<string, string>,
 	editorRef: React.RefObject<editor.IStandaloneCodeEditor | null> | null
 ) {
-	let matches: editor.FindMatch[] = [];
 	const envVarData: Record<string, IEnvVar> = {};
 
 	if (envVars && envVars.length > 0) {
-		envVars.forEach((variable) => {
-			matches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false) ?? [];
-			const fullName = variable.slice(2, -1);
-			const name = fullName.split(":")[0] ?? fullName;
-			const value = fullName.split(":")[1] ?? "";
+		let flagName = "";
+		let flagValue: string | undefined = "";
+		const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
+
+		envVarPlaceHolder.forEach((variable) => {
+			const matches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false) ?? [];
+			const name = variable.split(":")[0] ?? variable;
+			let value: string | undefined = variable.split(":")[1] ?? "";
+
+			if (flagName !== "" && flagValue !== "") {
+				if (name === flagName && value !== flagValue) {
+					value = undefined;
+				} else if (name === flagName && value === flagValue) {
+					value = value;
+				}
+			} else {
+				value = envUrlState[name] ?? value;
+			}
+
 			envVarData[name] = {
 				linesNumber: matches.map((match) => match.range.startLineNumber),
 				name: name,
 				value: envUrlState[name] ?? value,
 			};
+			flagName = name;
+			flagValue = value;
 		});
 	}
+
 	return envVarData;
 }

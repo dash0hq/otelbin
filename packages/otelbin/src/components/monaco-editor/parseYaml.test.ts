@@ -3,7 +3,14 @@
 
 import { describe, expect, it } from "@jest/globals";
 import type { IItem, IYamlElement } from "./parseYaml";
-import { getYamlDocument, extractServiceItems, findPipelinesKeyValues, parseYaml, selectConfigType } from "./parseYaml";
+import {
+	getYamlDocument,
+	extractServiceItems,
+	findPipelinesKeyValues,
+	parseYaml,
+	selectConfigType,
+	extractVariables,
+} from "./parseYaml";
 
 //The example contains pipelines with duplicated names (otlp and batch)
 const editorBinding = {
@@ -243,5 +250,43 @@ describe("selectConfigType", () => {
 	it("should return the original config if it is not a valid K8s ConfigMap or OpenTelemetryCollector CRD", () => {
 		const config = "invalidConfig";
 		expect(selectConfigType(config)).toBe(config);
+	});
+});
+
+describe("extractVariables", () => {
+	//The example contains 2 environment variables, one with default value and one without
+	const inputString = {
+		prefix: "",
+		name: "config",
+		fallback: `
+receivers:
+  otlp:
+    endpoint: \${env1:defaultValue1}:14250
+processors:
+  batch:
+    endpoint: \${env2}:14250
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
+  metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
+`
+			.trim()
+			.replaceAll(/\t/g, "  ") as string,
+	} as const;
+
+	it("should extract variables from input string", () => {
+		const result1 = extractVariables(inputString.fallback);
+		expect(result1).toEqual(["${env1:defaultValue1}", "${env2}"]);
+
+		const inputString2 = "No variables in this string";
+		const result2 = extractVariables(inputString2);
+		expect(result2).toEqual([]);
 	});
 });

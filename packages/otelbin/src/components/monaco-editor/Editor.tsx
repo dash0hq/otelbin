@@ -27,7 +27,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
 import { extractEnvVarData, extractVariables, selectConfigType } from "./parseYaml";
-import EnvVarForm from "../EnvVarForm";
+import EnvVarForm, { type IEnvVar } from "../EnvVarForm";
 import { envVarBinding } from "../validation/binding";
 
 const firaCode = Fira_Code({
@@ -48,7 +48,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
 	const [envVariables, setEnvVariables] = useState<string[]>([]);
-	const envVarData = extractEnvVarData(envVariables, env, editorRef);
+	const [envVarData, setEnvVarData] = useState<Record<string, IEnvVar>>({});
 	const serverSideValidationResult = useServerSideValidation(envVarData);
 
 	const onWidthChange = useCallback((newWidth: number) => {
@@ -153,6 +153,10 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	useEffect(() => {
 		setEnvVariables(extractVariables(currentConfig));
 	}, [currentConfig]);
+
+	useEffect(() => {
+		setEnvVarData(extractEnvVarData(envVariables, env, editorRef));
+	}, [envVariables, env, editorRef]);
 
 	return (
 		<>

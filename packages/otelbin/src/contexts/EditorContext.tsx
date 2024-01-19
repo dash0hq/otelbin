@@ -111,8 +111,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [{ config }] = useUrlState([editorBinding]);
 
 	function envVarDecoration(variables: string[]) {
+		if (variables.length === 0) return;
 		variables.forEach((variable) => {
 			const findMatches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false);
+
 			if (findMatches) {
 				findMatches.forEach((match) => {
 					const range = match.range;
@@ -318,6 +320,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 			findSymbols(docElements, "", wordAtCursor.word, cursorOffset);
+			envVarDecoration(envVariables);
 		});
 
 		editorRef.current.onDidPaste(() => {

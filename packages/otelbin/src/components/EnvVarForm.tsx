@@ -44,7 +44,7 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 						>
 							{unboundVariables.length}
 						</span>{" "}
-						{`${unboundVariables.length > 1 ? "variables" : "variable"} unbound`}
+						{`${unboundVariables.length === 1 ? "variable" : "variables"} unbound`}
 					</div>
 					<IconButton onClick={handleClose} variant={"transparent"} size={"xs"}>
 						<X height={12} />
@@ -65,15 +65,14 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 	const [{ env }, getLink] = useUrlState([envVarBinding]);
 	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.value ?? "");
 	const isServerSideValidationEnabled = useServerSideValidationEnabled();
+
 	function handleEnvVarChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
 		setEnvVarValue(event.target.value);
 	}
 
 	function handleEnvVarSubmit() {
-		if (typeof window !== "undefined" && envVarValue !== "") {
+		if (typeof window !== "undefined") {
 			window.history.pushState(null, "", getLink({ env: { ...env, [envVar.name]: envVarValue } }));
-		} else if (typeof window !== "undefined" && envVarValue === "") {
-			window.history.pushState(null, "", getLink({ env: { ...env, [envVar.name]: "" } }));
 		}
 	}
 
@@ -83,6 +82,7 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 	}
 
 	useEffect(() => {
+		//To enable automatic resizing of the textarea
 		if (textAreaRef.current) {
 			textAreaRef.current.style.height = "0px";
 			const scrollHeight = textAreaRef.current.scrollHeight;
@@ -94,7 +94,12 @@ function EnvVar({ envVar }: { envVar: IEnvVar }) {
 		if (isServerSideValidationEnabled) {
 			handleEnvVarSubmit();
 		}
+		// eslint-disable-next-line
 	}, [isServerSideValidationEnabled]);
+
+	useEffect(() => {
+		setEnvVarValue(env[envVar.name] ?? envVar.value ?? "");
+	}, [envVar.name, env, envVar.value]);
 
 	return (
 		<div className="flex flex-col gap-y-1 my-6">
