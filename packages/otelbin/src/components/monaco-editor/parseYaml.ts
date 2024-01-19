@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Parser } from "yaml";
-import YAML from "yaml";
+import YAML, { Parser } from "yaml";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
