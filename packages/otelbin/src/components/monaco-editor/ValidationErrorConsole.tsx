@@ -192,7 +192,7 @@ export function ErrorMessage({
 			{yamlError ? (
 				<div className={`${font.className} ${errorsStyle}`}>
 					<p className="max-w-[100%]">{`${yamlError.code} ${
-						yamlError.pos && `(Line ${yamlError.linePos?.[0].line})`
+						yamlError.linePos && `(Line ${yamlError.linePos?.[0].line})`
 					}`}</p>
 				</div>
 			) : (
