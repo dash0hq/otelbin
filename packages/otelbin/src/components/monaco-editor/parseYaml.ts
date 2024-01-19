@@ -280,8 +280,6 @@ export function extractEnvVarData(
 			if (flagName !== "" && flagValue !== "") {
 				if (name === flagName && value !== flagValue) {
 					value = undefined;
-				} else if (name === flagName && value === flagValue) {
-					value = value;
 				}
 			} else {
 				value = envUrlState[name] ?? value;
