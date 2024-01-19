@@ -4,17 +4,11 @@
 import { useEffect, useState, useRef } from "react";
 import { ChevronDown, XCircle, AlertTriangle } from "lucide-react";
 import { type NextFont } from "next/dist/compiled/@next/font";
+import type { YAMLParseError } from "yaml";
 
 export interface IAjvError {
 	message: string;
 	line?: number | null;
-}
-
-export interface IJsYamlError {
-	mark: {
-		line: number | null;
-	};
-	reason: string | null;
 }
 
 export interface IServerSideError {
@@ -25,7 +19,7 @@ export interface IServerSideError {
 }
 
 export interface IError {
-	jsYamlError?: IJsYamlError;
+	yamlError?: YAMLParseError;
 	ajvErrors?: IAjvError[];
 	customErrors?: string[];
 	customWarnings?: string[];
@@ -43,7 +37,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 	const [height, setHeight] = useState(170);
 	const errorCount =
 		(errors?.ajvErrors?.length ?? 0) +
-		(errors?.jsYamlError != null ? 1 : 0) +
+		(errors?.yamlError != null ? 1 : 0) +
 		(errors?.customErrors?.length ?? 0) +
 		(errors?.serverSideError?.error ? 1 : 0);
 
@@ -150,7 +144,7 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 								errors.customErrors.map((error: string, index: number) => {
 									return <ErrorMessage key={index} customErrors={error} font={font} />;
 								})}
-							{errors?.jsYamlError?.mark?.line && <ErrorMessage jsYamlError={errors?.jsYamlError} font={font} />}
+							{errors?.yamlError?.linePos?.[0] && <ErrorMessage yamlError={errors?.yamlError} font={font} />}
 						</div>
 					)}
 				</div>
@@ -161,14 +155,14 @@ export default function ValidationErrorConsole({ errors, font }: { errors?: IErr
 
 export function ErrorMessage({
 	ajvError,
-	jsYamlError,
+	yamlError,
 	serverSideError,
 	customErrors,
 	customWarnings,
 	font,
 }: {
 	ajvError?: IAjvError;
-	jsYamlError?: IJsYamlError;
+	yamlError?: YAMLParseError;
 	serverSideError?: IServerSideError;
 	customErrors?: string;
 	customWarnings?: string;
@@ -195,10 +189,10 @@ export function ErrorMessage({
 					<p className="max-w-[100%]">{`${customErrors}`}</p>
 				</div>
 			)}
-			{jsYamlError ? (
+			{yamlError ? (
 				<div className={`${font.className} ${errorsStyle}`}>
-					<p className="max-w-[100%]">{`${jsYamlError.reason} ${
-						jsYamlError.mark && `(Line ${jsYamlError.mark.line})`
+					<p className="max-w-[100%]">{`${yamlError.code} ${
+						yamlError.pos && `(Line ${yamlError.linePos?.[0].line})`
 					}`}</p>
 				</div>
 			) : (
