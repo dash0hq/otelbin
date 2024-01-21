@@ -9,7 +9,7 @@ import { distroBinding, distroVersionBinding, envVarBinding } from "~/components
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { useEffect, useMemo, useState } from "react";
 import { type ServerSideValidationResult } from "~/types";
-import type { IEnvVar } from "../EnvVarForm";
+import type { IEnvVar } from "~/contexts/EditorContext";
 
 export interface ValidationState {
 	isLoading: boolean;

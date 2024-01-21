@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../button";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover";
 import Down from "./../assets/svg/down.svg";
@@ -10,9 +10,10 @@ import { useDistributions } from "../validation/useDistributions";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding, envVarBinding } from "../validation/binding";
 import InfoBox from "./InfoBox";
-import { extractEnvVarData, extractVariables } from "../monaco-editor/parseYaml";
+// import { extractEnvVarData, extractVariables } from "../monaco-editor/parseYaml";
 import { editorBinding } from "../monaco-editor/editorBinding";
 import WarningBox from "./WarningBox";
+import { useEnvVariables } from "~/contexts/EditorContext";
 
 export interface ICurrentDistributionVersion {
 	distro: string;
@@ -21,12 +22,7 @@ export interface ICurrentDistributionVersion {
 }
 
 export default function ValidationType() {
-	const [{ config, env, distro, distroVersion }] = useUrlState([
-		distroBinding,
-		distroVersionBinding,
-		envVarBinding,
-		editorBinding,
-	]);
+	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding, envVarBinding, editorBinding]);
 	const [open, setOpen] = useState(false);
 	const { data: distributions } = useDistributions();
 
@@ -35,13 +31,16 @@ export default function ValidationType() {
 			? { distro: distro, version: distroVersion, name: distributions[distro]?.name || "" }
 			: undefined;
 
-	const [envVariables, setEnvVariables] = useState<string[]>([]);
-	const envVarData = extractEnvVarData(envVariables, env);
-	const unboundVariables = Object.values(envVarData).filter((envVar) => envVar.value === undefined);
+	// const [envVariables, setEnvVariables] = useState<string[]>([]);
+	const { envVarData } = useEnvVariables();
+	const unboundVariables = Object.values(envVarData).filter(
+		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
+	);
 
-	useEffect(() => {
-		setEnvVariables(extractVariables(config));
-	}, [config]);
+	// console.log(envVarData);
+	// useEffect(() => {
+	// 	setEnvVariables(extractVariables(config));
+	// }, [config]);
 
 	return (
 		<div className="flex items-center gap-x-4">

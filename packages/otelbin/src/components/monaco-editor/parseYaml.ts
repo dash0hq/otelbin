@@ -3,7 +3,7 @@
 
 import { Parser } from "yaml";
 import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
-import type { IEnvVar } from "../EnvVarForm";
+// import type { IEnvVar } from "../EnvVarForm";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -257,36 +257,4 @@ export function extractVariables(inputString: string): string[] {
 	const matches = inputString.match(variableRegex);
 
 	return matches ? matches.map((match) => match) : [];
-}
-
-export function extractEnvVarData(envVars: string[], envUrlState: Record<string, string>) {
-	const envVarData: Record<string, IEnvVar> = {};
-
-	if (envVars && envVars.length > 0) {
-		let flagName = "";
-		let flagValue: string | undefined = "";
-		const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
-
-		envVarPlaceHolder.forEach((variable) => {
-			const name = variable.split(":")[0] ?? variable;
-			let value: string | undefined = variable.split(":")[1] ?? "";
-
-			if (flagName !== "" && flagValue !== "") {
-				if (name === flagName && value !== flagValue) {
-					value = undefined;
-				}
-			} else {
-				value = envUrlState[name] ?? value;
-			}
-
-			envVarData[name] = {
-				name: name,
-				value: envUrlState[name] ?? value,
-			};
-			flagName = name;
-			flagValue = value;
-		});
-	}
-
-	return envVarData;
 }

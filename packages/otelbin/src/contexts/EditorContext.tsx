@@ -17,9 +17,14 @@ import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/mo
 import "../components/react-flow/decorationStyles.css";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { envVarBinding } from "~/components/validation/binding";
 
-interface ILineNumber {
-	lines: number[];
+export interface IEnvVar {
+	name: string;
+	value?: string;
+	submittedValue?: string;
+	defaultValues?: string[];
+	lines?: number[];
 }
 
 interface YAMLWorker {
@@ -75,12 +80,12 @@ export const EnvVarMenuContext = createContext<{
 	},
 });
 
-export const EnvVarLines = createContext<{
-	envVarLines: Record<string, ILineNumber>;
-	setEnvVarLines: (envVarLines: Record<string, ILineNumber>) => void;
+export const EnvVarData = createContext<{
+	envVarData: Record<string, IEnvVar>;
+	setEnvVarData: (envVariables: Record<string, IEnvVar>) => void;
 }>({
-	envVarLines: {},
-	setEnvVarLines: () => {
+	envVarData: {},
+	setEnvVarData: () => {
 		return;
 	},
 });
@@ -113,8 +118,8 @@ export function useEnvVarMenu() {
 	return React.useContext(EnvVarMenuContext);
 }
 
-export function useEnvVarLines() {
-	return React.useContext(EnvVarLines);
+export function useEnvVariables() {
+	return React.useContext(EnvVarData);
 }
 
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
@@ -125,24 +130,33 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(true);
-	const [envVarLines, setEnvVarLines] = useState<Record<string, ILineNumber>>({});
+	const [envVarData, setEnvVarData] = useState<Record<string, IEnvVar>>({});
 	const [envVariables, setEnvVariables] = useState<string[]>([]);
-	const [{ config }] = useUrlState([editorBinding]);
+	const [{ config, env }] = useUrlState([editorBinding, envVarBinding]);
 
-	function calcEnvVarLines(envVars: string[]) {
-		const lineNumbers: Record<string, ILineNumber> = {};
-		const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
+	function extractEnvVarData(envVars: string[], envUrlState: Record<string, string>) {
+		const envVarData: Record<string, IEnvVar> = {};
 
-		envVarPlaceHolder.forEach((variable) => {
-			const name = variable.split(":")[0] ?? variable;
-			const matches =
-				editorRef?.current?.getModel()?.findMatches("${" + name + ":", true, false, false, null, false) ?? [];
+		if (envVars && envVars.length > 0) {
+			const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
 
-			if (matches) {
-				lineNumbers[name] = { lines: matches.map((match) => match.range.startLineNumber) };
-			}
-		});
-		return lineNumbers;
+			envVarPlaceHolder.forEach((variable) => {
+				const name = variable.split(":")[0] ?? variable;
+				const matches =
+					editorRef?.current?.getModel()?.findMatches("${" + name + ":", true, false, false, null, false) ?? [];
+				const defaultValue: string | undefined = variable.split(":")[1] ?? "";
+				const submittedValue = envUrlState[name];
+
+				envVarData[name] = {
+					name: name,
+					submittedValue: submittedValue,
+					defaultValues: [...(envVarData[name]?.defaultValues ?? []), defaultValue],
+					lines: matches.map((match) => match.range.startLineNumber),
+				};
+			});
+		}
+
+		return envVarData;
 	}
 
 	function envVarDecoration(variables: string[]) {
@@ -183,8 +197,8 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 	useEffect(() => {
 		envVarDecoration(envVariables);
-		setEnvVarLines(calcEnvVarLines(envVariables));
-	}, [envVariables]);
+		setEnvVarData(extractEnvVarData(envVariables, env));
+	}, [envVariables, env]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
@@ -347,7 +361,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		});
 
 		envVarDecoration(envVariables);
-		setEnvVarLines(calcEnvVarLines(envVariables));
+		setEnvVarData(extractEnvVarData(envVariables, env));
 
 		editorRef.current.onDidChangeCursorPosition((e) => {
 			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) ?? 0;
@@ -389,9 +403,9 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		setOpenEnvVarMenu: setOpenEnvVarMenu,
 	};
 
-	const envVarLinesContext = {
-		envVarLines: envVarLines,
-		setEnvVarLines: setEnvVarLines,
+	const envVarDataContext = {
+		envVarData: envVarData,
+		setEnvVarData: setEnvVarData,
 	};
 
 	return (
@@ -402,7 +416,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 						<ViewModeContext.Provider value={viewModeContext}>
 							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
 								<EnvVarMenuContext.Provider value={envVarMenuContext}>
-									<EnvVarLines.Provider value={envVarLinesContext}>{children}</EnvVarLines.Provider>
+									<EnvVarData.Provider value={envVarDataContext}>{children}</EnvVarData.Provider>
 								</EnvVarMenuContext.Provider>
 							</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>

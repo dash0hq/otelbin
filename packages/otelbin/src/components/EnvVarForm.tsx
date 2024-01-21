@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useEffect, useRef, useState } from "react";
-import { useEnvVarLines, useEnvVarMenu } from "~/contexts/EditorContext";
+import { type IEnvVar, useEnvVarMenu, useEnvVariables } from "~/contexts/EditorContext";
 import { IconButton } from "./icon-button";
 import { Check, X, XCircle } from "lucide-react";
 import { Label } from "./label";
@@ -10,21 +10,17 @@ import { Textarea } from "./textArea";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding, envVarBinding } from "./validation/binding";
 
-export interface IEnvVar {
-	// linesNumber: number[];
-	name: string;
-	value?: string;
-}
-
-export default function EnvVarForm({ envVarData }: { envVarData: Record<string, IEnvVar> }) {
+export default function EnvVarForm() {
 	const { openEnvVarMenu, setOpenEnvVarMenu } = useEnvVarMenu();
-	const { envVarLines } = useEnvVarLines();
+	const { envVarData, setEnvVarData } = useEnvVariables();
 
 	function handleClose() {
 		setOpenEnvVarMenu(false);
 	}
 
-	const unboundVariables = Object.values(envVarData).filter((envVar) => envVar.value === undefined);
+	const unboundVariables = Object.values(envVarData).filter(
+		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
+	);
 
 	return (
 		<div
@@ -53,7 +49,7 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 				</div>
 				<div className="px-4">
 					{Object.values(envVarData).map((envVar) => (
-						<EnvVar key={envVar.name} envVar={envVar} lines={envVarLines[envVar.name]?.lines} />
+						<EnvVar key={envVar.name} envVar={envVar} setEnvVarData={setEnvVarData} />
 					))}
 				</div>
 			</div>
@@ -61,10 +57,16 @@ export default function EnvVarForm({ envVarData }: { envVarData: Record<string, 
 	);
 }
 
-function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: number[] }) {
+function EnvVar({
+	envVar,
+	setEnvVarData,
+}: {
+	envVar: IEnvVar;
+	setEnvVarData: (envVariables: Record<string, IEnvVar>) => void;
+}) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [{ env }, getLink] = useUrlState([envVarBinding]);
-	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.value ?? "");
+	const [envVarValue, setEnvVarValue] = useState(envVar.submittedValue ?? "");
 	const isServerSideValidationEnabled = useServerSideValidationEnabled();
 
 	function handleEnvVarChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -99,8 +101,18 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: number[] }) {
 	}, [isServerSideValidationEnabled]);
 
 	useEffect(() => {
-		setEnvVarValue(env[envVar.name] ?? envVar.value ?? "");
-	}, [envVar.name, env, envVar.value]);
+		const distinctDefaultValues = new Set(envVar.defaultValues);
+		const submittedValue = env[envVar.name];
+		if (!submittedValue) {
+			if (distinctDefaultValues.size > 1) {
+				setEnvVarValue("");
+			} else if (distinctDefaultValues.size === 1) {
+				setEnvVarValue(envVar?.defaultValues?.[0] ?? "");
+			}
+		}
+	}, [envVar.defaultValues, envVar.name, env]);
+
+	const envVarLinesIsArray = Array.isArray(envVar.lines) && envVar.lines?.length > 0;
 
 	return (
 		<div className="flex flex-col gap-y-1 my-6">
@@ -142,13 +154,14 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: number[] }) {
 				</div>
 			</div>
 			<Label className="text-[12px] text-[#AFAFB2]" htmlFor="envVar">
-				{`Used ${lines?.length} ${lines && lines?.length > 1 ? `times` : `time`} on line `}
-				{lines?.map((lineNumber, index) => (
-					<React.Fragment key={lineNumber}>
-						<span className="text-blue-400">{lineNumber}</span>
-						{index < lines.length - 1 ? ` and ` : ``}
-					</React.Fragment>
-				))}
+				{`Used ${envVar.lines?.length} ${envVar.lines && envVar.lines?.length > 1 ? `times` : `time`} on line `}
+				{envVarLinesIsArray &&
+					envVar.lines?.map((lineNumber, index) => (
+						<React.Fragment key={lineNumber}>
+							<span className="text-blue-400">{lineNumber}</span>
+							{index < (envVar?.lines?.length ?? 0) - 1 ? ` and ` : ``}
+						</React.Fragment>
+					))}
 			</Label>
 		</div>
 	);

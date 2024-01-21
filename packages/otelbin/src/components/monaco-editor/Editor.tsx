@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { IError } from "./ValidationErrorConsole";
 import ValidationErrorConsole from "./ValidationErrorConsole";
 import EditorTopBar from "../EditorTopBar";
-import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
+import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode, useEnvVariables } from "~/contexts/EditorContext";
 import MonacoEditor, { loader, type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
@@ -26,9 +26,8 @@ import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
-import { extractEnvVarData, extractVariables, selectConfigType } from "./parseYaml";
-import EnvVarForm, { type IEnvVar } from "../EnvVarForm";
-import { envVarBinding } from "../validation/binding";
+import { selectConfigType } from "./parseYaml";
+import EnvVarForm from "../EnvVarForm";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -44,11 +43,10 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const { setViewMode, viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
-	const [{ config, env }, getLink] = useUrlState([editorBinding, envVarBinding]);
+	const [{ config }, getLink] = useUrlState([editorBinding]);
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
-	const [envVariables, setEnvVariables] = useState<string[]>([]);
-	const [envVarData, setEnvVarData] = useState<Record<string, IEnvVar>>({});
+	const { envVarData } = useEnvVariables();
 	const serverSideValidationResult = useServerSideValidation(envVarData);
 
 	const onWidthChange = useCallback((newWidth: number) => {
@@ -150,14 +148,6 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}
 
-	useEffect(() => {
-		setEnvVariables(extractVariables(currentConfig));
-	}, [currentConfig]);
-
-	useEffect(() => {
-		setEnvVarData(extractEnvVarData(envVariables, env));
-	}, [envVariables, env]);
-
 	return (
 		<>
 			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
@@ -203,7 +193,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							{viewMode !== "pipeline" && <ValidationErrorConsole errors={totalValidationErrors} font={firaCode} />}
 							{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 						</div>
-						{envVariables.length > 0 && <EnvVarForm envVarData={envVarData} />}
+						{Object.keys(envVarData).length > 0 && <EnvVarForm />}
 						<div className="z-0 min-h-full w-full shrink grow relative">
 							<AutoSizer>
 								{({ width, height }) => (
