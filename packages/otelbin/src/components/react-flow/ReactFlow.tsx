@@ -43,6 +43,8 @@ export default function Flow({
 	const jsonData = useMemo(() => {
 		try {
 			return YAML.parse(value, { logLevel: "error", schema: "failsafe" }) as IConfig;
+			// Catching and ignoring errors here since validation errors are already displayed in the validation console.
+			// This prevents additional noise and instability when editing the config.
 		} catch (error: unknown) {}
 	}, [value]) as IConfig;
 

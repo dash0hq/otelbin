@@ -242,6 +242,8 @@ export function selectConfigType(config: string) {
 	let jsonData: any;
 	try {
 		jsonData = YAML.parse(config, { logLevel: "error", schema: "failsafe" }) as any;
+		// Catching and ignoring errors here since validation errors are already displayed in the validation console.
+		// This prevents additional noise and instability when editing the config.
 	} catch (e) {}
 	if (isK8sConfigMap(jsonData)) {
 		return jsonData.data.relay;
