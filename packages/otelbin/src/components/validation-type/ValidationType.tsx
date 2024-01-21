@@ -10,7 +10,6 @@ import { useDistributions } from "../validation/useDistributions";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding, envVarBinding } from "../validation/binding";
 import InfoBox from "./InfoBox";
-// import { extractEnvVarData, extractVariables } from "../monaco-editor/parseYaml";
 import { editorBinding } from "../monaco-editor/editorBinding";
 import WarningBox from "./WarningBox";
 import { useEnvVariables } from "~/contexts/EditorContext";
@@ -31,16 +30,10 @@ export default function ValidationType() {
 			? { distro: distro, version: distroVersion, name: distributions[distro]?.name || "" }
 			: undefined;
 
-	// const [envVariables, setEnvVariables] = useState<string[]>([]);
 	const { envVarData } = useEnvVariables();
 	const unboundVariables = Object.values(envVarData).filter(
 		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
 	);
-
-	// console.log(envVarData);
-	// useEffect(() => {
-	// 	setEnvVariables(extractVariables(config));
-	// }, [config]);
 
 	return (
 		<div className="flex items-center gap-x-4">

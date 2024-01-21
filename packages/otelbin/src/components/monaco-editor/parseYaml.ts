@@ -3,7 +3,6 @@
 
 import { Parser } from "yaml";
 import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
-// import type { IEnvVar } from "../EnvVarForm";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
