@@ -5,7 +5,7 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import type { editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
-import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from "monaco-yaml";
+import { configureMonacoYaml, type MonacoYamlOptions } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
@@ -85,33 +85,41 @@ export function useBreadcrumbs() {
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<Monaco | null>(null);
-	const monacoYamlRef = useRef<unknown | null>(null);
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const isServerValidationEnabled = useServerSideValidationEnabled();
-	const defaultSchema: SchemasSettings = {
-		uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
-		// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
-		schema,
-		fileMatch: ["*"],
-	};
-	const createData: MonacoYamlOptions = {
-		enableSchemaRequest: !isServerValidationEnabled,
-		schemas: isServerValidationEnabled ? [] : [defaultSchema],
-		validate: !isServerValidationEnabled,
-	};
-
 	const viewState = editorRef.current?.saveViewState();
+	const [monaco, setMonaco] = useState<Monaco>();
+
+	useEffect(() => setMonaco(monaco), [monaco]);
 
 	useEffect(() => {
-		if (monacoRef.current && isServerValidationEnabled) {
-			monacoYamlRef.current = null;
+		if (!isServerValidationEnabled && monaco) {
+			const monacoYaml = configureMonacoYaml(monaco, {
+				enableSchemaRequest: true,
+				schemas: [
+					{
+						uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
+						// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
+						schema,
+						fileMatch: ["*"],
+					},
+				],
+				validate: true,
+			});
+			return () =>
+				monacoYaml.update({
+					enableSchemaRequest: false,
+					schemas: [],
+					validate: false,
+				});
 		}
-	}, [isServerValidationEnabled]);
+	}, [isServerValidationEnabled, monaco]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
+		setMonaco(monaco);
 
 		window.MonacoEnvironment = {
 			getWorker(_, label) {
@@ -136,16 +144,13 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			isServerValidationEnabled
 		);
 
-		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
+		monaco.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
 		});
-
-		monacoYamlRef.current = configureMonacoYaml(monaco, createData);
 
 		const worker = createWorkerManager<YAMLWorker, MonacoYamlOptions>(monaco, {
 			label: "yaml",
 			moduleId: "monaco-yaml/yaml.worker",
-			createData,
 		});
 
 		function createCompletionItemProvider(getWorker: WorkerAccessor): languages.CompletionItemProvider {
@@ -174,12 +179,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				},
 			};
 		}
-		if (!isServerValidationEnabled) {
-			monacoRef?.current?.languages.registerCompletionItemProvider(
-				"yaml",
-				createCompletionItemProvider(worker.getWorker)
-			);
-		}
+
+		monaco.languages.registerCompletionItemProvider(
+			"yaml",
+			createCompletionItemProvider(worker?.getWorker as WorkerAccessor)
+		);
 
 		let value = editorRef.current?.getValue() ?? "";
 		let docElements = getYamlDocument(value);
