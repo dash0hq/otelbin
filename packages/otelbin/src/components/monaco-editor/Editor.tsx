@@ -46,8 +46,8 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [{ config }, getLink] = useUrlState([editorBinding]);
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
-	const { envVarData } = useEnvVariables();
-	const serverSideValidationResult = useServerSideValidation(envVarData);
+	const { envVarState } = useEnvVariables();
+	const serverSideValidationResult = useServerSideValidation(envVarState);
 
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
@@ -193,7 +193,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							{viewMode !== "pipeline" && <ValidationErrorConsole errors={totalValidationErrors} font={firaCode} />}
 							{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 						</div>
-						{Object.keys(envVarData).length > 0 && <EnvVarForm />}
+						{Object.keys(envVarState).length > 0 && <EnvVarForm />}
 						<div className="z-0 min-h-full w-full shrink grow relative">
 							<AutoSizer>
 								{({ width, height }) => (

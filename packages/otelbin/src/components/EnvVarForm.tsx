@@ -12,13 +12,13 @@ import { distroBinding, distroVersionBinding, envVarBinding } from "./validation
 
 export default function EnvVarForm() {
 	const { openEnvVarMenu, setOpenEnvVarMenu } = useEnvVarMenu();
-	const { envVarData, setEnvVarData } = useEnvVariables();
+	const { envVarState, setEnvVarState } = useEnvVariables();
 
 	function handleClose() {
 		setOpenEnvVarMenu(false);
 	}
 
-	const unboundVariables = Object.values(envVarData).filter(
+	const unboundVariables = Object.values(envVarState).filter(
 		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
 	);
 
@@ -48,8 +48,8 @@ export default function EnvVarForm() {
 					</IconButton>
 				</div>
 				<div className="px-4">
-					{Object.values(envVarData).map((envVar) => (
-						<EnvVar key={envVar.name} envVar={envVar} setEnvVarData={setEnvVarData} />
+					{Object.values(envVarState).map((envVar) => (
+						<EnvVar key={envVar.name} envVar={envVar} envVarState={envVarState} setEnvVarState={setEnvVarState} />
 					))}
 				</div>
 			</div>
@@ -59,10 +59,12 @@ export default function EnvVarForm() {
 
 function EnvVar({
 	envVar,
-	setEnvVarData,
+	envVarState,
+	setEnvVarState,
 }: {
 	envVar: IEnvVar;
-	setEnvVarData: (envVariables: Record<string, IEnvVar>) => void;
+	envVarState: Record<string, IEnvVar>;
+	setEnvVarState: (envVariables: Record<string, IEnvVar>) => void;
 }) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [{ env }, getLink] = useUrlState([envVarBinding]);
@@ -106,11 +108,20 @@ function EnvVar({
 		if (!submittedValue) {
 			if (distinctDefaultValues.size > 1) {
 				setEnvVarValue("");
+				setEnvVarState({ ...envVarState, [envVar.name]: { ...envVar, submittedValue: undefined, defaultValues: [] } });
 			} else if (distinctDefaultValues.size === 1) {
 				setEnvVarValue(envVar?.defaultValues?.[0] ?? "");
+				setEnvVarState({
+					...envVarState,
+					[envVar.name]: {
+						...envVar,
+						submittedValue: env[envVar.name] ?? envVar?.defaultValues?.[0],
+						defaultValues: envVar?.defaultValues,
+					},
+				});
 			}
 		}
-	}, [envVar.defaultValues, envVar.name, env]);
+	}, [envVar.defaultValues, envVar, envVarState, setEnvVarState, env]);
 
 	const envVarLinesIsArray = Array.isArray(envVar.lines) && envVar.lines?.length > 0;
 

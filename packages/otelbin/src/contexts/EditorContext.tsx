@@ -21,7 +21,6 @@ import { envVarBinding } from "~/components/validation/binding";
 
 export interface IEnvVar {
 	name: string;
-	value?: string;
 	submittedValue?: string;
 	defaultValues?: string[];
 	lines?: number[];
@@ -80,12 +79,12 @@ export const EnvVarMenuContext = createContext<{
 	},
 });
 
-export const EnvVarData = createContext<{
-	envVarData: Record<string, IEnvVar>;
-	setEnvVarData: (envVariables: Record<string, IEnvVar>) => void;
+export const EnvVarState = createContext<{
+	envVarState: Record<string, IEnvVar>;
+	setEnvVarState: (envVariables: Record<string, IEnvVar>) => void;
 }>({
-	envVarData: {},
-	setEnvVarData: () => {
+	envVarState: {},
+	setEnvVarState: () => {
 		return;
 	},
 });
@@ -119,7 +118,7 @@ export function useEnvVarMenu() {
 }
 
 export function useEnvVariables() {
-	return React.useContext(EnvVarData);
+	return React.useContext(EnvVarState);
 }
 
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
@@ -130,7 +129,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(true);
-	const [envVarData, setEnvVarData] = useState<Record<string, IEnvVar>>({});
+	const [envVarState, setEnvVarState] = useState<Record<string, IEnvVar>>({});
 	const [envVariables, setEnvVariables] = useState<string[]>([]);
 	const [{ config, env }] = useUrlState([editorBinding, envVarBinding]);
 
@@ -197,7 +196,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 	useEffect(() => {
 		envVarDecoration(envVariables);
-		setEnvVarData(extractEnvVarData(envVariables, env));
+		setEnvVarState(extractEnvVarData(envVariables, env));
 	}, [envVariables, env]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
@@ -361,7 +360,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		});
 
 		envVarDecoration(envVariables);
-		setEnvVarData(extractEnvVarData(envVariables, env));
+		setEnvVarState(extractEnvVarData(envVariables, env));
 
 		editorRef.current.onDidChangeCursorPosition((e) => {
 			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) ?? 0;
@@ -404,8 +403,8 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	const envVarDataContext = {
-		envVarData: envVarData,
-		setEnvVarData: setEnvVarData,
+		envVarState: envVarState,
+		setEnvVarState: setEnvVarState,
 	};
 
 	return (
@@ -416,7 +415,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 						<ViewModeContext.Provider value={viewModeContext}>
 							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
 								<EnvVarMenuContext.Provider value={envVarMenuContext}>
-									<EnvVarData.Provider value={envVarDataContext}>{children}</EnvVarData.Provider>
+									<EnvVarState.Provider value={envVarDataContext}>{children}</EnvVarState.Provider>
 								</EnvVarMenuContext.Provider>
 							</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>

@@ -30,8 +30,8 @@ export default function ValidationType() {
 			? { distro: distro, version: distroVersion, name: distributions[distro]?.name || "" }
 			: undefined;
 
-	const { envVarData } = useEnvVariables();
-	const unboundVariables = Object.values(envVarData).filter(
+	const { envVarState } = useEnvVariables();
+	const unboundVariables = Object.values(envVarState).filter(
 		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
 	);
 

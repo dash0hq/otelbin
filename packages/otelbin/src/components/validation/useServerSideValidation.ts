@@ -38,7 +38,9 @@ export function useServerSideValidation(envVarData: Record<string, IEnvVar>): Va
 		envVarBinding,
 	]);
 	const [state, setState] = useState<ValidationState>(initialValidationState);
-	const unboundVariables = Object.values(envVarData).filter((envVar) => envVar.value === undefined);
+	const unboundVariables = Object.values(envVarData).filter(
+		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
+	);
 	const validate = useMemo(
 		() =>
 			debounce(
