@@ -5,7 +5,7 @@ import React, { type RefObject, useEffect, useMemo } from "react";
 import ReactFlow, { Background, Panel, useReactFlow, useNodesState, useEdgesState, useStore } from "reactflow";
 import "reactflow/dist/style.css";
 import type { IConfig } from "./dataType";
-import { Parser } from "yaml";
+import YAML, { Parser } from "yaml";
 import useEdgeCreator from "./useEdgeCreator";
 import { useFocus } from "~/contexts/EditorContext";
 import { Minus, Plus, HelpCircle, Lock, Minimize2 } from "lucide-react";
@@ -22,7 +22,6 @@ import ReceiversNode from "./node-types/ReceiversNode";
 import ProcessorsNode from "./node-types/ProcessorsNode";
 import { useLayout } from "./layout/useLayout";
 import CyclicErrorEdge from "./CyclicErrorEdge";
-import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 
@@ -40,7 +39,15 @@ export default function Flow({
 	editorRef: EditorRefType | null;
 }) {
 	const reactFlowInstance = useReactFlow();
-	const jsonData = useMemo(() => JsYaml.load(value, { schema: FAILSAFE_SCHEMA }) as IConfig, [value]);
+
+	const jsonData = useMemo(() => {
+		try {
+			return YAML.parse(value, { logLevel: "error", schema: "failsafe" }) as IConfig;
+			// Catching and ignoring errors here since validation errors are already displayed in the validation console.
+			// This prevents additional noise and instability when editing the config.
+		} catch (error: unknown) {}
+	}, [value]) as IConfig;
+
 	const pipelines = useMemo(() => {
 		const parsedYaml = Array.from(new Parser().parse(value));
 		const doc = parsedYaml.find((token) => token.type === "document") as Document;

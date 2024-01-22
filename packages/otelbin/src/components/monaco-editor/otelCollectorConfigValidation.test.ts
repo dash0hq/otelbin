@@ -15,7 +15,7 @@ import {
 } from "./parseYaml";
 import { capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
 import type { editor } from "monaco-editor";
-import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
+import YAML from "yaml";
 
 const editorBinding = {
 	prefix: "",
@@ -261,12 +261,12 @@ describe("findErrorElement", () => {
 	});
 });
 
-describe("JsYaml.load", () => {
+describe("Yaml.parse", () => {
 	it("should load a YAML document that included numbers and convert it to JSON data with numbers as string", () => {
-		const jsonData = JsYaml.load(yamlData.fallback, { schema: FAILSAFE_SCHEMA });
+		const jsonData = YAML.parse(yamlData.fallback, { schema: "failsafe" });
 		expect(jsonData).toStrictEqual({
-			receivers: { otlp: null, 2222: null },
-			processors: { batch: null, 3333: null },
+			receivers: { otlp: "", 2222: "" },
+			processors: { batch: "", 3333: "" },
 			service: {
 				extensions: ["health_check", "pprof", "zpages", "999"],
 				pipelines: {

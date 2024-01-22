@@ -77,8 +77,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 		}
 	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult, isServerValidationEnabled]);
 
-	const isValidConfig =
-		totalValidationErrors.jsYamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
+	const isValidConfig = totalValidationErrors.yamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
 
 	const handleEditorChange: OnChange = (value) => {
 		const configType = selectConfigType(value ?? "");
