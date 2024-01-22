@@ -15,6 +15,7 @@ import {
 } from "./parseYaml";
 import { capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
 import type { editor } from "monaco-editor";
+import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 
 const editorBinding = {
 	prefix: "",
@@ -30,6 +31,28 @@ service:
 		traces:
 			receivers: [otlp]
 			processors: [batch]
+			exporters: [otlp]
+`
+		.trim()
+		.replaceAll(/\t/g, "  ") as string,
+} as const;
+
+const yamlData = {
+	prefix: "",
+	name: "config",
+	fallback: `
+receivers:
+  otlp:
+  2222:
+processors:
+  batch:
+  3333:
+service:
+  extensions: [health_check, pprof, zpages, 999]
+  pipelines:
+		traces:
+			receivers: [otlp, 123, 456]
+			processors: [batch, 789]
 			exporters: [otlp]
 `
 		.trim()
@@ -235,5 +258,25 @@ describe("findErrorElement", () => {
 		const expectedOutput = undefined;
 
 		expect(result).toEqual(expectedOutput);
+	});
+});
+
+describe("JsYaml.load", () => {
+	it("should load a YAML document that included numbers and convert it to JSON data with numbers as string", () => {
+		const jsonData = JsYaml.load(yamlData.fallback, { schema: FAILSAFE_SCHEMA });
+		expect(jsonData).toStrictEqual({
+			receivers: { otlp: null, 2222: null },
+			processors: { batch: null, 3333: null },
+			service: {
+				extensions: ["health_check", "pprof", "zpages", "999"],
+				pipelines: {
+					traces: {
+						receivers: ["otlp", "123", "456"],
+						processors: ["batch", "789"],
+						exporters: ["otlp"],
+					},
+				},
+			},
+		});
 	});
 });

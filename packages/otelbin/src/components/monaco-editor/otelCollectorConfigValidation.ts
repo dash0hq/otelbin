@@ -3,7 +3,7 @@
 
 import { schema } from "./JSONSchema";
 import type { IAjvError, IError, IJsYamlError } from "./ValidationErrorConsole";
-import JsYaml from "js-yaml";
+import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 import Ajv from "ajv";
 import type { ErrorObject } from "ajv";
 import { type RefObject } from "react";
@@ -53,7 +53,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	const serverSideValidationPath = serverSideValidationResult?.result?.path ?? [];
 
 	try {
-		const jsonData = JsYaml.load(configData);
+		const jsonData = JsYaml.load(configData, { schema: FAILSAFE_SCHEMA });
 		const valid = ajv.validate(schema, jsonData);
 		if (!valid) {
 			const errors = ajv.errors;

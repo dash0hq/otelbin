@@ -3,18 +3,18 @@
 
 import { parentNodesConfig } from "./ParentsNode";
 
-export default function ParentNodeTag({ tag }: { tag: string }) {
-	function FormatTag(tagName: string) {
-		const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-		let resultString = [""];
-		if (tagName.includes("/")) {
-			resultString = tagName.split("/");
-			return capitalize(resultString.join(" / "));
-		} else {
-			return capitalize(tagName);
-		}
+export function FormatTag(tagName: string) {
+	const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+	let resultString = [""];
+	if (tagName.includes("/")) {
+		resultString = tagName.split("/");
+		return capitalize(resultString.join(" / "));
+	} else {
+		return capitalize(tagName);
 	}
+}
 
+export default function ParentNodeTag({ tag }: { tag: string }) {
 	return (
 		<>
 			{parentNodesConfig

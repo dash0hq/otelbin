@@ -64,7 +64,12 @@ export function FlowClick(
 				?.filter((item) => item.level1Parent === data.parentNode)
 				.find((item) => item.source === label);
 		} else {
-			return mainItemsData[dataType]?.find((item) => item.source === label);
+			return (
+				mainItemsData[dataType]?.find((item) => item.source === label) ??
+				pipelinesKeyValues?.[dataType]
+					?.filter((item) => item.level1Parent === data.parentNode)
+					.find((item) => item.source === label)
+			);
 		}
 	}
 

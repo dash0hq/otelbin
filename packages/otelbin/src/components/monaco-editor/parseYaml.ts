@@ -2,28 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Parser } from "yaml";
-import JsYaml from "js-yaml";
+import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 export interface SourceToken {
 	type:
-		| "byte-order-mark"
-		| "doc-mode"
-		| "doc-start"
-		| "space"
-		| "comment"
-		| "newline"
-		| "directive-line"
-		| "anchor"
-		| "tag"
-		| "seq-item-ind"
-		| "explicit-key-ind"
-		| "map-value-ind"
-		| "flow-map-start"
-		| "flow-map-end"
-		| "flow-seq-start"
-		| "flow-seq-end"
-		| "flow-error-end"
-		| "comma"
-		| "block-scalar-header";
+	| "byte-order-mark"
+	| "doc-mode"
+	| "doc-start"
+	| "space"
+	| "comment"
+	| "newline"
+	| "directive-line"
+	| "anchor"
+	| "tag"
+	| "seq-item-ind"
+	| "explicit-key-ind"
+	| "map-value-ind"
+	| "flow-map-start"
+	| "flow-map-end"
+	| "flow-seq-start"
+	| "flow-seq-end"
+	| "flow-error-end"
+	| "comma"
+	| "block-scalar-header";
 	offset: number;
 	indent: number;
 	source: string;
@@ -240,8 +240,7 @@ export function isOtelColCRD(jsonData: IOtelColCRD) {
 }
 
 export function selectConfigType(config: string) {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const jsonData = JsYaml.load(config) as any;
+	const jsonData = JsYaml.load(config, { schema: FAILSAFE_SCHEMA }) as any;
 
 	if (isK8sConfigMap(jsonData)) {
 		return jsonData.data.relay;
