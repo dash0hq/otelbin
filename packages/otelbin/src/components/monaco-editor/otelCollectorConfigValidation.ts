@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { schema } from "./JSONSchema";
-import type { IAjvError, IError, IJsYamlError } from "./ValidationErrorConsole";
-import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
+import type { IAjvError, IError } from "./ValidationErrorConsole";
+import YAML, { type YAMLParseError } from "yaml";
 import Ajv from "ajv";
 import type { ErrorObject } from "ajv";
 import type { RefObject } from "react";
@@ -52,7 +52,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	const serverSideValidationPath = serverSideValidationResult?.result?.path ?? [];
 
 	try {
-		const jsonData = JsYaml.load(configData, { schema: FAILSAFE_SCHEMA });
+		const jsonData = YAML.parse(configData, { logLevel: "error", schema: "failsafe" });
 		const valid = ajv.validate(schema, jsonData);
 		if (!valid) {
 			const errors = ajv.errors;
@@ -75,32 +75,27 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 						severity: 8,
 						message: errorInfo.message,
 					});
-					if (error instanceof JsYaml.YAMLException) {
-						errorInfo.line = error.mark.line + 1;
-						errorInfo.column = error.mark.column + 1;
-					}
 					return errorInfo;
 				});
 				ajvError.push(...validationErrors);
 			}
 		}
 	} catch (error: unknown) {
-		const knownError = error as IJsYamlError;
-		const errorLineNumber = knownError.mark?.line;
-		const errorMessage = knownError.reason ?? "Unknown error";
+		const yamlError = error as YAMLParseError;
+		const errorMessage = yamlError.code ?? "Unknown error";
 		const errorMarker = {
-			startLineNumber: errorLineNumber ?? 0,
-			endLineNumber: errorLineNumber ?? 0,
-			startColumn: 0,
-			endColumn: 0,
+			startLineNumber: yamlError.linePos?.[0].line ?? 0,
+			endLineNumber: yamlError.linePos?.[1]?.line ?? 0,
+			startColumn: yamlError.linePos?.[0].col ?? 0,
+			endColumn: yamlError.linePos?.[1]?.col ?? 0,
 			severity: 8,
 			message: errorMessage,
 		};
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", [errorMarker]);
 
-		totalErrors.jsYamlError = knownError;
+		totalErrors.yamlError = yamlError;
 	}
-	if (!totalErrors.jsYamlError) {
+	if (!totalErrors.yamlError) {
 		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData);
 		const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
 		const { line, column } = findLineAndColumn(configData, serverSideErrorElement?.offset);

@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Parser } from "yaml";
-import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
+import YAML, { Parser } from "yaml";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -240,8 +239,12 @@ export function isOtelColCRD(jsonData: IOtelColCRD) {
 }
 
 export function selectConfigType(config: string) {
-	const jsonData = JsYaml.load(config, { schema: FAILSAFE_SCHEMA }) as any;
-
+	let jsonData: any;
+	try {
+		jsonData = YAML.parse(config, { logLevel: "error", schema: "failsafe" }) as any;
+		// Catching and ignoring errors here since validation errors are already displayed in the validation console.
+		// This prevents additional noise and instability when editing the config.
+	} catch (e) {}
 	if (isK8sConfigMap(jsonData)) {
 		return jsonData.data.relay;
 	} else if (isOtelColCRD(jsonData)) {
