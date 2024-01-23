@@ -92,8 +92,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const viewState = editorRef.current?.saveViewState();
 	const [monaco, setMonaco] = useState<Monaco>();
 
-	useEffect(() => setMonaco(monaco), [monaco]);
-
 	useEffect(() => {
 		if (!isServerValidationEnabled && monaco) {
 			const monacoYaml = configureMonacoYaml(monaco, {
