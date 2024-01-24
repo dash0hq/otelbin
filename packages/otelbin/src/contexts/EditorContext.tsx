@@ -12,8 +12,10 @@ import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import { type IItem, getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
-import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
-import { useServerSideValidationEnabled } from "~/components/monaco-editor/Editor";
+import {
+	useServerSideValidationEnabled,
+	validateOtelCollectorConfigurationAndSetMarkers,
+} from "~/components/monaco-editor/otelCollectorConfigValidation";
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;

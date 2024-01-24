@@ -21,6 +21,8 @@ import {
 	parseYaml,
 } from "./parseYaml";
 import type { ValidationState } from "../validation/useServerSideValidation";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
@@ -221,3 +223,8 @@ export const findErrorElement = (path: string[], data?: IYamlElement[]): IYamlEl
 	}
 	return undefined;
 };
+
+export function useServerSideValidationEnabled(): boolean {
+	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+	return !!distro && !!distroVersion;
+}

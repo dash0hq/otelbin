@@ -14,7 +14,10 @@ import Flow from "../react-flow/ReactFlow";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
-import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
+import {
+	useServerSideValidationEnabled,
+	validateOtelCollectorConfigurationAndSetMarkers,
+} from "~/components/monaco-editor/otelCollectorConfigValidation";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { AppFooter } from "~/components/AppFooter";
 import { AutoSizer } from "~/components/AutoSizer";
@@ -27,7 +30,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
 import { selectConfigType } from "./parseYaml";
-import { distroBinding, distroVersionBinding } from "../validation/binding";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -224,9 +226,4 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 			</div>
 		</>
 	);
-}
-
-export function useServerSideValidationEnabled(): boolean {
-	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
-	return !!distro && !!distroVersion;
 }
