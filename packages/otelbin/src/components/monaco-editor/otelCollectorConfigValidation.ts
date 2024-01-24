@@ -6,7 +6,7 @@ import type { IAjvError, IError } from "./ValidationErrorConsole";
 import YAML, { type YAMLParseError } from "yaml";
 import Ajv from "ajv";
 import type { ErrorObject } from "ajv";
-import type { RefObject } from "react";
+import { type RefObject } from "react";
 import type { editor } from "monaco-editor";
 import { type Monaco } from "@monaco-editor/react";
 import {
@@ -21,6 +21,8 @@ import {
 	parseYaml,
 } from "./parseYaml";
 import type { ValidationState } from "../validation/useServerSideValidation";
+import { useUrlState } from "~/lib/urlState/client/useUrlState";
+import { distroBinding, distroVersionBinding } from "../validation/binding";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
@@ -30,6 +32,7 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	configData: string,
 	editorRef: EditorRefType,
 	monacoRef: MonacoRefType,
+	isServerSideValidationEnabled: boolean,
 	serverSideValidationResult?: ValidationState
 ) {
 	const ajv = new Ajv({ allErrors: true });
@@ -96,24 +99,34 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		totalErrors.yamlError = yamlError;
 	}
 	if (!totalErrors.yamlError) {
-		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData);
-		const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
-		const { line, column } = findLineAndColumn(configData, serverSideErrorElement?.offset);
-		totalErrors.serverSideError = {
-			message: serverSideValidationResult?.result?.message ?? "",
-			error: serverSideValidationResult?.result?.error ?? "",
-			line: line,
-			path: serverSideValidationPath,
-		};
-		serverSideValidationPath.length > 0 &&
-			errorMarkers.push({
-				startLineNumber: line ?? 0,
-				endLineNumber: 0,
-				startColumn: column ?? 0,
-				endColumn: column ?? 0,
-				severity: 8,
-				message: serverSideValidationResult?.result?.message + " - " + serverSideValidationResult?.result?.error,
-			});
+		customValidate(
+			mainItemsData,
+			serviceItemsData,
+			errorMarkers,
+			totalErrors,
+			configData,
+			isServerSideValidationEnabled
+		);
+		const totalBrowserSideErrorsCount = (totalErrors.ajvErrors?.length ?? 0) + (totalErrors.customErrors?.length ?? 0);
+		if (!totalBrowserSideErrorsCount) {
+			const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
+			const { line, column } = findLineAndColumn(configData, serverSideErrorElement?.offset);
+			totalErrors.serverSideError = {
+				message: serverSideValidationResult?.result?.message ?? "",
+				error: serverSideValidationResult?.result?.error ?? "",
+				line: line,
+				path: serverSideValidationPath,
+			};
+			serverSideValidationPath.length > 0 &&
+				errorMarkers.push({
+					startLineNumber: line ?? 0,
+					endLineNumber: 0,
+					startColumn: column ?? 0,
+					endColumn: column ?? 0,
+					severity: 8,
+					message: serverSideValidationResult?.result?.message + " - " + serverSideValidationResult?.result?.error,
+				});
+		}
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	}
 	return totalErrors;
@@ -124,7 +137,8 @@ export function customValidate(
 	serviceItemsData: IValidateItem | undefined,
 	errorMarkers: editor.IMarkerData[],
 	totalErrors: IError,
-	configData: string
+	configData: string,
+	isServerSideValidationEnabled?: boolean
 ) {
 	if (!mainItemsData) return totalErrors;
 	for (const key of Object.keys(mainItemsData)) {
@@ -132,7 +146,6 @@ export function customValidate(
 		const serviceItems = serviceItemsData?.[key];
 
 		if (!serviceItems) continue;
-
 		serviceItems.forEach((item) => {
 			if (
 				!mainItems?.some((mainItem) => mainItem.source === item.source) &&
@@ -151,28 +164,31 @@ export function customValidate(
 					message: errorMessage,
 				};
 				errorMarkers.push(errorMarker);
-				totalErrors.customErrors?.push(errorMarker.message + " " + `(line ${line})`);
+				totalErrors.customErrors?.push(errorMarker.message + " " + `(Line ${line})`);
 			}
 		});
-		mainItems?.forEach((item) => {
-			if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
-				const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
-				const { line, column } = findLineAndColumn(configData, item.offset);
-				const endColumn = column + (item.source?.length ?? 0);
 
-				const errorMarker = {
-					startLineNumber: line ?? 0,
-					endLineNumber: 0,
-					startColumn: column ?? 0,
-					endColumn: endColumn,
-					severity: 4,
-					message: errorMessage,
-				};
-				errorMarkers.push(errorMarker);
+		if (!isServerSideValidationEnabled) {
+			mainItems?.forEach((item) => {
+				if (!serviceItems.some((serviceItem) => serviceItem.source === item.source)) {
+					const errorMessage = `${capitalize(key)} "${item.source}" is unused.`;
+					const { line, column } = findLineAndColumn(configData, item.offset);
+					const endColumn = column + (item.source?.length ?? 0);
 
-				totalErrors.customWarnings?.push(errorMarker.message + " " + `(line ${line})`);
-			}
-		});
+					const errorMarker = {
+						startLineNumber: line ?? 0,
+						endLineNumber: 0,
+						startColumn: column ?? 0,
+						endColumn: endColumn,
+						severity: 4,
+						message: errorMessage,
+					};
+					errorMarkers.push(errorMarker);
+
+					totalErrors.customWarnings?.push(errorMarker.message + " " + `(Line ${line})`);
+				}
+			});
+		}
 	}
 }
 
@@ -207,3 +223,8 @@ export const findErrorElement = (path: string[], data?: IYamlElement[]): IYamlEl
 	}
 	return undefined;
 };
+
+export function useServerSideValidationEnabled(): boolean {
+	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+	return !!distro && !!distroVersion;
+}

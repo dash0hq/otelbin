@@ -14,7 +14,10 @@ import Flow from "../react-flow/ReactFlow";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import AppHeader from "../AppHeader";
 import WelcomeModal from "../welcome-modal/WelcomeModal";
-import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
+import {
+	useServerSideValidationEnabled,
+	validateOtelCollectorConfigurationAndSetMarkers,
+} from "~/components/monaco-editor/otelCollectorConfigValidation";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import { AppFooter } from "~/components/AppFooter";
 import { AutoSizer } from "~/components/AutoSizer";
@@ -46,7 +49,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
 	const serverSideValidationResult = useServerSideValidation();
-
+	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
 		setWidth(newWidth);
@@ -67,12 +70,13 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 				currentConfig,
 				editorRef,
 				monacoRef,
+				isServerValidationEnabled,
 				serverSideValidationResult
 			);
 		} else {
 			return {};
 		}
-	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult]);
+	}, [currentConfig, editorRef, monacoRef, serverSideValidationResult, isServerValidationEnabled]);
 
 	const isValidConfig = totalValidationErrors.yamlError == null && (totalValidationErrors.ajvErrors?.length ?? 0) === 0;
 
