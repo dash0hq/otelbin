@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../button";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover";
 import Down from "./../assets/svg/down.svg";
@@ -12,7 +12,7 @@ import { distroBinding, distroVersionBinding, envVarBinding } from "../validatio
 import InfoBox from "./InfoBox";
 import { editorBinding } from "../monaco-editor/editorBinding";
 import WarningBox from "./WarningBox";
-import { useEnvVariables } from "~/contexts/EditorContext";
+import { extractEnvVarData, extractVariables } from "../monaco-editor/parseYaml";
 
 export interface ICurrentDistributionVersion {
 	distro: string;
@@ -21,7 +21,12 @@ export interface ICurrentDistributionVersion {
 }
 
 export default function ValidationType() {
-	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding, envVarBinding, editorBinding]);
+	const [{ distro, distroVersion, config, env }] = useUrlState([
+		distroBinding,
+		distroVersionBinding,
+		envVarBinding,
+		editorBinding,
+	]);
 	const [open, setOpen] = useState(false);
 	const { data: distributions } = useDistributions();
 
@@ -30,9 +35,11 @@ export default function ValidationType() {
 			? { distro: distro, version: distroVersion, name: distributions[distro]?.name || "" }
 			: undefined;
 
-	const { envVarState } = useEnvVariables();
-	const unboundVariables = Object.values(envVarState).filter(
-		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
+	const variables = useMemo(() => extractVariables(config), [config]);
+	const envVarData = extractEnvVarData(variables, env);
+
+	const unboundVariables = Object.values(envVarData).filter(
+		(envVar) => envVar.submittedValue === undefined && new Set(envVar.defaultValues).size > 1
 	);
 
 	return (

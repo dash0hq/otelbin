@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import { type editor, type IPosition } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
@@ -15,15 +15,17 @@ import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
 import "../components/react-flow/decorationStyles.css";
-import { editorBinding } from "~/components/monaco-editor/editorBinding";
-import { useUrlState } from "~/lib/urlState/client/useUrlState";
-import { envVarBinding } from "~/components/validation/binding";
+
+export interface ILine {
+	lines: number[];
+}
 
 export interface IEnvVar {
 	name: string;
 	submittedValue?: string;
 	defaultValues?: string[];
-	lines?: number[];
+	lines?: ILine;
+	bounded?: boolean;
 }
 
 interface YAMLWorker {
@@ -79,12 +81,12 @@ export const EnvVarMenuContext = createContext<{
 	},
 });
 
-export const EnvVarState = createContext<{
-	envVarState: Record<string, IEnvVar>;
-	setEnvVarState: (envVariables: Record<string, IEnvVar>) => void;
+export const EnvVarLine = createContext<{
+	envVarLine: Record<string, ILine>;
+	setEnvVarLine: (envVarLine: Record<string, ILine>) => void;
 }>({
-	envVarState: {},
-	setEnvVarState: () => {
+	envVarLine: {},
+	setEnvVarLine: () => {
 		return;
 	},
 });
@@ -117,90 +119,86 @@ export function useEnvVarMenu() {
 	return React.useContext(EnvVarMenuContext);
 }
 
-export function useEnvVariables() {
-	return React.useContext(EnvVarState);
+export function useEnvLines() {
+	return React.useContext(EnvVarLine);
 }
 
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+	const [editorRefState, setEditorRefState] = useState<editor.IStandaloneCodeEditor>();
 	const monacoRef = useRef<Monaco | null>(null);
 	const monacoYamlRef = useRef<unknown | null>(null);
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(true);
-	const [envVarState, setEnvVarState] = useState<Record<string, IEnvVar>>({});
-	const [envVariables, setEnvVariables] = useState<string[]>([]);
-	const [{ config, env }] = useUrlState([editorBinding, envVarBinding]);
+	const currentValue = editorRefState?.getModel()?.getValue() ?? "";
+	const variables = useMemo(() => extractVariables(currentValue), [currentValue]);
+	const [envVarLine, setEnvVarLine] = useState<Record<string, ILine>>({});
 
-	function extractEnvVarData(envVars: string[], envUrlState: Record<string, string>) {
-		const envVarData: Record<string, IEnvVar> = {};
+	function extractLineNumbers(envVars: string[]) {
+		const envVarLines: Record<string, ILine> = {};
 
-		if (envVars && envVars.length > 0) {
+		if (envVars && envVars.length > 0 && editorRefState) {
 			const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
 
 			envVarPlaceHolder.forEach((variable) => {
 				const name = variable.split(":")[0] ?? variable;
+				const matchCondition = name === variable ? "${" + name + "}" : "${" + name + ":";
 				const matches =
-					editorRef?.current?.getModel()?.findMatches("${" + name + ":", true, false, false, null, false) ?? [];
-				const defaultValue: string | undefined = variable.split(":")[1] ?? "";
-				const submittedValue = envUrlState[name];
+					editorRef?.current?.getModel()?.findMatches(matchCondition, true, false, false, null, false) ?? [];
 
-				envVarData[name] = {
-					name: name,
-					submittedValue: submittedValue,
-					defaultValues: [...(envVarData[name]?.defaultValues ?? []), defaultValue],
+				envVarLines[name] = {
 					lines: matches.map((match) => match.range.startLineNumber),
 				};
 			});
 		}
 
-		return envVarData;
+		return envVarLines;
 	}
 
 	function envVarDecoration(variables: string[]) {
 		if (variables.length === 0) return;
-		variables.forEach((variable) => {
-			const findMatches = editorRef?.current?.getModel()?.findMatches(variable, true, false, false, null, false);
+		if (editorRefState) {
+			variables.forEach((variable) => {
+				const findMatches = editorRef.current?.getModel()?.findMatches(variable, true, false, false, null, false);
 
-			if (findMatches) {
-				findMatches.forEach((match) => {
-					const range = match.range;
-					const startLineNumber = range.startLineNumber;
-					const startColumn = range.startColumn;
-					const endLineNumber = range.endLineNumber;
-					const endColumn = range.endColumn;
-					const decoration = {
-						range: {
-							startLineNumber: startLineNumber,
-							startColumn: startColumn,
-							endLineNumber: endLineNumber,
-							endColumn: endColumn,
-						},
-						options: {
-							isWholeLine: false,
-							className: "envVarDecoration",
-							inlineClassName: "envVarDecoration",
-							stickiness: monacoRef.current?.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
-						},
-					};
-					editorRef?.current?.createDecorationsCollection([decoration]);
-				});
-			}
-		});
+				if (findMatches) {
+					findMatches.forEach((match) => {
+						const range = match.range;
+						const startLineNumber = range.startLineNumber;
+						const startColumn = range.startColumn;
+						const endLineNumber = range.endLineNumber;
+						const endColumn = range.endColumn;
+						const decoration = {
+							range: {
+								startLineNumber: startLineNumber,
+								startColumn: startColumn,
+								endLineNumber: endLineNumber,
+								endColumn: endColumn,
+							},
+							options: {
+								isWholeLine: false,
+								className: "envVarDecoration",
+								inlineClassName: "envVarDecoration",
+								stickiness: monacoRef.current?.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+							},
+						};
+						editorRef?.current?.createDecorationsCollection([decoration]);
+					});
+				}
+			});
+		}
 	}
 
 	useEffect(() => {
-		setEnvVariables(extractVariables(config));
-	}, [config]);
-
-	useEffect(() => {
-		envVarDecoration(envVariables);
-		setEnvVarState(extractEnvVarData(envVariables, env));
-	}, [envVariables, env]);
+		envVarDecoration(variables);
+		setEnvVarLine(extractLineNumbers(variables));
+	}, [variables]);
 
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
+		setEditorRefState(editor);
 
 		window.MonacoEnvironment = {
 			getWorker(_, label) {
@@ -359,8 +357,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			}
 		});
 
-		envVarDecoration(envVariables);
-		setEnvVarState(extractEnvVarData(envVariables, env));
+		envVarDecoration(variables);
 
 		editorRef.current.onDidChangeCursorPosition((e) => {
 			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) ?? 0;
@@ -370,7 +367,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 			findSymbols(docElements, "", wordAtCursor.word, cursorOffset);
-			envVarDecoration(envVariables);
+			envVarDecoration(variables);
 		});
 
 		editorRef.current.onDidPaste(() => {
@@ -402,9 +399,9 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		setOpenEnvVarMenu: setOpenEnvVarMenu,
 	};
 
-	const envVarDataContext = {
-		envVarState: envVarState,
-		setEnvVarState: setEnvVarState,
+	const envVarLineContext = {
+		envVarLine: envVarLine,
+		setEnvVarLine: setEnvVarLine,
 	};
 
 	return (
@@ -415,7 +412,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 						<ViewModeContext.Provider value={viewModeContext}>
 							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
 								<EnvVarMenuContext.Provider value={envVarMenuContext}>
-									<EnvVarState.Provider value={envVarDataContext}>{children}</EnvVarState.Provider>
+									<EnvVarLine.Provider value={envVarLineContext}>{children}</EnvVarLine.Provider>
 								</EnvVarMenuContext.Provider>
 							</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>

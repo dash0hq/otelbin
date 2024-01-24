@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { IError } from "./ValidationErrorConsole";
 import ValidationErrorConsole from "./ValidationErrorConsole";
 import EditorTopBar from "../EditorTopBar";
-import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode, useEnvVariables } from "~/contexts/EditorContext";
+import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
 import MonacoEditor, { loader, type OnChange } from "@monaco-editor/react";
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
@@ -26,8 +26,9 @@ import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
-import { selectConfigType } from "./parseYaml";
+import { extractEnvVarData, extractVariables, selectConfigType } from "./parseYaml";
 import EnvVarForm from "../EnvVarForm";
+import { envVarBinding } from "../validation/binding";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -43,11 +44,12 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const { setViewMode, viewMode } = useViewMode();
 	const savedOpenModal = Boolean(typeof window !== "undefined" && localStorage.getItem("welcomeModal"));
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
-	const [{ config }, getLink] = useUrlState([editorBinding]);
+	const [{ env, config }, getLink] = useUrlState([editorBinding, envVarBinding]);
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
-	const { envVarState } = useEnvVariables();
-	const serverSideValidationResult = useServerSideValidation(envVarState);
+	const variables = useMemo(() => extractVariables(config), [config]);
+	const envVarData = extractEnvVarData(variables, env);
+	const serverSideValidationResult = useServerSideValidation(envVarData);
 
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
@@ -192,7 +194,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							{viewMode !== "pipeline" && <ValidationErrorConsole errors={totalValidationErrors} font={firaCode} />}
 							{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 						</div>
-						{Object.keys(envVarState).length > 0 && <EnvVarForm />}
+						{Object.keys(envVarData).length > 0 && <EnvVarForm />}
 						<div className="z-0 min-h-full w-full shrink grow relative">
 							<AutoSizer>
 								{({ width, height }) => (

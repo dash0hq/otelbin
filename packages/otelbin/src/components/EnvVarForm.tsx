@@ -1,25 +1,29 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useEffect, useRef, useState } from "react";
-import { type IEnvVar, useEnvVarMenu, useEnvVariables } from "~/contexts/EditorContext";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { type IEnvVar, useEnvVarMenu, useEnvLines, type ILine } from "~/contexts/EditorContext";
 import { IconButton } from "./icon-button";
 import { Check, X, XCircle } from "lucide-react";
 import { Label } from "./label";
 import { Textarea } from "./textArea";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding, envVarBinding } from "./validation/binding";
+import { editorBinding } from "./monaco-editor/editorBinding";
+import { extractEnvVarData, extractVariables } from "./monaco-editor/parseYaml";
 
 export default function EnvVarForm() {
 	const { openEnvVarMenu, setOpenEnvVarMenu } = useEnvVarMenu();
-	const { envVarState, setEnvVarState } = useEnvVariables();
-
+	const { envVarLine } = useEnvLines();
+	const [{ env, config }] = useUrlState([editorBinding, envVarBinding]);
+	const variables = useMemo(() => extractVariables(config), [config]);
+	const envVarData = extractEnvVarData(variables, env);
 	function handleClose() {
 		setOpenEnvVarMenu(false);
 	}
 
-	const unboundVariables = Object.values(envVarState).filter(
-		(envVar) => envVar.submittedValue === undefined && envVar.defaultValues?.length === 0
+	const unboundVariables = Object.values(envVarData).filter(
+		(envVar) => envVar.submittedValue === undefined && new Set(envVar.defaultValues).size > 1
 	);
 
 	return (
@@ -48,8 +52,8 @@ export default function EnvVarForm() {
 					</IconButton>
 				</div>
 				<div className="px-4">
-					{Object.values(envVarState).map((envVar) => (
-						<EnvVar key={envVar.name} envVar={envVar} envVarState={envVarState} setEnvVarState={setEnvVarState} />
+					{Object.values(envVarData).map((envVar) => (
+						<EnvVar key={envVar.name} envVar={envVar} lines={envVarLine[envVar.name]} />
 					))}
 				</div>
 			</div>
@@ -57,18 +61,10 @@ export default function EnvVarForm() {
 	);
 }
 
-function EnvVar({
-	envVar,
-	envVarState,
-	setEnvVarState,
-}: {
-	envVar: IEnvVar;
-	envVarState: Record<string, IEnvVar>;
-	setEnvVarState: (envVariables: Record<string, IEnvVar>) => void;
-}) {
+function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-	const [{ env }, getLink] = useUrlState([envVarBinding]);
-	const [envVarValue, setEnvVarValue] = useState(envVar.submittedValue ?? "");
+	const [{ env }, getLink] = useUrlState([envVarBinding, editorBinding]);
+	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? "");
 	const isServerSideValidationEnabled = useServerSideValidationEnabled();
 
 	function handleEnvVarChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -81,6 +77,7 @@ function EnvVar({
 		}
 	}
 
+	console.log("EnvVarForm");
 	function useServerSideValidationEnabled(): boolean {
 		const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
 		return !!distro && !!distroVersion;
@@ -102,28 +99,17 @@ function EnvVar({
 		// eslint-disable-next-line
 	}, [isServerSideValidationEnabled]);
 
-	useEffect(() => {
-		const distinctDefaultValues = new Set(envVar.defaultValues);
-		const submittedValue = env[envVar.name];
-		if (!submittedValue) {
-			if (distinctDefaultValues.size > 1) {
-				setEnvVarValue("");
-				setEnvVarState({ ...envVarState, [envVar.name]: { ...envVar, submittedValue: undefined, defaultValues: [] } });
-			} else if (distinctDefaultValues.size === 1) {
-				setEnvVarValue(envVar?.defaultValues?.[0] ?? "");
-				setEnvVarState({
-					...envVarState,
-					[envVar.name]: {
-						...envVar,
-						submittedValue: env[envVar.name] ?? envVar?.defaultValues?.[0],
-						defaultValues: envVar?.defaultValues,
-					},
-				});
-			}
-		}
-	}, [envVar.defaultValues, envVar, envVarState, setEnvVarState, env]);
-
-	const envVarLinesIsArray = Array.isArray(envVar.lines) && envVar.lines?.length > 0;
+	// useEffect(() => {
+	// 	const distinctDefaultValues = new Set(envVar.defaultValues);
+	// 	const submittedValue = env[envVar.name];
+	// 	if (!submittedValue) {
+	// 		if (distinctDefaultValues.size > 1) {
+	// 			setEnvVarValue("");
+	// 		} else if (distinctDefaultValues.size === 1) {
+	// 			setEnvVarValue(envVar?.defaultValues?.[0] ?? "");
+	// 		}
+	// 	}
+	// }, [env]);
 
 	return (
 		<div className="flex flex-col gap-y-1 my-6">
@@ -165,14 +151,13 @@ function EnvVar({
 				</div>
 			</div>
 			<Label className="text-[12px] text-[#AFAFB2]" htmlFor="envVar">
-				{`Used ${envVar.lines?.length} ${envVar.lines && envVar.lines?.length > 1 ? `times` : `time`} on line `}
-				{envVarLinesIsArray &&
-					envVar.lines?.map((lineNumber, index) => (
-						<React.Fragment key={lineNumber}>
-							<span className="text-blue-400">{lineNumber}</span>
-							{index < (envVar?.lines?.length ?? 0) - 1 ? ` and ` : ``}
-						</React.Fragment>
-					))}
+				{`Used ${lines?.lines.length} ${lines && lines?.lines.length > 1 ? `times` : `time`} on line `}
+				{lines?.lines?.map((lineNumber, index) => (
+					<React.Fragment key={lineNumber}>
+						<span className="text-blue-400">{lineNumber}</span>
+						{index < (lines.lines?.length ?? 0) - 1 ? ` and ` : ``}
+					</React.Fragment>
+				))}
 			</Label>
 		</div>
 	);
