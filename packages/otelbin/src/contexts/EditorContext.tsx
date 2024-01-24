@@ -133,7 +133,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const isServerValidationEnabled = useServerSideValidationEnabled();
-	const viewState = editorRef.current?.saveViewState();
 	const [monaco, setMonaco] = useState<Monaco>();
 	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(true);
 	const currentValue = editorRefState?.getModel()?.getValue() ?? "";
@@ -191,35 +190,39 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 	function envVarDecoration(variables: string[]) {
 		if (variables.length === 0) return;
-		if (editorRefState) {
-			variables.forEach((variable) => {
-				const findMatches = editorRef.current?.getModel()?.findMatches(variable, true, false, false, null, false);
+		const decorations: editor.IModelDeltaDecoration[] = [];
+		let matches: editor.FindMatch[] = [];
 
-				if (findMatches) {
-					findMatches.forEach((match) => {
-						const range = match.range;
-						const startLineNumber = range.startLineNumber;
-						const startColumn = range.startColumn;
-						const endLineNumber = range.endLineNumber;
-						const endColumn = range.endColumn;
-						const decoration = {
-							range: {
-								startLineNumber: startLineNumber,
-								startColumn: startColumn,
-								endLineNumber: endLineNumber,
-								endColumn: endColumn,
-							},
-							options: {
-								isWholeLine: false,
-								className: "envVarDecoration",
-								inlineClassName: "envVarDecoration",
-								stickiness: monacoRef.current?.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
-							},
-						};
-						editorRef?.current?.createDecorationsCollection([decoration]);
-					});
-				}
+		if (editorRefState && monaco) {
+			variables.forEach((variable) => {
+				matches = editorRefState.getModel()?.findMatches(variable, false, false, false, null, false) ?? [];
 			});
+
+			if (matches?.length > 0) {
+				matches.forEach((match) => {
+					const range = match.range;
+					const startLineNumber = range.startLineNumber;
+					const startColumn = range.startColumn;
+					const endLineNumber = range.endLineNumber;
+					const endColumn = range.endColumn;
+					const decoration = {
+						range: {
+							startLineNumber: startLineNumber,
+							startColumn: startColumn,
+							endLineNumber: endLineNumber,
+							endColumn: endColumn,
+						},
+						options: {
+							isWholeLine: false,
+							className: "envVarDecoration",
+							inlineClassName: "envVarDecoration",
+							stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+						},
+					};
+					decorations.push(decoration);
+				});
+			}
+			editorRefState.createDecorationsCollection(decorations);
 		}
 	}
 
@@ -242,8 +245,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			},
 		};
 
-		editorRef.current?.restoreViewState(viewState as editor.ICodeEditorViewState);
-
 		validateOtelCollectorConfigurationAndSetMarkers(
 			editorRef.current.getModel()?.getValue() || "",
 			editorRef,
@@ -251,7 +252,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			isServerValidationEnabled
 		);
 
-		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
+		monaco.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\${([^}]+:[^}]+)}|\${([^}]+)}|(?:\w+\/[\w_]+(?:-[\w_]+)*|\w+)/,
 		});
 

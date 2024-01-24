@@ -77,7 +77,6 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 		}
 	}
 
-	console.log("EnvVarForm");
 	function useServerSideValidationEnabled(): boolean {
 		const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
 		return !!distro && !!distroVersion;
