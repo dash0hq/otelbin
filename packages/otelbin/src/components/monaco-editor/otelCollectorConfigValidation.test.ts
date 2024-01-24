@@ -209,6 +209,52 @@ describe("customValidate", () => {
 			customWarnings: ['Extension "item5" is unused. (Line 1)', 'Receiver "item6E" is unused. (Line 1)'],
 		});
 	});
+
+	it("should compare mainItemsData with serviceItemsData, if serverSide validation is enabled it should not add to warnings markers, only add error markers", () => {
+		const mainItemsData = {
+			connectors: [{ source: "Test item2", offset: 1 }],
+			exporters: [{ source: "Test item3", offset: 2 }],
+			extensions: [{ source: "Test item5", offset: 3 }],
+			receivers: [{ source: "Test item6E", offset: 4 }],
+		};
+		const serviceItemsData = {
+			exporters: [{ source: "Test item3", offset: 3 }],
+			extensions: [{ source: "Test item5E", offset: 4 }],
+			receivers: [{ source: "Test item6", offset: 5 }],
+		};
+
+		const errorMarkers: editor.IMarkerData[] = [];
+		const totalErrors = { customErrors: [], customWarnings: [] };
+		const configData = editorBinding.fallback;
+
+		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData, true);
+
+		expect(errorMarkers).toEqual([
+			{
+				startLineNumber: 1,
+				endLineNumber: 0,
+				startColumn: 5,
+				endColumn: 16,
+				severity: 8,
+				message: 'Extension "Test item5E" is not defined.',
+			},
+			{
+				startLineNumber: 1,
+				endLineNumber: 0,
+				startColumn: 6,
+				endColumn: 16,
+				severity: 8,
+				message: 'Receiver "Test item6" is not defined.',
+			},
+		]);
+		expect(totalErrors).toEqual({
+			customErrors: [
+				'Extension "Test item5E" is not defined. (Line 1)',
+				'Receiver "Test item6" is not defined. (Line 1)',
+			],
+			customWarnings: [],
+		});
+	});
 });
 
 // Tested with brief editorBinding.fallback
