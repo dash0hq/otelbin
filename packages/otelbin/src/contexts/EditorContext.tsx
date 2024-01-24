@@ -5,16 +5,18 @@ import React, { createContext, useEffect, useMemo, useRef, useState } from "reac
 import type { ReactNode, RefObject } from "react";
 import { type editor, type IPosition } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
-import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from "monaco-yaml";
+import { configureMonacoYaml, type MonacoYamlOptions } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
-import type { IItem } from "../components/monaco-editor/parseYaml";
-import { extractVariables, getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
+import "../components/react-flow/decorationStyles.css";
+import { type IItem, getYamlDocument, selectConfigType, extractVariables } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
-import { validateOtelCollectorConfigurationAndSetMarkers } from "~/components/monaco-editor/otelCollectorConfigValidation";
-import "../components/react-flow/decorationStyles.css";
+import {
+	useServerSideValidationEnabled,
+	validateOtelCollectorConfigurationAndSetMarkers,
+} from "~/components/monaco-editor/otelCollectorConfigValidation";
 
 export interface ILine {
 	lines: number[];
@@ -127,14 +129,44 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 	const [editorRefState, setEditorRefState] = useState<editor.IStandaloneCodeEditor>();
 	const monacoRef = useRef<Monaco | null>(null);
-	const monacoYamlRef = useRef<unknown | null>(null);
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
+	const isServerValidationEnabled = useServerSideValidationEnabled();
+	const viewState = editorRef.current?.saveViewState();
+	const [monaco, setMonaco] = useState<Monaco>();
 	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(true);
 	const currentValue = editorRefState?.getModel()?.getValue() ?? "";
 	const variables = useMemo(() => extractVariables(currentValue), [currentValue]);
 	const [envVarLine, setEnvVarLine] = useState<Record<string, ILine>>({});
+
+	useEffect(() => {
+		if (!isServerValidationEnabled && monaco) {
+			const monacoYaml = configureMonacoYaml(monaco, {
+				enableSchemaRequest: true,
+				schemas: [
+					{
+						uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
+						// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
+						schema,
+						fileMatch: ["*"],
+					},
+				],
+				validate: true,
+			});
+			return () =>
+				monacoYaml.update({
+					enableSchemaRequest: false,
+					schemas: [],
+					validate: false,
+				});
+		}
+	}, [isServerValidationEnabled, monaco]);
+
+	useEffect(() => {
+		envVarDecoration(variables);
+		setEnvVarLine(extractLineNumbers(variables));
+	}, [variables]);
 
 	function extractLineNumbers(envVars: string[]) {
 		const envVarLines: Record<string, ILine> = {};
@@ -191,14 +223,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}
 
-	useEffect(() => {
-		envVarDecoration(variables);
-		setEnvVarLine(extractLineNumbers(variables));
-	}, [variables]);
-
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
+		monacoRef.current = monaco;
 		setEditorRefState(editor);
+		setMonaco(monaco);
 
 		window.MonacoEnvironment = {
 			getWorker(_, label) {
@@ -213,37 +242,22 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			},
 		};
 
-		const defaultSchema: SchemasSettings = {
-			uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
-			// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
-			schema,
-			fileMatch: ["*"],
-		};
-
-		monacoRef.current = monaco;
+		editorRef.current?.restoreViewState(viewState as editor.ICodeEditorViewState);
 
 		validateOtelCollectorConfigurationAndSetMarkers(
 			editorRef.current.getModel()?.getValue() || "",
 			editorRef,
-			monacoRef
+			monacoRef,
+			isServerValidationEnabled
 		);
 
 		monacoRef?.current?.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\${([^}]+:[^}]+)}|\${([^}]+)}|(?:\w+\/[\w_]+(?:-[\w_]+)*|\w+)/,
 		});
 
-		const createData: MonacoYamlOptions = {
-			enableSchemaRequest: true,
-			schemas: [defaultSchema],
-			validate: true,
-		};
-
-		monacoYamlRef.current = configureMonacoYaml(monaco, createData);
-
 		const worker = createWorkerManager<YAMLWorker, MonacoYamlOptions>(monaco, {
 			label: "yaml",
 			moduleId: "monaco-yaml/yaml.worker",
-			createData,
 		});
 
 		function createCompletionItemProvider(getWorker: WorkerAccessor): languages.CompletionItemProvider {
@@ -273,9 +287,9 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			};
 		}
 
-		monacoRef?.current?.languages.registerCompletionItemProvider(
+		monaco.languages.registerCompletionItemProvider(
 			"yaml",
-			createCompletionItemProvider(worker.getWorker)
+			createCompletionItemProvider(worker?.getWorker as WorkerAccessor)
 		);
 
 		let value = editorRef.current?.getValue() ?? "";
