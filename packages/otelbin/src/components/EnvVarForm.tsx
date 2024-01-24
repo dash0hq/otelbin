@@ -99,17 +99,17 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 		// eslint-disable-next-line
 	}, [isServerSideValidationEnabled]);
 
-	// useEffect(() => {
-	// 	const distinctDefaultValues = new Set(envVar.defaultValues);
-	// 	const submittedValue = env[envVar.name];
-	// 	if (!submittedValue) {
-	// 		if (distinctDefaultValues.size > 1) {
-	// 			setEnvVarValue("");
-	// 		} else if (distinctDefaultValues.size === 1) {
-	// 			setEnvVarValue(envVar?.defaultValues?.[0] ?? "");
-	// 		}
-	// 	}
-	// }, [env]);
+	useEffect(() => {
+		const distinctDefaultValues = new Set(envVar.defaultValues);
+		const submittedValue = env[envVar.name];
+		if (!submittedValue) {
+			if (distinctDefaultValues.size > 1) {
+				setEnvVarValue("");
+			} else if (distinctDefaultValues.size === 1) {
+				setEnvVarValue(envVar?.defaultValues?.[0] ?? "");
+			}
+		}
+	}, [env]);
 
 	return (
 		<div className="flex flex-col gap-y-1 my-6">
