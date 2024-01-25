@@ -102,6 +102,8 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 	useEffect(() => {
 		if (envVar.defaultValue === "") {
 			setEnvVarValue(env[envVar.name] ?? "");
+		} else if (envVar.defaultValue !== "" && envVar.defaultValue !== undefined) {
+			setEnvVarValue(envVar.defaultValue ?? "");
 		}
 	}, [env, envVar.defaultValue, envVar.name]);
 
