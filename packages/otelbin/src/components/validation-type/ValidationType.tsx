@@ -39,7 +39,7 @@ export default function ValidationType() {
 	const envVarData = extractEnvVarData(variables, env);
 
 	const unboundVariables = Object.values(envVarData).filter(
-		(envVar) => envVar.submittedValue === undefined && new Set(envVar.defaultValues).size > 1
+		(envVar) => envVar.submittedValue === undefined && envVar.defaultValue === ""
 	);
 
 	return (

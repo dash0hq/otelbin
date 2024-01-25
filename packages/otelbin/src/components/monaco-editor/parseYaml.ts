@@ -271,12 +271,14 @@ export function extractEnvVarData(envVars: string[], envUrlState: Record<string,
 		envVarPlaceHolder.forEach((variable) => {
 			const name = variable.split(":")[0] ?? variable;
 			const defaultValue: string | undefined = variable.split(":")[1] ?? "";
+			const distinctDefaultValues = new Set([...(envVarData[name]?.defaultValues ?? []), defaultValue]);
 			const submittedValue = envUrlState[name];
 
 			envVarData[name] = {
 				name: name,
 				submittedValue: submittedValue,
-				defaultValues: [...(envVarData[name]?.defaultValues ?? []), defaultValue],
+				defaultValues: [...distinctDefaultValues],
+				defaultValue: [...distinctDefaultValues].length > 1 ? "" : defaultValue,
 			};
 		});
 	}

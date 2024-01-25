@@ -26,6 +26,7 @@ export interface IEnvVar {
 	name: string;
 	submittedValue?: string;
 	defaultValues?: string[];
+	defaultValue?: string;
 	lines?: ILine;
 	bounded?: boolean;
 }
@@ -195,33 +196,33 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 		if (editorRefState && monaco) {
 			variables.forEach((variable) => {
-				matches = editorRefState.getModel()?.findMatches(variable, false, false, false, null, false) ?? [];
+				matches = editorRefState.getModel()?.findMatches(variable, true, false, false, null, false) ?? [];
+				if (matches?.length > 0) {
+					matches.forEach((match) => {
+						const range = match.range;
+						const startLineNumber = range.startLineNumber;
+						const startColumn = range.startColumn;
+						const endLineNumber = range.endLineNumber;
+						const endColumn = range.endColumn;
+						const decoration = {
+							range: {
+								startLineNumber: startLineNumber,
+								startColumn: startColumn,
+								endLineNumber: endLineNumber,
+								endColumn: endColumn,
+							},
+							options: {
+								isWholeLine: false,
+								className: "envVarDecoration",
+								inlineClassName: "envVarDecoration",
+								stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+							},
+						};
+						decorations.push(decoration);
+					});
+				}
 			});
 
-			if (matches?.length > 0) {
-				matches.forEach((match) => {
-					const range = match.range;
-					const startLineNumber = range.startLineNumber;
-					const startColumn = range.startColumn;
-					const endLineNumber = range.endLineNumber;
-					const endColumn = range.endColumn;
-					const decoration = {
-						range: {
-							startLineNumber: startLineNumber,
-							startColumn: startColumn,
-							endLineNumber: endLineNumber,
-							endColumn: endColumn,
-						},
-						options: {
-							isWholeLine: false,
-							className: "envVarDecoration",
-							inlineClassName: "envVarDecoration",
-							stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
-						},
-					};
-					decorations.push(decoration);
-				});
-			}
 			editorRefState.createDecorationsCollection(decorations);
 		}
 	}
@@ -295,9 +296,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 		let value = editorRef.current?.getValue() ?? "";
 		let docElements = getYamlDocument(value);
+
 		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
 			docElements = getYamlDocument(value);
+			envVarDecoration(variables);
 		});
 
 		function correctKey(value: string, key?: string, key2?: string) {
@@ -382,7 +385,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				endColumn: 0,
 			};
 			findSymbols(docElements, "", wordAtCursor.word, cursorOffset);
-			envVarDecoration(variables);
 		});
 
 		editorRef.current.onDidPaste(() => {

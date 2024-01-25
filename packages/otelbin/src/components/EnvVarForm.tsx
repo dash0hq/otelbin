@@ -8,9 +8,10 @@ import { Check, X, XCircle } from "lucide-react";
 import { Label } from "./label";
 import { Textarea } from "./textArea";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
-import { distroBinding, distroVersionBinding, envVarBinding } from "./validation/binding";
+import { envVarBinding } from "./validation/binding";
 import { editorBinding } from "./monaco-editor/editorBinding";
 import { extractEnvVarData, extractVariables } from "./monaco-editor/parseYaml";
+import { useServerSideValidationEnabled } from "./monaco-editor/otelCollectorConfigValidation";
 
 export default function EnvVarForm() {
 	const { openEnvVarMenu, setOpenEnvVarMenu } = useEnvVarMenu();
@@ -18,13 +19,18 @@ export default function EnvVarForm() {
 	const [{ env, config }] = useUrlState([editorBinding, envVarBinding]);
 	const variables = useMemo(() => extractVariables(config), [config]);
 	const envVarData = extractEnvVarData(variables, env);
+	const [envVarDataState, setEnvVarDataState] = useState(envVarData);
 	function handleClose() {
 		setOpenEnvVarMenu(false);
 	}
 
-	const unboundVariables = Object.values(envVarData).filter(
-		(envVar) => envVar.submittedValue === undefined && new Set(envVar.defaultValues).size > 1
+	const unboundVariables = Object.values(envVarDataState).filter(
+		(envVar) => envVar.submittedValue === undefined && envVar.defaultValue === ""
 	);
+
+	useEffect(() => {
+		setEnvVarDataState(extractEnvVarData(variables, env));
+	}, [variables, env]);
 
 	return (
 		<div
@@ -52,7 +58,7 @@ export default function EnvVarForm() {
 					</IconButton>
 				</div>
 				<div className="px-4">
-					{Object.values(envVarData).map((envVar) => (
+					{Object.values(envVarDataState).map((envVar) => (
 						<EnvVar key={envVar.name} envVar={envVar} lines={envVarLine[envVar.name]} />
 					))}
 				</div>
@@ -64,7 +70,7 @@ export default function EnvVarForm() {
 function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [{ env }, getLink] = useUrlState([envVarBinding, editorBinding]);
-	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? "");
+	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.defaultValue ?? "");
 	const isServerSideValidationEnabled = useServerSideValidationEnabled();
 
 	function handleEnvVarChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -75,11 +81,6 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 		if (typeof window !== "undefined") {
 			window.history.pushState(null, "", getLink({ env: { ...env, [envVar.name]: envVarValue } }));
 		}
-	}
-
-	function useServerSideValidationEnabled(): boolean {
-		const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
-		return !!distro && !!distroVersion;
 	}
 
 	useEffect(() => {
@@ -99,16 +100,10 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 	}, [isServerSideValidationEnabled]);
 
 	useEffect(() => {
-		const distinctDefaultValues = new Set(envVar.defaultValues);
-		const submittedValue = env[envVar.name];
-		if (!submittedValue) {
-			if (distinctDefaultValues.size > 1) {
-				setEnvVarValue("");
-			} else if (distinctDefaultValues.size === 1) {
-				setEnvVarValue(envVar?.defaultValues?.[0] ?? "");
-			}
+		if (envVar.defaultValue === "") {
+			setEnvVarValue(env[envVar.name] ?? "");
 		}
-	}, [env]);
+	}, [env, envVar.defaultValue, envVar.name]);
 
 	return (
 		<div className="flex flex-col gap-y-1 my-6">
@@ -149,15 +144,17 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 					)}
 				</div>
 			</div>
-			<Label className="text-[12px] text-[#AFAFB2]" htmlFor="envVar">
-				{`Used ${lines?.lines.length} ${lines && lines?.lines.length > 1 ? `times` : `time`} on line `}
-				{lines?.lines?.map((lineNumber, index) => (
-					<React.Fragment key={lineNumber}>
-						<span className="text-blue-400">{lineNumber}</span>
-						{index < (lines.lines?.length ?? 0) - 1 ? ` and ` : ``}
-					</React.Fragment>
-				))}
-			</Label>
+			{lines && lines.lines.length > 0 && (
+				<Label className="text-[12px] text-[#AFAFB2]" htmlFor="envVar">
+					{`Used ${lines && lines.lines.length} ${lines && lines?.lines.length > 1 ? `times` : `time`} on line `}
+					{lines?.lines?.map((lineNumber, index) => (
+						<React.Fragment key={lineNumber}>
+							<span className="text-blue-400">{lineNumber}</span>
+							{index < (lines.lines?.length ?? 0) - 1 ? ` and ` : ``}
+						</React.Fragment>
+					))}
+				</Label>
+			)}
 		</div>
 	);
 }
