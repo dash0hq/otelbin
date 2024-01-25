@@ -28,7 +28,6 @@ export interface IEnvVar {
 	defaultValues?: string[];
 	defaultValue?: string;
 	lines?: ILine;
-	bounded?: boolean;
 }
 
 interface YAMLWorker {

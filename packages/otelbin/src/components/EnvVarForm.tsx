@@ -11,7 +11,6 @@ import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { envVarBinding } from "./validation/binding";
 import { editorBinding } from "./monaco-editor/editorBinding";
 import { extractEnvVarData, extractVariables } from "./monaco-editor/parseYaml";
-import { useServerSideValidationEnabled } from "./monaco-editor/otelCollectorConfigValidation";
 
 export default function EnvVarForm() {
 	const { openEnvVarMenu, setOpenEnvVarMenu } = useEnvVarMenu();
@@ -71,7 +70,6 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [{ env }, getLink] = useUrlState([envVarBinding, editorBinding]);
 	const [envVarValue, setEnvVarValue] = useState(env[envVar.name] ?? envVar.defaultValue ?? "");
-	const isServerSideValidationEnabled = useServerSideValidationEnabled();
 
 	function handleEnvVarChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
 		setEnvVarValue(event.target.value);
@@ -91,13 +89,6 @@ function EnvVar({ envVar, lines }: { envVar: IEnvVar; lines?: ILine }) {
 			textAreaRef.current.style.height = scrollHeight + "px";
 		}
 	}, [envVarValue]);
-
-	useEffect(() => {
-		if (isServerSideValidationEnabled) {
-			handleEnvVarSubmit();
-		}
-		// eslint-disable-next-line
-	}, [isServerSideValidationEnabled]);
 
 	useEffect(() => {
 		if (envVar.defaultValue === "") {
