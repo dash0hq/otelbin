@@ -139,6 +139,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const currentValue = editorRefState?.getModel()?.getValue() ?? "";
 	const variables = useMemo(() => extractVariables(currentValue), [currentValue]);
 	const [envVarLine, setEnvVarLine] = useState<Record<string, ILine>>({});
+	const [oldDecorations, setOldDecorations] = useState<string[]>([]);
 
 	useEffect(() => {
 		if (!isServerValidationEnabled && monaco) {
@@ -213,7 +214,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 							},
 							options: {
 								isWholeLine: false,
-								className: "envVarDecoration",
 								inlineClassName: "envVarDecoration",
 								stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 							},
@@ -222,8 +222,10 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 					});
 				}
 			});
-
-			editorRefState.createDecorationsCollection(decorations);
+			const newDecoration = editorRefState.getModel()?.deltaDecorations(oldDecorations, decorations);
+			if (newDecoration) {
+				setOldDecorations(newDecoration);
+			}
 		}
 	}
 
