@@ -15,7 +15,7 @@ import {
 } from "./parseYaml";
 import { capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
 import type { editor } from "monaco-editor";
-import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
+import YAML from "yaml";
 
 const editorBinding = {
 	prefix: "",
@@ -205,8 +205,54 @@ describe("customValidate", () => {
 			},
 		]);
 		expect(totalErrors).toEqual({
-			customErrors: ['Extension "item5E" is not defined. (line 1)', 'Receiver "item6" is not defined. (line 1)'],
-			customWarnings: ['Extension "item5" is unused. (line 1)', 'Receiver "item6E" is unused. (line 1)'],
+			customErrors: ['Extension "item5E" is not defined. (Line 1)', 'Receiver "item6" is not defined. (Line 1)'],
+			customWarnings: ['Extension "item5" is unused. (Line 1)', 'Receiver "item6E" is unused. (Line 1)'],
+		});
+	});
+
+	it("should compare mainItemsData with serviceItemsData, if serverSide validation is enabled it should not add to warnings markers, only add error markers", () => {
+		const mainItemsData = {
+			connectors: [{ source: "Test item2", offset: 1 }],
+			exporters: [{ source: "Test item3", offset: 2 }],
+			extensions: [{ source: "Test item5", offset: 3 }],
+			receivers: [{ source: "Test item6E", offset: 4 }],
+		};
+		const serviceItemsData = {
+			exporters: [{ source: "Test item3", offset: 3 }],
+			extensions: [{ source: "Test item5E", offset: 4 }],
+			receivers: [{ source: "Test item6", offset: 5 }],
+		};
+
+		const errorMarkers: editor.IMarkerData[] = [];
+		const totalErrors = { customErrors: [], customWarnings: [] };
+		const configData = editorBinding.fallback;
+
+		customValidate(mainItemsData, serviceItemsData, errorMarkers, totalErrors, configData, true);
+
+		expect(errorMarkers).toEqual([
+			{
+				startLineNumber: 1,
+				endLineNumber: 0,
+				startColumn: 5,
+				endColumn: 16,
+				severity: 8,
+				message: 'Extension "Test item5E" is not defined.',
+			},
+			{
+				startLineNumber: 1,
+				endLineNumber: 0,
+				startColumn: 6,
+				endColumn: 16,
+				severity: 8,
+				message: 'Receiver "Test item6" is not defined.',
+			},
+		]);
+		expect(totalErrors).toEqual({
+			customErrors: [
+				'Extension "Test item5E" is not defined. (Line 1)',
+				'Receiver "Test item6" is not defined. (Line 1)',
+			],
+			customWarnings: [],
 		});
 	});
 });
@@ -261,12 +307,12 @@ describe("findErrorElement", () => {
 	});
 });
 
-describe("JsYaml.load", () => {
+describe("Yaml.parse", () => {
 	it("should load a YAML document that included numbers and convert it to JSON data with numbers as string", () => {
-		const jsonData = JsYaml.load(yamlData.fallback, { schema: FAILSAFE_SCHEMA });
+		const jsonData = YAML.parse(yamlData.fallback, { schema: "failsafe" });
 		expect(jsonData).toStrictEqual({
-			receivers: { otlp: null, 2222: null },
-			processors: { batch: null, 3333: null },
+			receivers: { otlp: "", 2222: "" },
+			processors: { batch: "", 3333: "" },
 			service: {
 				extensions: ["health_check", "pprof", "zpages", "999"],
 				pipelines: {
