@@ -67,9 +67,9 @@ export class OTelBinValidationStack extends Stack {
     const supportedDistributionsListBucket = new Bucket(this, 'supported-distributions-list', {
       bucketName: `supported-distributions-list-${props.testEnvironmentName}`,
       enforceSSL: true,
-      removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     new BucketDeployment(this, 'deploy-supported-distributions-list', {
@@ -87,6 +87,7 @@ export class OTelBinValidationStack extends Stack {
         actions: ['s3:Get'],
       }),
     );
+    credentialsRole.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     supportedDistributionsListBucket.grantRead(credentialsRole);
 
