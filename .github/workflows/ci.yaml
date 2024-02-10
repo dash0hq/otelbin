@@ -20,8 +20,8 @@ concurrency:
   group: ${{ github.ref }}
 
 jobs:
-  verify:
-    name: Code tests
+  otelbin-verify:
+    name: OTelBin tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -50,9 +50,34 @@ jobs:
         working-directory: packages/otelbin
         run: npm run test
 
+  otelbin-validation-image-verify:
+    name: OTelBin Validation Image Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        shell: bash
+        working-directory: packages/otelbin-validation-image
+        run: npm ci
+
+      - name: Test
+        shell: bash
+        working-directory: packages/otelbin-validation-image
+        run: npm run test
+
   prep-itests:
     name: Deploy validation backend
-    needs: ['verify']
+    needs: ['otelbin-verify', 'otelbin-validation-image-verify']
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
