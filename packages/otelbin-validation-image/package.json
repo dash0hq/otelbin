@@ -4,7 +4,7 @@
   "description": "AWS Lambda handler to run validation requests",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "esbuild src/index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js"
   },
   "repository": {
@@ -18,10 +18,14 @@
   },
   "homepage": "https://github.com/dash0hq/otelbin#readme",
   "devDependencies": {
-		"@types/aws-lambda": "^8.10.129",
+    "@jest/globals": "^29.7.0",
+    "@types/aws-lambda": "^8.10.129",
+    "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.8",
     "@types/node": "^20.8.10",
-		"esbuild": "^0.19.8"
+    "esbuild": "^0.19.8",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",
