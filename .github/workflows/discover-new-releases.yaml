@@ -153,7 +153,7 @@ jobs:
           name: supported-distributions
           path: packages/otelbin-validation/src/assets
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           title: Update supported versions
           commit-message: 'chore: update the version list of supported OpenTelemetry collector distros'
