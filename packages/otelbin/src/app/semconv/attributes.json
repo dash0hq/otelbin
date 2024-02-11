@@ -1,0 +1,4792 @@
+[
+  {
+    "key": "client.address",
+    "context": "resource",
+    "type": "string",
+    "brief": "Client address - domain name if available without reverse DNS lookup; otherwise, IP address or Unix domain socket name.",
+    "examples": [
+      "client.example.com",
+      "10.1.2.80",
+      "/tmp/my.sock"
+    ],
+    "note": "When observed from the server side, and when communicating through an intermediary, `client.address` SHOULD represent the client address behind any intermediaries,  for example proxies, if it's available.\n"
+  },
+  {
+    "key": "client.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Client port number.",
+    "examples": [
+      65123
+    ],
+    "note": "When observed from the server side, and when communicating through an intermediary, `client.port` SHOULD represent the client port behind any intermediaries,  for example proxies, if it's available.\n"
+  },
+  {
+    "key": "destination.address",
+    "context": "resource",
+    "type": "string",
+    "brief": "Destination address - domain name if available without reverse DNS lookup; otherwise, IP address or Unix domain socket name.",
+    "examples": [
+      "destination.example.com",
+      "10.1.2.80",
+      "/tmp/my.sock"
+    ],
+    "note": "When observed from the source side, and when communicating through an intermediary, `destination.address` SHOULD represent the destination address behind any intermediaries, for example proxies, if it's available.\n"
+  },
+  {
+    "key": "destination.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Destination port number",
+    "examples": [
+      3389,
+      2888
+    ]
+  },
+  {
+    "key": "error.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "other",
+          "value": "_OTHER",
+          "brief": "A fallback error value to be used when the instrumentation doesn't define a custom value."
+        }
+      ]
+    },
+    "brief": "Describes a class of error the operation ended with.",
+    "examples": [
+      "timeout",
+      "java.net.UnknownHostException",
+      "server_certificate_invalid",
+      "500"
+    ],
+    "note": "The `error.type` SHOULD be predictable and SHOULD have low cardinality.\nInstrumentations SHOULD document the list of errors they report.\n\nThe cardinality of `error.type` within one instrumentation library SHOULD be low.\nTelemetry consumers that aggregate data from multiple instrumentation libraries and applications\nshould be prepared for `error.type` to have high cardinality at query time when no\nadditional filters are applied.\n\nIf the operation has completed successfully, instrumentations SHOULD NOT set `error.type`.\n\nIf a specific domain defines its own set of error identifiers (such as HTTP or gRPC status codes),\nit's RECOMMENDED to:\n  * Use a domain-specific attribute\n  * Set `error.type` to capture all errors, regardless of whether they are defined within the domain-specific set or not.\n"
+  },
+  {
+    "key": "exception.type",
+    "context": "span",
+    "type": "string",
+    "brief": "The type of the exception (its fully-qualified class name, if applicable). The dynamic type of the exception should be preferred over the static type in languages that support it.\n",
+    "examples": [
+      "java.net.ConnectException",
+      "OSError"
+    ]
+  },
+  {
+    "key": "exception.message",
+    "context": "span",
+    "type": "string",
+    "brief": "The exception message.",
+    "examples": [
+      "Division by zero",
+      "Can't convert 'int' object to str implicitly"
+    ]
+  },
+  {
+    "key": "exception.stacktrace",
+    "context": "span",
+    "type": "string",
+    "brief": "A stacktrace as a string in the natural representation for the language runtime. The representation is to be determined and documented by each language SIG.\n",
+    "examples": [
+      "Exception in thread \"main\" java.lang.RuntimeException: Test exception\\n at com.example.GenerateTrace.methodB(GenerateTrace.java:13)\\n at com.example.GenerateTrace.methodA(GenerateTrace.java:9)\\n at com.example.GenerateTrace.main(GenerateTrace.java:5)"
+    ]
+  },
+  {
+    "key": "faas.trigger",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "datasource",
+          "value": "datasource",
+          "brief": "A response to some data source operation such as a database or filesystem read/write"
+        },
+        {
+          "id": "http",
+          "value": "http",
+          "brief": "To provide an answer to an inbound HTTP request"
+        },
+        {
+          "id": "pubsub",
+          "value": "pubsub",
+          "brief": "A function is set to be executed when messages are sent to a messaging system"
+        },
+        {
+          "id": "timer",
+          "value": "timer",
+          "brief": "A function is scheduled to be executed regularly"
+        },
+        {
+          "id": "other",
+          "value": "other",
+          "brief": "If none of the others apply"
+        }
+      ]
+    },
+    "brief": "Type of the trigger which caused this function invocation.",
+    "examples": []
+  },
+  {
+    "key": "faas.invoked_name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the invoked function.\n",
+    "examples": [
+      "my-function"
+    ],
+    "note": "SHOULD be equal to the `faas.name` resource attribute of the invoked function.\n"
+  },
+  {
+    "key": "faas.invoked_provider",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "alibaba_cloud",
+          "value": "alibaba_cloud",
+          "brief": "Alibaba Cloud"
+        },
+        {
+          "id": "aws",
+          "value": "aws",
+          "brief": "Amazon Web Services"
+        },
+        {
+          "id": "azure",
+          "value": "azure",
+          "brief": "Microsoft Azure"
+        },
+        {
+          "id": "gcp",
+          "value": "gcp",
+          "brief": "Google Cloud Platform"
+        },
+        {
+          "id": "tencent_cloud",
+          "value": "tencent_cloud",
+          "brief": "Tencent Cloud"
+        }
+      ]
+    },
+    "brief": "The cloud provider of the invoked function.\n",
+    "examples": [],
+    "note": "SHOULD be equal to the `cloud.provider` resource attribute of the invoked function.\n"
+  },
+  {
+    "key": "faas.invoked_region",
+    "context": "resource",
+    "type": "string",
+    "brief": "The cloud region of the invoked function.\n",
+    "examples": [
+      "eu-central-1"
+    ],
+    "note": "SHOULD be equal to the `cloud.region` resource attribute of the invoked function.\n"
+  },
+  {
+    "key": "peer.service",
+    "context": "span",
+    "type": "string",
+    "brief": "The [`service.name`](/docs/resource/README.md#service) of the remote service. SHOULD be equal to the actual `service.name` resource attribute of the remote service if any.\n",
+    "examples": [
+      "AuthTokenCache"
+    ]
+  },
+  {
+    "key": "enduser.id",
+    "context": "span",
+    "type": "string",
+    "brief": "Username or client_id extracted from the access token or [Authorization](https://tools.ietf.org/html/rfc7235#section-4.2) header in the inbound request from outside the system.\n",
+    "examples": [
+      "username"
+    ]
+  },
+  {
+    "key": "enduser.role",
+    "context": "span",
+    "type": "string",
+    "brief": "Actual/assumed role the client is making the request under extracted from token or application security context.",
+    "examples": [
+      "admin"
+    ]
+  },
+  {
+    "key": "enduser.scope",
+    "context": "span",
+    "type": "string",
+    "brief": "Scopes or granted authorities the client currently possesses extracted from token or application security context. The value would come from the scope associated with an [OAuth 2.0 Access Token](https://tools.ietf.org/html/rfc6749#section-3.3) or an attribute value in a [SAML 2.0 Assertion](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html).\n",
+    "examples": [
+      "read:message, write:files"
+    ]
+  },
+  {
+    "key": "event.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name identifies the event.\n",
+    "examples": [
+      "click",
+      "exception"
+    ]
+  },
+  {
+    "key": "event.domain",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "browser",
+          "value": "browser",
+          "brief": "Events from browser apps"
+        },
+        {
+          "id": "device",
+          "value": "device",
+          "brief": "Events from mobile apps"
+        },
+        {
+          "id": "k8s",
+          "value": "k8s",
+          "brief": "Events from Kubernetes"
+        }
+      ]
+    },
+    "brief": "The domain identifies the business context for the events.\n",
+    "examples": [],
+    "note": "Events across different domains may have same `event.name`, yet be unrelated events.\n"
+  },
+  {
+    "key": "log.record.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "A unique identifier for the Log Record.\n",
+    "examples": [
+      "01ARZ3NDEKTSV4RRFFQ69G5FAV"
+    ],
+    "note": "If an id is provided, other log records with the same id will be considered duplicates and can be removed safely. This means, that two distinguishable log records MUST have different values.\nThe id MAY be an [Universally Unique Lexicographically Sortable Identifier (ULID)](https://github.com/ulid/spec), but other identifiers (e.g. UUID) may be used as needed.\n"
+  },
+  {
+    "key": "log.iostream",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "stdout",
+          "value": "stdout",
+          "brief": "Logs from stdout stream"
+        },
+        {
+          "id": "stderr",
+          "value": "stderr",
+          "brief": "Events from stderr stream"
+        }
+      ]
+    },
+    "brief": "The stream associated with the log. See below for a list of well-known values.\n",
+    "examples": []
+  },
+  {
+    "key": "log.file.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The basename of the file.\n",
+    "examples": [
+      "audit.log"
+    ]
+  },
+  {
+    "key": "log.file.path",
+    "context": "resource",
+    "type": "string",
+    "brief": "The full path to the file.\n",
+    "examples": [
+      "/var/log/mysql/audit.log"
+    ]
+  },
+  {
+    "key": "log.file.name_resolved",
+    "context": "resource",
+    "type": "string",
+    "brief": "The basename of the file, with symlinks resolved.\n",
+    "examples": [
+      "uuid.log"
+    ]
+  },
+  {
+    "key": "log.file.path_resolved",
+    "context": "resource",
+    "type": "string",
+    "brief": "The full path to the file, with symlinks resolved.\n",
+    "examples": [
+      "/var/lib/docker/uuid.log"
+    ]
+  },
+  {
+    "key": "ios.state",
+    "context": "event",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "active",
+          "value": "active",
+          "brief": "The app has become `active`. Associated with UIKit notification `applicationDidBecomeActive`.\n"
+        },
+        {
+          "id": "inactive",
+          "value": "inactive",
+          "brief": "The app is now `inactive`. Associated with UIKit notification `applicationWillResignActive`.\n"
+        },
+        {
+          "id": "background",
+          "value": "background",
+          "brief": "The app is now in the background. This value is associated with UIKit notification `applicationDidEnterBackground`.\n"
+        },
+        {
+          "id": "foreground",
+          "value": "foreground",
+          "brief": "The app is now in the foreground. This value is associated with UIKit notification `applicationWillEnterForeground`.\n"
+        },
+        {
+          "id": "terminate",
+          "value": "terminate",
+          "brief": "The app is about to terminate. Associated with UIKit notification `applicationWillTerminate`.\n"
+        }
+      ]
+    },
+    "brief": "This attribute represents the state the application has transitioned into at the occurrence of the event.\n",
+    "examples": [],
+    "note": "The iOS lifecycle states are defined in the [UIApplicationDelegate documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate#1656902), and from which the `OS terminology` column values are derived.\n"
+  },
+  {
+    "key": "android.state",
+    "context": "event",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "created",
+          "value": "created",
+          "brief": "Any time before Activity.onResume() or, if the app has no Activity, Context.startService() has been called in the app for the first time.\n"
+        },
+        {
+          "id": "background",
+          "value": "background",
+          "brief": "Any time after Activity.onPause() or, if the app has no Activity, Context.stopService() has been called when the app was in the foreground state.\n"
+        },
+        {
+          "id": "foreground",
+          "value": "foreground",
+          "brief": "Any time after Activity.onResume() or, if the app has no Activity, Context.startService() has been called when the app was in either the created or background states.\n"
+        }
+      ]
+    },
+    "brief": "This attribute represents the state the application has transitioned into at the occurrence of the event.\n",
+    "examples": [],
+    "note": "The Android lifecycle states are defined in [Activity lifecycle callbacks](https://developer.android.com/guide/components/activities/activity-lifecycle#lc), and from which the `OS identifiers` are derived.\n"
+  },
+  {
+    "key": "state",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "idle",
+          "value": "idle"
+        },
+        {
+          "id": "used",
+          "value": "used"
+        }
+      ]
+    },
+    "brief": "The state of a connection in the pool",
+    "examples": [
+      "idle"
+    ]
+  },
+  {
+    "key": "pool.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the connection pool; unique within the instrumented application. In case the connection pool implementation doesn't provide a name, then the [db.connection_string](/docs/database/database-spans.md#connection-level-attributes) should be used\n",
+    "examples": [
+      "myDataSource"
+    ]
+  },
+  {
+    "key": "jvm.buffer.pool.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the buffer pool.",
+    "examples": [
+      "mapped",
+      "direct"
+    ],
+    "note": "Pool names are generally obtained via [BufferPoolMXBean#getName()](https://docs.oracle.com/en/java/javase/11/docs/api/java.management/java/lang/management/BufferPoolMXBean.html#getName()).\n"
+  },
+  {
+    "key": "jvm.memory.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "heap",
+          "value": "heap",
+          "brief": "Heap memory."
+        },
+        {
+          "id": "non_heap",
+          "value": "non_heap",
+          "brief": "Non-heap memory"
+        }
+      ]
+    },
+    "brief": "The type of memory.",
+    "examples": [
+      "heap",
+      "non_heap"
+    ]
+  },
+  {
+    "key": "jvm.memory.pool.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the memory pool.",
+    "examples": [
+      "G1 Old Gen",
+      "G1 Eden space",
+      "G1 Survivor Space"
+    ],
+    "note": "Pool names are generally obtained via [MemoryPoolMXBean#getName()](https://docs.oracle.com/en/java/javase/11/docs/api/java.management/java/lang/management/MemoryPoolMXBean.html#getName()).\n"
+  },
+  {
+    "key": "system.device",
+    "context": "resource",
+    "type": "string",
+    "brief": "The device identifier",
+    "examples": [
+      "(identifier)"
+    ]
+  },
+  {
+    "key": "system.cpu.state",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "user",
+          "value": "user"
+        },
+        {
+          "id": "system",
+          "value": "system"
+        },
+        {
+          "id": "nice",
+          "value": "nice"
+        },
+        {
+          "id": "idle",
+          "value": "idle"
+        },
+        {
+          "id": "iowait",
+          "value": "iowait"
+        },
+        {
+          "id": "interrupt",
+          "value": "interrupt"
+        },
+        {
+          "id": "steal",
+          "value": "steal"
+        }
+      ]
+    },
+    "brief": "The state of the CPU",
+    "examples": [
+      "idle",
+      "interrupt"
+    ]
+  },
+  {
+    "key": "system.cpu.logical_number",
+    "context": "resource",
+    "type": "int",
+    "brief": "The logical CPU number [0..n-1]",
+    "examples": [
+      1
+    ]
+  },
+  {
+    "key": "system.memory.state",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "used",
+          "value": "used"
+        },
+        {
+          "id": "free",
+          "value": "free"
+        },
+        {
+          "id": "shared",
+          "value": "shared"
+        },
+        {
+          "id": "buffers",
+          "value": "buffers"
+        },
+        {
+          "id": "cached",
+          "value": "cached"
+        }
+      ]
+    },
+    "brief": "The memory state",
+    "examples": [
+      "free",
+      "cached"
+    ]
+  },
+  {
+    "key": "system.paging.state",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "used",
+          "value": "used"
+        },
+        {
+          "id": "free",
+          "value": "free"
+        }
+      ]
+    },
+    "brief": "The memory paging state",
+    "examples": [
+      "free"
+    ]
+  },
+  {
+    "key": "system.paging.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "major",
+          "value": "major"
+        },
+        {
+          "id": "minor",
+          "value": "minor"
+        }
+      ]
+    },
+    "brief": "The memory paging type",
+    "examples": [
+      "minor"
+    ]
+  },
+  {
+    "key": "system.paging.direction",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "in",
+          "value": "in"
+        },
+        {
+          "id": "out",
+          "value": "out"
+        }
+      ]
+    },
+    "brief": "The paging access direction",
+    "examples": [
+      "in"
+    ]
+  },
+  {
+    "key": "system.disk.direction",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "read",
+          "value": "read"
+        },
+        {
+          "id": "write",
+          "value": "write"
+        }
+      ]
+    },
+    "brief": "The disk operation direction",
+    "examples": [
+      "read"
+    ]
+  },
+  {
+    "key": "system.filesystem.state",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "used",
+          "value": "used"
+        },
+        {
+          "id": "free",
+          "value": "free"
+        },
+        {
+          "id": "reserved",
+          "value": "reserved"
+        }
+      ]
+    },
+    "brief": "The filesystem state",
+    "examples": [
+      "used"
+    ]
+  },
+  {
+    "key": "system.filesystem.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "fat32",
+          "value": "fat32"
+        },
+        {
+          "id": "exfat",
+          "value": "exfat"
+        },
+        {
+          "id": "ntfs",
+          "value": "ntfs"
+        },
+        {
+          "id": "refs",
+          "value": "refs"
+        },
+        {
+          "id": "hfsplus",
+          "value": "hfsplus"
+        },
+        {
+          "id": "ext4",
+          "value": "ext4"
+        }
+      ]
+    },
+    "brief": "The filesystem type",
+    "examples": [
+      "ext4"
+    ]
+  },
+  {
+    "key": "system.filesystem.mode",
+    "context": "resource",
+    "type": "string",
+    "brief": "The filesystem mode",
+    "examples": [
+      "rw, ro"
+    ]
+  },
+  {
+    "key": "system.filesystem.mountpoint",
+    "context": "resource",
+    "type": "string",
+    "brief": "The filesystem mount path",
+    "examples": [
+      "/mnt/data"
+    ]
+  },
+  {
+    "key": "system.network.direction",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "transmit",
+          "value": "transmit"
+        },
+        {
+          "id": "receive",
+          "value": "receive"
+        }
+      ]
+    },
+    "brief": "",
+    "examples": [
+      "transmit"
+    ]
+  },
+  {
+    "key": "system.network.state",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "close",
+          "value": "close"
+        },
+        {
+          "id": "close_wait",
+          "value": "close_wait"
+        },
+        {
+          "id": "closing",
+          "value": "closing"
+        },
+        {
+          "id": "delete",
+          "value": "delete"
+        },
+        {
+          "id": "established",
+          "value": "established"
+        },
+        {
+          "id": "fin_wait_1",
+          "value": "fin_wait_1"
+        },
+        {
+          "id": "fin_wait_2",
+          "value": "fin_wait_2"
+        },
+        {
+          "id": "last_ack",
+          "value": "last_ack"
+        },
+        {
+          "id": "listen",
+          "value": "listen"
+        },
+        {
+          "id": "syn_recv",
+          "value": "syn_recv"
+        },
+        {
+          "id": "syn_sent",
+          "value": "syn_sent"
+        },
+        {
+          "id": "time_wait",
+          "value": "time_wait"
+        }
+      ]
+    },
+    "brief": "A stateless protocol MUST NOT set this attribute",
+    "examples": [
+      "close_wait"
+    ]
+  },
+  {
+    "key": "system.processes.status",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "running",
+          "value": "running"
+        },
+        {
+          "id": "sleeping",
+          "value": "sleeping"
+        },
+        {
+          "id": "stopped",
+          "value": "stopped"
+        },
+        {
+          "id": "defunct",
+          "value": "defunct"
+        }
+      ]
+    },
+    "brief": "The process state, e.g., [Linux Process State Codes](https://man7.org/linux/man-pages/man1/ps.1.html#PROCESS_STATE_CODES)\n",
+    "examples": [
+      "running"
+    ]
+  },
+  {
+    "key": "cloud.provider",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "alibaba_cloud",
+          "value": "alibaba_cloud",
+          "brief": "Alibaba Cloud"
+        },
+        {
+          "id": "aws",
+          "value": "aws",
+          "brief": "Amazon Web Services"
+        },
+        {
+          "id": "azure",
+          "value": "azure",
+          "brief": "Microsoft Azure"
+        },
+        {
+          "id": "gcp",
+          "value": "gcp",
+          "brief": "Google Cloud Platform"
+        },
+        {
+          "id": "heroku",
+          "value": "heroku",
+          "brief": "Heroku Platform as a Service"
+        },
+        {
+          "id": "ibm_cloud",
+          "value": "ibm_cloud",
+          "brief": "IBM Cloud"
+        },
+        {
+          "id": "tencent_cloud",
+          "value": "tencent_cloud",
+          "brief": "Tencent Cloud"
+        }
+      ]
+    },
+    "brief": "Name of the cloud provider.\n",
+    "examples": []
+  },
+  {
+    "key": "cloud.account.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "The cloud account ID the resource is assigned to.\n",
+    "examples": [
+      "111111111111",
+      "opentelemetry"
+    ]
+  },
+  {
+    "key": "cloud.region",
+    "context": "resource",
+    "type": "string",
+    "brief": "The geographical region the resource is running.\n",
+    "examples": [
+      "us-central1",
+      "us-east-1"
+    ],
+    "note": "Refer to your provider's docs to see the available regions, for example [Alibaba Cloud regions](https://www.alibabacloud.com/help/doc-detail/40654.htm), [AWS regions](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/), [Azure regions](https://azure.microsoft.com/global-infrastructure/geographies/), [Google Cloud regions](https://cloud.google.com/about/locations), or [Tencent Cloud regions](https://www.tencentcloud.com/document/product/213/6091).\n"
+  },
+  {
+    "key": "cloud.resource_id",
+    "context": "resource",
+    "type": "string",
+    "brief": "Cloud provider-specific native identifier of the monitored cloud resource (e.g. an [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) on AWS, a [fully qualified resource ID](https://learn.microsoft.com/rest/api/resources/resources/get-by-id) on Azure, a [full resource name](https://cloud.google.com/apis/design/resource_names#full_resource_name) on GCP)\n",
+    "examples": [
+      "arn:aws:lambda:REGION:ACCOUNT_ID:function:my-function",
+      "//run.googleapis.com/projects/PROJECT_ID/locations/LOCATION_ID/services/SERVICE_ID",
+      "/subscriptions/<SUBSCIPTION_GUID>/resourceGroups/<RG>/providers/Microsoft.Web/sites/<FUNCAPP>/functions/<FUNC>"
+    ],
+    "note": "On some cloud providers, it may not be possible to determine the full ID at startup,\nso it may be necessary to set `cloud.resource_id` as a span attribute instead.\n\nThe exact value to use for `cloud.resource_id` depends on the cloud provider.\nThe following well-known definitions MUST be used if you set this attribute and they apply:\n\n* **AWS Lambda:** The function [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html).\n  Take care not to use the \"invoked ARN\" directly but replace any\n  [alias suffix](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)\n  with the resolved function version, as the same runtime instance may be invokable with\n  multiple different aliases.\n* **GCP:** The [URI of the resource](https://cloud.google.com/iam/docs/full-resource-names)\n* **Azure:** The [Fully Qualified Resource ID](https://docs.microsoft.com/rest/api/resources/resources/get-by-id) of the invoked function,\n  *not* the function app, having the form\n  `/subscriptions/<SUBSCIPTION_GUID>/resourceGroups/<RG>/providers/Microsoft.Web/sites/<FUNCAPP>/functions/<FUNC>`.\n  This means that a span attribute MUST be used, as an Azure function app can host multiple functions that would usually share\n  a TracerProvider.\n"
+  },
+  {
+    "key": "cloud.availability_zone",
+    "context": "resource",
+    "type": "string",
+    "brief": "Cloud regions often have multiple, isolated locations known as zones to increase availability. Availability zone represents the zone where the resource is running.\n",
+    "examples": [
+      "us-east-1c"
+    ],
+    "note": "Availability zones are called \"zones\" on Alibaba Cloud and Google Cloud.\n"
+  },
+  {
+    "key": "cloud.platform",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "alibaba_cloud_ecs",
+          "value": "alibaba_cloud_ecs",
+          "brief": "Alibaba Cloud Elastic Compute Service"
+        },
+        {
+          "id": "alibaba_cloud_fc",
+          "value": "alibaba_cloud_fc",
+          "brief": "Alibaba Cloud Function Compute"
+        },
+        {
+          "id": "alibaba_cloud_openshift",
+          "value": "alibaba_cloud_openshift",
+          "brief": "Red Hat OpenShift on Alibaba Cloud"
+        },
+        {
+          "id": "aws_ec2",
+          "value": "aws_ec2",
+          "brief": "AWS Elastic Compute Cloud"
+        },
+        {
+          "id": "aws_ecs",
+          "value": "aws_ecs",
+          "brief": "AWS Elastic Container Service"
+        },
+        {
+          "id": "aws_eks",
+          "value": "aws_eks",
+          "brief": "AWS Elastic Kubernetes Service"
+        },
+        {
+          "id": "aws_lambda",
+          "value": "aws_lambda",
+          "brief": "AWS Lambda"
+        },
+        {
+          "id": "aws_elastic_beanstalk",
+          "value": "aws_elastic_beanstalk",
+          "brief": "AWS Elastic Beanstalk"
+        },
+        {
+          "id": "aws_app_runner",
+          "value": "aws_app_runner",
+          "brief": "AWS App Runner"
+        },
+        {
+          "id": "aws_openshift",
+          "value": "aws_openshift",
+          "brief": "Red Hat OpenShift on AWS (ROSA)"
+        },
+        {
+          "id": "azure_vm",
+          "value": "azure_vm",
+          "brief": "Azure Virtual Machines"
+        },
+        {
+          "id": "azure_container_instances",
+          "value": "azure_container_instances",
+          "brief": "Azure Container Instances"
+        },
+        {
+          "id": "azure_aks",
+          "value": "azure_aks",
+          "brief": "Azure Kubernetes Service"
+        },
+        {
+          "id": "azure_functions",
+          "value": "azure_functions",
+          "brief": "Azure Functions"
+        },
+        {
+          "id": "azure_app_service",
+          "value": "azure_app_service",
+          "brief": "Azure App Service"
+        },
+        {
+          "id": "azure_openshift",
+          "value": "azure_openshift",
+          "brief": "Azure Red Hat OpenShift"
+        },
+        {
+          "id": "gcp_bare_metal_solution",
+          "value": "gcp_bare_metal_solution",
+          "brief": "Google Bare Metal Solution (BMS)"
+        },
+        {
+          "id": "gcp_compute_engine",
+          "value": "gcp_compute_engine",
+          "brief": "Google Cloud Compute Engine (GCE)"
+        },
+        {
+          "id": "gcp_cloud_run",
+          "value": "gcp_cloud_run",
+          "brief": "Google Cloud Run"
+        },
+        {
+          "id": "gcp_kubernetes_engine",
+          "value": "gcp_kubernetes_engine",
+          "brief": "Google Cloud Kubernetes Engine (GKE)"
+        },
+        {
+          "id": "gcp_cloud_functions",
+          "value": "gcp_cloud_functions",
+          "brief": "Google Cloud Functions (GCF)"
+        },
+        {
+          "id": "gcp_app_engine",
+          "value": "gcp_app_engine",
+          "brief": "Google Cloud App Engine (GAE)"
+        },
+        {
+          "id": "gcp_openshift",
+          "value": "gcp_openshift",
+          "brief": "Red Hat OpenShift on Google Cloud"
+        },
+        {
+          "id": "ibm_cloud_openshift",
+          "value": "ibm_cloud_openshift",
+          "brief": "Red Hat OpenShift on IBM Cloud"
+        },
+        {
+          "id": "tencent_cloud_cvm",
+          "value": "tencent_cloud_cvm",
+          "brief": "Tencent Cloud Cloud Virtual Machine (CVM)"
+        },
+        {
+          "id": "tencent_cloud_eks",
+          "value": "tencent_cloud_eks",
+          "brief": "Tencent Cloud Elastic Kubernetes Service (EKS)"
+        },
+        {
+          "id": "tencent_cloud_scf",
+          "value": "tencent_cloud_scf",
+          "brief": "Tencent Cloud Serverless Cloud Function (SCF)"
+        }
+      ]
+    },
+    "brief": "The cloud platform in use.\n",
+    "examples": [],
+    "note": "The prefix of the service SHOULD match the one specified in `cloud.provider`.\n"
+  },
+  {
+    "key": "code.function",
+    "context": "span",
+    "type": "string",
+    "brief": "The method or function name, or equivalent (usually rightmost part of the code unit's name).\n",
+    "examples": [
+      "serveRequest"
+    ]
+  },
+  {
+    "key": "code.namespace",
+    "context": "span",
+    "type": "string",
+    "brief": "The \"namespace\" within which `code.function` is defined. Usually the qualified class or module name, such that `code.namespace` + some separator + `code.function` form a unique identifier for the code unit.\n",
+    "examples": [
+      "com.example.MyHttpService"
+    ]
+  },
+  {
+    "key": "code.filepath",
+    "context": "span",
+    "type": "string",
+    "brief": "The source code file name that identifies the code unit as uniquely as possible (preferably an absolute file path).\n",
+    "examples": [
+      "/usr/local/MyApplication/content_root/app/index.php"
+    ]
+  },
+  {
+    "key": "code.lineno",
+    "context": "span",
+    "type": "int",
+    "brief": "The line number in `code.filepath` best representing the operation. It SHOULD point within the code unit named in `code.function`.\n",
+    "examples": [
+      42
+    ]
+  },
+  {
+    "key": "code.column",
+    "context": "span",
+    "type": "int",
+    "brief": "The column number in `code.filepath` best representing the operation. It SHOULD point within the code unit named in `code.function`.\n",
+    "examples": [
+      16
+    ]
+  },
+  {
+    "key": "container.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Container name used by container runtime.\n",
+    "examples": [
+      "opentelemetry-autoconf"
+    ]
+  },
+  {
+    "key": "container.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "Container ID. Usually a UUID, as for example used to [identify Docker containers](https://docs.docker.com/engine/reference/run/#container-identification). The UUID might be abbreviated.\n",
+    "examples": [
+      "a3bf90e006b2"
+    ]
+  },
+  {
+    "key": "container.runtime",
+    "context": "resource",
+    "type": "string",
+    "brief": "The container runtime managing this container.\n",
+    "examples": [
+      "docker",
+      "containerd",
+      "rkt"
+    ]
+  },
+  {
+    "key": "container.image.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the image the container was built on.\n",
+    "examples": [
+      "gcr.io/opentelemetry/operator"
+    ]
+  },
+  {
+    "key": "container.image.tags",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "Container image tags. An example can be found in [Docker Image Inspect](https://docs.docker.com/engine/api/v1.43/#tag/Image/operation/ImageInspect). Should be only the `<tag>` section of the full name for example from `registry.example.com/my-org/my-image:<tag>`.\n",
+    "examples": [
+      "v1.27.1",
+      "3.5.7-0"
+    ]
+  },
+  {
+    "key": "container.image.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "Runtime specific image identifier. Usually a hash algorithm followed by a UUID.\n",
+    "examples": [
+      "sha256:19c92d0a00d1b66d897bceaa7319bee0dd38a10a851c60bcec9474aa3f01e50f"
+    ],
+    "note": "Docker defines a sha256 of the image id; `container.image.id` corresponds to the `Image` field from the Docker container inspect [API](https://docs.docker.com/engine/api/v1.43/#tag/Container/operation/ContainerInspect) endpoint.\nK8s defines a link to the container registry repository with digest `\"imageID\": \"registry.azurecr.io /namespace/service/dockerfile@sha256:bdeabd40c3a8a492eaf9e8e44d0ebbb84bac7ee25ac0cf8a7159d25f62555625\"`.\nThe ID is assinged by the container runtime and can vary in different environments. Consider using `oci.manifest.digest` if it is important to identify the same image in different environments/runtimes.\n"
+  },
+  {
+    "key": "container.image.repo_digests",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "Repo digests of the container image as provided by the container runtime.\n",
+    "examples": [
+      "example@sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb",
+      "internal.registry.example.com:5000/example@sha256:b69959407d21e8a062e0416bf13405bb2b71ed7a84dde4158ebafacfa06f5578"
+    ],
+    "note": "[Docker](https://docs.docker.com/engine/api/v1.43/#tag/Image/operation/ImageInspect) and [CRI](https://github.com/kubernetes/cri-api/blob/c75ef5b473bbe2d0a4fc92f82235efd665ea8e9f/pkg/apis/runtime/v1/api.proto#L1237-L1238) report those under the `RepoDigests` field.\n"
+  },
+  {
+    "key": "container.command",
+    "context": "resource",
+    "type": "string",
+    "brief": "The command used to run the container (i.e. the command name).\n",
+    "examples": [
+      "otelcontribcol"
+    ],
+    "note": "If using embedded credentials or sensitive data, it is recommended to remove them to prevent potential leakage.\n"
+  },
+  {
+    "key": "container.command_line",
+    "context": "resource",
+    "type": "string",
+    "brief": "The full command run by the container as a single string representing the full command. [2]\n",
+    "examples": [
+      "otelcontribcol --config config.yaml"
+    ]
+  },
+  {
+    "key": "container.command_args",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "All the command arguments (including the command/executable itself) run by the container. [2]\n",
+    "examples": [
+      "otelcontribcol, --config, config.yaml"
+    ]
+  },
+  {
+    "key": "container.labels",
+    "context": "resource",
+    "type": "template[string]",
+    "brief": "Container labels, `<key>` being the label name, the value being the label value.\n",
+    "examples": [
+      "container.labels.app=nginx"
+    ]
+  },
+  {
+    "key": "http.method",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `http.request.method` instead.",
+    "examples": [
+      "GET",
+      "POST",
+      "HEAD"
+    ]
+  },
+  {
+    "key": "http.status_code",
+    "context": "resource",
+    "type": "int",
+    "brief": "Deprecated, use `http.response.status_code` instead.",
+    "examples": [
+      200
+    ]
+  },
+  {
+    "key": "http.scheme",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `url.scheme` instead.",
+    "examples": [
+      "http",
+      "https"
+    ]
+  },
+  {
+    "key": "http.url",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `url.full` instead.",
+    "examples": [
+      "https://www.foo.bar/search?q=OpenTelemetry#SemConv"
+    ]
+  },
+  {
+    "key": "http.target",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `url.path` and `url.query` instead.",
+    "examples": [
+      "/search?q=OpenTelemetry#SemConv"
+    ]
+  },
+  {
+    "key": "http.request_content_length",
+    "context": "resource",
+    "type": "int",
+    "brief": "Deprecated, use `http.request.header.content-length` instead.",
+    "examples": [
+      3495
+    ]
+  },
+  {
+    "key": "http.response_content_length",
+    "context": "resource",
+    "type": "int",
+    "brief": "Deprecated, use `http.response.header.content-length` instead.",
+    "examples": [
+      3495
+    ]
+  },
+  {
+    "key": "net.sock.peer.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, no replacement at this time.",
+    "examples": [
+      "/var/my.sock"
+    ]
+  },
+  {
+    "key": "net.sock.peer.addr",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `network.peer.address`.",
+    "examples": [
+      "192.168.0.1"
+    ]
+  },
+  {
+    "key": "net.sock.peer.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Deprecated, use `network.peer.port`.",
+    "examples": [
+      65531
+    ]
+  },
+  {
+    "key": "net.peer.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `server.address` on client spans and `client.address` on server spans.",
+    "examples": [
+      "example.com"
+    ]
+  },
+  {
+    "key": "net.peer.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Deprecated, use `server.port` on client spans and `client.port` on server spans.",
+    "examples": [
+      8080
+    ]
+  },
+  {
+    "key": "net.host.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `server.address`.",
+    "examples": [
+      "example.com"
+    ]
+  },
+  {
+    "key": "net.host.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Deprecated, use `server.port`.",
+    "examples": [
+      8080
+    ]
+  },
+  {
+    "key": "net.sock.host.addr",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `network.local.address`.",
+    "examples": [
+      "/var/my.sock"
+    ]
+  },
+  {
+    "key": "net.sock.host.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Deprecated, use `network.local.port`.",
+    "examples": [
+      8080
+    ]
+  },
+  {
+    "key": "net.transport",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "ip_tcp",
+          "value": "ip_tcp"
+        },
+        {
+          "id": "ip_udp",
+          "value": "ip_udp"
+        },
+        {
+          "id": "pipe",
+          "value": "pipe",
+          "brief": "Named or anonymous pipe."
+        },
+        {
+          "id": "inproc",
+          "value": "inproc",
+          "brief": "In-process communication."
+        },
+        {
+          "id": "other",
+          "value": "other",
+          "brief": "Something else (non IP-based)."
+        }
+      ]
+    },
+    "brief": "Deprecated, use `network.transport`.",
+    "examples": []
+  },
+  {
+    "key": "net.protocol.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `network.protocol.name`.",
+    "examples": [
+      "amqp",
+      "http",
+      "mqtt"
+    ]
+  },
+  {
+    "key": "net.protocol.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use `network.protocol.version`.",
+    "examples": [
+      "3.1.1"
+    ]
+  },
+  {
+    "key": "net.sock.family",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "inet",
+          "value": "inet",
+          "brief": "IPv4 address"
+        },
+        {
+          "id": "inet6",
+          "value": "inet6",
+          "brief": "IPv6 address"
+        },
+        {
+          "id": "unix",
+          "value": "unix",
+          "brief": "Unix domain socket path"
+        }
+      ]
+    },
+    "brief": "Deprecated, use `network.transport` and `network.type`.",
+    "examples": []
+  },
+  {
+    "key": "http.request.body.size",
+    "context": "resource",
+    "type": "int",
+    "brief": "The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size.\n",
+    "examples": [
+      3495
+    ]
+  },
+  {
+    "key": "http.request.header",
+    "context": "resource",
+    "type": "template[string[]]",
+    "brief": "HTTP request headers, `<key>` being the normalized HTTP Header name (lowercase), the value being the header values.\n",
+    "examples": [
+      "http.request.header.content-type=[\"application/json\"]",
+      "http.request.header.x-forwarded-for=[\"1.2.3.4\", \"1.2.3.5\"]"
+    ],
+    "note": "Instrumentations SHOULD require an explicit configuration of which headers are to be captured. Including all request headers can be a security risk - explicit configuration helps avoid leaking sensitive information.\nThe `User-Agent` header is already captured in the `user_agent.original` attribute. Users MAY explicitly configure instrumentations to capture them even though it is not recommended.\nThe attribute value MUST consist of either multiple header values as an array of strings or a single-item array containing a possibly comma-concatenated string, depending on the way the HTTP library provides access to headers.\n"
+  },
+  {
+    "key": "http.request.method",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "connect",
+          "value": "CONNECT",
+          "brief": "CONNECT method."
+        },
+        {
+          "id": "delete",
+          "value": "DELETE",
+          "brief": "DELETE method."
+        },
+        {
+          "id": "get",
+          "value": "GET",
+          "brief": "GET method."
+        },
+        {
+          "id": "head",
+          "value": "HEAD",
+          "brief": "HEAD method."
+        },
+        {
+          "id": "options",
+          "value": "OPTIONS",
+          "brief": "OPTIONS method."
+        },
+        {
+          "id": "patch",
+          "value": "PATCH",
+          "brief": "PATCH method."
+        },
+        {
+          "id": "post",
+          "value": "POST",
+          "brief": "POST method."
+        },
+        {
+          "id": "put",
+          "value": "PUT",
+          "brief": "PUT method."
+        },
+        {
+          "id": "trace",
+          "value": "TRACE",
+          "brief": "TRACE method."
+        },
+        {
+          "id": "other",
+          "value": "_OTHER",
+          "brief": "Any HTTP method that the instrumentation has no prior knowledge of."
+        }
+      ]
+    },
+    "brief": "HTTP request method.",
+    "examples": [
+      "GET",
+      "POST",
+      "HEAD"
+    ],
+    "note": "HTTP request method value SHOULD be \"known\" to the instrumentation.\nBy default, this convention defines \"known\" methods as the ones listed in [RFC9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-methods)\nand the PATCH method defined in [RFC5789](https://www.rfc-editor.org/rfc/rfc5789.html).\n\nIf the HTTP request method is not known to instrumentation, it MUST set the `http.request.method` attribute to `_OTHER`.\n\nIf the HTTP instrumentation could end up converting valid HTTP request methods to `_OTHER`, then it MUST provide a way to override\nthe list of known HTTP methods. If this override is done via environment variable, then the environment variable MUST be named\nOTEL_INSTRUMENTATION_HTTP_KNOWN_METHODS and support a comma-separated list of case-sensitive known HTTP methods\n(this list MUST be a full override of the default known method, it is not a list of known methods in addition to the defaults).\n\nHTTP method names are case-sensitive and `http.request.method` attribute value MUST match a known HTTP method name exactly.\nInstrumentations for specific web frameworks that consider HTTP methods to be case insensitive, SHOULD populate a canonical equivalent.\nTracing instrumentations that do so, MUST also set `http.request.method_original` to the original value.\n"
+  },
+  {
+    "key": "http.request.method_original",
+    "context": "resource",
+    "type": "string",
+    "brief": "Original HTTP method sent by the client in the request line.",
+    "examples": [
+      "GeT",
+      "ACL",
+      "foo"
+    ]
+  },
+  {
+    "key": "http.request.resend_count",
+    "context": "resource",
+    "type": "int",
+    "brief": "The ordinal number of request resending attempt (for any reason, including redirects).\n",
+    "examples": [
+      3
+    ],
+    "note": "The resend count SHOULD be updated each time an HTTP request gets resent by the client, regardless of what was the cause of the resending (e.g. redirection, authorization failure, 503 Server Unavailable, network issues, or any other).\n"
+  },
+  {
+    "key": "http.response.body.size",
+    "context": "resource",
+    "type": "int",
+    "brief": "The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size.\n",
+    "examples": [
+      3495
+    ]
+  },
+  {
+    "key": "http.response.header",
+    "context": "resource",
+    "type": "template[string[]]",
+    "brief": "HTTP response headers, `<key>` being the normalized HTTP Header name (lowercase), the value being the header values.\n",
+    "examples": [
+      "http.response.header.content-type=[\"application/json\"]",
+      "http.response.header.my-custom-header=[\"abc\", \"def\"]"
+    ],
+    "note": "Instrumentations SHOULD require an explicit configuration of which headers are to be captured. Including all response headers can be a security risk - explicit configuration helps avoid leaking sensitive information.\nUsers MAY explicitly configure instrumentations to capture them even though it is not recommended.\nThe attribute value MUST consist of either multiple header values as an array of strings or a single-item array containing a possibly comma-concatenated string, depending on the way the HTTP library provides access to headers.\n"
+  },
+  {
+    "key": "http.response.status_code",
+    "context": "resource",
+    "type": "int",
+    "brief": "[HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).",
+    "examples": [
+      200
+    ]
+  },
+  {
+    "key": "http.route",
+    "context": "resource",
+    "type": "string",
+    "brief": "The matched route, that is, the path template in the format used by the respective server framework.\n",
+    "examples": [
+      "/users/:userID?",
+      "{controller}/{action}/{id?}"
+    ],
+    "note": "MUST NOT be populated when this is not supported by the HTTP server framework as the route attribute should have low-cardinality and the URI path can NOT substitute it.\nSHOULD include the [application root](/docs/http/http-spans.md#http-server-definitions) if there is one.\n"
+  },
+  {
+    "key": "messaging.batch.message_count",
+    "context": "resource",
+    "type": "int",
+    "brief": "The number of messages sent, received, or processed in the scope of the batching operation.",
+    "examples": [
+      0,
+      1,
+      2
+    ],
+    "note": "Instrumentations SHOULD NOT set `messaging.batch.message_count` on spans that operate with a single message. When a messaging client library supports both batch and single-message API for the same operation, instrumentations SHOULD use `messaging.batch.message_count` for batching APIs and SHOULD NOT use it for single-message APIs.\n"
+  },
+  {
+    "key": "messaging.client_id",
+    "context": "resource",
+    "type": "string",
+    "brief": "A unique identifier for the client that consumes or produces a message.\n",
+    "examples": [
+      "client-5",
+      "myhost@8742@s8083jm"
+    ]
+  },
+  {
+    "key": "messaging.destination.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The message destination name",
+    "examples": [
+      "MyQueue",
+      "MyTopic"
+    ],
+    "note": "Destination name SHOULD uniquely identify a specific queue, topic or other entity within the broker. If\nthe broker doesn't have such notion, the destination name SHOULD uniquely identify the broker.\n"
+  },
+  {
+    "key": "messaging.destination.template",
+    "context": "resource",
+    "type": "string",
+    "brief": "Low cardinality representation of the messaging destination name",
+    "examples": [
+      "/customers/{customerId}"
+    ],
+    "note": "Destination names could be constructed from templates. An example would be a destination name involving a user name or product id. Although the destination name in this case is of high cardinality, the underlying template is of low cardinality and can be effectively used for grouping and aggregation.\n"
+  },
+  {
+    "key": "messaging.destination.anonymous",
+    "context": "resource",
+    "type": "boolean",
+    "brief": "A boolean that is true if the message destination is anonymous (could be unnamed or have auto-generated name).",
+    "examples": []
+  },
+  {
+    "key": "messaging.destination.temporary",
+    "context": "resource",
+    "type": "boolean",
+    "brief": "A boolean that is true if the message destination is temporary and might not exist anymore after messages are processed.",
+    "examples": []
+  },
+  {
+    "key": "messaging.destination_publish.anonymous",
+    "context": "resource",
+    "type": "boolean",
+    "brief": "A boolean that is true if the publish message destination is anonymous (could be unnamed or have auto-generated name).",
+    "examples": []
+  },
+  {
+    "key": "messaging.destination_publish.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the original destination the message was published to",
+    "examples": [
+      "MyQueue",
+      "MyTopic"
+    ],
+    "note": "The name SHOULD uniquely identify a specific queue, topic, or other entity within the broker. If\nthe broker doesn't have such notion, the original destination name SHOULD uniquely identify the broker.\n"
+  },
+  {
+    "key": "messaging.kafka.consumer.group",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the Kafka Consumer Group that is handling the message. Only applies to consumers, not producers.\n",
+    "examples": [
+      "my-group"
+    ]
+  },
+  {
+    "key": "messaging.kafka.destination.partition",
+    "context": "resource",
+    "type": "int",
+    "brief": "Partition the message is sent to.\n",
+    "examples": [
+      2
+    ]
+  },
+  {
+    "key": "messaging.kafka.message.key",
+    "context": "resource",
+    "type": "string",
+    "brief": "Message keys in Kafka are used for grouping alike messages to ensure they're processed on the same partition. They differ from `messaging.message.id` in that they're not unique. If the key is `null`, the attribute MUST NOT be set.\n",
+    "examples": [
+      "myKey"
+    ],
+    "note": "If the key type is not string, it's string representation has to be supplied for the attribute. If the key has no unambiguous, canonical string form, don't include its value.\n"
+  },
+  {
+    "key": "messaging.kafka.message.offset",
+    "context": "resource",
+    "type": "int",
+    "brief": "The offset of a record in the corresponding Kafka partition.\n",
+    "examples": [
+      42
+    ]
+  },
+  {
+    "key": "messaging.kafka.message.tombstone",
+    "context": "resource",
+    "type": "boolean",
+    "brief": "A boolean that is true if the message is a tombstone.",
+    "examples": []
+  },
+  {
+    "key": "messaging.message.conversation_id",
+    "context": "resource",
+    "type": "string",
+    "brief": "The conversation ID identifying the conversation to which the message belongs, represented as a string. Sometimes called \"Correlation ID\".\n",
+    "examples": [
+      "MyConversationId"
+    ]
+  },
+  {
+    "key": "messaging.message.envelope.size",
+    "context": "resource",
+    "type": "int",
+    "brief": "The size of the message body and metadata in bytes.\n",
+    "examples": [
+      2738
+    ],
+    "note": "This can refer to both the compressed or uncompressed size. If both sizes are known, the uncompressed\nsize should be used.\n"
+  },
+  {
+    "key": "messaging.message.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "A value used by the messaging system as an identifier for the message, represented as a string.",
+    "examples": [
+      "452a7c7c7c7048c2f887f61572b18fc2"
+    ]
+  },
+  {
+    "key": "messaging.message.body.size",
+    "context": "resource",
+    "type": "int",
+    "brief": "The size of the message body in bytes.\n",
+    "examples": [
+      1439
+    ],
+    "note": "This can refer to both the compressed or uncompressed body size. If both sizes are known, the uncompressed\nbody size should be used.\n"
+  },
+  {
+    "key": "messaging.operation",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "publish",
+          "value": "publish",
+          "brief": "One or more messages are provided for publishing to an intermediary. If a single message is published, the context of the \"Publish\" span can be used as the creation context and no \"Create\" span needs to be created.\n"
+        },
+        {
+          "id": "create",
+          "value": "create",
+          "brief": "A message is created. \"Create\" spans always refer to a single message and are used to provide a unique creation context for messages in batch publishing scenarios.\n"
+        },
+        {
+          "id": "receive",
+          "value": "receive",
+          "brief": "One or more messages are requested by a consumer. This operation refers to pull-based scenarios, where consumers explicitly call methods of messaging SDKs to receive messages.\n"
+        },
+        {
+          "id": "deliver",
+          "value": "deliver",
+          "brief": "One or more messages are passed to a consumer. This operation refers to push-based scenarios, where consumer register callbacks which get called by messaging SDKs.\n"
+        }
+      ]
+    },
+    "brief": "A string identifying the kind of messaging operation.\n",
+    "examples": [],
+    "note": "If a custom value is used, it MUST be of low cardinality."
+  },
+  {
+    "key": "messaging.rabbitmq.destination.routing_key",
+    "context": "resource",
+    "type": "string",
+    "brief": "RabbitMQ message routing key.\n",
+    "examples": [
+      "myKey"
+    ]
+  },
+  {
+    "key": "messaging.rocketmq.client_group",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the RocketMQ producer/consumer group that is handling the message. The client type is identified by the SpanKind.\n",
+    "examples": [
+      "myConsumerGroup"
+    ]
+  },
+  {
+    "key": "messaging.rocketmq.consumption_model",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "clustering",
+          "value": "clustering",
+          "brief": "Clustering consumption model"
+        },
+        {
+          "id": "broadcasting",
+          "value": "broadcasting",
+          "brief": "Broadcasting consumption model"
+        }
+      ]
+    },
+    "brief": "Model of message consumption. This only applies to consumer spans.\n",
+    "examples": []
+  },
+  {
+    "key": "messaging.rocketmq.message.delay_time_level",
+    "context": "resource",
+    "type": "int",
+    "brief": "The delay time level for delay message, which determines the message delay time.\n",
+    "examples": [
+      3
+    ]
+  },
+  {
+    "key": "messaging.rocketmq.message.delivery_timestamp",
+    "context": "resource",
+    "type": "int",
+    "brief": "The timestamp in milliseconds that the delay message is expected to be delivered to consumer.\n",
+    "examples": [
+      1665987217045
+    ]
+  },
+  {
+    "key": "messaging.rocketmq.message.group",
+    "context": "resource",
+    "type": "string",
+    "brief": "It is essential for FIFO message. Messages that belong to the same message group are always processed one by one within the same consumer group.\n",
+    "examples": [
+      "myMessageGroup"
+    ]
+  },
+  {
+    "key": "messaging.rocketmq.message.keys",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "Key(s) of message, another way to mark message besides message id.\n",
+    "examples": [
+      "keyA",
+      "keyB"
+    ]
+  },
+  {
+    "key": "messaging.rocketmq.message.tag",
+    "context": "resource",
+    "type": "string",
+    "brief": "The secondary classifier of message besides topic.\n",
+    "examples": [
+      "tagA"
+    ]
+  },
+  {
+    "key": "messaging.rocketmq.message.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "normal",
+          "value": "normal",
+          "brief": "Normal message"
+        },
+        {
+          "id": "fifo",
+          "value": "fifo",
+          "brief": "FIFO message"
+        },
+        {
+          "id": "delay",
+          "value": "delay",
+          "brief": "Delay message"
+        },
+        {
+          "id": "transaction",
+          "value": "transaction",
+          "brief": "Transaction message"
+        }
+      ]
+    },
+    "brief": "Type of message.\n",
+    "examples": []
+  },
+  {
+    "key": "messaging.rocketmq.namespace",
+    "context": "resource",
+    "type": "string",
+    "brief": "Namespace of RocketMQ resources, resources in different namespaces are individual.\n",
+    "examples": [
+      "myNamespace"
+    ]
+  },
+  {
+    "key": "messaging.system",
+    "context": "resource",
+    "type": "string",
+    "brief": "A string identifying the messaging system.",
+    "examples": [
+      "kafka",
+      "rabbitmq",
+      "rocketmq",
+      "activemq",
+      "AmazonSQS"
+    ]
+  },
+  {
+    "key": "network.carrier.icc",
+    "context": "resource",
+    "type": "string",
+    "brief": "The ISO 3166-1 alpha-2 2-character country code associated with the mobile carrier network.",
+    "examples": [
+      "DE"
+    ]
+  },
+  {
+    "key": "network.carrier.mcc",
+    "context": "resource",
+    "type": "string",
+    "brief": "The mobile carrier country code.",
+    "examples": [
+      "310"
+    ]
+  },
+  {
+    "key": "network.carrier.mnc",
+    "context": "resource",
+    "type": "string",
+    "brief": "The mobile carrier network code.",
+    "examples": [
+      "001"
+    ]
+  },
+  {
+    "key": "network.carrier.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the mobile carrier.",
+    "examples": [
+      "sprint"
+    ]
+  },
+  {
+    "key": "network.connection.subtype",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "gprs",
+          "value": "gprs",
+          "brief": "GPRS"
+        },
+        {
+          "id": "edge",
+          "value": "edge",
+          "brief": "EDGE"
+        },
+        {
+          "id": "umts",
+          "value": "umts",
+          "brief": "UMTS"
+        },
+        {
+          "id": "cdma",
+          "value": "cdma",
+          "brief": "CDMA"
+        },
+        {
+          "id": "evdo_0",
+          "value": "evdo_0",
+          "brief": "EVDO Rel. 0"
+        },
+        {
+          "id": "evdo_a",
+          "value": "evdo_a",
+          "brief": "EVDO Rev. A"
+        },
+        {
+          "id": "cdma2000_1xrtt",
+          "value": "cdma2000_1xrtt",
+          "brief": "CDMA2000 1XRTT"
+        },
+        {
+          "id": "hsdpa",
+          "value": "hsdpa",
+          "brief": "HSDPA"
+        },
+        {
+          "id": "hsupa",
+          "value": "hsupa",
+          "brief": "HSUPA"
+        },
+        {
+          "id": "hspa",
+          "value": "hspa",
+          "brief": "HSPA"
+        },
+        {
+          "id": "iden",
+          "value": "iden",
+          "brief": "IDEN"
+        },
+        {
+          "id": "evdo_b",
+          "value": "evdo_b",
+          "brief": "EVDO Rev. B"
+        },
+        {
+          "id": "lte",
+          "value": "lte",
+          "brief": "LTE"
+        },
+        {
+          "id": "ehrpd",
+          "value": "ehrpd",
+          "brief": "EHRPD"
+        },
+        {
+          "id": "hspap",
+          "value": "hspap",
+          "brief": "HSPAP"
+        },
+        {
+          "id": "gsm",
+          "value": "gsm",
+          "brief": "GSM"
+        },
+        {
+          "id": "td_scdma",
+          "value": "td_scdma",
+          "brief": "TD-SCDMA"
+        },
+        {
+          "id": "iwlan",
+          "value": "iwlan",
+          "brief": "IWLAN"
+        },
+        {
+          "id": "nr",
+          "value": "nr",
+          "brief": "5G NR (New Radio)"
+        },
+        {
+          "id": "nrnsa",
+          "value": "nrnsa",
+          "brief": "5G NRNSA (New Radio Non-Standalone)"
+        },
+        {
+          "id": "lte_ca",
+          "value": "lte_ca",
+          "brief": "LTE CA"
+        }
+      ]
+    },
+    "brief": "This describes more details regarding the connection.type. It may be the type of cell technology connection, but it could be used for describing details about a wifi connection.",
+    "examples": [
+      "LTE"
+    ]
+  },
+  {
+    "key": "network.connection.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "wifi",
+          "value": "wifi"
+        },
+        {
+          "id": "wired",
+          "value": "wired"
+        },
+        {
+          "id": "cell",
+          "value": "cell"
+        },
+        {
+          "id": "unavailable",
+          "value": "unavailable"
+        },
+        {
+          "id": "unknown",
+          "value": "unknown"
+        }
+      ]
+    },
+    "brief": "The internet connection type.",
+    "examples": [
+      "wifi"
+    ]
+  },
+  {
+    "key": "network.local.address",
+    "context": "resource",
+    "type": "string",
+    "brief": "Local address of the network connection - IP address or Unix domain socket name.",
+    "examples": [
+      "10.1.2.80",
+      "/tmp/my.sock"
+    ]
+  },
+  {
+    "key": "network.local.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Local port number of the network connection.",
+    "examples": [
+      65123
+    ]
+  },
+  {
+    "key": "network.peer.address",
+    "context": "resource",
+    "type": "string",
+    "brief": "Peer address of the network connection - IP address or Unix domain socket name.",
+    "examples": [
+      "10.1.2.80",
+      "/tmp/my.sock"
+    ]
+  },
+  {
+    "key": "network.peer.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Peer port number of the network connection.",
+    "examples": [
+      65123
+    ]
+  },
+  {
+    "key": "network.protocol.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "[OSI application layer](https://osi-model.com/application-layer/) or non-OSI equivalent.",
+    "examples": [
+      "amqp",
+      "http",
+      "mqtt"
+    ],
+    "note": "The value SHOULD be normalized to lowercase."
+  },
+  {
+    "key": "network.protocol.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "Version of the protocol specified in `network.protocol.name`.",
+    "examples": [
+      "3.1.1"
+    ],
+    "note": "`network.protocol.version` refers to the version of the protocol used and might be different from the protocol client's version. If the HTTP client has a version of `0.27.2`, but sends HTTP version `1.1`, this attribute should be set to `1.1`.\n"
+  },
+  {
+    "key": "network.transport",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "tcp",
+          "value": "tcp",
+          "brief": "TCP"
+        },
+        {
+          "id": "udp",
+          "value": "udp",
+          "brief": "UDP"
+        },
+        {
+          "id": "pipe",
+          "value": "pipe",
+          "brief": "Named or anonymous pipe."
+        },
+        {
+          "id": "unix",
+          "value": "unix",
+          "brief": "Unix domain socket"
+        }
+      ]
+    },
+    "brief": "[OSI transport layer](https://osi-model.com/transport-layer/) or [inter-process communication method](https://wikipedia.org/wiki/Inter-process_communication).\n",
+    "examples": [
+      "tcp",
+      "udp"
+    ],
+    "note": "The value SHOULD be normalized to lowercase.\n\nConsider always setting the transport when setting a port number, since\na port number is ambiguous without knowing the transport. For example\ndifferent processes could be listening on TCP port 12345 and UDP port 12345.\n"
+  },
+  {
+    "key": "network.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "ipv4",
+          "value": "ipv4",
+          "brief": "IPv4"
+        },
+        {
+          "id": "ipv6",
+          "value": "ipv6",
+          "brief": "IPv6"
+        }
+      ]
+    },
+    "brief": "[OSI network layer](https://osi-model.com/network-layer/) or non-OSI equivalent.",
+    "examples": [
+      "ipv4",
+      "ipv6"
+    ],
+    "note": "The value SHOULD be normalized to lowercase."
+  },
+  {
+    "key": "oci.manifest.digest",
+    "context": "resource",
+    "type": "string",
+    "brief": "The digest of the OCI image manifest. For container images specifically is the digest by which the container image is known.\n",
+    "examples": [
+      "sha256:e4ca62c0d62f3e886e684806dfe9d4e0cda60d54986898173c1083856cfda0f4"
+    ],
+    "note": "Follows [OCI Image Manifest Specification](https://github.com/opencontainers/image-spec/blob/main/manifest.md), and specifically the [Digest property](https://github.com/opencontainers/image-spec/blob/main/descriptor.md#digests).\nAn example can be found in [Example Image Manifest](https://docs.docker.com/registry/spec/manifest-v2-2/#example-image-manifest).\n"
+  },
+  {
+    "key": "rpc.connect_rpc.error_code",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "members": [
+        {
+          "id": "cancelled",
+          "value": "cancelled"
+        },
+        {
+          "id": "unknown",
+          "value": "unknown"
+        },
+        {
+          "id": "invalid_argument",
+          "value": "invalid_argument"
+        },
+        {
+          "id": "deadline_exceeded",
+          "value": "deadline_exceeded"
+        },
+        {
+          "id": "not_found",
+          "value": "not_found"
+        },
+        {
+          "id": "already_exists",
+          "value": "already_exists"
+        },
+        {
+          "id": "permission_denied",
+          "value": "permission_denied"
+        },
+        {
+          "id": "resource_exhausted",
+          "value": "resource_exhausted"
+        },
+        {
+          "id": "failed_precondition",
+          "value": "failed_precondition"
+        },
+        {
+          "id": "aborted",
+          "value": "aborted"
+        },
+        {
+          "id": "out_of_range",
+          "value": "out_of_range"
+        },
+        {
+          "id": "unimplemented",
+          "value": "unimplemented"
+        },
+        {
+          "id": "internal",
+          "value": "internal"
+        },
+        {
+          "id": "unavailable",
+          "value": "unavailable"
+        },
+        {
+          "id": "data_loss",
+          "value": "data_loss"
+        },
+        {
+          "id": "unauthenticated",
+          "value": "unauthenticated"
+        }
+      ]
+    },
+    "brief": "The [error codes](https://connect.build/docs/protocol/#error-codes) of the Connect request. Error codes are always string values.",
+    "examples": []
+  },
+  {
+    "key": "rpc.connect_rpc.request.metadata",
+    "context": "resource",
+    "type": "template[string[]]",
+    "brief": "Connect request metadata, `<key>` being the normalized Connect Metadata key (lowercase), the value being the metadata values.\n",
+    "examples": [
+      "rpc.request.metadata.my-custom-metadata-attribute=[\"1.2.3.4\", \"1.2.3.5\"]"
+    ],
+    "note": "Instrumentations SHOULD require an explicit configuration of which metadata values are to be captured. Including all request metadata values can be a security risk - explicit configuration helps avoid leaking sensitive information.\n"
+  },
+  {
+    "key": "rpc.connect_rpc.response.metadata",
+    "context": "resource",
+    "type": "template[string[]]",
+    "brief": "Connect response metadata, `<key>` being the normalized Connect Metadata key (lowercase), the value being the metadata values.\n",
+    "examples": [
+      "rpc.response.metadata.my-custom-metadata-attribute=[\"attribute_value\"]"
+    ],
+    "note": "Instrumentations SHOULD require an explicit configuration of which metadata values are to be captured. Including all response metadata values can be a security risk - explicit configuration helps avoid leaking sensitive information.\n"
+  },
+  {
+    "key": "rpc.grpc.status_code",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "members": [
+        {
+          "id": "ok",
+          "value": 0,
+          "brief": "OK"
+        },
+        {
+          "id": "cancelled",
+          "value": 1,
+          "brief": "CANCELLED"
+        },
+        {
+          "id": "unknown",
+          "value": 2,
+          "brief": "UNKNOWN"
+        },
+        {
+          "id": "invalid_argument",
+          "value": 3,
+          "brief": "INVALID_ARGUMENT"
+        },
+        {
+          "id": "deadline_exceeded",
+          "value": 4,
+          "brief": "DEADLINE_EXCEEDED"
+        },
+        {
+          "id": "not_found",
+          "value": 5,
+          "brief": "NOT_FOUND"
+        },
+        {
+          "id": "already_exists",
+          "value": 6,
+          "brief": "ALREADY_EXISTS"
+        },
+        {
+          "id": "permission_denied",
+          "value": 7,
+          "brief": "PERMISSION_DENIED"
+        },
+        {
+          "id": "resource_exhausted",
+          "value": 8,
+          "brief": "RESOURCE_EXHAUSTED"
+        },
+        {
+          "id": "failed_precondition",
+          "value": 9,
+          "brief": "FAILED_PRECONDITION"
+        },
+        {
+          "id": "aborted",
+          "value": 10,
+          "brief": "ABORTED"
+        },
+        {
+          "id": "out_of_range",
+          "value": 11,
+          "brief": "OUT_OF_RANGE"
+        },
+        {
+          "id": "unimplemented",
+          "value": 12,
+          "brief": "UNIMPLEMENTED"
+        },
+        {
+          "id": "internal",
+          "value": 13,
+          "brief": "INTERNAL"
+        },
+        {
+          "id": "unavailable",
+          "value": 14,
+          "brief": "UNAVAILABLE"
+        },
+        {
+          "id": "data_loss",
+          "value": 15,
+          "brief": "DATA_LOSS"
+        },
+        {
+          "id": "unauthenticated",
+          "value": 16,
+          "brief": "UNAUTHENTICATED"
+        }
+      ]
+    },
+    "brief": "The [numeric status code](https://github.com/grpc/grpc/blob/v1.33.2/doc/statuscodes.md) of the gRPC request.",
+    "examples": []
+  },
+  {
+    "key": "rpc.grpc.request.metadata",
+    "context": "resource",
+    "type": "template[string[]]",
+    "brief": "gRPC request metadata, `<key>` being the normalized gRPC Metadata key (lowercase), the value being the metadata values.\n",
+    "examples": [
+      "rpc.grpc.request.metadata.my-custom-metadata-attribute=[\"1.2.3.4\", \"1.2.3.5\"]"
+    ],
+    "note": "Instrumentations SHOULD require an explicit configuration of which metadata values are to be captured. Including all request metadata values can be a security risk - explicit configuration helps avoid leaking sensitive information.\n"
+  },
+  {
+    "key": "rpc.grpc.response.metadata",
+    "context": "resource",
+    "type": "template[string[]]",
+    "brief": "gRPC response metadata, `<key>` being the normalized gRPC Metadata key (lowercase), the value being the metadata values.\n",
+    "examples": [
+      "rpc.grpc.response.metadata.my-custom-metadata-attribute=[\"attribute_value\"]"
+    ],
+    "note": "Instrumentations SHOULD require an explicit configuration of which metadata values are to be captured. Including all response metadata values can be a security risk - explicit configuration helps avoid leaking sensitive information.\n"
+  },
+  {
+    "key": "rpc.jsonrpc.error_code",
+    "context": "resource",
+    "type": "int",
+    "brief": "`error.code` property of response if it is an error response.",
+    "examples": [
+      -32700,
+      100
+    ]
+  },
+  {
+    "key": "rpc.jsonrpc.error_message",
+    "context": "resource",
+    "type": "string",
+    "brief": "`error.message` property of response if it is an error response.",
+    "examples": [
+      "Parse error",
+      "User already exists"
+    ]
+  },
+  {
+    "key": "rpc.jsonrpc.request_id",
+    "context": "resource",
+    "type": "string",
+    "brief": "`id` property of request or response. Since protocol allows id to be int, string, `null` or missing (for notifications), value is expected to be cast to string for simplicity. Use empty string in case of `null` value. Omit entirely if this is a notification.\n",
+    "examples": [
+      "10",
+      "request-7",
+      ""
+    ]
+  },
+  {
+    "key": "rpc.jsonrpc.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "Protocol version as in `jsonrpc` property of request/response. Since JSON-RPC 1.0 doesn't specify this, the value can be omitted.",
+    "examples": [
+      "2.0",
+      "1.0"
+    ]
+  },
+  {
+    "key": "rpc.method",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the (logical) method being called, must be equal to the $method part in the span name.",
+    "examples": [
+      "exampleMethod"
+    ],
+    "note": "This is the logical name of the method from the RPC interface perspective, which can be different from the name of any implementing method/function. The `code.function` attribute may be used to store the latter (e.g., method actually executing the call on the server side, RPC client stub method on the client side).\n"
+  },
+  {
+    "key": "rpc.service",
+    "context": "resource",
+    "type": "string",
+    "brief": "The full (logical) name of the service being called, including its package name, if applicable.",
+    "examples": [
+      "myservice.EchoService"
+    ],
+    "note": "This is the logical name of the service from the RPC interface perspective, which can be different from the name of any implementing class. The `code.namespace` attribute may be used to store the latter (despite the attribute name, it may include a class name; e.g., class with method actually executing the call on the server side, RPC client stub class on the client side).\n"
+  },
+  {
+    "key": "rpc.system",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "grpc",
+          "value": "grpc",
+          "brief": "gRPC"
+        },
+        {
+          "id": "java_rmi",
+          "value": "java_rmi",
+          "brief": "Java RMI"
+        },
+        {
+          "id": "dotnet_wcf",
+          "value": "dotnet_wcf",
+          "brief": ".NET WCF"
+        },
+        {
+          "id": "apache_dubbo",
+          "value": "apache_dubbo",
+          "brief": "Apache Dubbo"
+        },
+        {
+          "id": "connect_rpc",
+          "value": "connect_rpc",
+          "brief": "Connect RPC"
+        }
+      ]
+    },
+    "brief": "A string identifying the remoting system. See below for a list of well-known identifiers.",
+    "examples": []
+  },
+  {
+    "key": "thread.id",
+    "context": "span",
+    "type": "int",
+    "brief": "Current \"managed\" thread ID (as opposed to OS thread ID).\n",
+    "examples": [
+      42
+    ]
+  },
+  {
+    "key": "thread.name",
+    "context": "span",
+    "type": "string",
+    "brief": "Current thread name.\n",
+    "examples": [
+      "main"
+    ]
+  },
+  {
+    "key": "url.scheme",
+    "context": "resource",
+    "type": "string",
+    "brief": "The [URI scheme](https://www.rfc-editor.org/rfc/rfc3986#section-3.1) component identifying the used protocol.",
+    "examples": [
+      "https",
+      "ftp",
+      "telnet"
+    ]
+  },
+  {
+    "key": "url.full",
+    "context": "resource",
+    "type": "string",
+    "brief": "Absolute URL describing a network resource according to [RFC3986](https://www.rfc-editor.org/rfc/rfc3986)",
+    "examples": [
+      "https://www.foo.bar/search?q=OpenTelemetry#SemConv",
+      "//localhost"
+    ],
+    "note": "For network calls, URL usually has `scheme://host[:port][path][?query][#fragment]` format, where the fragment is not transmitted over HTTP, but if it is known, it SHOULD be included nevertheless.\n`url.full` MUST NOT contain credentials passed via URL in form of `https://username:password@www.example.com/`. In such case username and password SHOULD be redacted and attribute's value SHOULD be `https://REDACTED:REDACTED@www.example.com/`.\n`url.full` SHOULD capture the absolute URL when it is available (or can be reconstructed) and SHOULD NOT be validated or modified except for sanitizing purposes.\n"
+  },
+  {
+    "key": "url.path",
+    "context": "resource",
+    "type": "string",
+    "brief": "The [URI path](https://www.rfc-editor.org/rfc/rfc3986#section-3.3) component",
+    "examples": [
+      "/search"
+    ]
+  },
+  {
+    "key": "url.query",
+    "context": "resource",
+    "type": "string",
+    "brief": "The [URI query](https://www.rfc-editor.org/rfc/rfc3986#section-3.4) component",
+    "examples": [
+      "q=OpenTelemetry"
+    ],
+    "note": "Sensitive content provided in query string SHOULD be scrubbed when instrumentations can identify it."
+  },
+  {
+    "key": "url.fragment",
+    "context": "resource",
+    "type": "string",
+    "brief": "The [URI fragment](https://www.rfc-editor.org/rfc/rfc3986#section-3.5) component",
+    "examples": [
+      "SemConv"
+    ]
+  },
+  {
+    "key": "user_agent.original",
+    "context": "resource",
+    "type": "string",
+    "brief": "Value of the [HTTP User-Agent](https://www.rfc-editor.org/rfc/rfc9110.html#field.user-agent) header sent by the client.\n",
+    "examples": [
+      "CERN-LineMode/2.15 libwww/2.17b3",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1"
+    ]
+  },
+  {
+    "key": "android.os.api_level",
+    "context": "resource",
+    "type": "string",
+    "brief": "Uniquely identifies the framework API revision offered by a version (`os.version`) of the android operating system. More information can be found [here](https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels).\n",
+    "examples": [
+      "33",
+      "32"
+    ]
+  },
+  {
+    "key": "browser.brands",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "Array of brand name and version separated by a space",
+    "examples": [
+      " Not A;Brand 99",
+      "Chromium 99",
+      "Chrome 99"
+    ],
+    "note": "This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.brands`).\n"
+  },
+  {
+    "key": "browser.platform",
+    "context": "resource",
+    "type": "string",
+    "brief": "The platform on which the browser is running",
+    "examples": [
+      "Windows",
+      "macOS",
+      "Android"
+    ],
+    "note": "This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.platform`). If unavailable, the legacy `navigator.platform` API SHOULD NOT be used instead and this attribute SHOULD be left unset in order for the values to be consistent.\nThe list of possible values is defined in the [W3C User-Agent Client Hints specification](https://wicg.github.io/ua-client-hints/#sec-ch-ua-platform). Note that some (but not all) of these values can overlap with values in the [`os.type` and `os.name` attributes](./os.md). However, for consistency, the values in the `browser.platform` attribute should capture the exact value that the user agent provides.\n"
+  },
+  {
+    "key": "browser.mobile",
+    "context": "resource",
+    "type": "boolean",
+    "brief": "A boolean that is true if the browser is running on a mobile device",
+    "examples": [],
+    "note": "This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.mobile`). If unavailable, this attribute SHOULD be left unset.\n"
+  },
+  {
+    "key": "browser.language",
+    "context": "resource",
+    "type": "string",
+    "brief": "Preferred language of the user using the browser",
+    "examples": [
+      "en",
+      "en-US",
+      "fr",
+      "fr-FR"
+    ],
+    "note": "This value is intended to be taken from the Navigator API `navigator.language`.\n"
+  },
+  {
+    "key": "aws.ecs.container.arn",
+    "context": "resource",
+    "type": "string",
+    "brief": "The Amazon Resource Name (ARN) of an [ECS container instance](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_instances.html).\n",
+    "examples": [
+      "arn:aws:ecs:us-west-1:123456789123:container/32624152-9086-4f0e-acae-1a75b14fe4d9"
+    ]
+  },
+  {
+    "key": "aws.ecs.cluster.arn",
+    "context": "resource",
+    "type": "string",
+    "brief": "The ARN of an [ECS cluster](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/clusters.html).\n",
+    "examples": [
+      "arn:aws:ecs:us-west-2:123456789123:cluster/my-cluster"
+    ]
+  },
+  {
+    "key": "aws.ecs.launchtype",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "ec2",
+          "value": "ec2"
+        },
+        {
+          "id": "fargate",
+          "value": "fargate"
+        }
+      ]
+    },
+    "brief": "The [launch type](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) for an ECS task.\n",
+    "examples": []
+  },
+  {
+    "key": "aws.ecs.task.arn",
+    "context": "resource",
+    "type": "string",
+    "brief": "The ARN of an [ECS task definition](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html).\n",
+    "examples": [
+      "arn:aws:ecs:us-west-1:123456789123:task/10838bed-421f-43ef-870a-f43feacbbb5b"
+    ]
+  },
+  {
+    "key": "aws.ecs.task.family",
+    "context": "resource",
+    "type": "string",
+    "brief": "The task definition family this task definition is a member of.\n",
+    "examples": [
+      "opentelemetry-family"
+    ]
+  },
+  {
+    "key": "aws.ecs.task.revision",
+    "context": "resource",
+    "type": "string",
+    "brief": "The revision for this task definition.\n",
+    "examples": [
+      "8",
+      "26"
+    ]
+  },
+  {
+    "key": "aws.eks.cluster.arn",
+    "context": "resource",
+    "type": "string",
+    "brief": "The ARN of an EKS cluster.\n",
+    "examples": [
+      "arn:aws:ecs:us-west-2:123456789123:cluster/my-cluster"
+    ]
+  },
+  {
+    "key": "aws.log.group.names",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "The name(s) of the AWS log group(s) an application is writing to.\n",
+    "examples": [
+      "/aws/lambda/my-function",
+      "opentelemetry-service"
+    ],
+    "note": "Multiple log groups must be supported for cases like multi-container applications, where a single application has sidecar containers, and each write to their own log group.\n"
+  },
+  {
+    "key": "aws.log.group.arns",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "The Amazon Resource Name(s) (ARN) of the AWS log group(s).\n",
+    "examples": [
+      "arn:aws:logs:us-west-1:123456789012:log-group:/aws/my/group:*"
+    ],
+    "note": "See the [log group ARN format documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/iam-access-control-overview-cwl.html#CWL_ARN_Format).\n"
+  },
+  {
+    "key": "aws.log.stream.names",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "The name(s) of the AWS log stream(s) an application is writing to.\n",
+    "examples": [
+      "logs/main/10838bed-421f-43ef-870a-f43feacbbb5b"
+    ]
+  },
+  {
+    "key": "aws.log.stream.arns",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "The ARN(s) of the AWS log stream(s).\n",
+    "examples": [
+      "arn:aws:logs:us-west-1:123456789012:log-group:/aws/my/group:log-stream:logs/main/10838bed-421f-43ef-870a-f43feacbbb5b"
+    ],
+    "note": "See the [log stream ARN format documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/iam-access-control-overview-cwl.html#CWL_ARN_Format). One log group can contain several log streams, so these ARNs necessarily identify both a log group and a log stream.\n"
+  },
+  {
+    "key": "gcp.cloud_run.job.execution",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the Cloud Run [execution](https://cloud.google.com/run/docs/managing/job-executions) being run for the Job, as set by the [`CLOUD_RUN_EXECUTION`](https://cloud.google.com/run/docs/container-contract#jobs-env-vars) environment variable.\n",
+    "examples": [
+      "job-name-xxxx",
+      "sample-job-mdw84"
+    ]
+  },
+  {
+    "key": "gcp.cloud_run.job.task_index",
+    "context": "resource",
+    "type": "int",
+    "brief": "The index for a task within an execution as provided by the [`CLOUD_RUN_TASK_INDEX`](https://cloud.google.com/run/docs/container-contract#jobs-env-vars) environment variable.\n",
+    "examples": [
+      0,
+      1
+    ]
+  },
+  {
+    "key": "gcp.gce.instance.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The instance name of a GCE instance. This is the value provided by `host.name`, the visible name of the instance in the Cloud Console UI, and the prefix for the default hostname of the instance as defined by the [default internal DNS name](https://cloud.google.com/compute/docs/internal-dns#instance-fully-qualified-domain-names).\n",
+    "examples": [
+      "instance-1",
+      "my-vm-name"
+    ]
+  },
+  {
+    "key": "gcp.gce.instance.hostname",
+    "context": "resource",
+    "type": "string",
+    "brief": "The hostname of a GCE instance. This is the full value of the default or [custom hostname](https://cloud.google.com/compute/docs/instances/custom-hostname-vm).\n",
+    "examples": [
+      "my-host1234.example.com",
+      "sample-vm.us-west1-b.c.my-project.internal"
+    ]
+  },
+  {
+    "key": "heroku.release.creation_timestamp",
+    "context": "resource",
+    "type": "string",
+    "brief": "Time and date the release was created\n",
+    "examples": [
+      "2022-10-23T18:00:42Z"
+    ]
+  },
+  {
+    "key": "heroku.release.commit",
+    "context": "resource",
+    "type": "string",
+    "brief": "Commit hash for the current release\n",
+    "examples": [
+      "e6134959463efd8966b20e75b913cafe3f5ec"
+    ]
+  },
+  {
+    "key": "heroku.app.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "Unique identifier for the application\n",
+    "examples": [
+      "2daa2797-e42b-4624-9322-ec3f968df4da"
+    ]
+  },
+  {
+    "key": "deployment.environment",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the [deployment environment](https://wikipedia.org/wiki/Deployment_environment) (aka deployment tier).\n",
+    "examples": [
+      "staging",
+      "production"
+    ],
+    "note": "`deployment.environment` does not affect the uniqueness constraints defined through\nthe `service.namespace`, `service.name` and `service.instance.id` resource attributes.\nThis implies that resources carrying the following attribute combinations MUST be\nconsidered to be identifying the same service:\n\n* `service.name=frontend`, `deployment.environment=production`\n* `service.name=frontend`, `deployment.environment=staging`.\n"
+  },
+  {
+    "key": "device.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "A unique identifier representing the device",
+    "examples": [
+      "2ab2916d-a51f-4ac8-80ee-45ac31a28092"
+    ],
+    "note": "The device identifier MUST only be defined using the values outlined below. This value is not an advertising identifier and MUST NOT be used as such. On iOS (Swift or Objective-C), this value MUST be equal to the [vendor identifier](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor). On Android (Java or Kotlin), this value MUST be equal to the Firebase Installation ID or a globally unique UUID which is persisted across sessions in your application. More information can be found [here](https://developer.android.com/training/articles/user-data-ids) on best practices and exact implementation details. Caution should be taken when storing personal data or anything which can identify a user. GDPR and data protection laws may apply, ensure you do your own due diligence.\n"
+  },
+  {
+    "key": "device.model.identifier",
+    "context": "resource",
+    "type": "string",
+    "brief": "The model identifier for the device",
+    "examples": [
+      "iPhone3,4",
+      "SM-G920F"
+    ],
+    "note": "It's recommended this value represents a machine readable version of the model identifier rather than the market or consumer-friendly name of the device.\n"
+  },
+  {
+    "key": "device.model.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The marketing name for the device model",
+    "examples": [
+      "iPhone 6s Plus",
+      "Samsung Galaxy S6"
+    ],
+    "note": "It's recommended this value represents a human readable version of the device model rather than a machine readable alternative.\n"
+  },
+  {
+    "key": "device.manufacturer",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the device manufacturer",
+    "examples": [
+      "Apple",
+      "Samsung"
+    ],
+    "note": "The Android OS provides this field via [Build](https://developer.android.com/reference/android/os/Build#MANUFACTURER). iOS apps SHOULD hardcode the value `Apple`.\n"
+  },
+  {
+    "key": "faas.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the single function that this runtime instance executes.\n",
+    "examples": [
+      "my-function",
+      "myazurefunctionapp/some-function-name"
+    ],
+    "note": "This is the name of the function as configured/deployed on the FaaS\nplatform and is usually different from the name of the callback\nfunction (which may be stored in the\n[`code.namespace`/`code.function`](/docs/general/attributes.md#source-code-attributes)\nspan attributes).\n\nFor some cloud providers, the above definition is ambiguous. The following\ndefinition of function name MUST be used for this attribute\n(and consequently the span name) for the listed cloud providers/products:\n\n* **Azure:**  The full name `<FUNCAPP>/<FUNC>`, i.e., function app name\n  followed by a forward slash followed by the function name (this form\n  can also be seen in the resource JSON for the function).\n  This means that a span attribute MUST be used, as an Azure function\n  app can host multiple functions that would usually share\n  a TracerProvider (see also the `cloud.resource_id` attribute).\n"
+  },
+  {
+    "key": "faas.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The immutable version of the function being executed.",
+    "examples": [
+      "26",
+      "pinkfroid-00002"
+    ],
+    "note": "Depending on the cloud provider and platform, use:\n\n* **AWS Lambda:** The [function version](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html)\n  (an integer represented as a decimal string).\n* **Google Cloud Run (Services):** The [revision](https://cloud.google.com/run/docs/managing/revisions)\n  (i.e., the function name plus the revision suffix).\n* **Google Cloud Functions:** The value of the\n  [`K_REVISION` environment variable](https://cloud.google.com/functions/docs/env-var#runtime_environment_variables_set_automatically).\n* **Azure Functions:** Not applicable. Do not set this attribute.\n"
+  },
+  {
+    "key": "faas.instance",
+    "context": "resource",
+    "type": "string",
+    "brief": "The execution environment ID as a string, that will be potentially reused for other invocations to the same function/function version.\n",
+    "examples": [
+      "2021/06/28/[$LATEST]2f399eb14537447da05ab2a2e39309de"
+    ],
+    "note": "* **AWS Lambda:** Use the (full) log stream name.\n"
+  },
+  {
+    "key": "faas.max_memory",
+    "context": "resource",
+    "type": "int",
+    "brief": "The amount of memory available to the serverless function converted to Bytes.\n",
+    "examples": [
+      134217728
+    ],
+    "note": "It's recommended to set this attribute since e.g. too little memory can easily stop a Java AWS Lambda function from working correctly. On AWS Lambda, the environment variable `AWS_LAMBDA_FUNCTION_MEMORY_SIZE` provides this information (which must be multiplied by 1,048,576).\n"
+  },
+  {
+    "key": "host.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "Unique host ID. For Cloud, this must be the instance_id assigned by the cloud provider. For non-containerized systems, this should be the `machine-id`. See the table below for the sources to use to determine the `machine-id` based on operating system.\n",
+    "examples": [
+      "fdbf79e8af94cb7f9e8df36789187052"
+    ]
+  },
+  {
+    "key": "host.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the host. On Unix systems, it may contain what the hostname command returns, or the fully qualified hostname, or another name specified by the user.\n",
+    "examples": [
+      "opentelemetry-test"
+    ]
+  },
+  {
+    "key": "host.type",
+    "context": "resource",
+    "type": "string",
+    "brief": "Type of host. For Cloud, this must be the machine type.\n",
+    "examples": [
+      "n1-standard-1"
+    ]
+  },
+  {
+    "key": "host.arch",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "amd64",
+          "value": "amd64",
+          "brief": "AMD64"
+        },
+        {
+          "id": "arm32",
+          "value": "arm32",
+          "brief": "ARM32"
+        },
+        {
+          "id": "arm64",
+          "value": "arm64",
+          "brief": "ARM64"
+        },
+        {
+          "id": "ia64",
+          "value": "ia64",
+          "brief": "Itanium"
+        },
+        {
+          "id": "ppc32",
+          "value": "ppc32",
+          "brief": "32-bit PowerPC"
+        },
+        {
+          "id": "ppc64",
+          "value": "ppc64",
+          "brief": "64-bit PowerPC"
+        },
+        {
+          "id": "s390x",
+          "value": "s390x",
+          "brief": "IBM z/Architecture"
+        },
+        {
+          "id": "x86",
+          "value": "x86",
+          "brief": "32-bit x86"
+        }
+      ]
+    },
+    "brief": "The CPU architecture the host system is running on.\n",
+    "examples": []
+  },
+  {
+    "key": "host.image.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Name of the VM image or OS install the host was instantiated from.\n",
+    "examples": [
+      "infra-ami-eks-worker-node-7d4ec78312",
+      "CentOS-8-x86_64-1905"
+    ]
+  },
+  {
+    "key": "host.image.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "VM image ID or host OS image ID. For Cloud, this value is from the provider.\n",
+    "examples": [
+      "ami-07b06b442921831e5"
+    ]
+  },
+  {
+    "key": "host.image.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version string of the VM image or host OS as defined in [Version Attributes](README.md#version-attributes).\n",
+    "examples": [
+      "0.1"
+    ]
+  },
+  {
+    "key": "host.ip",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "Available IP addresses of the host, excluding loopback interfaces.\n",
+    "examples": [
+      "192.168.1.140",
+      "fe80::abc2:4a28:737a:609e"
+    ],
+    "note": "IPv4 Addresses MUST be specified in dotted-quad notation. IPv6 addresses MUST be specified in the [RFC 5952](https://www.rfc-editor.org/rfc/rfc5952.html) format.\n"
+  },
+  {
+    "key": "host.mac",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "Available MAC addresses of the host, excluding loopback interfaces.\n",
+    "examples": [
+      "AC-DE-48-23-45-67",
+      "AC-DE-48-23-45-67-01-9F"
+    ],
+    "note": "MAC Addresses MUST be represented in [IEEE RA hexadecimal form](https://standards.ieee.org/wp-content/uploads/import/documents/tutorials/eui.pdf): as hyphen-separated octets in uppercase hexadecimal form from most to least significant.\n"
+  },
+  {
+    "key": "host.cpu.vendor.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "Processor manufacturer identifier. A maximum 12-character string.\n",
+    "examples": [
+      "GenuineIntel"
+    ],
+    "note": "[CPUID](https://wiki.osdev.org/CPUID) command returns the vendor ID string in EBX, EDX and ECX registers. Writing these to memory in this order results in a 12-character string.\n"
+  },
+  {
+    "key": "host.cpu.family",
+    "context": "resource",
+    "type": "int",
+    "brief": "Numeric value specifying the family or generation of the CPU.\n",
+    "examples": [
+      6
+    ]
+  },
+  {
+    "key": "host.cpu.model.id",
+    "context": "resource",
+    "type": "int",
+    "brief": "Model identifier. It provides more granular information about the CPU, distinguishing it from other CPUs within the same family.\n",
+    "examples": [
+      6
+    ]
+  },
+  {
+    "key": "host.cpu.model.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Model designation of the processor.\n",
+    "examples": [
+      "11th Gen Intel(R) Core(TM) i7-1185G7 @ 3.00GHz"
+    ]
+  },
+  {
+    "key": "host.cpu.stepping",
+    "context": "resource",
+    "type": "int",
+    "brief": "Stepping or core revisions.\n",
+    "examples": [
+      1
+    ]
+  },
+  {
+    "key": "host.cpu.cache.l2.size",
+    "context": "resource",
+    "type": "int",
+    "brief": "The amount of level 2 memory cache available to the processor (in Bytes).\n",
+    "examples": [
+      12288000
+    ]
+  },
+  {
+    "key": "k8s.cluster.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the cluster.\n",
+    "examples": [
+      "opentelemetry-cluster"
+    ]
+  },
+  {
+    "key": "k8s.cluster.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "A pseudo-ID for the cluster, set to the UID of the `kube-system` namespace.\n",
+    "examples": [
+      "218fc5a9-a5f1-4b54-aa05-46717d0ab26d"
+    ],
+    "note": "K8s doesn't have support for obtaining a cluster ID. If this is ever\nadded, we will recommend collecting the `k8s.cluster.uid` through the\nofficial APIs. In the meantime, we are able to use the `uid` of the\n`kube-system` namespace as a proxy for cluster ID. Read on for the\nrationale.\n\nEvery object created in a K8s cluster is assigned a distinct UID. The\n`kube-system` namespace is used by Kubernetes itself and will exist\nfor the lifetime of the cluster. Using the `uid` of the `kube-system`\nnamespace is a reasonable proxy for the K8s ClusterID as it will only\nchange if the cluster is rebuilt. Furthermore, Kubernetes UIDs are\nUUIDs as standardized by\n[ISO/IEC 9834-8 and ITU-T X.667](https://www.itu.int/ITU-T/studygroups/com17/oid.html).\nWhich states:\n\n> If generated according to one of the mechanisms defined in Rec.\n  ITU-T X.667 | ISO/IEC 9834-8, a UUID is either guaranteed to be\n  different from all other UUIDs generated before 3603 A.D., or is\n  extremely likely to be different (depending on the mechanism chosen).\n\nTherefore, UIDs between clusters should be extremely unlikely to\nconflict.\n"
+  },
+  {
+    "key": "k8s.node.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the Node.\n",
+    "examples": [
+      "node-1"
+    ]
+  },
+  {
+    "key": "k8s.node.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the Node.\n",
+    "examples": [
+      "1eb3a0c6-0477-4080-a9cb-0cb7db65c6a2"
+    ]
+  },
+  {
+    "key": "k8s.namespace.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the namespace that the pod is running in.\n",
+    "examples": [
+      "default"
+    ]
+  },
+  {
+    "key": "k8s.pod.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the Pod.\n",
+    "examples": [
+      "275ecb36-5aa8-4c2a-9c47-d8bb681b9aff"
+    ]
+  },
+  {
+    "key": "k8s.pod.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the Pod.\n",
+    "examples": [
+      "opentelemetry-pod-autoconf"
+    ]
+  },
+  {
+    "key": "k8s.container.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the Container from Pod specification, must be unique within a Pod. Container runtime usually uses different globally unique name (`container.name`).\n",
+    "examples": [
+      "redis"
+    ]
+  },
+  {
+    "key": "k8s.container.restart_count",
+    "context": "resource",
+    "type": "int",
+    "brief": "Number of times the container was restarted. This attribute can be used to identify a particular container (running or stopped) within a container spec.\n",
+    "examples": [
+      0,
+      2
+    ]
+  },
+  {
+    "key": "k8s.replicaset.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the ReplicaSet.\n",
+    "examples": [
+      "275ecb36-5aa8-4c2a-9c47-d8bb681b9aff"
+    ]
+  },
+  {
+    "key": "k8s.replicaset.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the ReplicaSet.\n",
+    "examples": [
+      "opentelemetry"
+    ]
+  },
+  {
+    "key": "k8s.deployment.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the Deployment.\n",
+    "examples": [
+      "275ecb36-5aa8-4c2a-9c47-d8bb681b9aff"
+    ]
+  },
+  {
+    "key": "k8s.deployment.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the Deployment.\n",
+    "examples": [
+      "opentelemetry"
+    ]
+  },
+  {
+    "key": "k8s.statefulset.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the StatefulSet.\n",
+    "examples": [
+      "275ecb36-5aa8-4c2a-9c47-d8bb681b9aff"
+    ]
+  },
+  {
+    "key": "k8s.statefulset.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the StatefulSet.\n",
+    "examples": [
+      "opentelemetry"
+    ]
+  },
+  {
+    "key": "k8s.daemonset.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the DaemonSet.\n",
+    "examples": [
+      "275ecb36-5aa8-4c2a-9c47-d8bb681b9aff"
+    ]
+  },
+  {
+    "key": "k8s.daemonset.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the DaemonSet.\n",
+    "examples": [
+      "opentelemetry"
+    ]
+  },
+  {
+    "key": "k8s.job.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the Job.\n",
+    "examples": [
+      "275ecb36-5aa8-4c2a-9c47-d8bb681b9aff"
+    ]
+  },
+  {
+    "key": "k8s.job.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the Job.\n",
+    "examples": [
+      "opentelemetry"
+    ]
+  },
+  {
+    "key": "k8s.cronjob.uid",
+    "context": "resource",
+    "type": "string",
+    "brief": "The UID of the CronJob.\n",
+    "examples": [
+      "275ecb36-5aa8-4c2a-9c47-d8bb681b9aff"
+    ]
+  },
+  {
+    "key": "k8s.cronjob.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the CronJob.\n",
+    "examples": [
+      "opentelemetry"
+    ]
+  },
+  {
+    "key": "os.type",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "windows",
+          "value": "windows",
+          "brief": "Microsoft Windows"
+        },
+        {
+          "id": "linux",
+          "value": "linux",
+          "brief": "Linux"
+        },
+        {
+          "id": "darwin",
+          "value": "darwin",
+          "brief": "Apple Darwin"
+        },
+        {
+          "id": "freebsd",
+          "value": "freebsd",
+          "brief": "FreeBSD"
+        },
+        {
+          "id": "netbsd",
+          "value": "netbsd",
+          "brief": "NetBSD"
+        },
+        {
+          "id": "openbsd",
+          "value": "openbsd",
+          "brief": "OpenBSD"
+        },
+        {
+          "id": "dragonflybsd",
+          "value": "dragonflybsd",
+          "brief": "DragonFly BSD"
+        },
+        {
+          "id": "hpux",
+          "value": "hpux",
+          "brief": "HP-UX (Hewlett Packard Unix)"
+        },
+        {
+          "id": "aix",
+          "value": "aix",
+          "brief": "AIX (Advanced Interactive eXecutive)"
+        },
+        {
+          "id": "solaris",
+          "value": "solaris",
+          "brief": "SunOS, Oracle Solaris"
+        },
+        {
+          "id": "z_os",
+          "value": "z_os",
+          "brief": "IBM z/OS"
+        }
+      ]
+    },
+    "brief": "The operating system type.",
+    "examples": []
+  },
+  {
+    "key": "os.description",
+    "context": "resource",
+    "type": "string",
+    "brief": "Human readable (not intended to be parsed) OS version information, like e.g. reported by `ver` or `lsb_release -a` commands.\n",
+    "examples": [
+      "Microsoft Windows [Version 10.0.18363.778]",
+      "Ubuntu 18.04.1 LTS"
+    ]
+  },
+  {
+    "key": "os.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Human readable operating system name.",
+    "examples": [
+      "iOS",
+      "Android",
+      "Ubuntu"
+    ]
+  },
+  {
+    "key": "os.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version string of the operating system as defined in [Version Attributes](/docs/resource/README.md#version-attributes).\n",
+    "examples": [
+      "14.2.1",
+      "18.04.1"
+    ]
+  },
+  {
+    "key": "os.build_id",
+    "context": "resource",
+    "type": "string",
+    "brief": "Unique identifier for a particular build or compilation of the operating system.",
+    "examples": [
+      "TQ3C.230805.001.B2",
+      "20E247",
+      "22621"
+    ]
+  },
+  {
+    "key": "process.pid",
+    "context": "resource",
+    "type": "int",
+    "brief": "Process identifier (PID).\n",
+    "examples": [
+      1234
+    ]
+  },
+  {
+    "key": "process.parent_pid",
+    "context": "resource",
+    "type": "int",
+    "brief": "Parent Process identifier (PID).\n",
+    "examples": [
+      111
+    ]
+  },
+  {
+    "key": "process.executable.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the process executable. On Linux based systems, can be set to the `Name` in `proc/[pid]/status`. On Windows, can be set to the base name of `GetProcessImageFileNameW`.\n",
+    "examples": [
+      "otelcol"
+    ]
+  },
+  {
+    "key": "process.executable.path",
+    "context": "resource",
+    "type": "string",
+    "brief": "The full path to the process executable. On Linux based systems, can be set to the target of `proc/[pid]/exe`. On Windows, can be set to the result of `GetProcessImageFileNameW`.\n",
+    "examples": [
+      "/usr/bin/cmd/otelcol"
+    ]
+  },
+  {
+    "key": "process.command",
+    "context": "resource",
+    "type": "string",
+    "brief": "The command used to launch the process (i.e. the command name). On Linux based systems, can be set to the zeroth string in `proc/[pid]/cmdline`. On Windows, can be set to the first parameter extracted from `GetCommandLineW`.\n",
+    "examples": [
+      "cmd/otelcol"
+    ]
+  },
+  {
+    "key": "process.command_line",
+    "context": "resource",
+    "type": "string",
+    "brief": "The full command used to launch the process as a single string representing the full command. On Windows, can be set to the result of `GetCommandLineW`. Do not set this if you have to assemble it just for monitoring; use `process.command_args` instead.\n",
+    "examples": [
+      "C:\\cmd\\otecol --config=\"my directory\\config.yaml\""
+    ]
+  },
+  {
+    "key": "process.command_args",
+    "context": "resource",
+    "type": "string[]",
+    "brief": "All the command arguments (including the command/executable itself) as received by the process. On Linux-based systems (and some other Unixoid systems supporting procfs), can be set according to the list of null-delimited strings extracted from `proc/[pid]/cmdline`. For libc-based executables, this would be the full argv vector passed to `main`.\n",
+    "examples": [
+      "cmd/otecol",
+      "--config=config.yaml"
+    ]
+  },
+  {
+    "key": "process.owner",
+    "context": "resource",
+    "type": "string",
+    "brief": "The username of the user that owns the process.\n",
+    "examples": [
+      "root"
+    ]
+  },
+  {
+    "key": "process.runtime.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the runtime of this process. For compiled native binaries, this SHOULD be the name of the compiler.\n",
+    "examples": [
+      "OpenJDK Runtime Environment"
+    ]
+  },
+  {
+    "key": "process.runtime.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version of the runtime of this process, as returned by the runtime without modification.\n",
+    "examples": [
+      "14.0.2"
+    ]
+  },
+  {
+    "key": "process.runtime.description",
+    "context": "resource",
+    "type": "string",
+    "brief": "An additional description about the runtime of the process, for example a specific vendor customization of the runtime environment.\n",
+    "examples": [
+      "Eclipse OpenJ9 Eclipse OpenJ9 VM openj9-0.21.0"
+    ]
+  },
+  {
+    "key": "service.namespace",
+    "context": "resource",
+    "type": "string",
+    "brief": "A namespace for `service.name`.\n",
+    "examples": [
+      "Shop"
+    ],
+    "note": "A string value having a meaning that helps to distinguish a group of services, for example the team name that owns a group of services. `service.name` is expected to be unique within the same namespace. If `service.namespace` is not specified in the Resource then `service.name` is expected to be unique for all services that have no explicit namespace defined (so the empty/unspecified namespace is simply one more valid namespace). Zero-length namespace string is assumed equal to unspecified namespace.\n"
+  },
+  {
+    "key": "service.instance.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "The string ID of the service instance.\n",
+    "examples": [
+      "my-k8s-pod-deployment-1",
+      "627cc493-f310-47de-96bd-71410b7dec09"
+    ],
+    "note": "MUST be unique for each instance of the same `service.namespace,service.name` pair (in other words `service.namespace,service.name,service.instance.id` triplet MUST be globally unique). The ID helps to distinguish instances of the same service that exist at the same time (e.g. instances of a horizontally scaled service). It is preferable for the ID to be persistent and stay the same for the lifetime of the service instance, however it is acceptable that the ID is ephemeral and changes during important lifetime events for the service (e.g. service restarts). If the service has no inherent unique ID that can be used as the value of this attribute it is recommended to generate a random Version 1 or Version 4 RFC 4122 UUID (services aiming for reproducible UUIDs may also use Version 5, see RFC 4122 for more recommendations).\n"
+  },
+  {
+    "key": "service.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Logical name of the service.\n",
+    "examples": [
+      "shoppingcart"
+    ],
+    "note": "MUST be the same for all instances of horizontally scaled services. If the value was not specified, SDKs MUST fallback to `unknown_service:` concatenated with [`process.executable.name`](process.md#process), e.g. `unknown_service:bash`. If `process.executable.name` is not available, the value MUST be set to `unknown_service`.\n"
+  },
+  {
+    "key": "service.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version string of the service API or implementation. The format is not defined by these conventions.\n",
+    "examples": [
+      "2.0.0",
+      "a01dbef8a"
+    ]
+  },
+  {
+    "key": "telemetry.distro.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the auto instrumentation agent or distribution, if used.\n",
+    "examples": [
+      "parts-unlimited-java"
+    ],
+    "note": "Official auto instrumentation agents and distributions SHOULD set the `telemetry.distro.name` attribute to\na string starting with `opentelemetry-`, e.g. `opentelemetry-java-instrumentation`.\n"
+  },
+  {
+    "key": "telemetry.distro.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version string of the auto instrumentation agent or distribution, if used.\n",
+    "examples": [
+      "1.2.3"
+    ]
+  },
+  {
+    "key": "telemetry.sdk.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the telemetry SDK as defined above.\n",
+    "examples": [
+      "opentelemetry"
+    ],
+    "note": "The OpenTelemetry SDK MUST set the `telemetry.sdk.name` attribute to `opentelemetry`.\nIf another SDK, like a fork or a vendor-provided implementation, is used, this SDK MUST set the\n`telemetry.sdk.name` attribute to the fully-qualified class or module name of this SDK's main entry point\nor another suitable identifier depending on the language.\nThe identifier `opentelemetry` is reserved and MUST NOT be used in this case.\nAll custom identifiers SHOULD be stable across different versions of an implementation.\n"
+  },
+  {
+    "key": "telemetry.sdk.language",
+    "context": "resource",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "cpp",
+          "value": "cpp"
+        },
+        {
+          "id": "dotnet",
+          "value": "dotnet"
+        },
+        {
+          "id": "erlang",
+          "value": "erlang"
+        },
+        {
+          "id": "go",
+          "value": "go"
+        },
+        {
+          "id": "java",
+          "value": "java"
+        },
+        {
+          "id": "nodejs",
+          "value": "nodejs"
+        },
+        {
+          "id": "php",
+          "value": "php"
+        },
+        {
+          "id": "python",
+          "value": "python"
+        },
+        {
+          "id": "ruby",
+          "value": "ruby"
+        },
+        {
+          "id": "rust",
+          "value": "rust"
+        },
+        {
+          "id": "swift",
+          "value": "swift"
+        },
+        {
+          "id": "webjs",
+          "value": "webjs"
+        }
+      ]
+    },
+    "brief": "The language of the telemetry SDK.\n",
+    "examples": []
+  },
+  {
+    "key": "telemetry.sdk.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version string of the telemetry SDK.\n",
+    "examples": [
+      "1.2.3"
+    ]
+  },
+  {
+    "key": "webengine.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the web engine.\n",
+    "examples": [
+      "WildFly"
+    ]
+  },
+  {
+    "key": "webengine.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version of the web engine.\n",
+    "examples": [
+      "21.0.0"
+    ]
+  },
+  {
+    "key": "webengine.description",
+    "context": "resource",
+    "type": "string",
+    "brief": "Additional description of the web engine (e.g. detailed version and edition information).\n",
+    "examples": [
+      "WildFly Full 21.0.0.Final (WildFly Core 13.0.1.Final) - 2.2.2.Final"
+    ]
+  },
+  {
+    "key": "otel.scope.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "The name of the instrumentation scope - (`InstrumentationScope.Name` in OTLP).",
+    "examples": [
+      "io.opentelemetry.contrib.mongodb"
+    ]
+  },
+  {
+    "key": "otel.scope.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "The version of the instrumentation scope - (`InstrumentationScope.Version` in OTLP).",
+    "examples": [
+      "1.0.0"
+    ]
+  },
+  {
+    "key": "otel.library.name",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use the `otel.scope.name` attribute.",
+    "examples": [
+      "io.opentelemetry.contrib.mongodb"
+    ]
+  },
+  {
+    "key": "otel.library.version",
+    "context": "resource",
+    "type": "string",
+    "brief": "Deprecated, use the `otel.scope.version` attribute.",
+    "examples": [
+      "1.0.0"
+    ]
+  },
+  {
+    "key": "server.address",
+    "context": "resource",
+    "type": "string",
+    "brief": "Server domain name if available without reverse DNS lookup; otherwise, IP address or Unix domain socket name.",
+    "examples": [
+      "example.com",
+      "10.1.2.80",
+      "/tmp/my.sock"
+    ],
+    "note": "When observed from the client side, and when communicating through an intermediary, `server.address` SHOULD represent the server address behind any intermediaries, for example proxies, if it's available.\n"
+  },
+  {
+    "key": "server.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Server port number.",
+    "examples": [
+      80,
+      8080,
+      443
+    ],
+    "note": "When observed from the client side, and when communicating through an intermediary, `server.port` SHOULD represent the server port behind any intermediaries, for example proxies, if it's available.\n"
+  },
+  {
+    "key": "session.id",
+    "context": "resource",
+    "type": "string",
+    "brief": "A unique id to identify a session.",
+    "examples": [
+      "00112233-4455-6677-8899-aabbccddeeff"
+    ]
+  },
+  {
+    "key": "session.previous_id",
+    "context": "resource",
+    "type": "string",
+    "brief": "The previous `session.id` for this user, when known.",
+    "examples": [
+      "00112233-4455-6677-8899-aabbccddeeff"
+    ]
+  },
+  {
+    "key": "source.address",
+    "context": "resource",
+    "type": "string",
+    "brief": "Source address - domain name if available without reverse DNS lookup; otherwise, IP address or Unix domain socket name.",
+    "examples": [
+      "source.example.com",
+      "10.1.2.80",
+      "/tmp/my.sock"
+    ],
+    "note": "When observed from the destination side, and when communicating through an intermediary, `source.address` SHOULD represent the source address behind any intermediaries, for example proxies, if it's available.\n"
+  },
+  {
+    "key": "source.port",
+    "context": "resource",
+    "type": "int",
+    "brief": "Source port number",
+    "examples": [
+      3389,
+      2888
+    ]
+  },
+  {
+    "key": "aws.lambda.invoked_arn",
+    "context": "span",
+    "type": "string",
+    "brief": "The full invoked ARN as provided on the `Context` passed to the function (`Lambda-Runtime-Invoked-Function-Arn` header on the `/runtime/invocation/next` applicable).\n",
+    "examples": [
+      "arn:aws:lambda:us-east-1:123456:function:myfunction:myalias"
+    ],
+    "note": "This may be different from `cloud.resource_id` if an alias is involved."
+  },
+  {
+    "key": "cloudevents.event_id",
+    "context": "span",
+    "type": "string",
+    "brief": "The [event_id](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#id) uniquely identifies the event.\n",
+    "examples": [
+      "123e4567-e89b-12d3-a456-426614174000",
+      "0001"
+    ]
+  },
+  {
+    "key": "cloudevents.event_source",
+    "context": "span",
+    "type": "string",
+    "brief": "The [source](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#source-1) identifies the context in which an event happened.\n",
+    "examples": [
+      "https://github.com/cloudevents",
+      "/cloudevents/spec/pull/123",
+      "my-service"
+    ]
+  },
+  {
+    "key": "cloudevents.event_spec_version",
+    "context": "span",
+    "type": "string",
+    "brief": "The [version of the CloudEvents specification](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#specversion) which the event uses.\n",
+    "examples": [
+      "1.0"
+    ]
+  },
+  {
+    "key": "cloudevents.event_type",
+    "context": "span",
+    "type": "string",
+    "brief": "The [event_type](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#type) contains a value describing the type of event related to the originating occurrence.\n",
+    "examples": [
+      "com.github.pull_request.opened",
+      "com.example.object.deleted.v2"
+    ]
+  },
+  {
+    "key": "cloudevents.event_subject",
+    "context": "span",
+    "type": "string",
+    "brief": "The [subject](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#subject) of the event in the context of the event producer (identified by source).\n",
+    "examples": [
+      "mynewfile.jpg"
+    ]
+  },
+  {
+    "key": "opentracing.ref_type",
+    "context": "span",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "child_of",
+          "value": "child_of",
+          "brief": "The parent Span depends on the child Span in some capacity"
+        },
+        {
+          "id": "follows_from",
+          "value": "follows_from",
+          "brief": "The parent Span doesn't depend in any way on the result of the child Span"
+        }
+      ]
+    },
+    "brief": "Parent-child Reference type",
+    "examples": [],
+    "note": "The causal relationship between a child Span and a parent Span.\n"
+  },
+  {
+    "key": "db.system",
+    "context": "span",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "other_sql",
+          "value": "other_sql",
+          "brief": "Some other SQL database. Fallback only. See notes."
+        },
+        {
+          "id": "mssql",
+          "value": "mssql",
+          "brief": "Microsoft SQL Server"
+        },
+        {
+          "id": "mssqlcompact",
+          "value": "mssqlcompact",
+          "brief": "Microsoft SQL Server Compact"
+        },
+        {
+          "id": "mysql",
+          "value": "mysql",
+          "brief": "MySQL"
+        },
+        {
+          "id": "oracle",
+          "value": "oracle",
+          "brief": "Oracle Database"
+        },
+        {
+          "id": "db2",
+          "value": "db2",
+          "brief": "IBM Db2"
+        },
+        {
+          "id": "postgresql",
+          "value": "postgresql",
+          "brief": "PostgreSQL"
+        },
+        {
+          "id": "redshift",
+          "value": "redshift",
+          "brief": "Amazon Redshift"
+        },
+        {
+          "id": "hive",
+          "value": "hive",
+          "brief": "Apache Hive"
+        },
+        {
+          "id": "cloudscape",
+          "value": "cloudscape",
+          "brief": "Cloudscape"
+        },
+        {
+          "id": "hsqldb",
+          "value": "hsqldb",
+          "brief": "HyperSQL DataBase"
+        },
+        {
+          "id": "progress",
+          "value": "progress",
+          "brief": "Progress Database"
+        },
+        {
+          "id": "maxdb",
+          "value": "maxdb",
+          "brief": "SAP MaxDB"
+        },
+        {
+          "id": "hanadb",
+          "value": "hanadb",
+          "brief": "SAP HANA"
+        },
+        {
+          "id": "ingres",
+          "value": "ingres",
+          "brief": "Ingres"
+        },
+        {
+          "id": "firstsql",
+          "value": "firstsql",
+          "brief": "FirstSQL"
+        },
+        {
+          "id": "edb",
+          "value": "edb",
+          "brief": "EnterpriseDB"
+        },
+        {
+          "id": "cache",
+          "value": "cache",
+          "brief": "InterSystems Caché"
+        },
+        {
+          "id": "adabas",
+          "value": "adabas",
+          "brief": "Adabas (Adaptable Database System)"
+        },
+        {
+          "id": "firebird",
+          "value": "firebird",
+          "brief": "Firebird"
+        },
+        {
+          "id": "derby",
+          "value": "derby",
+          "brief": "Apache Derby"
+        },
+        {
+          "id": "filemaker",
+          "value": "filemaker",
+          "brief": "FileMaker"
+        },
+        {
+          "id": "informix",
+          "value": "informix",
+          "brief": "Informix"
+        },
+        {
+          "id": "instantdb",
+          "value": "instantdb",
+          "brief": "InstantDB"
+        },
+        {
+          "id": "interbase",
+          "value": "interbase",
+          "brief": "InterBase"
+        },
+        {
+          "id": "mariadb",
+          "value": "mariadb",
+          "brief": "MariaDB"
+        },
+        {
+          "id": "netezza",
+          "value": "netezza",
+          "brief": "Netezza"
+        },
+        {
+          "id": "pervasive",
+          "value": "pervasive",
+          "brief": "Pervasive PSQL"
+        },
+        {
+          "id": "pointbase",
+          "value": "pointbase",
+          "brief": "PointBase"
+        },
+        {
+          "id": "sqlite",
+          "value": "sqlite",
+          "brief": "SQLite"
+        },
+        {
+          "id": "sybase",
+          "value": "sybase",
+          "brief": "Sybase"
+        },
+        {
+          "id": "teradata",
+          "value": "teradata",
+          "brief": "Teradata"
+        },
+        {
+          "id": "vertica",
+          "value": "vertica",
+          "brief": "Vertica"
+        },
+        {
+          "id": "h2",
+          "value": "h2",
+          "brief": "H2"
+        },
+        {
+          "id": "coldfusion",
+          "value": "coldfusion",
+          "brief": "ColdFusion IMQ"
+        },
+        {
+          "id": "cassandra",
+          "value": "cassandra",
+          "brief": "Apache Cassandra"
+        },
+        {
+          "id": "hbase",
+          "value": "hbase",
+          "brief": "Apache HBase"
+        },
+        {
+          "id": "mongodb",
+          "value": "mongodb",
+          "brief": "MongoDB"
+        },
+        {
+          "id": "redis",
+          "value": "redis",
+          "brief": "Redis"
+        },
+        {
+          "id": "couchbase",
+          "value": "couchbase",
+          "brief": "Couchbase"
+        },
+        {
+          "id": "couchdb",
+          "value": "couchdb",
+          "brief": "CouchDB"
+        },
+        {
+          "id": "cosmosdb",
+          "value": "cosmosdb",
+          "brief": "Microsoft Azure Cosmos DB"
+        },
+        {
+          "id": "dynamodb",
+          "value": "dynamodb",
+          "brief": "Amazon DynamoDB"
+        },
+        {
+          "id": "neo4j",
+          "value": "neo4j",
+          "brief": "Neo4j"
+        },
+        {
+          "id": "geode",
+          "value": "geode",
+          "brief": "Apache Geode"
+        },
+        {
+          "id": "elasticsearch",
+          "value": "elasticsearch",
+          "brief": "Elasticsearch"
+        },
+        {
+          "id": "memcached",
+          "value": "memcached",
+          "brief": "Memcached"
+        },
+        {
+          "id": "cockroachdb",
+          "value": "cockroachdb",
+          "brief": "CockroachDB"
+        },
+        {
+          "id": "opensearch",
+          "value": "opensearch",
+          "brief": "OpenSearch"
+        },
+        {
+          "id": "clickhouse",
+          "value": "clickhouse",
+          "brief": "ClickHouse"
+        },
+        {
+          "id": "spanner",
+          "value": "spanner",
+          "brief": "Cloud Spanner"
+        },
+        {
+          "id": "trino",
+          "value": "trino",
+          "brief": "Trino"
+        }
+      ]
+    },
+    "brief": "An identifier for the database management system (DBMS) product being used. See below for a list of well-known identifiers.",
+    "examples": []
+  },
+  {
+    "key": "db.connection_string",
+    "context": "span",
+    "type": "string",
+    "brief": "The connection string used to connect to the database. It is recommended to remove embedded credentials.\n",
+    "examples": [
+      "Server=(localdb)\\v11.0;Integrated Security=true;"
+    ]
+  },
+  {
+    "key": "db.user",
+    "context": "span",
+    "type": "string",
+    "brief": "Username for accessing the database.\n",
+    "examples": [
+      "readonly_user",
+      "reporting_user"
+    ]
+  },
+  {
+    "key": "db.jdbc.driver_classname",
+    "context": "span",
+    "type": "string",
+    "brief": "The fully-qualified class name of the [Java Database Connectivity (JDBC)](https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/) driver used to connect.\n",
+    "examples": [
+      "org.postgresql.Driver",
+      "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    ]
+  },
+  {
+    "key": "db.name",
+    "context": "span",
+    "type": "string",
+    "brief": "This attribute is used to report the name of the database being accessed. For commands that switch the database, this should be set to the target database (even if the command fails).\n",
+    "examples": [
+      "customers",
+      "main"
+    ],
+    "note": "In some SQL databases, the database name to be used is called \"schema name\". In case there are multiple layers that could be considered for database name (e.g. Oracle instance name and schema name), the database name to be used is the more specific layer (e.g. Oracle schema name).\n"
+  },
+  {
+    "key": "db.statement",
+    "context": "span",
+    "type": "string",
+    "brief": "The database statement being executed.\n",
+    "examples": [
+      "SELECT * FROM wuser_table",
+      "SET mykey \"WuValue\""
+    ]
+  },
+  {
+    "key": "db.operation",
+    "context": "span",
+    "type": "string",
+    "brief": "The name of the operation being executed, e.g. the [MongoDB command name](https://docs.mongodb.com/manual/reference/command/#database-operations) such as `findAndModify`, or the SQL keyword.\n",
+    "examples": [
+      "findAndModify",
+      "HMSET",
+      "SELECT"
+    ],
+    "note": "When setting this to an SQL keyword, it is not recommended to attempt any client-side parsing of `db.statement` just to get this property, but it should be set if the operation name is provided by the library being instrumented. If the SQL statement has an ambiguous operation, or performs more than one operation, this value may be omitted.\n"
+  },
+  {
+    "key": "db.mssql.instance_name",
+    "context": "span",
+    "type": "string",
+    "brief": "The Microsoft SQL Server [instance name](https://docs.microsoft.com/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver15) connecting to. This name is used to determine the port of a named instance.\n",
+    "examples": [
+      "MSSQLSERVER"
+    ],
+    "note": "If setting a `db.mssql.instance_name`, `server.port` is no longer required (but still recommended if non-standard).\n"
+  },
+  {
+    "key": "db.cassandra.page_size",
+    "context": "span",
+    "type": "int",
+    "brief": "The fetch size used for paging, i.e. how many rows will be returned at once.\n",
+    "examples": [
+      5000
+    ]
+  },
+  {
+    "key": "db.cassandra.consistency_level",
+    "context": "span",
+    "type": "enum",
+    "enum": {
+      "members": [
+        {
+          "id": "all",
+          "value": "all"
+        },
+        {
+          "id": "each_quorum",
+          "value": "each_quorum"
+        },
+        {
+          "id": "quorum",
+          "value": "quorum"
+        },
+        {
+          "id": "local_quorum",
+          "value": "local_quorum"
+        },
+        {
+          "id": "one",
+          "value": "one"
+        },
+        {
+          "id": "two",
+          "value": "two"
+        },
+        {
+          "id": "three",
+          "value": "three"
+        },
+        {
+          "id": "local_one",
+          "value": "local_one"
+        },
+        {
+          "id": "any",
+          "value": "any"
+        },
+        {
+          "id": "serial",
+          "value": "serial"
+        },
+        {
+          "id": "local_serial",
+          "value": "local_serial"
+        }
+      ]
+    },
+    "brief": "The consistency level of the query. Based on consistency values from [CQL](https://docs.datastax.com/en/cassandra-oss/3.0/cassandra/dml/dmlConfigConsistency.html).\n",
+    "examples": []
+  },
+  {
+    "key": "db.cassandra.table",
+    "context": "span",
+    "type": "string",
+    "brief": "The name of the primary table that the operation is acting upon, including the keyspace name (if applicable).",
+    "examples": [
+      "mytable"
+    ],
+    "note": "This mirrors the db.sql.table attribute but references cassandra rather than sql. It is not recommended to attempt any client-side parsing of `db.statement` just to get this property, but it should be set if it is provided by the library being instrumented. If the operation is acting upon an anonymous table, or more than one table, this value MUST NOT be set.\n"
+  },
+  {
+    "key": "db.cassandra.idempotence",
+    "context": "span",
+    "type": "boolean",
+    "brief": "Whether or not the query is idempotent.\n",
+    "examples": []
+  },
+  {
+    "key": "db.cassandra.speculative_execution_count",
+    "context": "span",
+    "type": "int",
+    "brief": "The number of times a query was speculatively executed. Not set or `0` if the query was not executed speculatively.\n",
+    "examples": [
+      0,
+      2
+    ]
+  },
+  {
+    "key": "db.cassandra.coordinator.id",
+    "context": "span",
+    "type": "string",
+    "brief": "The ID of the coordinating node for a query.\n",
+    "examples": [
+      "be13faa2-8574-4d71-926d-27f16cf8a7af"
+    ]
+  },
+  {
+    "key": "db.cassandra.coordinator.dc",
+    "context": "span",
+    "type": "string",
+    "brief": "The data center of the coordinating node for a query.\n",
+    "examples": [
+      "us-west-2"
+    ]
+  },
+  {
+    "key": "db.redis.database_index",
+    "context": "span",
+    "type": "int",
+    "brief": "The index of the database being accessed as used in the [`SELECT` command](https://redis.io/commands/select), provided as an integer. To be used instead of the generic `db.name` attribute.\n",
+    "examples": [
+      0,
+      1,
+      15
+    ]
+  },
+  {
+    "key": "db.mongodb.collection",
+    "context": "span",
+    "type": "string",
+    "brief": "The collection being accessed within the database stated in `db.name`.\n",
+    "examples": [
+      "customers",
+      "products"
+    ]
+  },
+  {
+    "key": "db.elasticsearch.cluster.name",
+    "context": "span",
+    "type": "string",
+    "brief": "Represents the identifier of an Elasticsearch cluster.\n",
+    "examples": [
+      "e9106fc68e3044f0b1475b04bf4ffd5f"
+    ]
+  },
+  {
+    "key": "db.elasticsearch.node.name",
+    "context": "span",
+    "type": "string",
+    "brief": "Represents the human-readable identifier of the node/instance to which a request was routed.\n",
+    "examples": [
+      "instance-0000000001"
+    ]
+  },
+  {
+    "key": "db.elasticsearch.path_parts",
+    "context": "span",
+    "type": "template[string]",
+    "brief": "A dynamic value in the url path.\n",
+    "examples": [
+      "db.elasticsearch.path_parts.index=test-index",
+      "db.elasticsearch.path_parts.doc_id=123"
+    ],
+    "note": "Many Elasticsearch url paths allow dynamic values. These SHOULD be recorded in span attributes in the format `db.elasticsearch.path_parts.<key>`, where `<key>` is the url path part name. The implementation SHOULD reference the [elasticsearch schema](https://raw.githubusercontent.com/elastic/elasticsearch-specification/main/output/schema/schema.json) in order to map the path part values to their names.\n"
+  },
+  {
+    "key": "db.sql.table",
+    "context": "span",
+    "type": "string",
+    "brief": "The name of the primary table that the operation is acting upon, including the database name (if applicable).",
+    "examples": [
+      "public.users",
+      "customers"
+    ],
+    "note": "It is not recommended to attempt any client-side parsing of `db.statement` just to get this property, but it should be set if it is provided by the library being instrumented. If the operation is acting upon an anonymous table, or more than one table, this value MUST NOT be set.\n"
+  },
+  {
+    "key": "db.cosmosdb.client_id",
+    "context": "span",
+    "type": "string",
+    "brief": "Unique Cosmos client instance id.",
+    "examples": [
+      "3ba4827d-4422-483f-b59f-85b74211c11d"
+    ]
+  },
+  {
+    "key": "db.cosmosdb.operation_type",
+    "context": "span",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "invalid",
+          "value": "Invalid"
+        },
+        {
+          "id": "create",
+          "value": "Create"
+        },
+        {
+          "id": "patch",
+          "value": "Patch"
+        },
+        {
+          "id": "read",
+          "value": "Read"
+        },
+        {
+          "id": "read_feed",
+          "value": "ReadFeed"
+        },
+        {
+          "id": "delete",
+          "value": "Delete"
+        },
+        {
+          "id": "replace",
+          "value": "Replace"
+        },
+        {
+          "id": "execute",
+          "value": "Execute"
+        },
+        {
+          "id": "query",
+          "value": "Query"
+        },
+        {
+          "id": "head",
+          "value": "Head"
+        },
+        {
+          "id": "head_feed",
+          "value": "HeadFeed"
+        },
+        {
+          "id": "upsert",
+          "value": "Upsert"
+        },
+        {
+          "id": "batch",
+          "value": "Batch"
+        },
+        {
+          "id": "query_plan",
+          "value": "QueryPlan"
+        },
+        {
+          "id": "execute_javascript",
+          "value": "ExecuteJavaScript"
+        }
+      ]
+    },
+    "brief": "CosmosDB Operation Type.",
+    "examples": []
+  },
+  {
+    "key": "db.cosmosdb.connection_mode",
+    "context": "span",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "gateway",
+          "value": "gateway",
+          "brief": "Gateway (HTTP) connections mode"
+        },
+        {
+          "id": "direct",
+          "value": "direct",
+          "brief": "Direct connection."
+        }
+      ]
+    },
+    "brief": "Cosmos client connection mode.",
+    "examples": []
+  },
+  {
+    "key": "db.cosmosdb.container",
+    "context": "span",
+    "type": "string",
+    "brief": "Cosmos DB container name.",
+    "examples": [
+      "anystring"
+    ]
+  },
+  {
+    "key": "db.cosmosdb.request_content_length",
+    "context": "span",
+    "type": "int",
+    "brief": "Request payload size in bytes",
+    "examples": []
+  },
+  {
+    "key": "db.cosmosdb.status_code",
+    "context": "span",
+    "type": "int",
+    "brief": "Cosmos DB status code.",
+    "examples": [
+      200,
+      201
+    ]
+  },
+  {
+    "key": "db.cosmosdb.sub_status_code",
+    "context": "span",
+    "type": "int",
+    "brief": "Cosmos DB sub status code.",
+    "examples": [
+      1000,
+      1002
+    ]
+  },
+  {
+    "key": "db.cosmosdb.request_charge",
+    "context": "span",
+    "type": "double",
+    "brief": "RU consumed for that operation",
+    "examples": [
+      46.18,
+      1
+    ]
+  },
+  {
+    "key": "otel.status_code",
+    "context": "span",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": false,
+      "members": [
+        {
+          "id": "ok",
+          "value": "OK",
+          "brief": "The operation has been validated by an Application developer or Operator to have completed successfully."
+        },
+        {
+          "id": "error",
+          "value": "ERROR",
+          "brief": "The operation contains an error."
+        }
+      ]
+    },
+    "brief": "Name of the code, either \"OK\" or \"ERROR\". MUST NOT be set if the status code is UNSET.",
+    "examples": []
+  },
+  {
+    "key": "otel.status_description",
+    "context": "span",
+    "type": "string",
+    "brief": "Description of the Status if it has a value, otherwise not set.",
+    "examples": [
+      "resource not found"
+    ]
+  },
+  {
+    "key": "faas.invocation_id",
+    "context": "span",
+    "type": "string",
+    "brief": "The invocation ID of the current function invocation.",
+    "examples": [
+      "af9d5aa4-a685-4c5f-a22b-444f80b3cc28"
+    ]
+  },
+  {
+    "key": "faas.document.collection",
+    "context": "span",
+    "type": "string",
+    "brief": "The name of the source on which the triggering operation was performed. For example, in Cloud Storage or S3 corresponds to the bucket name, and in Cosmos DB to the database name.\n",
+    "examples": [
+      "myBucketName",
+      "myDbName"
+    ]
+  },
+  {
+    "key": "faas.document.operation",
+    "context": "span",
+    "type": "enum",
+    "enum": {
+      "allow_custom_values": true,
+      "members": [
+        {
+          "id": "insert",
+          "value": "insert",
+          "brief": "When a new object is created."
+        },
+        {
+          "id": "edit",
+          "value": "edit",
+          "brief": "When an object is modified."
+        },
+        {
+          "id": "delete",
+          "value": "delete",
+          "brief": "When an object is deleted."
+        }
+      ]
+    },
+    "brief": "Describes the type of the operation that was performed on the data.",
+    "examples": []
+  },
+  {
+    "key": "faas.document.time",
+    "context": "span",
+    "type": "string",
+    "brief": "A string containing the time when the data was accessed in the [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format expressed in [UTC](https://www.w3.org/TR/NOTE-datetime).\n",
+    "examples": [
+      "2020-01-23T13:47:06Z"
+    ]
+  },
+  {
+    "key": "faas.document.name",
+    "context": "span",
+    "type": "string",
+    "brief": "The document name/table subjected to the operation. For example, in Cloud Storage or S3 is the name of the file, and in Cosmos DB the table name.\n",
+    "examples": [
+      "myFile.txt",
+      "myTableName"
+    ]
+  },
+  {
+    "key": "faas.time",
+    "context": "span",
+    "type": "string",
+    "brief": "A string containing the function invocation time in the [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format expressed in [UTC](https://www.w3.org/TR/NOTE-datetime).\n",
+    "examples": [
+      "2020-01-23T13:47:06Z"
+    ]
+  },
+  {
+    "key": "faas.cron",
+    "context": "span",
+    "type": "string",
+    "brief": "A string containing the schedule period as [Cron Expression](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm).\n",
+    "examples": [
+      "0/5 * * * ? *"
+    ]
+  },
+  {
+    "key": "faas.coldstart",
+    "context": "span",
+    "type": "boolean",
+    "brief": "A boolean that is true if the serverless function is executed for the first time (aka cold-start).\n",
+    "examples": []
+  },
+  {
+    "key": "feature_flag.key",
+    "context": "event",
+    "type": "string",
+    "brief": "The unique identifier of the feature flag.",
+    "examples": [
+      "logo-color"
+    ]
+  },
+  {
+    "key": "feature_flag.provider_name",
+    "context": "event",
+    "type": "string",
+    "brief": "The name of the service provider that performs the flag evaluation.",
+    "examples": [
+      "Flag Manager"
+    ]
+  },
+  {
+    "key": "feature_flag.variant",
+    "context": "event",
+    "type": "string",
+    "brief": "SHOULD be a semantic identifier for a value. If one is unavailable, a stringified version of the value can be used.\n",
+    "examples": [
+      "red",
+      "true",
+      "on"
+    ],
+    "note": "A semantic identifier, commonly referred to as a variant, provides a means\nfor referring to a value without including the value itself. This can\nprovide additional context for understanding the meaning behind a value.\nFor example, the variant `red` maybe be used for the value `#c05543`.\n\nA stringified version of the value can be used in situations where a\nsemantic identifier is unavailable. String representation of the value\nshould be determined by the implementer."
+  },
+  {
+    "key": "message.type",
+    "context": "event",
+    "type": "enum",
+    "enum": {
+      "members": [
+        {
+          "id": "sent",
+          "value": "SENT"
+        },
+        {
+          "id": "received",
+          "value": "RECEIVED"
+        }
+      ]
+    },
+    "brief": "Whether this is a received or sent message.",
+    "examples": []
+  },
+  {
+    "key": "message.id",
+    "context": "event",
+    "type": "int",
+    "brief": "MUST be calculated as two different counters starting from `1` one for sent messages and one for received message.",
+    "examples": [],
+    "note": "This way we guarantee that the values will be consistent between different implementations."
+  },
+  {
+    "key": "message.compressed_size",
+    "context": "event",
+    "type": "int",
+    "brief": "Compressed size of the message in bytes.",
+    "examples": []
+  },
+  {
+    "key": "message.uncompressed_size",
+    "context": "event",
+    "type": "int",
+    "brief": "Uncompressed size of the message in bytes.",
+    "examples": []
+  },
+  {
+    "key": "exception.escaped",
+    "context": "event",
+    "type": "boolean",
+    "brief": "SHOULD be set to true if the exception event is recorded at a point where it is known that the exception is escaping the scope of the span.\n",
+    "examples": [],
+    "note": "An exception is considered to have escaped (or left) the scope of a span,\nif that span is ended while the exception is still logically \"in flight\".\nThis may be actually \"in flight\" in some languages (e.g. if the exception\nis passed to a Context manager's `__exit__` method in Python) but will\nusually be caught at the point of recording the exception in most languages.\n\nIt is usually not possible to determine at the point where an exception is thrown\nwhether it will escape the scope of a span.\nHowever, it is trivial to know that an exception\nwill escape, if one checks for an active exception just before ending the span,\nas done in the [example above](#recording-an-exception).\n\nIt follows that an exception may still escape the scope of the span\neven if the `exception.escaped` attribute was not set or set to false,\nsince the event might have been recorded at a time where it was not\nclear whether the exception will escape."
+  }
+]
