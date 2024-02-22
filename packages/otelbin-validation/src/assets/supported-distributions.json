@@ -8,6 +8,11 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.95.0",
+        "artifact": "otelcol_0.95.0_linux_amd64.rpm",
+        "released_at": "2024-02-21T16:33:04.000Z"
+      },
+      {
         "version": "v0.94.0",
         "artifact": "otelcol_0.94.0_linux_amd64.rpm",
         "released_at": "2024-02-08T16:12:36.000Z"
