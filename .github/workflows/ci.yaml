@@ -78,7 +78,7 @@ jobs:
   prep-itests:
     name: Deploy validation backend
     needs: ['otelbin-verify', 'otelbin-validation-image-verify']
-    runs-on: ubuntu-latest
+    runs-on: 8core_32gb
     timeout-minutes: 30
     outputs:
       test_matrix: ${{ steps.prepare_test_matrix.outputs.test_matrix }}
