@@ -105,7 +105,7 @@ export default function ValidationTile({
 									/>
 								</SelectTrigger>
 								<SelectContent>
-									<SelectGroup>
+									<SelectGroup style={{ maxHeight: "50vh" }}>
 										{Array.isArray(distribution?.releases) &&
 											distribution?.releases
 												.map((release) => release.version)
