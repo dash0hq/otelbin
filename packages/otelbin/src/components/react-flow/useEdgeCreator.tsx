@@ -111,13 +111,13 @@ export function calcEdges(nodeIdsArray: Node[]) {
 		const connectorsAsExporter = nodes.filter((node) => node?.data?.type === "connectors/exporters");
 		const connectorsAsReceiver = nodes.filter((node) => node?.data?.type === "connectors/receivers");
 
-		connectorsAsExporter.forEach((sourceNode) => {
-			const targetNode = connectorsAsReceiver.find((node) => node?.data?.label === sourceNode?.data?.label);
+		const connectorEdges = connectorsAsExporter.flatMap((sourceNode) =>
+			connectorsAsReceiver
+				.filter((node) => node?.data?.label === sourceNode?.data?.label)
+				.map((targetNode) => createConnectorEdge(sourceNode, targetNode))
+		);
 
-			if (targetNode) {
-				edges.push(createConnectorEdge(sourceNode, targetNode));
-			}
-		});
+		edges.push(...connectorEdges);
 	};
 
 	const addEdgesToNodes = (nodes: Node[]) => {
