@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ImageResponse, NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { ImageResponse } from "next/og";
 import { calcNodes } from "~/components/react-flow/useClientNodes";
 import ParentsNode, { svgArrowHead } from "../../../og/ParentsNode";
 import { Redis } from "@upstash/redis/nodejs";
