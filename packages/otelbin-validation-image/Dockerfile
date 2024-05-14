@@ -26,7 +26,7 @@ RUN /usr/app/rpm_download.sh
 
 FROM public.ecr.aws/lambda/nodejs:18 AS builder
 
-WORKDIR /usr/app    
+WORKDIR /usr/app
 COPY package.json package.json
 COPY src/ src/
 RUN npm install
@@ -54,6 +54,9 @@ RUN rpm -i otelcol.rpm \
 # Add the event handler
 COPY --from=builder /usr/app/dist /usr/app/src
 COPY --from=builder /usr/app/package.json /usr/app/package.json
+
+# Copy the collector config so that telemetry data can be exported.
+COPY collector.yaml /collector.yaml
 
 WORKDIR /usr/app/src
 

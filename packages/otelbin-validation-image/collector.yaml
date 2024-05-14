@@ -1,0 +1,31 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "localhost:4317"
+      http:
+        endpoint: "localhost:4318"
+
+exporters:
+  otlp:
+    endpoint: ingress.eu-west-1.aws.dash0.com:4317
+    headers:
+      Authorization: "Bearer ${DASH0_AUTHORIZATION_TOKEN}"
+
+extensions:
+  health_check:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      exporters: [otlp]
+  telemetry:
+    metrics:
+      address: localhost:8888

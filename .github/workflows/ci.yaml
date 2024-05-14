@@ -151,6 +151,7 @@ jobs:
           CDK_DEPLOY_REGION: 'us-east-2'
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+          DASH0_AUTHORIZATION_TOKEN: ${{ secrets.DASH0_AUTHORIZATION_TOKEN }}
         run: |
           npx projen deploy --require-approval never --outputs-file ./cdk-outputs.json
 
