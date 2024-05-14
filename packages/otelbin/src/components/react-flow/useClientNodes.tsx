@@ -135,7 +135,7 @@ export const calcNodes = (value: IConfig) => {
 	const pipelines = value?.service?.pipelines;
 	const connectors = value?.connectors;
 	if (pipelines == null) {
-		return;
+		return [];
 	}
 
 	const nodesToAdd: Node[] = [];
