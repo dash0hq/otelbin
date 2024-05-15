@@ -1,3 +1,12 @@
+// This code is a 99% copy of the official OpenTelemetry Lambda wrapper for Node.js.
+// https://github.com/open-telemetry/opentelemetry-lambda/blob/fefd74405214790644fe262b0f5a8a636c029184/nodejs/packages/layer/src/wrapper.ts
+//
+// Unfortunately, we couldn't use it as a dependency, because it is not published to npm.
+//
+// Changes from original:
+// - removed ability to overwrite config sections via globals
+// - removed some default instrumentations
+
 const { NodeTracerConfig, NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
 const {
 	BatchSpanProcessor,
