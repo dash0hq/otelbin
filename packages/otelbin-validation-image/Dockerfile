@@ -26,11 +26,19 @@ RUN /usr/app/rpm_download.sh
 
 FROM public.ecr.aws/lambda/nodejs:18 AS builder
 
-WORKDIR /usr/app    
+WORKDIR /usr/app
 COPY package.json package.json
 COPY src/ src/
 RUN npm install
 RUN npm run build
+
+FROM golang:1.22 AS builder-extension
+
+RUN apt-get update && apt-get install -y zip make
+RUN wget https://github.com/open-telemetry/opentelemetry-lambda/archive/refs/tags/layer-collector/0.6.0.zip
+RUN unzip 0.6.0.zip
+WORKDIR /go/opentelemetry-lambda-layer-collector-0.6.0/collector
+RUN make package
 
 FROM public.ecr.aws/lambda/nodejs:18
 
@@ -40,6 +48,7 @@ RUN yum -y install python3 python3-pip shadow-utils
 
 WORKDIR /usr/otelcol
 COPY --from=downloader /download/otelcol.rpm otelcol.rpm
+COPY --from=builder-extension /go/opentelemetry-lambda-layer-collector-0.6.0/collector/build/extensions /opt/extensions
 
 # Install the collector's RPM package
 RUN rpm -i otelcol.rpm \
@@ -53,7 +62,21 @@ RUN rpm -i otelcol.rpm \
 
 # Add the event handler
 COPY --from=builder /usr/app/dist /usr/app/src
-COPY --from=builder /usr/app/package.json /usr/app/package.json
+COPY --from=builder /usr/app/package.json /usr/app/src/package.json
+
+# Copy the collector config so that telemetry data can be exported.
+# https://github.com/open-telemetry/opentelemetry-lambda/blob/layer-collector/0.6.0/collector/internal/collector/collector.go#L51-L54
+COPY collector.yaml /opt/collector-config/config.yaml
+
+# Set relevant environment variable to enable OpenTelemetry
+ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4328
+ENV OTEL_PROPAGATORS="tracecontext,baggage"
+ENV OTEL_LAMBDA_DISABLE_AWS_CONTEXT_PROPAGATION=true
+# Fix "DEBUG Recording is off, propagating context in a non-recording span"
+ENV OTEL_TRACES_SAMPLER=always_on
+#ENV OTEL_LOG_LEVEL=DEBUG
+ENV NODE_OPTIONS="--require /usr/app/src/lambda-wrapper.js"
+ENV _HANDLER="index.handler"
 
 WORKDIR /usr/app/src
 

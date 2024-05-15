@@ -1,35 +1,51 @@
 {
-  "name": "otelbin-validation-handler",
-  "version": "0.0.1",
-  "description": "AWS Lambda handler to run validation requests",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "jest",
-    "build": "esbuild src/index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dash0hq/otelbin.git"
-  },
-  "author": "",
-  "license": "Apache 2",
-  "bugs": {
-    "url": "https://github.com/dash0hq/otelbin/issues"
-  },
-  "homepage": "https://github.com/dash0hq/otelbin#readme",
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/aws-lambda": "^8.10.129",
-    "@types/jest": "^29.5.12",
-    "@types/js-yaml": "^4.0.8",
-    "@types/node": "^20.8.10",
-    "esbuild": "^0.19.8",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.2"
-  },
-  "dependencies": {
-    "@expo/spawn-async": "^1.7.2",
-    "aws-lambda": "^1.0.7",
-    "js-yaml": "^4.1.0"
-  }
+	"name": "otelbin-validation-handler",
+	"version": "0.0.1",
+	"description": "AWS Lambda handler to run validation requests against OpenTelemetry collector",
+	"main": "src/index.js",
+	"scripts": {
+		"test": "jest",
+		"build": "npm run build:app && npm run build:wrapper",
+		"build:app": "esbuild src/index.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+		"build:wrapper": "esbuild src/lambda-wrapper.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=dist/lambda-wrapper.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dash0hq/otelbin.git"
+	},
+	"author": "",
+	"license": "Apache 2",
+	"bugs": {
+		"url": "https://github.com/dash0hq/otelbin/issues"
+	},
+	"homepage": "https://github.com/dash0hq/otelbin#readme",
+	"devDependencies": {
+		"@jest/globals": "^29.7.0",
+		"@types/aws-lambda": "^8.10.129",
+		"@types/jest": "^29.5.12",
+		"@types/js-yaml": "^4.0.8",
+		"@types/node": "^20.8.10",
+		"esbuild": "^0.19.8",
+		"jest": "^29.7.0",
+		"ts-jest": "^29.1.2"
+	},
+	"dependencies": {
+		"@expo/spawn-async": "^1.7.2",
+		"aws-lambda": "^1.0.7",
+		"js-yaml": "^4.1.0",
+		"@opentelemetry/api": "^1.7.0",
+		"@opentelemetry/exporter-trace-otlp-proto": "^0.50.0",
+		"@opentelemetry/exporter-metrics-otlp-proto": "^0.50.0",
+		"@opentelemetry/instrumentation": "^0.50.0",
+		"@opentelemetry/instrumentation-aws-lambda": "^0.40.0",
+		"@opentelemetry/instrumentation-aws-sdk": "^0.40.0",
+		"@opentelemetry/instrumentation-dns": "^0.35.0",
+		"@opentelemetry/instrumentation-http": "^0.35.0",
+		"@opentelemetry/instrumentation-net": "^0.35.0",
+		"@opentelemetry/resource-detector-aws": "^1.3.4",
+		"@opentelemetry/resources": "^1.18.1",
+		"@opentelemetry/sdk-metrics": "^1.18.1",
+		"@opentelemetry/sdk-trace-base": "^1.18.1",
+		"@opentelemetry/sdk-trace-node": "^1.18.1"
+	}
 }

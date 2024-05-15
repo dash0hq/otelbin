@@ -1,0 +1,30 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        # non-standard port to avoid port conflicts with the collectors we spawn for validation
+        endpoint: "localhost:4327"
+      http:
+        # non-standard port to avoid port conflicts with the collectors we spawn for validation
+        endpoint: "localhost:4328"
+
+exporters:
+  otlp:
+    endpoint: ingress.eu-west-1.aws.dash0.com:4317
+    headers:
+      Authorization: "Bearer ${DASH0_AUTHORIZATION_TOKEN}"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      exporters: [otlp]
+  telemetry:
+    metrics:
+      address: localhost:8888
