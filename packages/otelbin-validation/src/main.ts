@@ -153,7 +153,6 @@ export class OTelBinValidationStack extends Stack {
           }),
           environment: {
             DISTRO_NAME: distributionName,
-            AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
             DASH0_AUTHORIZATION_TOKEN: props.dash0AuthorizationToken || '',
           },
           /*
