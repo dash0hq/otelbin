@@ -35,7 +35,7 @@ const instrumentations = [
 	new AwsInstrumentation({
 		suppressInternalInstrumentation: true
 	}),
-	new AwsLambdaInstrumentation(defaultConfigureInstrumentations)()
+	new AwsLambdaInstrumentation(defaultConfigureInstrumentations())
 ];
 
 // configure lambda logging

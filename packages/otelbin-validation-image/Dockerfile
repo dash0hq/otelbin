@@ -70,8 +70,12 @@ COPY collector.yaml /opt/collector-config/config.yaml
 ENV OTEL_SERVICE_NAME=OTelBin
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4328
 ENV OTEL_PROPAGATORS="tracecontext,baggage"
-ENV NODE_OPTIONS="--require /usr/app/src/lambda-wrapper.js"
+ENV OTEL_LAMBDA_DISABLE_AWS_CONTEXT_PROPAGATION=true
+# Fix "DEBUG Recording is off, propagating context in a non-recording span"
+ENV OTEL_TRACES_SAMPLER=always_on
 ENV OTEL_LOG_LEVEL=DEBUG
+ENV NODE_OPTIONS="--require /usr/app/src/lambda-wrapper.js"
+ENV _HANDLER="index.handler"
 
 WORKDIR /usr/app/src
 
