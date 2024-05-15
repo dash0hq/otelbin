@@ -67,13 +67,14 @@ COPY --from=builder /usr/app/package.json /usr/app/src/package.json
 # Copy the collector config so that telemetry data can be exported.
 # https://github.com/open-telemetry/opentelemetry-lambda/blob/layer-collector/0.6.0/collector/internal/collector/collector.go#L51-L54
 COPY collector.yaml /opt/collector-config/config.yaml
-ENV OTEL_SERVICE_NAME=OTelBin
+
+# Set relevant environment variable to enable OpenTelemetry
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4328
 ENV OTEL_PROPAGATORS="tracecontext,baggage"
 ENV OTEL_LAMBDA_DISABLE_AWS_CONTEXT_PROPAGATION=true
 # Fix "DEBUG Recording is off, propagating context in a non-recording span"
 ENV OTEL_TRACES_SAMPLER=always_on
-ENV OTEL_LOG_LEVEL=DEBUG
+#ENV OTEL_LOG_LEVEL=DEBUG
 ENV NODE_OPTIONS="--require /usr/app/src/lambda-wrapper.js"
 ENV _HANDLER="index.handler"
 
