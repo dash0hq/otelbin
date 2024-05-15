@@ -32,6 +32,14 @@ COPY src/ src/
 RUN npm install
 RUN npm run build
 
+FROM golang:1.22 AS builder-extension
+
+RUN apt-get update && apt-get install -y zip make
+RUN wget https://github.com/open-telemetry/opentelemetry-lambda/archive/refs/tags/layer-collector/0.6.0.zip
+RUN unzip 0.6.0.zip
+WORKDIR /go/opentelemetry-lambda-layer-collector-0.6.0/collector
+RUN make package
+
 FROM public.ecr.aws/lambda/nodejs:18
 
 # Install useradd command needed by the OtelContrib RPM
@@ -40,6 +48,7 @@ RUN yum -y install python3 python3-pip shadow-utils
 
 WORKDIR /usr/otelcol
 COPY --from=downloader /download/otelcol.rpm otelcol.rpm
+COPY --from=builder-extension /go/opentelemetry-lambda-layer-collector-0.6.0/collector/build/extensions /opt/extensions
 
 # Install the collector's RPM package
 RUN rpm -i otelcol.rpm \
@@ -56,7 +65,8 @@ COPY --from=builder /usr/app/dist /usr/app/src
 COPY --from=builder /usr/app/package.json /usr/app/package.json
 
 # Copy the collector config so that telemetry data can be exported.
-COPY collector.yaml /collector.yaml
+# https://github.com/open-telemetry/opentelemetry-lambda/blob/layer-collector/0.6.0/collector/internal/collector/collector.go#L51-L54
+COPY collector.yaml /opt/collector-config/config.yaml
 
 WORKDIR /usr/app/src
 

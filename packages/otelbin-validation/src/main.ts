@@ -4,7 +4,7 @@ import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps, Tags } from
 import { ApiKeySourceType, AwsIntegration, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Architecture, DockerImageCode, DockerImageFunction, LayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
@@ -154,7 +154,6 @@ export class OTelBinValidationStack extends Stack {
           environment: {
             DISTRO_NAME: distributionName,
             AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
-            OPENTELEMETRY_COLLECTOR_CONFIG_FILE: '/var/task/collector.yaml',
             DASH0_AUTHORIZATION_TOKEN: props.dash0AuthorizationToken || '',
           },
           /*
@@ -165,9 +164,6 @@ export class OTelBinValidationStack extends Stack {
           memorySize: 1024,
           timeout: Duration.seconds(15),
           logRetention: RetentionDays.THREE_DAYS,
-          layers: props.dash0AuthorizationToken ? [
-            LayerVersion.fromLayerVersionArn(this, 'otelcol-layer', `arn:aws:lambda:${this.region}:901920570463:layer:aws-otel-nodejs-amd64-ver-1-18-1:1`),
-          ]:[],
         });
 
         const releaseResource = distributionResource.addResource(release.version);
