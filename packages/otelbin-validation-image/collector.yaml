@@ -12,9 +12,6 @@ exporters:
     headers:
       Authorization: "Bearer ${DASH0_AUTHORIZATION_TOKEN}"
 
-extensions:
-  health_check:
-
 service:
   pipelines:
     traces:
