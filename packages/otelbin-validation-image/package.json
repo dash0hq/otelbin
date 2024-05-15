@@ -6,8 +6,8 @@
   "scripts": {
     "test": "jest",
 		"build": "npm run build:app && npm run build:wrapper",
-    "build:app": "esbuild src/index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
-		"build:wrapper": "esbuild src/lambda-wrapper.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/lambda-wrapper.js"
+    "build:app": "esbuild src/index.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+		"build:wrapper": "esbuild src/lambda-wrapper.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=dist/lambda-wrapper.js"
   },
   "repository": {
     "type": "git",
