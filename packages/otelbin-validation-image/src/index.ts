@@ -1,3 +1,5 @@
+import "./lambda-wrapper";
+
 import { realpath, writeFile } from "fs/promises";
 import { spawn } from "child_process";
 import spawnAsync from "@expo/spawn-async";

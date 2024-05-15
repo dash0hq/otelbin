@@ -67,6 +67,7 @@ COPY --from=builder /usr/app/package.json /usr/app/package.json
 # Copy the collector config so that telemetry data can be exported.
 # https://github.com/open-telemetry/opentelemetry-lambda/blob/layer-collector/0.6.0/collector/internal/collector/collector.go#L51-L54
 COPY collector.yaml /opt/collector-config/config.yaml
+ENV OTEL_SERVICE_NAME=OTelBin
 
 WORKDIR /usr/app/src
 
