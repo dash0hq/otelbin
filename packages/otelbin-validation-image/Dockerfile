@@ -71,6 +71,7 @@ ENV OTEL_SERVICE_NAME=OTelBin
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4328
 ENV OTEL_PROPAGATORS="tracecontext,baggage"
 ENV NODE_OPTIONS="--require /usr/app/src/lambda-wrapper.js"
+ENV OTEL_LOG_LEVEL=DEBUG
 
 WORKDIR /usr/app/src
 
