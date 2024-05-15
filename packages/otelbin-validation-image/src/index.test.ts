@@ -1,4 +1,4 @@
-import { extractErrorMessage, extractErrorPath } from "./index";
+const {extractErrorPath, extractErrorMessage} = require("./index");
 
 describe("extractErrorMessage", () => {
 	it("must extract error message for OTel collector core/contrib when config parsing fails", () => {

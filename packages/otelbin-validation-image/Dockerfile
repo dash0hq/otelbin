@@ -62,13 +62,15 @@ RUN rpm -i otelcol.rpm \
 
 # Add the event handler
 COPY --from=builder /usr/app/dist /usr/app/src
-COPY --from=builder /usr/app/package.json /usr/app/package.json
+COPY --from=builder /usr/app/package.json /usr/app/src/package.json
 
 # Copy the collector config so that telemetry data can be exported.
 # https://github.com/open-telemetry/opentelemetry-lambda/blob/layer-collector/0.6.0/collector/internal/collector/collector.go#L51-L54
 COPY collector.yaml /opt/collector-config/config.yaml
 ENV OTEL_SERVICE_NAME=OTelBin
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4328
+ENV OTEL_PROPAGATORS="tracecontext,baggage"
+ENV NODE_OPTIONS="--require /usr/app/src/lambda-wrapper.js"
 
 WORKDIR /usr/app/src
 
