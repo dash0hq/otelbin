@@ -13,19 +13,19 @@ exporters:
     endpoint: ingress.eu-west-1.aws.dash0.com:4317
     headers:
       Authorization: "Bearer ${DASH0_AUTHORIZATION_TOKEN}"
-  debug: {}
+  logging: {}
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlp, debug]
+      exporters: [otlp, logging]
     metrics:
       receivers: [otlp]
-      exporters: [otlp, debug]
+      exporters: [otlp, logging]
     logs:
       receivers: [otlp]
-      exporters: [otlp, debug]
+      exporters: [otlp, logging]
   telemetry:
     metrics:
       address: localhost:8888
