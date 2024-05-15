@@ -68,6 +68,7 @@ COPY --from=builder /usr/app/package.json /usr/app/package.json
 # https://github.com/open-telemetry/opentelemetry-lambda/blob/layer-collector/0.6.0/collector/internal/collector/collector.go#L51-L54
 COPY collector.yaml /opt/collector-config/config.yaml
 ENV OTEL_SERVICE_NAME=OTelBin
+ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4328
 
 WORKDIR /usr/app/src
 
