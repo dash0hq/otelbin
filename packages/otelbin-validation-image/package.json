@@ -1,7 +1,7 @@
 {
   "name": "otelbin-validation-handler",
   "version": "0.0.1",
-  "description": "AWS Lambda handler to run validation requests",
+  "description": "AWS Lambda handler to run validation requests against OpenTelemetry collector",
   "main": "src/index.js",
   "scripts": {
     "test": "jest",
