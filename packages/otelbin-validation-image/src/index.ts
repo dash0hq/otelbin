@@ -1,9 +1,8 @@
-import type { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
-
-const { realpath, writeFile } = require("fs/promises");
-const { spawn } = require("child_process");
-const spawnAsync = require("@expo/spawn-async");
-const yaml = require("js-yaml");
+import { realpath, writeFile } from "fs/promises";
+import { spawn } from "child_process";
+import spawnAsync from "@expo/spawn-async";
+import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
+import * as yaml from "js-yaml";
 
 interface SpawnError extends Error {
 	pid: number;
@@ -24,102 +23,7 @@ interface Env {
 
 const distroName = process.env.DISTRO_NAME;
 
-/**
- * Using CommonJS export to allow for AWS lambda layer to work as per the
- * documentation
- *
- * > For TypeScript users, if you are using esbuild (either directly or through
- * > tools such as the AWS CDK), you must export your handler function through
- * > module.exports rather than with the export keyword! The AWS mananaged layer
- * > for ADOT JavaScript needs to hot-patch your handler at runtime, but can't
- * > because esbuild makes your handler immutable when using the export keyword.
- * > Source: https://aws-otel.github.io/docs/getting-started/lambda/lambda-js
- */
-exports.handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
-	let body = event.body!;
-
-	if (event.isBase64Encoded) {
-		let buff = Buffer.from(body, "base64");
-		body = buff.toString("ascii");
-	}
-
-	const validationPayload = JSON.parse(body) as ValidationPayload;
-	const config = validationPayload.config;
-	const env = validationPayload.env;
-
-	if (
-		!validationPayload || // Empty event
-		!config || // Empty configuration string
-		!config?.trim().length || // Blank configuration string (only whitespaces)
-		!Object.keys(yaml.load(config) as Object).length // Empty YAML
-	) {
-		return {
-			statusCode: 200,
-			body: JSON.stringify({
-				message: "The provided configuration is invalid",
-				error: "the provided configuration is empty"
-			})
-		};
-	}
-
-	try {
-		const configPath = "/tmp/config.yaml";
-
-		await writeFile(configPath, config!, {
-			flag: "w+"
-		});
-
-		// Resolve real path (the collector binary is likely symlinked)
-		const otelcolRealPath = await realpath("/usr/bin/otelcol");
-
-		switch (distroName) {
-			case "adot":
-				await exports.validateAdot(otelcolRealPath, configPath, env);
-				break;
-			default:
-				await exports.validateOtelCol(otelcolRealPath, configPath, env);
-		}
-
-		return {
-			statusCode: 200,
-			body: JSON.stringify({
-				message: "Configuration is valid"
-			})
-		};
-	} catch (err) {
-		console.error(err); // should contain code (exit code) and signal (that caused the termination).
-
-		const spawnErr = err as SpawnError;
-
-		const status = spawnErr.status;
-		const stderr = spawnErr.stderr || "";
-		const stdout = spawnErr.stdout || "";
-
-		if (isCollectorValidationFailure(stderr)) {
-			const error = exports.extractErrorMessage(stderr);
-			const path = exports.extractErrorPath(error);
-
-			return {
-				statusCode: 200,
-				// Unfortunately the collector returns one validation error at the time
-				body: JSON.stringify({
-					path,
-					message: "The provided configuration is invalid",
-					error
-				})
-			};
-		}
-
-		return {
-			statusCode: 500,
-			body: JSON.stringify({
-				message: `Error occurred while validating the configuration:\nstatus: ${status}\nstdout: ${stdout}\nstderr: ${stderr}\nerror: ${err}`
-			})
-		};
-	}
-};
-
-exports.validateAdot = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
+export const validateAdot = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
 	/*
 	 * ADOT does not support the `validate` subcommand
 	 * (see https://github.com/aws-observability/aws-otel-collector/issues/2391),
@@ -190,7 +94,7 @@ exports.validateAdot = async (otelcolRealPath: string, configPath: string, env: 
 		});
 };
 
-exports.validateOtelCol = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
+export const validateOtelCol = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
 	/*
 	 * Node.js spawn is unreliable in terms of collecting stdout and stderr through the spawn call
 	 * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
@@ -204,6 +108,90 @@ exports.validateOtelCol = async (otelcolRealPath: string, configPath: string, en
 	});
 };
 
+export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+	let body = event.body!;
+
+	if (event.isBase64Encoded) {
+		let buff = Buffer.from(body, "base64");
+		body = buff.toString("ascii");
+	}
+
+	const validationPayload = JSON.parse(body) as ValidationPayload;
+	const config = validationPayload.config;
+	const env = validationPayload.env;
+
+	if (
+		!validationPayload || // Empty event
+		!config || // Empty configuration string
+		!config?.trim().length || // Blank configuration string (only whitespaces)
+		!Object.keys(yaml.load(config) as Object).length // Empty YAML
+	) {
+		return {
+			statusCode: 200,
+			body: JSON.stringify({
+				message: "The provided configuration is invalid",
+				error: "the provided configuration is empty"
+			})
+		};
+	}
+
+	try {
+		const configPath = "/tmp/config.yaml";
+
+		await writeFile(configPath, config!, {
+			flag: "w+"
+		});
+
+		// Resolve real path (the collector binary is likely symlinked)
+		const otelcolRealPath = await realpath("/usr/bin/otelcol");
+
+		switch (distroName) {
+			case "adot":
+				await validateAdot(otelcolRealPath, configPath, env);
+				break;
+			default:
+				await validateOtelCol(otelcolRealPath, configPath, env);
+		}
+
+		return {
+			statusCode: 200,
+			body: JSON.stringify({
+				message: "Configuration is valid"
+			})
+		};
+	} catch (err) {
+		console.error(err); // should contain code (exit code) and signal (that caused the termination).
+
+		const spawnErr = err as SpawnError;
+
+		const status = spawnErr.status;
+		const stderr = spawnErr.stderr || "";
+		const stdout = spawnErr.stdout || "";
+
+		if (isCollectorValidationFailure(stderr)) {
+			const error = extractErrorMessage(stderr);
+			const path = extractErrorPath(error);
+
+			return {
+				statusCode: 200,
+				// Unfortunately the collector returns one validation error at the time
+				body: JSON.stringify({
+					path,
+					message: "The provided configuration is invalid",
+					error
+				})
+			};
+		}
+
+		return {
+			statusCode: 500,
+			body: JSON.stringify({
+				message: `Error occurred while validating the configuration:\nstatus: ${status}\nstdout: ${stdout}\nstderr: ${stderr}\nerror: ${err}`
+			})
+		};
+	}
+};
+
 const defaultErrorPrefix = "Error: ";
 const adotInvalidConfigPrefix = "Error: invalid configuration: ";
 
@@ -213,7 +201,7 @@ function isCollectorValidationFailure(error: string): boolean {
 
 const parsingErrorHint = 'failed to get config:';
 
-exports.extractErrorMessage =  function extractErrorMessage(error: string): string {
+export function extractErrorMessage(error: string): string {
 	let errorMessage: string;
 	if (error.includes(parsingErrorHint)) {
 		errorMessage = extractParsingErrorMessage(error);
@@ -253,6 +241,6 @@ function extractValidationErrorMessage(error: string): string {
 		[0];
 }
 
-exports.extractErrorPath = function extractErrorPath(errorMessage: string): string[] {
+export function extractErrorPath(errorMessage: string): string[] {
 	return errorMessage.match(/^((?:[\w/]+(?:::)?)+):[^:]/)?.[1].split("::");
 }
