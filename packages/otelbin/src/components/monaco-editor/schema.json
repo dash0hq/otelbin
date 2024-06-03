@@ -1736,7 +1736,29 @@
             }
           }
         },
-        "^dynatrace(/[^/]+)*$": {
+        "^debug(/[^/]+)*$": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "loglevel": {},
+            "verbosity": {
+							"enum": ["basic", "normal", "detailed"],
+              "default": "detailed"
+            },
+            "sampling_initial": {
+              "type": "integer",
+              "default": 5
+            },
+            "sampling_thereafter": {
+              "type": "integer",
+              "default": 500
+            }
+          }
+        },
+				"^dynatrace(/[^/]+)*$": {
           "type": [
             "object",
             "null"
