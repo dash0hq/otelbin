@@ -1,0 +1,22 @@
+{
+  "name": "otelbin-recipes",
+  "version": "1.0.0",
+  "description": "Recipes for OTelBin including configuration validation",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "author": "Dash0 Inc.",
+  "license": "Apache-2.0",
+  "private": true,
+  "dependencies": {
+    "@types/cli-progress": "^3.11.5",
+    "@types/js-yaml": "^4.0.9",
+    "cli-progress": "^3.12.0",
+    "dotenv": "^16.3.1",
+    "js-yaml": "^4.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2",
+    "zod": "^3.22.4"
+  }
+}
