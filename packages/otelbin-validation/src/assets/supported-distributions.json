@@ -262,7 +262,7 @@
     ],
     "ignoredReleases": "<v0.36.0"
   },
-  "splunk": {
+  "splunk-otel-collector": {
     "name": "Splunk OpenTelemetry Collector",
     "provider": "Splunk Inc.",
     "description": "Splunk OpenTelemetry Collector",
