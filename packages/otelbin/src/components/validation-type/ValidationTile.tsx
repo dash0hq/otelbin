@@ -6,7 +6,9 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import AdotLogo from "./../assets/svg/distro-icons/adot.svg";
 import OtelLogo from "./../assets/svg/distro-icons/otel.svg";
+import SplunkLogo from "./../assets/svg/distro-icons/splunk.svg";
 import { Github, Globe } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "../button";
 import { IconButton } from "../icon-button";
 import { CurrentBadge } from "./ValidationTypeContent";
@@ -47,12 +49,25 @@ export default function ValidationTile({
 		}
 	}
 
+	let Icon: LucideIcon;
+	switch (distribution?.icon) {
+		case "adot":
+			Icon = AdotLogo;
+			break;
+		case "splunk":
+			Icon = SplunkLogo;
+			break;
+		default:
+			Icon = OtelLogo;
+			break;
+	}
+
 	return (
 		<Accordion type="single" collapsible>
 			<AccordionItem value="item-1" className="border-1 border-solid border-neutral-350 rounded-md">
 				<AccordionTrigger className="hover:no-underline px-3 hover:bg-button-hover rounded-md">
 					<div className="flex items-center gap-x-3 w-full">
-						{distribution?.icon === "adot" ? <AdotLogo /> : <OtelLogo />}
+						<Icon />
 						<div className="flex flex-col items-start">
 							<div className="flex items-center gap-x-3">
 								<p className="text-[13px] font-semibold text-neutral-950">{distribution?.name}</p>
