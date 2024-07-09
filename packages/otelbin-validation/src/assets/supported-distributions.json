@@ -267,7 +267,7 @@
     "provider": "Splunk Inc.",
     "description": "Splunk OpenTelemetry Collector",
     "icon": "splunk",
-    "website": "https://aws.amazon.com/otel",
+    "website": "https://www.splunk.com/en_us/solutions/opentelemetry.html",
     "repository": "signalfx/splunk-otel-collector",
     "releases": [
       {
