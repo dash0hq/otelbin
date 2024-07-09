@@ -74,8 +74,6 @@ exports.handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult>
 
 		switch (distroName) {
 			case "splunk":
-				await exports.validateAdot(otelcolRealPath, configPath, env);
-				break;				
 			case "adot":
 				await exports.validateAdot(otelcolRealPath, configPath, env);
 				break;
