@@ -83,3 +83,4 @@ We love our contributors! Here's how you can contribute:
 
 OTelBin makes use of the output of [cfgmetadatagen](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/cmd/configschema/cfgmetadatagen/cfgmetadatagen)
 and specifically a post-processed version of it that is part of [nimbushq/otel-validator](https://github.com/nimbushq/otel-validator).
+
