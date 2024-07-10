@@ -261,5 +261,36 @@
       }
     ],
     "ignoredReleases": "<v0.36.0"
+  },
+  "splunk-otel-collector": {
+    "name": "Splunk OpenTelemetry Collector",
+    "provider": "Splunk Inc.",
+    "description": "Splunk OpenTelemetry Collector",
+    "icon": "splunk",
+    "website": "https://www.splunk.com/en_us/solutions/opentelemetry.html",
+    "repository": "signalfx/splunk-otel-collector",
+    "releases": [
+      {
+        "version": "v0.103.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.103.0/splunk-otel-collector-0.103.0-1.x86_64.rpm",
+        "released_at": "2024-06-25T18:35:12.000Z"
+      },
+      {
+        "version": "v0.102.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.102.0/splunk-otel-collector-0.102.0-1.x86_64.rpm",
+        "released_at": "2024-06-05T18:35:12.000Z"
+      },
+      {
+        "version": "v0.101.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.101.0/splunk-otel-collector-0.101.0-1.x86_64.rpm",
+        "released_at": "2024-05-29T18:35:12.000Z"
+      },
+      {
+        "version": "v0.100.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.100.0/splunk-otel-collector-0.100.0-1.x86_64.rpm",
+        "released_at": "2024-05-09T18:35:12.000Z"
+      }
+    ],
+    "ignoredReleases": "<v0.100.0"
   }
 }

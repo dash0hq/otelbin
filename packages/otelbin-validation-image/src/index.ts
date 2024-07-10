@@ -73,6 +73,7 @@ exports.handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult>
 		const otelcolRealPath = await realpath("/usr/bin/otelcol");
 
 		switch (distroName) {
+			case "splunk":
 			case "adot":
 				await exports.validateAdot(otelcolRealPath, configPath, env);
 				break;

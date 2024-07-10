@@ -65,6 +65,63 @@ jobs:
           name: releases-${{ matrix.distro.name }}
           path: .github/workflows/scripts/list-releases/releases.json
 
+  check-splunk-releases:
+    name: Splunk OpenTelemetry Collector
+    strategy:
+      fail-fast: false
+      matrix:
+        distro:
+        - name: splunk-otel-collector
+          artifact_prefix: splunk-otel-collector
+          artifact_suffix: x86_64.rpm
+    runs-on: ubuntu-latest
+    outputs:
+      releases: ${{ steps.list-releases.outputs.releases }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        env:
+          NODE_MAJOR: 20
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl gnupg
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+          sudo apt-get update
+          sudo apt-get install nodejs -y
+      - name: Build list generator
+        working-directory: .github/workflows/scripts/list-releases
+        run: |
+          npm install
+          npm run build
+      - name: Look up ignored releases range
+        id: lookup-ignored-releases
+        shell: bash
+        working-directory: packages/otelbin-validation/src/assets
+        run: |
+          echo "range=$(jq -r '.["${{matrix.distro.name}}"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
+      - name: List matching releases
+        id: list-releases
+        shell: bash
+        env:
+          DISTRO_NAME: ${{ matrix.distro.name }}
+          GH_REPOSITORY: signalfx/splunk-otel-collector
+          GH_ASSET_PREFIX: ${{ matrix.distro.artifact_prefix }}
+          GH_ASSET_SUFFIX: ${{ matrix.distro.artifact_suffix }}
+          IGNORED_RELEASES: ${{ steps.lookup-ignored-releases.outputs.range }}
+        working-directory: .github/workflows/scripts/list-releases
+        run: |
+          npm run start --silent | tee releases.json
+      - name: Upload releases.json artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: releases-${{ matrix.distro.name }}
+          path: .github/workflows/scripts/list-releases/releases.json
+
   check-adot-releases:
     name: AWS Distro for OpenTelemetry
     strategy:
@@ -119,6 +176,7 @@ jobs:
     needs:
     - check-community-releases
     - check-adot-releases
+    - check-splunk-releases
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
