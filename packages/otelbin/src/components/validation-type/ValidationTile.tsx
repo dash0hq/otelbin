@@ -87,7 +87,7 @@ export default function ValidationTile({
 							<a href={distribution?.website} target="_blank" className="text-neutral-950">
 								<IconButton variant={"outline"} size={"xs"} className="w-full px-2 flex items-center gap-x-2">
 									<Globe height={12} color="#9CA2AB" />
-									{distribution?.website}
+									{distribution?.website.substring(0, Math.min(30, distribution?.website.length ?? 30))}
 								</IconButton>
 							</a>
 							{distribution?.repository && (
