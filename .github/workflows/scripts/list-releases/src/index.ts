@@ -47,6 +47,7 @@ const ignoredReleases = process.env.IGNORED_RELEASES;
 			}
 
 			switch (distroName) {
+				case "splunk-otel-collector":
 				case "otelcol-core":
 				case "otelcol-contrib": {
 					const assetPrefix = process.env.GH_ASSET_PREFIX;
@@ -71,9 +72,14 @@ const ignoredReleases = process.env.IGNORED_RELEASES;
 							released_at = new Date(timestamp);
 						}
 
+						let artifact = matchingAsset.name;
+						if (distroName === "splunk-otel-collector") {
+							artifact = matchingAsset.browser_download_url;
+						}
+
 						foundReleases.push({
 							version: release.tag_name!,
-							artifact: matchingAsset.name,
+							artifact,
 							released_at,
 						});
 					} else {
