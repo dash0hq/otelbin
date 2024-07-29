@@ -13,6 +13,7 @@ exporters:
     endpoint: ingress.eu-west-1.aws.dash0.com:4317
     headers:
       Authorization: "Bearer ${DASH0_AUTHORIZATION_TOKEN}"
+      Dash0-Dataset: "otelbinio"
 
 service:
   pipelines:
