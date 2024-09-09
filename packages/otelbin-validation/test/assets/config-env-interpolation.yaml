@@ -5,7 +5,9 @@ receivers:
   otlp:
     protocols:
       grpc:
+        endpoint: ${env:KUBE_POD_IP}:4317
       http:
+        endpoint: ${env:KUBE_POD_IP}:4318
 
 processors:
   batch:
