@@ -160,6 +160,11 @@
     "repository": "aws-observability/aws-otel-collector",
     "releases": [
       {
+        "version": "v0.40.2",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.40.2/aws-otel-collector.rpm",
+        "released_at": "2024-09-17T23:53:43.000Z"
+      },
+      {
         "version": "v0.39.3",
         "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.39.3/aws-otel-collector.rpm",
         "released_at": "2024-09-16T22:30:07.000Z"
@@ -200,6 +205,11 @@
     "website": "https://www.splunk.com/en_us/solutions/opentelemetry.html",
     "repository": "signalfx/splunk-otel-collector",
     "releases": [
+      {
+        "version": "v0.109.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.109.0/splunk-otel-collector-0.109.0-1.x86_64.rpm",
+        "released_at": "2024-09-17T23:28:41.000Z"
+      },
       {
         "version": "v0.108.1",
         "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.108.1/splunk-otel-collector-0.108.1-1.x86_64.rpm",
