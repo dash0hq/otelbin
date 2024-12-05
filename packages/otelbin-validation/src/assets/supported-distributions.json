@@ -8,6 +8,16 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.115.1",
+        "artifact": "otelcol_0.115.1_linux_amd64.rpm",
+        "released_at": "2024-12-04T19:15:19.000Z"
+      },
+      {
+        "version": "v0.115.0",
+        "artifact": "otelcol_0.115.0_linux_amd64.rpm",
+        "released_at": "2024-12-04T14:36:33.000Z"
+      },
+      {
         "version": "v0.114.0",
         "artifact": "otelcol_0.114.0_linux_amd64.rpm",
         "released_at": "2024-11-19T15:55:38.000Z"
@@ -108,6 +118,11 @@
     "website": "https://opentelemetry.io",
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
+      {
+        "version": "v0.115.1",
+        "artifact": "otelcol-contrib_0.115.1_linux_amd64.rpm",
+        "released_at": "2024-12-04T19:23:38.000Z"
+      },
       {
         "version": "v0.114.0",
         "artifact": "otelcol-contrib_0.114.0_linux_amd64.rpm",
