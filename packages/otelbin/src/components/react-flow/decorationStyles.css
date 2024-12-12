@@ -2,3 +2,8 @@
 	background-color: #38bdf8 !important;
 	color: black !important;
 }
+
+.envVarDecoration {
+	color: #fb923c !important;
+	cursor: pointer;
+}
