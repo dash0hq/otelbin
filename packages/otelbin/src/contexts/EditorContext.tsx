@@ -100,7 +100,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				enableSchemaRequest: true,
 				schemas: [
 					{
-						uri: "https://github.com/dash0hq/otelbin/blob/main/src/components/monaco-editor/schema.json",
+						uri: "https://github.com/dash0hq/otelbin/blob/main/packages/otelbin/src/components/monaco-editor/schema.json",
 						// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
 						schema,
 						fileMatch: ["*"],
