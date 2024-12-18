@@ -8,6 +8,16 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.116.1",
+        "artifact": "otelcol_0.116.1_linux_amd64.rpm",
+        "released_at": "2024-12-17T21:17:13.000Z"
+      },
+      {
+        "version": "v0.116.0",
+        "artifact": "otelcol_0.116.0_linux_amd64.rpm",
+        "released_at": "2024-12-17T16:37:15.000Z"
+      },
+      {
         "version": "v0.115.1",
         "artifact": "otelcol_0.115.1_linux_amd64.rpm",
         "released_at": "2024-12-04T19:15:19.000Z"
@@ -118,6 +128,16 @@
     "website": "https://opentelemetry.io",
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
+      {
+        "version": "v0.116.1",
+        "artifact": "otelcol-contrib_0.116.1_linux_amd64.rpm",
+        "released_at": "2024-12-17T21:23:45.000Z"
+      },
+      {
+        "version": "v0.116.0",
+        "artifact": "otelcol-contrib_0.116.0_linux_amd64.rpm",
+        "released_at": "2024-12-17T16:45:21.000Z"
+      },
       {
         "version": "v0.115.1",
         "artifact": "otelcol-contrib_0.115.1_linux_amd64.rpm",
@@ -280,6 +300,11 @@
     "website": "https://www.splunk.com/en_us/solutions/opentelemetry.html",
     "repository": "signalfx/splunk-otel-collector",
     "releases": [
+      {
+        "version": "v0.115.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.115.0/splunk-otel-collector-0.115.0-1.x86_64.rpm",
+        "released_at": "2024-12-17T21:14:23.000Z"
+      },
       {
         "version": "v0.114.0",
         "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.114.0/splunk-otel-collector-0.114.0-1.x86_64.rpm",
