@@ -8,6 +8,11 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.121.0",
+        "artifact": "otelcol_0.121.0_linux_amd64.rpm",
+        "released_at": "2025-03-04T16:12:13.000Z"
+      },
+      {
         "version": "v0.120.0",
         "artifact": "otelcol_0.120.0_linux_amd64.rpm",
         "released_at": "2025-02-19T18:16:13.000Z"
@@ -149,6 +154,11 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.121.0",
+        "artifact": "otelcol-contrib_0.121.0_linux_amd64.rpm",
+        "released_at": "2025-03-04T16:17:40.000Z"
+      },
+      {
         "version": "v0.120.0",
         "artifact": "otelcol-contrib_0.120.0_linux_amd64.rpm",
         "released_at": "2025-02-19T18:21:39.000Z"
@@ -284,6 +294,11 @@
     "website": "https://aws.amazon.com/otel",
     "repository": "aws-observability/aws-otel-collector",
     "releases": [
+      {
+        "version": "v0.43.0",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.43.0/aws-otel-collector.rpm",
+        "released_at": "2025-03-13T22:14:37.000Z"
+      },
       {
         "version": "v0.41.2",
         "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.41.2/aws-otel-collector.rpm",
