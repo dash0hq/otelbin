@@ -143,7 +143,7 @@
         "released_at": "2024-05-06T21:21:47.000Z"
       }
     ],
-    "ignoredReleases": "<v0.105.0"
+    "ignoredReleases": "<v0.110.0"
   },
   "otelcol-contrib": {
     "name": "OpenTelemetry Collector Contrib",
@@ -284,7 +284,7 @@
         "released_at": "2024-05-06T21:24:57.000Z"
       }
     ],
-    "ignoredReleases": "<v0.105.0"
+    "ignoredReleases": "<v0.110.0"
   },
   "adot": {
     "name": "AWS Distro for OpenTelemetry",
@@ -355,7 +355,7 @@
         "released_at": "2024-05-10T18:15:34.000Z"
       }
     ],
-    "ignoredReleases": "<v0.39.0"
+    "ignoredReleases": "<v0.40.0"
   },
   "splunk-otel-collector": {
     "name": "Splunk OpenTelemetry Collector",
@@ -461,6 +461,6 @@
         "released_at": "2024-07-10T21:39:56.000Z"
       }
     ],
-    "ignoredReleases": "<v0.105.0"
+    "ignoredReleases": "<v0.110.0"
   }
 }
