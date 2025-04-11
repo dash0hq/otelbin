@@ -200,6 +200,11 @@
     "repository": "aws-observability/aws-otel-collector",
     "releases": [
       {
+        "version": "v0.43.2",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.43.2/aws-otel-collector.rpm",
+        "released_at": "2025-04-10T17:00:41.000Z"
+      },
+      {
         "version": "v0.43.1",
         "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.43.1/aws-otel-collector.rpm",
         "released_at": "2025-03-20T18:05:34.000Z"
