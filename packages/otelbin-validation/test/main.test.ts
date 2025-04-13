@@ -32,17 +32,17 @@ const enumerateTestCases = () => {
   }
 
   const distributions = JSON.parse(
-	  (readFileSync(join(__dirname, '..', 'src', 'assets', 'supported-distributions.json'))).toString(),
+    (readFileSync(join(__dirname, '..', 'src', 'assets', 'supported-distributions.json'))).toString(),
   ) as Distributions;
 
   const testCases = new Array<string[]>();
-  	for (let distributionName of Object.keys(distributions)) {
-    	const distribution = distributions[distributionName];
+  for (let distributionName of Object.keys(distributions)) {
+    const distribution = distributions[distributionName];
 
-	    for (let { version } of distribution.releases) {
-    	  testCases.push([distributionName, version]);
-    	}
-  	}
+    for (let { version } of distribution.releases) {
+      testCases.push([distributionName, version]);
+    }
+  }
 
   return testCases;
 };
@@ -58,7 +58,7 @@ const defaultTimeout = 10_000; // 10 seconds
 
 const otelcolConfigValid = prepareValidationPayload('config-default.yaml');
 const otelcolConfigValidEnvInterpolation = prepareValidationPayload('config-default.yaml', {
-  'OTLP_ENDPOINT': 'otelcol:4317',
+  OTLP_ENDPOINT: 'otelcol:4317',
 });
 const otelcolConfigInvalidNoReceivers = prepareValidationPayload('config-no-receivers.yaml');
 const otelcolConfigInvalidUndeclaredExtension = prepareValidationPayload('config-undeclared-extension.yaml');
