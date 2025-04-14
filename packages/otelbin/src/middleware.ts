@@ -11,10 +11,6 @@ export default clerkMiddleware(async (auth, request) => {
 	if (isCreateNewRoute(request)) await auth.protect();
 
 	return handleShortLinkRequest(request);
-	// const resolvedAuth = await auth();
-	//
-	// if (!resolvedAuth.userId) {
-	// }
 });
 
 export const config = {
