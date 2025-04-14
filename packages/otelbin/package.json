@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@clerk/nextjs": "^6.14.3",
-		"@clerk/themes": "^1.7.6",
+		"@clerk/themes": "^2.2.31",
 		"@dagrejs/dagre": "^1.0.4",
 		"@jest/globals": "^29.7.0",
 		"@monaco-editor/react": "^4.6.0",
