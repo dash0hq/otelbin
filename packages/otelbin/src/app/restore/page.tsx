@@ -5,10 +5,18 @@
 
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RestorePage() {
+	return (
+		<Suspense>
+			<RestorePageImpl />
+		</Suspense>
+	);
+}
+
+function RestorePageImpl() {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, getLink] = useUrlState([editorBinding]);
 	const router = useRouter();
