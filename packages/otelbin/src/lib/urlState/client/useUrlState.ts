@@ -11,8 +11,6 @@ import { serializeUrlState } from "~/lib/urlState/serializeUrlState";
 import { useCallback, useMemo } from "react";
 import { useHashSearchParams } from "~/lib/urlState/client/useHashSearchParams";
 
-export const dynamic = 'force-dynamic'
-
 /**
  * A hook similar to useState that can be used to read&store state within the
  * URL as query parameters.
