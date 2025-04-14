@@ -1,21 +1,21 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { isBotRequest } from "./lib/utils";
 
-const isCreateNewRoute = createRouteMatcher(['/s/new'])
+const isCreateNewRoute = createRouteMatcher(["/s/new"]);
 
 export default clerkMiddleware(async (auth, request) => {
-	if (isCreateNewRoute(request)) await auth.protect()
+	if (isCreateNewRoute(request)) await auth.protect();
 
-		return handleShortLinkRequest(request);
+	return handleShortLinkRequest(request);
 	// const resolvedAuth = await auth();
 	//
 	// if (!resolvedAuth.userId) {
 	// }
-})
+});
 
 export const config = {
 	matcher: ["/s/(.*)"],
