@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
 	return (
 		<ClerkProvider
+			afterSignOutUrl="/restore"
 			appearance={{
 				baseTheme: dark,
 				variables: {
