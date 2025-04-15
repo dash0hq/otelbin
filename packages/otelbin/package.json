@@ -15,8 +15,8 @@
 		"licenses": "npx license-report --output=csv --fields=name --fields=installedVersion --fields=licenseType > licenses.csv"
 	},
 	"dependencies": {
-		"@clerk/nextjs": "^4.31.5",
-		"@clerk/themes": "^1.7.6",
+		"@clerk/nextjs": "^6.14.3",
+		"@clerk/themes": "^2.2.31",
 		"@dagrejs/dagre": "^1.0.4",
 		"@jest/globals": "^29.7.0",
 		"@monaco-editor/react": "^4.6.0",

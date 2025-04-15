@@ -117,9 +117,13 @@
     "eslint": {
       "name": "eslint",
       "description": "Runs eslint against the codebase",
+      "env": {
+        "ESLINT_USE_FLAT_CONFIG": "false"
+      },
       "steps": [
         {
-          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern src test build-tools .projenrc.js"
+          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern $@ src test build-tools .projenrc.js",
+          "receiveArgs": true
         }
       ]
     },
@@ -210,16 +214,13 @@
       },
       "steps": [
         {
-          "exec": "npm update npm-check-updates"
-        },
-        {
-          "exec": "npm-check-updates --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@jest/globals,@types/aws-lambda,@types/jest,@types/node,@typescript-eslint/eslint-plugin,@typescript-eslint/parser,aws-cdk,axios,esbuild,eslint-import-resolver-node,eslint-import-resolver-typescript,eslint-plugin-import,eslint,jest,jest-junit,npm-check-updates,projen,ts-jest,ts-node,typescript,aws-cdk-lib,aws-lambda,constructs"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@jest/globals,@types/aws-lambda,@types/jest,@types/node,axios,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jest-circus,projen,ts-jest,ts-node,typescript,aws-lambda"
         },
         {
           "exec": "npm install"
         },
         {
-          "exec": "npm update @jest/globals @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk axios esbuild eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit npm-check-updates projen ts-jest ts-node typescript aws-cdk-lib aws-lambda constructs"
+          "exec": "npm update @jest/globals @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk axios esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-circus jest-junit projen ts-jest ts-node typescript aws-cdk-lib aws-lambda constructs"
         },
         {
           "exec": "npx projen"

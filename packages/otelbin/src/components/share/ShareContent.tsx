@@ -41,7 +41,7 @@ export function ShareContent() {
 			<p className="weight mx-4 mt-3 mb-2 text-sm font-normal text-default">Share the config with others.</p>
 			<UrlCopy url={fullURL} />
 			{!isSignedIn && (
-				<SignInButton mode="modal" afterSignInUrl="/restore">
+				<SignInButton mode="modal" forceRedirectUrl="/restore">
 					<Button size="xs" variant="cta" className="mx-4 mt-3">
 						<LogIn className="mr-1" />
 						Sign in to create short URL

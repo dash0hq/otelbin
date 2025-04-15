@@ -45,3 +45,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 /licenses.csv
+# clerk configuration (can include secrets)
+/.clerk/

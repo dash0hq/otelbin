@@ -26,7 +26,6 @@ export default function AppHeader() {
 
 				<SignedIn>
 					<UserButton
-						afterSignOutUrl="/restore"
 						appearance={{
 							elements: {
 								avatarBox: "w-6 h-6",
@@ -35,7 +34,7 @@ export default function AppHeader() {
 					/>
 				</SignedIn>
 				<SignedOut>
-					<SignInButton mode="modal" afterSignInUrl="/restore">
+					<SignInButton mode="modal" forceRedirectUrl="/restore">
 						<Button size="xs">
 							<LogIn />
 						</Button>
