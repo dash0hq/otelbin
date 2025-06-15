@@ -1,7 +1,7 @@
 # Validation infrastructure
 
 OTelBin supports validation that is specific to multiple distributions of the OpenTelemetry collector.
-The supported distros and versions are listed in the [`packages/otelbin-validation/src/assets/supported-distributions.json`](./packages/otelbin-validation/src/assets/supported-distributions.json) file.
+The supported distros and versions are listed in the [`packages/otelbin-validation/src/assets/supported-distributions.json`](/packages/otelbin-validation/src/assets/supported-distributions.json) file.
 The distributions are assumed to be available as GitHub releases.
 
 ## Overview
