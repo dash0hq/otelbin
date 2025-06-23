@@ -91,44 +91,9 @@
         "version": "v0.116.0",
         "artifact": "otelcol_0.116.0_linux_amd64.rpm",
         "released_at": "2024-12-17T16:37:15.000Z"
-      },
-      {
-        "version": "v0.115.1",
-        "artifact": "otelcol_0.115.1_linux_amd64.rpm",
-        "released_at": "2024-12-04T19:15:19.000Z"
-      },
-      {
-        "version": "v0.115.0",
-        "artifact": "otelcol_0.115.0_linux_amd64.rpm",
-        "released_at": "2024-12-04T14:36:33.000Z"
-      },
-      {
-        "version": "v0.114.0",
-        "artifact": "otelcol_0.114.0_linux_amd64.rpm",
-        "released_at": "2024-11-19T15:55:38.000Z"
-      },
-      {
-        "version": "v0.113.0",
-        "artifact": "otelcol_0.113.0_linux_amd64.rpm",
-        "released_at": "2024-11-06T22:02:40.000Z"
-      },
-      {
-        "version": "v0.112.0",
-        "artifact": "otelcol_0.112.0_linux_amd64.rpm",
-        "released_at": "2024-10-23T14:42:10.000Z"
-      },
-      {
-        "version": "v0.111.0",
-        "artifact": "otelcol_0.111.0_linux_amd64.rpm",
-        "released_at": "2024-10-04T13:23:16.000Z"
-      },
-      {
-        "version": "v0.110.0",
-        "artifact": "otelcol_0.110.0_linux_amd64.rpm",
-        "released_at": "2024-09-24T14:09:18.000Z"
       }
     ],
-    "ignoredReleases": "<v0.110.0"
+    "ignoredReleases": "<v0.116.0"
   },
   "otelcol-contrib": {
     "name": "OpenTelemetry Collector Contrib",
@@ -217,39 +182,9 @@
         "version": "v0.116.0",
         "artifact": "otelcol-contrib_0.116.0_linux_amd64.rpm",
         "released_at": "2024-12-17T16:45:21.000Z"
-      },
-      {
-        "version": "v0.115.1",
-        "artifact": "otelcol-contrib_0.115.1_linux_amd64.rpm",
-        "released_at": "2024-12-04T19:23:38.000Z"
-      },
-      {
-        "version": "v0.114.0",
-        "artifact": "otelcol-contrib_0.114.0_linux_amd64.rpm",
-        "released_at": "2024-11-19T16:03:24.000Z"
-      },
-      {
-        "version": "v0.113.0",
-        "artifact": "otelcol-contrib_0.113.0_linux_amd64.rpm",
-        "released_at": "2024-11-06T22:07:52.000Z"
-      },
-      {
-        "version": "v0.112.0",
-        "artifact": "otelcol-contrib_0.112.0_linux_amd64.rpm",
-        "released_at": "2024-10-23T14:49:46.000Z"
-      },
-      {
-        "version": "v0.111.0",
-        "artifact": "otelcol-contrib_0.111.0_linux_amd64.rpm",
-        "released_at": "2024-10-04T13:27:15.000Z"
-      },
-      {
-        "version": "v0.110.0",
-        "artifact": "otelcol-contrib_0.110.0_linux_amd64.rpm",
-        "released_at": "2024-09-24T14:14:17.000Z"
       }
     ],
-    "ignoredReleases": "<v0.110.0"
+    "ignoredReleases": "<v0.116.0"
   },
   "adot": {
     "name": "AWS Distro for OpenTelemetry",
@@ -384,38 +319,8 @@
         "version": "v0.116.0",
         "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.116.0/splunk-otel-collector-0.116.0-1.x86_64.rpm",
         "released_at": "2025-01-08T20:31:27.000Z"
-      },
-      {
-        "version": "v0.115.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.115.0/splunk-otel-collector-0.115.0-1.x86_64.rpm",
-        "released_at": "2024-12-17T21:14:23.000Z"
-      },
-      {
-        "version": "v0.114.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.114.0/splunk-otel-collector-0.114.0-1.x86_64.rpm",
-        "released_at": "2024-12-10T21:10:39.000Z"
-      },
-      {
-        "version": "v0.113.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.113.0/splunk-otel-collector-0.113.0-1.x86_64.rpm",
-        "released_at": "2024-11-21T20:44:32.000Z"
-      },
-      {
-        "version": "v0.112.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.112.0/splunk-otel-collector-0.112.0-1.x86_64.rpm",
-        "released_at": "2024-11-07T19:52:24.000Z"
-      },
-      {
-        "version": "v0.111.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.111.0/splunk-otel-collector-0.111.0-1.x86_64.rpm",
-        "released_at": "2024-10-10T22:09:57.000Z"
-      },
-      {
-        "version": "v0.110.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.110.0/splunk-otel-collector-0.110.0-1.x86_64.rpm",
-        "released_at": "2024-09-27T01:30:28.000Z"
       }
     ],
-    "ignoredReleases": "<v0.110.0"
+    "ignoredReleases": "<v0.116.0"
   }
 }
