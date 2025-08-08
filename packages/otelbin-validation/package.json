@@ -1,5 +1,8 @@
 {
   "name": "otelbin-validation",
+  "engines": {
+    "node": "v22.x"
+  },
   "scripts": {
     "build": "npx projen build",
     "bundle": "npx projen bundle",

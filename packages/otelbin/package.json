@@ -3,6 +3,9 @@
 	"version": "0.1.0",
 	"private": true,
 	"license": "Apache-2.0",
+	"engines": {
+		"node": "v22.x"
+	},
 	"scripts": {
 		"build": "next build",
 		"dev": "next dev",
