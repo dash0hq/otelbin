@@ -15224,7 +15224,7 @@
               "description": "MaxStaleness is the total time a state entry will live past the time it was last seen. Set to 0 to retain state indefinitely."
             },
             "initial_value": {
-              "type": "integer",
+              "type": "string",
               "description": "InitialValue determines how to handle the first datapoint for a given metric. Valid values:\n\n  - auto: (default) send the first point iff the startime is set AND the starttime happens after the component started AND the starttime is different from the timestamp\n  - keep: always send the first point\n  - drop: don't send the first point, but store it for subsequent delta calculations"
             },
             "include": {
@@ -17297,7 +17297,7 @@
               "description": "MaxStaleness is the total time a state entry will live past the time it was last seen. Set to 0 to retain state indefinitely."
             },
             "initial_value": {
-              "type": "integer",
+              "type": "string",
               "description": "InitialValue determines how to handle the first datapoint for a given metric. Valid values:\n\n  - auto: (default) send the first point iff the startime is set AND the starttime happens after the component started AND the starttime is different from the timestamp\n  - keep: always send the first point\n  - drop: don't send the first point, but store it for subsequent delta calculations"
             },
             "include": {
