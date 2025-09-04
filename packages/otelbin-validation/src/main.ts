@@ -154,6 +154,7 @@ export class OTelBinValidationStack extends Stack {
           environment: {
             DISTRO_NAME: distributionName,
             DASH0_AUTHORIZATION_TOKEN: props.dash0AuthorizationToken || '',
+            SNOWFLAKE_CRL_ON_DISK_CACHE_DIR: '/tmp', // Remediation for https://github.com/snowflakedb/gosnowflake/pull/1526
           },
           /*
 					 * The default 128 cause the OtelCol process to swap a lot, and that increased
