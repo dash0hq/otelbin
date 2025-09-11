@@ -1,12 +1,12 @@
 # Validation infrastructure
 
 OTelBin supports validation that is specific to multiple distributions of the OpenTelemetry collector.
-The supported distros and versions are listed in the [`packages/otelbin-validation/src/assets/supported-distributions.json`](/packages/otelbin-validation/src/assets/supported-distributions.json) file.
+The supported distros and versions are listed in the [`./src/assets/supported-distributions.json`](./src/assets/supported-distributions.json) file.
 The distributions are assumed to be available as GitHub releases.
 
 ## Overview
 
-The validation backend is a [AWS CDK v2 app](./packages/otelbin-validation/src/main.ts).
+The validation backend is a [AWS CDK v2 app](./src/main.ts).
 The validation against specific distributions is exposes to the internet using an AWS API Gateway, secured by an API Key.
 The API Gateway, which exposes routes using the `/validation/${distribution_name}/${version}` pattern.
 Each such route is routed to a different AWS Lambda function using a [Docker image](./src/images/otelcol-validator), which is dedicated to validating a particular version of a particular distro.
