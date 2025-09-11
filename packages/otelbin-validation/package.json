@@ -1,5 +1,8 @@
 {
   "name": "otelbin-validation",
+  "engines": {
+    "node": "v22.x"
+  },
   "scripts": {
     "build": "npx projen build",
     "bundle": "npx projen bundle",
@@ -46,7 +49,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.99.1",
+    "aws-cdk-lib": "^2.189.1",
     "aws-lambda": "^1.0.7",
     "constructs": "^10.0.5"
   },

@@ -26,6 +26,7 @@ service:
     logs:
       receivers: [otlp]
       exporters: [otlp]
+  # Disable internal telemetry to avoid conflicts with OTel Lambda extension
   telemetry:
     metrics:
-      address: localhost:8888
+      level: none
