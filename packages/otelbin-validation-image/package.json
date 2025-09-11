@@ -3,6 +3,9 @@
 	"version": "0.0.1",
 	"description": "AWS Lambda handler to run validation requests against OpenTelemetry collector",
 	"main": "src/index.js",
+	"engines": {
+		"node": "v22.x"
+	},
 	"scripts": {
 		"test": "jest",
 		"build": "npm run build:app && npm run build:wrapper",

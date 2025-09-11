@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { type PropsWithChildren } from "react";
 import { type Metadata } from "next";
+import { Dash0 } from "~/components/Dash0";
 import { TooltipProvider } from "~/components/tooltip";
 import { Toaster } from "~/components/toaster";
 import { dark } from "@clerk/themes";
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				<head>
 					<meta name="viewport" content="initial-scale=1" />
 					<link rel="preload" href="/validation/supported-distributions" as="fetch" crossOrigin="anonymous" />
+					<Dash0 />
 				</head>
 				<body
 					className={cn("max-h-screen min-h-screen min-w-[64rem] bg-background font-sans antialiased", inter.className)}
