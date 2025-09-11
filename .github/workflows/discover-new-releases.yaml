@@ -45,8 +45,11 @@ jobs:
         id: lookup-ignored-releases
         shell: bash
         working-directory: packages/otelbin-validation/src/assets
+        env:
+          DISTRO_NAME: ${{matrix.distro.name}}
+        # language=bash
         run: |
-          echo "range=$(jq -r '.["${{matrix.distro.name}}"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
+          echo "range=$(jq -r ".[\"${DISTRO_NAME}\"].ignoredReleases" < supported-distributions.json)" | tee -a "${GITHUB_OUTPUT}"
       - name: List matching releases
         id: list-releases
         shell: bash
@@ -102,8 +105,11 @@ jobs:
         id: lookup-ignored-releases
         shell: bash
         working-directory: packages/otelbin-validation/src/assets
+        env:
+          DISTRO_NAME: ${{matrix.distro.name}}
+        # language=bash
         run: |
-          echo "range=$(jq -r '.["${{matrix.distro.name}}"].ignoredReleases' < supported-distributions.json)" | tee -a ${GITHUB_OUTPUT}
+          echo "range=$(jq -r ".[\"${DISTRO_NAME}\"].ignoredReleases" < supported-distributions.json)" | tee -a "${GITHUB_OUTPUT}"
       - name: List matching releases
         id: list-releases
         shell: bash

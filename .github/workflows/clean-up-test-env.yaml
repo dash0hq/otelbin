@@ -35,25 +35,35 @@ jobs:
         # When the trigger is a pull event, use the PR's branch name (`github.head_ref`), which
         # is available only for pull trigger. Otherwise, use the branch on which the commit was pushed.
         # (Ref names in pull requests are in the shape of `<pr_id>/merge` and those will break CDK.)
+        # language=bash
         run: |
-          echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> $GITHUB_OUTPUT || exit 1
+          echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> "$GITHUB_OUTPUT" || exit 1
 
       - name: Select credentials
         id: select_credentials
         shell: bash
         env:
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+          OTELBIN_AUTOMATION_ACCOUNT_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_PROD}}
+          OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}
+          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}
+          OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
+          OTELBIN_AUTOMATION_ACCOUNT_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}
+          OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}
+          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}
+          OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
+        # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}' >> ${GITHUB_OUTPUT}
+            echo "aws_account=${OTELBIN_AUTOMATION_ACCOUNT_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_PROD}" >> "${GITHUB_OUTPUT}"
           else
-            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}' >> ${GITHUB_OUTPUT}
+            echo "aws_account=${OTELBIN_AUTOMATION_ACCOUNT_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_DEV}" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Configure AWS credentials
