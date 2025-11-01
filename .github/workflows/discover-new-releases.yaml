@@ -63,7 +63,7 @@ jobs:
         run: |
           npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: releases-${{ matrix.distro.name }}
           path: .github/workflows/scripts/list-releases/releases.json
@@ -123,7 +123,7 @@ jobs:
         run: |
           npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: releases-${{ matrix.distro.name }}
           path: .github/workflows/scripts/list-releases/releases.json
@@ -172,7 +172,7 @@ jobs:
         run: |
           npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: releases-adot
           path: .github/workflows/scripts/list-releases/releases.json
@@ -198,7 +198,7 @@ jobs:
           mv packages/otelbin-validation/src/assets/supported-distributions.json packages/otelbin-validation/src/assets/supported-distributions.json.old
           jq -rs 'reduce .[] as $item ({}; . * $item)' packages/otelbin-validation/src/assets/supported-distributions.json.old releases/*/*.json > packages/otelbin-validation/src/assets/supported-distributions.json
       - name: Upload updated releases.json artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: supported-distributions
           path: packages/otelbin-validation/src/assets/supported-distributions.json
