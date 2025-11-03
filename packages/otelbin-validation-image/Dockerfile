@@ -33,7 +33,7 @@ RUN apk --no-cache add unzip && unzip /tmp/opentelemetry-collector-layer-${TARGE
 FROM public.ecr.aws/lambda/nodejs:22
 
 # Install useradd command needed by the otelcontrib RPM and xargs
-RUN microdnf -y install findutils shadow-utils ; microdnf clean all
+RUN microdnf -y install findutils shadow-utils util-linux; microdnf clean all
 
 COPY --from=downloader /tmp/otelcol.rpm /tmp/otelcol.rpm
 COPY --from=builder-extension /tmp/extensions /opt/extensions
