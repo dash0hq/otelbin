@@ -28,7 +28,7 @@ export function useUrlState<T extends Binding<unknown>[]>(
 	const searchParams = useSearchParams();
 	const hashSearchParams = useHashSearchParams();
 
-	const urlState = useMemo(() => parseUrlState(hashSearchParams, binds), [hashSearchParams, binds]);
+	const urlState = useMemo(() => parseUrlState(hashSearchParams, binds), [hashSearchParams, ...binds]);
 
 	const getLink = useCallback(
 		function getLink(newUrlState: Partial<Bindings<T>>, newPathName?: string): string {
