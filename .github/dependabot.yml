@@ -13,7 +13,7 @@ updates:
     directories:
       - "/packages/otelbin"
       - "/packages/otelbin-validation"
-      - "packages/otelbin-validation-image"
+      - "/packages/otelbin-validation-image"
     schedule:
       interval: "monthly"
     pull-request-branch-name:
