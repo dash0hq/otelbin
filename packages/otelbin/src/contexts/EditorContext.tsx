@@ -1,21 +1,34 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
-import type { editor } from "monaco-editor";
+import { type editor, type IPosition } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml, type MonacoYamlOptions } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { fromPosition, toCompletionList } from "monaco-languageserver-types";
 import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
-import { type IItem, getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
+import "../components/react-flow/decorationStyles.css";
+import { type IItem, getYamlDocument, selectConfigType, extractVariables } from "../components/monaco-editor/parseYaml";
 import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
 import { type CompletionList, type Position } from "vscode-languageserver-types";
 import {
 	useServerSideValidationEnabled,
 	validateOtelCollectorConfigurationAndSetMarkers,
 } from "~/components/monaco-editor/otelCollectorConfigValidation";
+
+export interface ILine {
+	lines: number[];
+}
+
+export interface IEnvVar {
+	name: string;
+	submittedValue?: string;
+	defaultValues?: string[];
+	defaultValue?: string;
+	lines?: ILine;
+}
 
 interface YAMLWorker {
 	doComplete: (uri: string, position: Position) => CompletionList | undefined;
@@ -60,6 +73,26 @@ export const BreadcrumbsContext = createContext<{
 	},
 });
 
+export const EnvVarMenuContext = createContext<{
+	openEnvVarMenu: boolean;
+	setOpenEnvVarMenu: (openEnvVarMenu: boolean) => void;
+}>({
+	openEnvVarMenu: false,
+	setOpenEnvVarMenu: () => {
+		return;
+	},
+});
+
+export const EnvVarLine = createContext<{
+	envVarLine: Record<string, ILine>;
+	setEnvVarLine: (envVarLine: Record<string, ILine>) => void;
+}>({
+	envVarLine: {},
+	setEnvVarLine: () => {
+		return;
+	},
+});
+
 export function useEditorRef() {
 	return React.useContext(EditorContext);
 }
@@ -84,15 +117,28 @@ export function useBreadcrumbs() {
 	return React.useContext(BreadcrumbsContext);
 }
 
+export function useEnvVarMenu() {
+	return React.useContext(EnvVarMenuContext);
+}
+
+export function useEnvLines() {
+	return React.useContext(EnvVarLine);
+}
+
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+	const [editorRefState, setEditorRefState] = useState<editor.IStandaloneCodeEditor>();
 	const monacoRef = useRef<Monaco | null>(null);
 	const [focused, setFocused] = useState("");
 	const [viewMode, setViewMode] = useState<ViewMode>("both");
 	const [path, setPath] = useState("");
 	const isServerValidationEnabled = useServerSideValidationEnabled();
-	const viewState = editorRef.current?.saveViewState();
 	const [monaco, setMonaco] = useState<Monaco>();
+	const [openEnvVarMenu, setOpenEnvVarMenu] = useState(true);
+	const currentValue = editorRefState?.getModel()?.getValue() ?? "";
+	const variables = useMemo(() => extractVariables(currentValue), [currentValue]);
+	const [envVarLine, setEnvVarLine] = useState<Record<string, ILine>>({});
+	const [oldDecorations, setOldDecorations] = useState<string[]>([]);
 
 	useEffect(() => {
 		if (!isServerValidationEnabled && monaco) {
@@ -117,8 +163,75 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}, [isServerValidationEnabled, monaco]);
 
+	useEffect(() => {
+		envVarDecoration(variables);
+		setEnvVarLine(extractLineNumbers(variables));
+	}, [variables]);
+
+	function extractLineNumbers(envVars: string[]) {
+		const envVarLines: Record<string, ILine> = {};
+
+		if (envVars && envVars.length > 0 && editorRefState) {
+			const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
+
+			envVarPlaceHolder.forEach((variable) => {
+				const name = variable.split(":")[0] ?? variable;
+				const matchCondition = name === variable ? "${" + name + "}" : "${" + name + ":";
+				const matches =
+					editorRef?.current?.getModel()?.findMatches(matchCondition, true, false, false, null, false) ?? [];
+
+				envVarLines[name] = {
+					lines: matches.map((match) => match.range.startLineNumber),
+				};
+			});
+		}
+
+		return envVarLines;
+	}
+
+	function envVarDecoration(variables: string[]) {
+		if (variables.length === 0) return;
+		const decorations: editor.IModelDeltaDecoration[] = [];
+		let matches: editor.FindMatch[] = [];
+
+		if (editorRefState && monaco) {
+			variables.forEach((variable) => {
+				matches = editorRefState.getModel()?.findMatches(variable, true, false, false, null, false) ?? [];
+				if (matches?.length > 0) {
+					matches.forEach((match) => {
+						const range = match.range;
+						const startLineNumber = range.startLineNumber;
+						const startColumn = range.startColumn;
+						const endLineNumber = range.endLineNumber;
+						const endColumn = range.endColumn;
+						const decoration = {
+							range: {
+								startLineNumber: startLineNumber,
+								startColumn: startColumn,
+								endLineNumber: endLineNumber,
+								endColumn: endColumn,
+							},
+							options: {
+								isWholeLine: false,
+								inlineClassName: "envVarDecoration",
+								stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+							},
+						};
+						decorations.push(decoration);
+					});
+				}
+			});
+			const newDecoration = editorRefState.getModel()?.deltaDecorations(oldDecorations, decorations);
+			if (newDecoration) {
+				setOldDecorations(newDecoration);
+			}
+		}
+	}
+
 	function editorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
 		editorRef.current = editor;
+		monacoRef.current = monaco;
+		setEditorRefState(editor);
 		setMonaco(monaco);
 
 		window.MonacoEnvironment = {
@@ -134,9 +247,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			},
 		};
 
-		monacoRef.current = monaco;
-		editorRef.current?.restoreViewState(viewState as editor.ICodeEditorViewState);
-
 		validateOtelCollectorConfigurationAndSetMarkers(
 			editorRef.current.getModel()?.getValue() || "",
 			editorRef,
@@ -145,7 +255,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		);
 
 		monaco.languages.setLanguageConfiguration("yaml", {
-			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
+			wordPattern: /\${([^}]+:[^}]+)}|\${([^}]+)}|(?:\w+\/[\w_]+(?:-[\w_]+)*|\w+)/,
 		});
 
 		const worker = createWorkerManager<YAMLWorker, MonacoYamlOptions>(monaco, {
@@ -187,9 +297,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
 		let value = editorRef.current?.getValue() ?? "";
 		let docElements = getYamlDocument(value);
+
 		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
 			docElements = getYamlDocument(value);
+			envVarDecoration(variables);
 		});
 
 		function correctKey(value: string, key?: string, key2?: string) {
@@ -250,6 +362,22 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			}
 		}
 
+		editorRef.current.onMouseDown(() => {
+			const envVarRegex = /\${([^}]+)}/g;
+			const cursorOffset = editorRef?.current?.getPosition() as IPosition;
+			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(cursorOffset) || {
+				word: "",
+				startColumn: 0,
+				endColumn: 0,
+			};
+
+			if (wordAtCursor.word.match(envVarRegex)) {
+				setOpenEnvVarMenu(true);
+			}
+		});
+
+		envVarDecoration(variables);
+
 		editorRef.current.onDidChangeCursorPosition((e) => {
 			const cursorOffset = editorRef?.current?.getModel()?.getOffsetAt(e.position) ?? 0;
 			const wordAtCursor: editor.IWordAtPosition = editorRef?.current?.getModel()?.getWordAtPosition(e.position) || {
@@ -284,13 +412,27 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		path: path,
 	};
 
+	const envVarMenuContext = {
+		openEnvVarMenu: openEnvVarMenu,
+		setOpenEnvVarMenu: setOpenEnvVarMenu,
+	};
+
+	const envVarLineContext = {
+		envVarLine: envVarLine,
+		setEnvVarLine: setEnvVarLine,
+	};
+
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>
 			<EditorContext.Provider value={editorRef}>
 				<MonacoContext.Provider value={monacoRef}>
 					<FocusContext.Provider value={focusContext}>
 						<ViewModeContext.Provider value={viewModeContext}>
-							<BreadcrumbsContext.Provider value={breadcrumbsContext}>{children}</BreadcrumbsContext.Provider>
+							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
+								<EnvVarMenuContext.Provider value={envVarMenuContext}>
+									<EnvVarLine.Provider value={envVarLineContext}>{children}</EnvVarLine.Provider>
+								</EnvVarMenuContext.Provider>
+							</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>
 					</FocusContext.Provider>
 				</MonacoContext.Provider>

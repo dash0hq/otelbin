@@ -1,15 +1,18 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../button";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover";
 import Down from "./../assets/svg/down.svg";
 import ValidationTypeContent from "./ValidationTypeContent";
 import { useDistributions } from "../validation/useDistributions";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
-import { distroBinding, distroVersionBinding } from "../validation/binding";
+import { distroBinding, distroVersionBinding, envVarBinding } from "../validation/binding";
 import InfoBox from "./InfoBox";
+import { editorBinding } from "../monaco-editor/editorBinding";
+import WarningBox from "./WarningBox";
+import { extractEnvVarData, extractVariables } from "../monaco-editor/parseYaml";
 
 export interface ICurrentDistributionVersion {
 	distro: string;
@@ -18,15 +21,26 @@ export interface ICurrentDistributionVersion {
 }
 
 export default function ValidationType() {
-	const [{ distro, distroVersion }] = useUrlState([distroBinding, distroVersionBinding]);
+	const [{ distro, distroVersion, config, env }] = useUrlState([
+		distroBinding,
+		distroVersionBinding,
+		envVarBinding,
+		editorBinding,
+	]);
 	const [open, setOpen] = useState(false);
-
 	const { data: distributions } = useDistributions();
 
 	const currentDistributionVersion =
 		distributions && distro && distroVersion
 			? { distro: distro, version: distroVersion, name: distributions[distro]?.name || "" }
 			: undefined;
+
+	const variables = useMemo(() => extractVariables(config), [config]);
+	const envVarData = extractEnvVarData(variables, env);
+
+	const unboundVariables = Object.values(envVarData).filter(
+		(envVar) => envVar.submittedValue === undefined && envVar.defaultValue === ""
+	);
 
 	return (
 		<div className="flex items-center gap-x-4">
@@ -49,6 +63,9 @@ export default function ValidationType() {
 				</PopoverContent>
 			</Popover>
 			{distro === null && distroVersion === null && <InfoBox />}
+			{distro !== null && distroVersion !== null && unboundVariables.length > 0 && (
+				<WarningBox unboundVariables={unboundVariables.length} />
+			)}
 		</div>
 	);
 }

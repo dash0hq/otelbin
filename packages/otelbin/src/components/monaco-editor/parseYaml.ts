@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import YAML, { Parser } from "yaml";
+import type { IEnvVar } from "~/contexts/EditorContext";
 export interface SourceToken {
 	type:
 		| "byte-order-mark"
@@ -252,4 +253,35 @@ export function selectConfigType(config: string) {
 	} else {
 		return config;
 	}
+}
+
+export function extractVariables(inputString: string): string[] {
+	const variableRegex = /\${([^}]+)}/g;
+	const matches = inputString.match(variableRegex);
+
+	return matches ? matches.map((match) => match) : [];
+}
+
+export function extractEnvVarData(envVars: string[], envUrlState: Record<string, string>) {
+	const envVarData: Record<string, IEnvVar> = {};
+
+	if (envVars && envVars.length > 0) {
+		const envVarPlaceHolder = envVars.map((variable) => variable.slice(2, -1));
+
+		envVarPlaceHolder.forEach((variable) => {
+			const name = variable.split(":")[0] ?? variable;
+			const defaultValue: string | undefined = variable.split(":")[1] ?? "";
+			const distinctDefaultValues = new Set([...(envVarData[name]?.defaultValues ?? []), defaultValue]);
+			const submittedValue = envUrlState[name];
+
+			envVarData[name] = {
+				name: name,
+				submittedValue: submittedValue,
+				defaultValues: [...distinctDefaultValues],
+				defaultValue: [...distinctDefaultValues].length > 1 ? "" : defaultValue,
+			};
+		});
+	}
+
+	return envVarData;
 }
