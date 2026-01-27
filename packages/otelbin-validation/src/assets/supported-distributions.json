@@ -8,6 +8,26 @@
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
       {
+        "version": "v0.144.0",
+        "artifact": "otelcol_0.144.0_linux_amd64.rpm",
+        "released_at": "2026-01-20T16:09:21.000Z"
+      },
+      {
+        "version": "v0.143.1",
+        "artifact": "otelcol_0.143.1_linux_amd64.rpm",
+        "released_at": "2026-01-06T17:50:21.000Z"
+      },
+      {
+        "version": "v0.143.0",
+        "artifact": "otelcol_0.143.0_linux_amd64.rpm",
+        "released_at": "2026-01-06T15:45:48.000Z"
+      },
+      {
+        "version": "v0.142.0",
+        "artifact": "otelcol_0.142.0_linux_amd64.rpm",
+        "released_at": "2025-12-16T05:00:48.000Z"
+      },
+      {
         "version": "v0.141.0",
         "artifact": "otelcol_0.141.0_linux_amd64.rpm",
         "released_at": "2025-12-03T00:29:30.000Z"
@@ -138,6 +158,26 @@
     "website": "https://opentelemetry.io",
     "repository": "open-telemetry/opentelemetry-collector-releases",
     "releases": [
+      {
+        "version": "v0.144.0",
+        "artifact": "otelcol-contrib_0.144.0_linux_amd64.rpm",
+        "released_at": "2026-01-20T16:19:51.000Z"
+      },
+      {
+        "version": "v0.143.1",
+        "artifact": "otelcol-contrib_0.143.1_linux_amd64.rpm",
+        "released_at": "2026-01-06T17:57:25.000Z"
+      },
+      {
+        "version": "v0.143.0",
+        "artifact": "otelcol-contrib_0.143.0_linux_amd64.rpm",
+        "released_at": "2026-01-06T15:53:10.000Z"
+      },
+      {
+        "version": "v0.142.0",
+        "artifact": "otelcol-contrib_0.142.0_linux_amd64.rpm",
+        "released_at": "2025-12-16T05:13:30.000Z"
+      },
       {
         "version": "v0.141.0",
         "artifact": "otelcol-contrib_0.141.0_linux_amd64.rpm",
@@ -270,6 +310,16 @@
     "repository": "aws-observability/aws-otel-collector",
     "releases": [
       {
+        "version": "v0.47.0",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.47.0/aws-otel-collector.rpm",
+        "released_at": "2026-01-26T08:59:43.000Z"
+      },
+      {
+        "version": "v0.46.0",
+        "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.46.0/aws-otel-collector.rpm",
+        "released_at": "2025-12-14T05:42:47.000Z"
+      },
+      {
         "version": "v0.45.1",
         "artifact": "https://aws-otel-collector.s3.amazonaws.com/amazon_linux/amd64/v0.45.1/aws-otel-collector.rpm",
         "released_at": "2025-10-10T18:14:12.000Z"
@@ -320,6 +370,21 @@
     "website": "https://www.splunk.com/en_us/solutions/opentelemetry.html",
     "repository": "signalfx/splunk-otel-collector",
     "releases": [
+      {
+        "version": "v0.143.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.143.0/splunk-otel-collector-0.143.0-1.x86_64.rpm",
+        "released_at": "2026-01-12T19:17:03.000Z"
+      },
+      {
+        "version": "v0.142.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.142.0/splunk-otel-collector-0.142.0-1.x86_64.rpm",
+        "released_at": "2026-01-05T17:52:16.000Z"
+      },
+      {
+        "version": "v0.141.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.141.0/splunk-otel-collector-0.141.0-1.x86_64.rpm",
+        "released_at": "2025-12-09T22:51:42.000Z"
+      },
       {
         "version": "v0.140.0",
         "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.140.0/splunk-otel-collector-0.140.0-1.x86_64.rpm",
