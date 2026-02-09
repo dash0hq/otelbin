@@ -53856,6 +53856,30 @@
                   }
                 }
               }
+            },
+            "profiles": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "receivers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "processors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exporters": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           },
           "patternProperties": {
@@ -53908,6 +53932,30 @@
               }
             },
             "^traces(/[^/]+)*$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "receivers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "processors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exporters": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "^profiles(/[^/]+)*$": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
