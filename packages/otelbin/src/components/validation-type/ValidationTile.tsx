@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import AdotLogo from "./../assets/svg/distro-icons/adot.svg";
 import OtelLogo from "./../assets/svg/distro-icons/otel.svg";
 import SplunkLogo from "./../assets/svg/distro-icons/splunk.svg";
+import DatadogLogo from "./../assets/svg/distro-icons/datadog.svg";
 import { Github, Globe } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "../button";
@@ -56,6 +57,9 @@ export default function ValidationTile({
 			break;
 		case "splunk":
 			Icon = SplunkLogo;
+			break;
+		case "datadog":
+			Icon = DatadogLogo;
 			break;
 		default:
 			Icon = OtelLogo;

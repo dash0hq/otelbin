@@ -407,5 +407,20 @@
       }
     ],
     "ignoredReleases": "<v0.127.0"
-  }
+  },
+   "ddot-collector": {
+		 "name": "Datadog OpenTelemetry Collector",
+      "provider": "Datadog",
+      "description": "Datadog Distribution of OpenTelemetry Collector (DDOT)",
+      "icon": "my-icon",
+      "website": "https://docs.datadoghq.com/opentelemetry/setup/ddot_collector/",
+      "repository": "DataDog/datadog-agent",
+      "releases": [
+				{
+					"version": "7.72.1",
+				  "artifact": "datadog-agent-7.72.1-1.x86_64.rpm",
+  				"released_at": "2025-01-23T00:00:00Z"
+				}
+			]
+   }
 }
