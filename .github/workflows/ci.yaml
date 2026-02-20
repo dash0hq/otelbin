@@ -26,12 +26,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version-file: .nvmrc
 
@@ -56,12 +56,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version-file: .nvmrc
 
@@ -88,12 +88,12 @@ jobs:
       test_env_name: ${{ steps.get_test_env_name.outputs.test_env_name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version-file: .nvmrc
 
@@ -112,29 +112,39 @@ jobs:
         # When the trigger is a pull event, use the PR's branch name (`github.head_ref`), which
         # is available only for pull trigger. Otherwise, use the branch on which the commit was pushed.
         # (Ref names in pull requests are in the shape of `<pr_id>/merge` and those will break CDK.)
+        # language=bash
         run: |
-          echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> $GITHUB_OUTPUT || exit 1
+          echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> "$GITHUB_OUTPUT" || exit 1
 
       - name: Select credentials
         id: select_credentials
         shell: bash
         env:
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+          OTELBIN_AUTOMATION_ACCOUNT_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_PROD}}
+          OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}
+          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}
+          OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
+          OTELBIN_AUTOMATION_ACCOUNT_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}
+          OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}
+          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}
+          OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
+        # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}' >> ${GITHUB_OUTPUT}
+            echo "aws_account=${OTELBIN_AUTOMATION_ACCOUNT_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_PROD}" >> "${GITHUB_OUTPUT}"
           else
-            echo 'aws_account=${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}' >> ${GITHUB_OUTPUT}
+            echo "aws_account=${OTELBIN_AUTOMATION_ACCOUNT_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_DEV}" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 # v4.1.0
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8 # v5.1.0
         with:
           aws-access-key-id: ${{ steps.select_credentials.outputs.aws_access_key }}
           aws-secret-access-key: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
@@ -184,12 +194,12 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version-file: .nvmrc
 
@@ -204,19 +214,26 @@ jobs:
         shell: bash
         env:
           TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
+          OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}
+          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}
+          OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
+          OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}
+          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}
+          OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
+        # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}' >> ${GITHUB_OUTPUT}
-            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}' >> ${GITHUB_OUTPUT}
+            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}" >> "${GITHUB_OUTPUT}"
+            echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_PROD}" >> "${GITHUB_OUTPUT}"
           else
-            echo 'aws_access_key=${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'aws_secret_access_key=${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}' >> ${GITHUB_OUTPUT}
-            echo 'role_arn=${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}' >> ${GITHUB_OUTPUT}
+            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}" >> "${GITHUB_OUTPUT}"
+            echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_DEV}" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 # v4.1.0
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8 # v5.1.0
         with:
           aws-access-key-id: ${{ steps.select_credentials.outputs.aws_access_key }}
           aws-secret-access-key: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
@@ -231,6 +248,8 @@ jobs:
           AWS_DEFAULT_REGION: 'us-east-2'
           API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
           API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
+          API_GATEWAY_KEY_ID: ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }}
           RELEASE_UNDER_TEST: ${{ matrix.test_matrix }}
+        # language=bash
         run: |
-          VALIDATION_API_KEY=$(aws apigateway get-api-key --api-key ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }} --include-value | jq -r '.value') npm run test
+          VALIDATION_API_KEY=$(aws apigateway get-api-key --api-key "${API_GATEWAY_KEY_ID}" --include-value | jq -r '.value') npm run test
