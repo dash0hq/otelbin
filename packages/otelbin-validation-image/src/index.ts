@@ -51,7 +51,7 @@ exports.handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult>
 		!validationPayload || // Empty event
 		!config || // Empty configuration string
 		!config?.trim().length || // Blank configuration string (only whitespaces)
-		!Object.keys(yaml.load(config) as Object).length // Empty YAML
+		!Object.keys(yaml.load(config, { schema: yaml.JSON_SCHEMA }) as Object).length // Empty YAML
 	) {
 		return {
 			statusCode: 200,
