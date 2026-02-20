@@ -3,8 +3,9 @@
 
 import { memo } from "react";
 import ParentNodeTag from "./ParentNodeTag";
-import { BarChart4, ListTree, Workflow } from "lucide-react";
+import { BarChart4, Layers, ListTree, Workflow } from "lucide-react";
 import BarChart4Svg from "../../../components/assets/svg/bar-chart-4.svg";
+import LayersSvg from "../../../components/assets/svg/layers.svg";
 import ListTreeSvg from "../../../components/assets/svg/list-tree.svg";
 import WorkflowSvg from "../../../components/assets/svg/workflow.svg";
 
@@ -42,6 +43,15 @@ export const parentNodesConfig = [
 		borderColor: "1px dashed #40ad54",
 		icon: <ListTree width={12} />,
 		serverSideIcon: <ListTreeSvg style={{ height: 12, width: 12 }} />,
+	},
+	{
+		type: "profiles",
+		typeRegex: /^profiles(\/.*)?$/i,
+		backgroundColor: "rgba(244, 114, 182, 0.05)",
+		tagBackgroundColor: "#F472B6",
+		borderColor: "1px dashed #EC4899",
+		icon: <Layers width={12} />,
+		serverSideIcon: <LayersSvg style={{ height: 12, width: 12 }} />,
 	},
 	{
 		type: "spans",
