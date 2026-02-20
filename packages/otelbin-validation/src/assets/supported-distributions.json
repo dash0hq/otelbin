@@ -51,84 +51,9 @@
         "version": "v0.134.1",
         "artifact": "otelcol_0.134.1_linux_amd64.rpm",
         "released_at": "2025-09-03T16:36:15.000Z"
-      },
-      {
-        "version": "v0.135.0-nightly.202509020233",
-        "artifact": "otelcol_0.135.0-nightly.202509020233_linux_amd64.rpm",
-        "released_at": "2025-09-02T19:03:47.000Z"
-      },
-      {
-        "version": "v0.134.0-nightly.202508310234",
-        "artifact": "otelcol_0.134.0-nightly.202508310234_linux_amd64.rpm",
-        "released_at": "2025-08-31T04:33:22.000Z"
-      },
-      {
-        "version": "v0.133.0",
-        "artifact": "otelcol_0.133.0_linux_amd64.rpm",
-        "released_at": "2025-08-25T22:07:59.000Z"
-      },
-      {
-        "version": "v0.132.4",
-        "artifact": "otelcol_0.132.4_linux_amd64.rpm",
-        "released_at": "2025-08-18T10:32:38.000Z"
-      },
-      {
-        "version": "v0.132.3",
-        "artifact": "otelcol_0.132.3_linux_amd64.rpm",
-        "released_at": "2025-08-18T06:52:21.000Z"
-      },
-      {
-        "version": "v0.132.2",
-        "artifact": "otelcol_0.132.2_linux_amd64.rpm",
-        "released_at": "2025-08-13T05:56:54.000Z"
-      },
-      {
-        "version": "v0.132.1",
-        "artifact": "otelcol_0.132.1_linux_amd64.rpm",
-        "released_at": "2025-08-13T04:43:58.000Z"
-      },
-      {
-        "version": "v0.132.0",
-        "artifact": "otelcol_0.132.0_linux_amd64.rpm",
-        "released_at": "2025-08-12T19:36:15.000Z"
-      },
-      {
-        "version": "v0.131.1",
-        "artifact": "otelcol_0.131.1_linux_amd64.rpm",
-        "released_at": "2025-08-01T18:37:55.000Z"
-      },
-      {
-        "version": "v0.131.0",
-        "artifact": "otelcol_0.131.0_linux_amd64.rpm",
-        "released_at": "2025-07-30T09:43:41.000Z"
-      },
-      {
-        "version": "v0.130.1",
-        "artifact": "otelcol_0.130.1_linux_amd64.rpm",
-        "released_at": "2025-07-22T13:19:01.000Z"
-      },
-      {
-        "version": "v0.130.0",
-        "artifact": "otelcol_0.130.0_linux_amd64.rpm",
-        "released_at": "2025-07-15T10:43:34.000Z"
-      },
-      {
-        "version": "v0.129.1",
-        "artifact": "otelcol_0.129.1_linux_amd64.rpm",
-        "released_at": "2025-07-02T07:37:37.000Z"
-      },
-      {
-        "version": "v0.128.0",
-        "artifact": "otelcol_0.128.0_linux_amd64.rpm",
-        "released_at": "2025-06-09T20:44:02.000Z"
-      },
-      {
-        "version": "v0.127.0",
-        "artifact": "otelcol_0.127.0_linux_amd64.rpm",
-        "released_at": "2025-05-27T13:41:21.000Z"
       }
     ],
-    "ignoredReleases": "<v0.127.0"
+    "ignoredReleases": "<v0.134.0"
   },
   "otelcol-contrib": {
     "name": "OpenTelemetry Collector Contrib",
@@ -182,84 +107,9 @@
         "version": "v0.134.1",
         "artifact": "otelcol-contrib_0.134.1_linux_amd64.rpm",
         "released_at": "2025-09-03T17:50:41.000Z"
-      },
-      {
-        "version": "v0.135.0-nightly.202509020233",
-        "artifact": "otelcol-contrib_0.135.0-nightly.202509020233_linux_amd64.rpm",
-        "released_at": "2025-09-02T17:26:56.000Z"
-      },
-      {
-        "version": "v0.134.0-nightly.202508310234",
-        "artifact": "otelcol-contrib_0.134.0-nightly.202508310234_linux_amd64.rpm",
-        "released_at": "2025-08-31T04:38:29.000Z"
-      },
-      {
-        "version": "v0.133.0",
-        "artifact": "otelcol-contrib_0.133.0_linux_amd64.rpm",
-        "released_at": "2025-08-25T22:14:08.000Z"
-      },
-      {
-        "version": "v0.132.4",
-        "artifact": "otelcol-contrib_0.132.4_linux_amd64.rpm",
-        "released_at": "2025-08-18T10:40:19.000Z"
-      },
-      {
-        "version": "v0.132.3",
-        "artifact": "otelcol-contrib_0.132.3_linux_amd64.rpm",
-        "released_at": "2025-08-18T06:59:26.000Z"
-      },
-      {
-        "version": "v0.132.2",
-        "artifact": "otelcol-contrib_0.132.2_linux_amd64.rpm",
-        "released_at": "2025-08-13T10:44:51.000Z"
-      },
-      {
-        "version": "v0.132.1",
-        "artifact": "otelcol-contrib_0.132.1_linux_amd64.rpm",
-        "released_at": "2025-08-13T04:50:29.000Z"
-      },
-      {
-        "version": "v0.132.0",
-        "artifact": "otelcol-contrib_0.132.0_linux_amd64.rpm",
-        "released_at": "2025-08-12T19:42:46.000Z"
-      },
-      {
-        "version": "v0.131.1",
-        "artifact": "otelcol-contrib_0.131.1_linux_amd64.rpm",
-        "released_at": "2025-08-01T18:45:03.000Z"
-      },
-      {
-        "version": "v0.131.0",
-        "artifact": "otelcol-contrib_0.131.0_linux_amd64.rpm",
-        "released_at": "2025-07-30T09:47:07.000Z"
-      },
-      {
-        "version": "v0.130.1",
-        "artifact": "otelcol-contrib_0.130.1_linux_amd64.rpm",
-        "released_at": "2025-07-22T13:26:00.000Z"
-      },
-      {
-        "version": "v0.130.0",
-        "artifact": "otelcol-contrib_0.130.0_linux_amd64.rpm",
-        "released_at": "2025-07-15T10:49:53.000Z"
-      },
-      {
-        "version": "v0.129.1",
-        "artifact": "otelcol-contrib_0.129.1_linux_amd64.rpm",
-        "released_at": "2025-07-02T07:44:31.000Z"
-      },
-      {
-        "version": "v0.128.0",
-        "artifact": "otelcol-contrib_0.128.0_linux_amd64.rpm",
-        "released_at": "2025-06-09T20:49:13.000Z"
-      },
-      {
-        "version": "v0.127.0",
-        "artifact": "otelcol-contrib_0.127.0_linux_amd64.rpm",
-        "released_at": "2025-05-27T13:44:28.000Z"
       }
     ],
-    "ignoredReleases": "<v0.127.0"
+    "ignoredReleases": "<v0.134.0"
   },
   "adot": {
     "name": "AWS Distro for OpenTelemetry",
@@ -364,48 +214,8 @@
         "version": "v0.132.0",
         "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.132.0/splunk-otel-collector-0.132.0-1.x86_64.rpm",
         "released_at": "2025-08-20T00:26:45.000Z"
-      },
-      {
-        "version": "v0.131.3",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.131.3/splunk-otel-collector-0.131.3-1.x86_64.rpm",
-        "released_at": "2025-08-17T16:44:02.000Z"
-      },
-      {
-        "version": "v0.131.2",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.131.2/splunk-otel-collector-0.131.2-1.x86_64.rpm",
-        "released_at": "2025-08-13T17:49:03.000Z"
-      },
-      {
-        "version": "v0.131.1",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.131.1/splunk-otel-collector-0.131.1-1.x86_64.rpm",
-        "released_at": "2025-08-06T18:17:52.000Z"
-      },
-      {
-        "version": "v0.131.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.131.0/splunk-otel-collector-0.131.0-1.x86_64.rpm",
-        "released_at": "2025-08-05T19:10:37.000Z"
-      },
-      {
-        "version": "v0.130.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.130.0/splunk-otel-collector-0.130.0-1.x86_64.rpm",
-        "released_at": "2025-07-25T00:11:43.000Z"
-      },
-      {
-        "version": "v0.129.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.129.0/splunk-otel-collector-0.129.0-1.x86_64.rpm",
-        "released_at": "2025-07-09T23:29:47.000Z"
-      },
-      {
-        "version": "v0.128.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.128.0/splunk-otel-collector-0.128.0-1.x86_64.rpm",
-        "released_at": "2025-06-30T22:41:25.000Z"
-      },
-      {
-        "version": "v0.127.0",
-        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.127.0/splunk-otel-collector-0.127.0-1.x86_64.rpm",
-        "released_at": "2025-06-18T02:18:59.000Z"
       }
     ],
-    "ignoredReleases": "<v0.127.0"
+    "ignoredReleases": "<v0.132.0"
   }
 }
