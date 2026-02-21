@@ -19,7 +19,6 @@ jest.config.mjs
 # next.js
 /.next/
 /out/
-next-env.d.ts
 
 # production
 /build
