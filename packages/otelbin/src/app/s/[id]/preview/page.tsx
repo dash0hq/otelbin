@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Redis } from "@upstash/redis/nodejs";
+import { Redis } from "@upstash/redis";
 import type { Metadata } from "next";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";

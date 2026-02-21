@@ -9,7 +9,7 @@ const rewriteSpy = jest.spyOn(NextResponse, "rewrite");
 const redirectSpy = jest.spyOn(NextResponse, "redirect");
 const nextSpy = jest.spyOn(NextResponse, "next");
 
-jest.mock("@upstash/redis/nodejs", () => {
+jest.mock("@upstash/redis", () => {
 	return {
 		Redis: {
 			fromEnv: jest.fn(() => {
