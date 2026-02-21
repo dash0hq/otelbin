@@ -1,1 +1,3 @@
 src/lib/urlState/jsurl2.ts
+jest.config.ts
+next-env.d.ts

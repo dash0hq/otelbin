@@ -4,5 +4,5 @@
 import { type NextRequest } from "next/server";
 
 export function getUserIdentifier(req: NextRequest): string {
-	return req.ip || req.headers.get("user-agent") || "unknown-client";
+	return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("user-agent") || "unknown-client";
 }
