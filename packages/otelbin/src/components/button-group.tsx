@@ -39,7 +39,10 @@ const ButtonGroup = React.forwardRef<React.ElementRef<"div">, ButtonGroupProps>(
 									...props,
 									variant,
 									size,
-									className: cn(child.props.className, variant === "outline" && "-ml-[2px]"),
+									className: cn(
+										(child.props as { className?: string }).className,
+										variant === "outline" && "-ml-[2px]"
+									),
 								} as React.ComponentPropsWithoutRef<typeof Button>);
 							}
 						}

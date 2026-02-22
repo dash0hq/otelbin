@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ImageResponse } from "next/og";
 import { calcNodes } from "~/components/react-flow/useClientNodes";
 import ParentsNode, { svgArrowHead } from "../../../og/ParentsNode";
-import { Redis } from "@upstash/redis/nodejs";
+import { Redis } from "@upstash/redis";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";

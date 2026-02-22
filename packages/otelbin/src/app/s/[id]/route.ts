@@ -7,8 +7,9 @@ import { Redis } from "@upstash/redis";
 
 const redis = Redis.fromEnv();
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-	const shortLink = await redis.get<string>(getShortLinkPersistenceKey(params.id));
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+	const { id } = await params;
+	const shortLink = await redis.get<string>(getShortLinkPersistenceKey(id));
 
 	if (shortLink) {
 		return NextResponse.redirect(shortLink);

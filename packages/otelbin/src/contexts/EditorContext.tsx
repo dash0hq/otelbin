@@ -101,19 +101,20 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 				schemas: [
 					{
 						uri: "https://github.com/dash0hq/otelbin/blob/main/packages/otelbin/src/components/monaco-editor/schema.json",
-						// @ts-expect-error TypeScript can’t narrow down the type of JSON imports
-						schema,
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						schema: schema as never,
 						fileMatch: ["*"],
 					},
 				],
 				validate: true,
 			});
-			return () =>
+			return () => {
 				monacoYaml.update({
 					enableSchemaRequest: false,
 					schemas: [],
 					validate: false,
 				});
+			};
 		}
 	}, [isServerValidationEnabled, monaco]);
 

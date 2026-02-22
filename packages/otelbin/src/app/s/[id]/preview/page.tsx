@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Redis } from "@upstash/redis/nodejs";
+import { Redis } from "@upstash/redis";
 import type { Metadata } from "next";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
@@ -22,8 +22,9 @@ const width = 1200;
 const height = 630;
 const ogImageAlt = "OpenTelemetry collector configuration pipeline visualization by OTelBin";
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-	if (!params.id) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+	const { id } = await params;
+	if (!id) {
 		return notFound();
 	}
 	const extendedMetadata: ExtendedMetadata = {
@@ -33,12 +34,12 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 		twitterData2: "",
 	};
 	try {
-		const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(params.id))) ?? "";
+		const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(id))) ?? "";
 		if (!fullLink) {
 			return notFound();
 		}
 		const url = new URL(fullLink);
-		const imagesUrl = new URL(`/s/${params.id}/img`, url.origin);
+		const imagesUrl = new URL(`/s/${id}/img`, url.origin);
 		const { config } = toUrlState(url, [editorBinding]);
 		const jsonData = JsYaml.load(config, { schema: FAILSAFE_SCHEMA }) as IConfig;
 		const components = extractComponents(jsonData);
