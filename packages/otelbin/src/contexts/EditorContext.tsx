@@ -5,24 +5,16 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import type { editor } from "monaco-editor";
 import { type Monaco, type OnMount } from "@monaco-editor/react";
-import { configureMonacoYaml, type MonacoYamlOptions } from "monaco-yaml";
+import { configureMonacoYaml } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
-import { fromPosition, toCompletionList } from "monaco-languageserver-types";
-import { type languages } from "monaco-editor/esm/vs/editor/editor.api.js";
 import { type IItem, getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
-import { type WorkerGetter, createWorkerManager } from "monaco-worker-manager";
-import { type CompletionList, type Position } from "vscode-languageserver-types";
 import {
 	useServerSideValidationEnabled,
 	validateOtelCollectorConfigurationAndSetMarkers,
 } from "~/components/monaco-editor/otelCollectorConfigValidation";
 
-interface YAMLWorker {
-	doComplete: (uri: string, position: Position) => CompletionList | undefined;
-}
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
-export type WorkerAccessor = WorkerGetter<YAMLWorker>;
 
 export const EditorContext = createContext<EditorRefType | null>(null);
 export const MonacoContext = createContext<MonacoRefType | null>(null);
@@ -122,19 +114,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		editorRef.current = editor;
 		setMonaco(monaco);
 
-		window.MonacoEnvironment = {
-			getWorker(_, label) {
-				switch (label) {
-					case "editorWorkerService":
-						return new Worker(new URL("monaco-editor/esm/vs/editor/editor.worker", import.meta.url));
-					case "yaml":
-						return new Worker(new URL("monaco-yaml/yaml.worker", import.meta.url));
-					default:
-						throw new Error(`Unknown label ${label}`);
-				}
-			},
-		};
-
 		monacoRef.current = monaco;
 		editorRef.current?.restoreViewState(viewState as editor.ICodeEditorViewState);
 
@@ -148,43 +127,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		monaco.languages.setLanguageConfiguration("yaml", {
 			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
 		});
-
-		const worker = createWorkerManager<YAMLWorker, MonacoYamlOptions>(monaco, {
-			label: "yaml",
-			moduleId: "monaco-yaml/yaml.worker",
-		});
-
-		function createCompletionItemProvider(getWorker: WorkerAccessor): languages.CompletionItemProvider {
-			return {
-				triggerCharacters: [" ", ":"],
-
-				async provideCompletionItems(model, position) {
-					const resource = model.uri;
-
-					const worker = await getWorker(resource);
-					const info = await worker.doComplete(String(resource), fromPosition(position));
-					if (!info) {
-						return;
-					}
-
-					const wordInfo = model.getWordUntilPosition(position);
-
-					return toCompletionList(info, {
-						range: {
-							startLineNumber: position.lineNumber,
-							startColumn: wordInfo.startColumn,
-							endLineNumber: position.lineNumber,
-							endColumn: wordInfo.endColumn,
-						},
-					});
-				},
-			};
-		}
-
-		monaco.languages.registerCompletionItemProvider(
-			"yaml",
-			createCompletionItemProvider(worker?.getWorker as WorkerAccessor)
-		);
 
 		let value = editorRef.current?.getValue() ?? "";
 		let docElements = getYamlDocument(value);
