@@ -10,12 +10,7 @@ import type { IError } from "./ValidationErrorConsole";
 import ValidationErrorConsole from "./ValidationErrorConsole";
 import EditorTopBar from "../EditorTopBar";
 import { useEditorRef, useEditorDidMount, useMonacoRef, useViewMode } from "~/contexts/EditorContext";
-import * as monaco from "monaco-editor";
 import MonacoEditor, { loader, type OnChange } from "@monaco-editor/react";
-
-// Use the local monaco-editor build instead of the CDN default,
-// so the editor core and workers are from the same version.
-loader.config({ monaco });
 import { ReactFlowProvider } from "reactflow";
 import Flow from "../react-flow/ReactFlow";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
@@ -118,28 +113,30 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 
 	useEffect(() => {
 		if (clerk.loaded) {
-			monaco.editor.defineTheme("OTelBin", {
-				base: "vs-dark",
-				inherit: true,
-				rules: [
-					{ token: "comment", foreground: "#6D737D" },
-					{ token: "string.yaml", foreground: "#38BDF8" },
-					{ token: "number.yaml", foreground: "#38BDF8" },
-					{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
-				],
-				colors: {
-					"editor.background": "#151721",
-					"editorLineNumber.foreground": "#6D737D",
-					"editorLineNumber.activeForeground": "#F9FAFB",
-					"editorCursor.foreground": "#F9FAFB",
-					"editor.selectionBackground": "#30353D",
-					"editor.selectionHighlightBackground": "#30353D",
-					"editor.hoverHighlightBackground": "#30353D",
-					"editor.lineHighlightBackground": "#30353D",
-					"editor.lineHighlightBorder": "#30353D",
-				},
+			loader.init().then((monaco) => {
+				monaco.editor.defineTheme("OTelBin", {
+					base: "vs-dark",
+					inherit: true,
+					rules: [
+						{ token: "comment", foreground: "#6D737D" },
+						{ token: "string.yaml", foreground: "#38BDF8" },
+						{ token: "number.yaml", foreground: "#38BDF8" },
+						{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
+					],
+					colors: {
+						"editor.background": "#151721",
+						"editorLineNumber.foreground": "#6D737D",
+						"editorLineNumber.activeForeground": "#F9FAFB",
+						"editorCursor.foreground": "#F9FAFB",
+						"editor.selectionBackground": "#30353D",
+						"editor.selectionHighlightBackground": "#30353D",
+						"editor.hoverHighlightBackground": "#30353D",
+						"editor.lineHighlightBackground": "#30353D",
+						"editor.lineHighlightBorder": "#30353D",
+					},
+				});
+				monaco.editor.setTheme("OTelBin");
 			});
-			monaco.editor.setTheme("OTelBin");
 		}
 	}, [clerk.loaded]);
 
