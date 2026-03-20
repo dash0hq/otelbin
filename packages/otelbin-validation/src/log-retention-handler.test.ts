@@ -1,5 +1,5 @@
-import { describe, expect, jest, test } from '@jest/globals';
 import { CloudWatchLogsClient, CreateLogGroupCommand, PutRetentionPolicyCommand } from '@aws-sdk/client-cloudwatch-logs';
+import { describe, expect, jest, test } from '@jest/globals';
 import { handler, CloudFormationCustomResourceEvent } from './log-retention-handler';
 
 function mockClient(overrides: {
