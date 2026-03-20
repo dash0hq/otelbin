@@ -27,6 +27,7 @@
     "projen": "npx projen"
   },
   "devDependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "^3.1013.0",
     "@jest/globals": "^29.7.0",
     "@stylistic/eslint-plugin": "^2",
     "@types/aws-lambda": "^8.10.149",

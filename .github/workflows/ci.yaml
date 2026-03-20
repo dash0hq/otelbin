@@ -95,6 +95,11 @@ jobs:
         working-directory: packages/otelbin-validation
         run: npm ci
 
+      - name: Unit tests
+        shell: bash
+        working-directory: packages/otelbin-validation
+        run: npx jest src/ --no-coverage
+
       - name: Test CDK stack synthesis
         shell: bash
         working-directory: packages/otelbin-validation
