@@ -10,8 +10,8 @@
 // Set GH_TOKEN before importing the stack module, which checks for it at load time.
 process.env.GH_TOKEN = process.env.GH_TOKEN || 'test-token';
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, test } from '@jest/globals';
 import { App } from 'aws-cdk-lib';
 import { Distributions, OTelBinValidationStack } from '../src/main';
@@ -20,11 +20,15 @@ const CF_MAX_RESOURCES = 500;
 
 describe('OTelBinValidationStack synthesis', () => {
   const app = new App();
-  new OTelBinValidationStack(app, 'test-stack', {
+  const stack = new OTelBinValidationStack(app, 'test-stack', {
     testEnvironmentName: 'test',
     githubToken: 'test-token',
   });
   const assembly = app.synth();
+
+  test('stack is synthesized successfully', () => {
+    expect(stack.stackName).toBe('test-stack');
+  });
 
   test('no stack exceeds the CloudFormation resource limit', () => {
     for (const stackArtifact of assembly.stacks) {

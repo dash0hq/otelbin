@@ -23,7 +23,7 @@ export async function handler(
   }
 
   const logGroupNames = event.ResourceProperties.LogGroupNames || [];
-  const retentionInDays = parseInt(event.ResourceProperties.RetentionInDays || '0');
+  const retentionInDays = Number.parseInt(event.ResourceProperties.RetentionInDays || '0');
 
   for (const logGroupName of logGroupNames) {
     try {
