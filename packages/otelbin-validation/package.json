@@ -1,8 +1,5 @@
 {
   "name": "otelbin-validation",
-  "engines": {
-    "node": "v22.x"
-  },
   "scripts": {
     "build": "npx projen build",
     "bundle": "npx projen bundle",
@@ -31,7 +28,7 @@
     "@stylistic/eslint-plugin": "^2",
     "@types/aws-lambda": "^8.10.149",
     "@types/jest": "^29.5.14",
-    "@types/node": "^16",
+    "@types/node": "^22",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "aws-cdk": "^2",
@@ -49,9 +46,13 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.189.1",
+    "@aws-sdk/client-cloudwatch-logs": "^3.1013.0",
+    "aws-cdk-lib": "^2.99.1",
     "aws-lambda": "^1.0.7",
-    "constructs": "^10.0.5"
+    "constructs": "^10.5.1"
+  },
+  "engines": {
+    "node": ">= 22.0.0"
   },
   "license": "Apache-2.0",
   "publishConfig": {

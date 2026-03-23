@@ -1,13 +1,13 @@
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
-import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
-import { ApiKeySourceType, AwsIntegration, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
+import { App, CfnOutput, CustomResource, Duration, NestedStack, NestedStackProps, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
+import { ApiKeySourceType, AwsIntegration, IResource, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
-import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Architecture, DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Architecture, Code, DockerImageCode, DockerImageFunction, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
+import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
 export interface Distributions {
@@ -25,6 +25,63 @@ export interface Distribution {
 export interface Release {
   version: string;
   artifact: string;
+}
+
+export interface DistributionNestedStackProps extends NestedStackProps {
+  validationResource: IResource;
+  lambdaExecutionRole: Role;
+  distributionName: string;
+  distribution: Distribution;
+  githubToken: string;
+  dash0AuthorizationToken?: string;
+}
+
+export class DistributionNestedStack extends NestedStack {
+  readonly lambdaFunctions: DockerImageFunction[] = [];
+
+  constructor(scope: Construct, id: string, props: DistributionNestedStackProps) {
+    super(scope, id, props);
+
+    const distributionResource = props.validationResource.addResource(props.distributionName);
+
+    for (let release of props.distribution.releases) {
+      const releaseLambda = new DockerImageFunction(this, `${props.distributionName}-${release.version}`, {
+        description: `Configuration validation for the the '${props.distributionName}' distribution, version '${release.version}'`,
+        architecture: Architecture.X86_64,
+        role: props.lambdaExecutionRole,
+        code: DockerImageCode.fromImageAsset(join(dirname(dirname(__dirname)), 'otelbin-validation-image'), {
+          platform: Platform.LINUX_AMD64,
+          buildArgs: {
+            DISTRO_NAME: props.distributionName,
+            GH_TOKEN: props.githubToken,
+            GH_REPOSITORY: props.distribution.repository,
+            GH_RELEASE: release.version,
+            GH_ARTIFACT: release.artifact,
+          },
+        }),
+        environment: {
+          DISTRO_NAME: props.distributionName,
+          DASH0_AUTHORIZATION_TOKEN: props.dash0AuthorizationToken || '',
+          SNOWFLAKE_CRL_ON_DISK_CACHE_DIR: '/tmp', // Remediation for https://github.com/snowflakedb/gosnowflake/pull/1526
+        },
+        /*
+         * The default 128 cause the OtelCol process to swap a lot, and that increased
+         * latency by a couple seconds in cold start and normal validations when testing
+         * with the Otelcol Contrib v0.85.1.
+         */
+        memorySize: 1024,
+        timeout: Duration.seconds(15),
+      });
+
+      const releaseResource = distributionResource.addResource(release.version);
+      releaseResource.addMethod('POST', new LambdaIntegration(releaseLambda), {
+        apiKeyRequired: true,
+      });
+
+      Tags.of(releaseLambda).add('otelcol-version', `${props.distributionName}-${release.version}`);
+      this.lambdaFunctions.push(releaseLambda);
+    }
+  }
 }
 
 export interface OTelBinValidationStackProps extends StackProps {
@@ -134,46 +191,70 @@ export class OTelBinValidationStack extends Stack {
       (readFileSync(join(__dirname, 'assets', 'supported-distributions.json'))).toString(),
     ) as Distributions;
 
+    const lambdaExecutionRole = new Role(this, 'lambda-execution-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromManagedPolicyArn(this, 'lambda-basic-execution', 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'),
+      ],
+    });
+
+    const allLambdaFunctions: DockerImageFunction[] = [];
+
     for (let [distributionName, distribution] of Object.entries(supportedDistributions)) {
-      const distributionResource = validation.addResource(distributionName);
-
-      for (let release of distribution.releases) {
-        const releaseLambda = new DockerImageFunction(this, `${distributionName}-${release.version}`, {
-          description: `Configuration validation for the the '${distributionName}' distribution, version '${release.version}'`,
-          architecture: Architecture.X86_64,
-          code: DockerImageCode.fromImageAsset(join(dirname(dirname(__dirname)), 'otelbin-validation-image'), {
-            platform: Platform.LINUX_AMD64,
-            buildArgs: {
-              DISTRO_NAME: distributionName,
-              GH_TOKEN: props.githubToken,
-              GH_REPOSITORY: distribution.repository,
-              GH_RELEASE: release.version,
-              GH_ARTIFACT: release.artifact,
-            },
-          }),
-          environment: {
-            DISTRO_NAME: distributionName,
-            DASH0_AUTHORIZATION_TOKEN: props.dash0AuthorizationToken || '',
-            SNOWFLAKE_CRL_ON_DISK_CACHE_DIR: '/tmp', // Remediation for https://github.com/snowflakedb/gosnowflake/pull/1526
-          },
-          /*
-					 * The default 128 cause the OtelCol process to swap a lot, and that increased
-					 * latency by a couple seconds in cold start and normal validations when testing
-					 * with the Otelcol Contrib v0.85.1.
-					 */
-          memorySize: 1024,
-          timeout: Duration.seconds(15),
-          logRetention: RetentionDays.THREE_DAYS,
-        });
-
-        const releaseResource = distributionResource.addResource(release.version);
-        releaseResource.addMethod('POST', new LambdaIntegration(releaseLambda), {
-          apiKeyRequired: true,
-        });
-
-        Tags.of(releaseLambda).add('otelcol-version', `${distributionName}-${release.version}`);
-      }
+      const nestedStack = new DistributionNestedStack(this, `distribution-${distributionName}`, {
+        validationResource: validation,
+        lambdaExecutionRole,
+        distributionName,
+        distribution,
+        githubToken: props.githubToken,
+        dash0AuthorizationToken: props.dash0AuthorizationToken,
+      });
+      allLambdaFunctions.push(...nestedStack.lambdaFunctions);
     }
+
+    const logRetentionHandler = new LambdaFunction(this, 'log-retention-handler', {
+      runtime: Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      // language=JavaScript
+      code: Code.fromInline(`
+const { CloudWatchLogsClient, CreateLogGroupCommand, PutRetentionPolicyCommand } = require("@aws-sdk/client-cloudwatch-logs");
+exports.handler = async (event) => {
+  if (event.RequestType === "Delete") {
+    return { PhysicalResourceId: event.PhysicalResourceId };
+  }
+  const client = new CloudWatchLogsClient();
+  const logGroupNames = event.ResourceProperties.LogGroupNames || [];
+  const retentionInDays = parseInt(event.ResourceProperties.RetentionInDays);
+  for (const logGroupName of logGroupNames) {
+    try {
+      await client.send(new CreateLogGroupCommand({ logGroupName }));
+    } catch (e) {
+      if (e.name !== "ResourceAlreadyExistsException") throw e;
+    }
+    await client.send(new PutRetentionPolicyCommand({ logGroupName, retentionInDays }));
+  }
+  return { PhysicalResourceId: "log-retention-policy" };
+};
+      `),
+      timeout: Duration.minutes(5),
+    });
+
+    logRetentionHandler.addToRolePolicy(new PolicyStatement({
+      actions: ['logs:CreateLogGroup', 'logs:PutRetentionPolicy'],
+      resources: ['*'],
+    }));
+
+    const logRetentionProvider = new Provider(this, 'log-retention-provider', {
+      onEventHandler: logRetentionHandler,
+    });
+
+    new CustomResource(this, 'log-retention-policy', {
+      serviceToken: logRetentionProvider.serviceToken,
+      properties: {
+        LogGroupNames: allLambdaFunctions.map(fn => `/aws/lambda/${fn.functionName}`),
+        RetentionInDays: '3',
+      },
+    });
 
     new CfnOutput(this, 'api-name', {
       exportName: `api-name-${props.testEnvironmentName}`,

@@ -118,7 +118,8 @@
       "name": "eslint",
       "description": "Runs eslint against the codebase",
       "env": {
-        "ESLINT_USE_FLAT_CONFIG": "false"
+        "ESLINT_USE_FLAT_CONFIG": "false",
+        "NODE_NO_WARNINGS": "1"
       },
       "steps": [
         {
@@ -214,13 +215,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@jest/globals,@types/aws-lambda,@types/jest,@types/node,axios,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jest-circus,projen,ts-jest,ts-node,typescript,aws-lambda"
+          "exec": "npx npm-check-updates@18 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@jest/globals,@types/aws-lambda,@types/jest,axios,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jest-circus,projen,ts-jest,ts-node,typescript,@aws-sdk/client-cloudwatch-logs,aws-lambda"
         },
         {
           "exec": "npm install"
         },
         {
-          "exec": "npm update @jest/globals @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk axios esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-circus jest-junit projen ts-jest ts-node typescript aws-cdk-lib aws-lambda constructs"
+          "exec": "npm update @jest/globals @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk axios esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-circus jest-junit projen ts-jest ts-node typescript @aws-sdk/client-cloudwatch-logs aws-cdk-lib aws-lambda constructs"
         },
         {
           "exec": "npx projen"

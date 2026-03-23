@@ -75,9 +75,39 @@ jobs:
         working-directory: packages/otelbin-validation-image
         run: npm run test
 
+  otelbin-validation-verify:
+    name: OTelBin Validation Stack Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        shell: bash
+        working-directory: packages/otelbin-validation
+        run: npm ci
+
+      - name: Unit tests
+        shell: bash
+        working-directory: packages/otelbin-validation
+        run: npx jest src/ --no-coverage
+
+      - name: Test CDK stack synthesis
+        shell: bash
+        working-directory: packages/otelbin-validation
+        run: npx jest test/stack.test.ts --no-coverage
+
   prep-itests:
     name: Deploy validation backend
-    needs: ['otelbin-verify', 'otelbin-validation-image-verify']
+    needs: ['otelbin-verify', 'otelbin-validation-image-verify', 'otelbin-validation-verify']
     runs-on: 8core_32gb
     timeout-minutes: 30
     outputs:
