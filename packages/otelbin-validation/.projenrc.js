@@ -3,10 +3,11 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   cdkVersion: '2.99.1',
   defaultReleaseBranch: 'main',
   name: 'otelbin-validation',
-  deps: ['aws-lambda'],
+  deps: ['@aws-sdk/client-cloudwatch-logs', 'aws-lambda'],
   devDeps: ['@jest/globals', '@types/aws-lambda', 'axios', 'esbuild', 'jest-circus'],
   github: false, // Skip GitHub integration, as this CDK app is not in the repo's root
   packageManager: 'npm',
+  minNodeVersion: '22.0.0',
   eslintOptions: {
     ignorePatterns: [
       '*.js',
@@ -21,6 +22,16 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     jestConfig: {
       testRunner: 'jest-circus/runner',
     },
+  },
+});
+project.eslint.addOverride({
+  files: ['src/**/*.test.ts'],
+  rules: {
+    'import/no-extraneous-dependencies': ['error', {
+      devDependencies: true,
+      optionalDependencies: false,
+      peerDependencies: true,
+    }],
   },
 });
 project.synth();
