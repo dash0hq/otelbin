@@ -19,7 +19,7 @@ jobs:
           echo "Triggering Vercel production deployment for ${DEPLOY_REF} (${DEPLOY_SHA})"
 
           # Create a production deployment pinned to the exact SHA
-          response=$(curl -sf -X POST "https://api.vercel.com/v13/deployments?teamId=${VERCEL_TEAM_ID}" \
+          response=$(curl -s -X POST "https://api.vercel.com/v13/deployments?teamId=${VERCEL_TEAM_ID}" \
             -H "Authorization: Bearer ${VERCEL_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{
