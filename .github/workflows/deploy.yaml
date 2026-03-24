@@ -2,19 +2,35 @@ name: Deploy to Vercel
 
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to deploy (tag, branch, or SHA)"
+        required: true
+        type: string
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve ref to SHA
+        id: resolve
+        run: |
+          sha=$(git ls-remote "${{ github.server_url }}/${{ github.repository }}" "${{ inputs.ref }}" | head -1 | cut -f1)
+          if [ -z "${sha}" ]; then
+            # Try as a raw SHA
+            sha="${{ inputs.ref }}"
+          fi
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          echo "Resolved ref '${{ inputs.ref }}' to SHA ${sha}"
+
       - name: Create Vercel production deployment and wait for completion
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_ACCESS_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERCEL_TEAM_ID: ${{ secrets.VERCEL_ORG_ID }}
           GITHUB_REPO_ID: "664563648"
-          DEPLOY_REF: ${{ github.ref_name }}
-          DEPLOY_SHA: ${{ github.sha }}
+          DEPLOY_REF: ${{ inputs.ref }}
+          DEPLOY_SHA: ${{ steps.resolve.outputs.sha }}
         run: |
           echo "Triggering Vercel production deployment for ${DEPLOY_REF} (${DEPLOY_SHA})"
 
