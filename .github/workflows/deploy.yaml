@@ -2,16 +2,6 @@ name: Deploy to Vercel
 
 on:
   workflow_dispatch:
-    inputs:
-      commit_sha:
-        description: "Commit SHA to deploy"
-        required: true
-        type: string
-      ref:
-        description: "Git ref (branch or tag name) for the deployment"
-        required: false
-        default: "main"
-        type: string
 
 jobs:
   deploy:
@@ -23,10 +13,10 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
           GITHUB_REPO_ID: ${{ secrets.VERCEL_GITHUB_REPO_ID }}
+          DEPLOY_REF: ${{ github.ref_name }}
+          DEPLOY_SHA: ${{ github.sha }}
         run: |
-          sha="${{ inputs.commit_sha }}"
-          ref="${{ inputs.ref }}"
-          echo "Triggering Vercel production deployment for ref ${ref} (${sha})"
+          echo "Triggering Vercel production deployment for ${DEPLOY_REF} (${DEPLOY_SHA})"
 
           # Create a production deployment pinned to the exact SHA
           response=$(curl -sf -X POST "https://api.vercel.com/v13/deployments?teamId=${VERCEL_TEAM_ID}" \
@@ -38,8 +28,8 @@ jobs:
               \"target\": \"production\",
               \"gitSource\": {
                 \"type\": \"github\",
-                \"ref\": \"${ref}\",
-                \"sha\": \"${sha}\",
+                \"ref\": \"${DEPLOY_REF}\",
+                \"sha\": \"${DEPLOY_SHA}\",
                 \"repoId\": ${GITHUB_REPO_ID}
               }
             }")
