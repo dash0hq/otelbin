@@ -219,6 +219,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
+          token: ${{ secrets.REPOSITORY_FULL_ACCESS_GITHUB_TOKEN }}
           title: Update supported versions
           commit-message: 'chore: update the version list of supported OpenTelemetry collector distros'
           add-paths: packages/otelbin-validation/src/assets/supported-distributions.json
