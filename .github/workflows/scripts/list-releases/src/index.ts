@@ -22,6 +22,7 @@ declare global {
 			GH_ASSET_PREFIX?: string;
 			GH_ASSET_SUFFIX?: string;
 			IGNORED_RELEASES: string;
+			GITHUB_TOKEN?: string;
 		}
 	}
 }
@@ -31,7 +32,7 @@ const [owner, repo] = process.env.GH_REPOSITORY.split("/");
 const ignoredReleases = process.env.IGNORED_RELEASES;
 
 (async () => {
-	const octokit = new Octokit();
+	const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 	const iterator = octokit.paginate.iterator(octokit.rest.repos.listReleases, {
 		owner,
 		repo,

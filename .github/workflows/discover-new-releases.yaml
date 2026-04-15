@@ -59,6 +59,7 @@ jobs:
           GH_ASSET_PREFIX: ${{ matrix.distro.artifact_prefix }}
           GH_ASSET_SUFFIX: ${{ matrix.distro.artifact_suffix }}
           IGNORED_RELEASES: ${{ steps.lookup-ignored-releases.outputs.range }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: .github/workflows/scripts/list-releases
         run: |
           npm run start --silent | tee releases.json
@@ -119,6 +120,7 @@ jobs:
           GH_ASSET_PREFIX: ${{ matrix.distro.artifact_prefix }}
           GH_ASSET_SUFFIX: ${{ matrix.distro.artifact_suffix }}
           IGNORED_RELEASES: ${{ steps.lookup-ignored-releases.outputs.range }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: .github/workflows/scripts/list-releases
         run: |
           npm run start --silent | tee releases.json
@@ -169,6 +171,7 @@ jobs:
           DISTRO_NAME: adot
           GH_REPOSITORY: aws-observability/aws-otel-collector
           IGNORED_RELEASES: ${{ steps.lookup-ignored-releases.outputs.range }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run start --silent | tee releases.json
       - name: Upload releases.json artifact
