@@ -24,10 +24,10 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
+    "@jest/globals": "^30.3.0",
     "@stylistic/eslint-plugin": "^2",
     "@types/aws-lambda": "^8.10.149",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
@@ -37,11 +37,11 @@
     "eslint": "^9",
     "eslint-import-resolver-typescript": "^3.10.0",
     "eslint-plugin-import": "^2.31.0",
-    "jest": "^29.7.0",
-    "jest-circus": "^29.7.0",
+    "jest": "^30.3.0",
+    "jest-circus": "^30.3.0",
     "jest-junit": "^16",
     "projen": "^0.99.19",
-    "ts-jest": "^29.3.2",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
