@@ -34,7 +34,7 @@
     "aws-cdk": "^2",
     "axios": "^1.15.0",
     "esbuild": "^0.25.2",
-    "eslint": "^9",
+    "eslint": "^10",
     "eslint-import-resolver-typescript": "^3.10.0",
     "eslint-plugin-import": "^2.31.0",
     "jest": "^29.7.0",
