@@ -6,11 +6,21 @@ on:
     types: [ closed ]
   workflow_dispatch:
 
+# Use the same group key as `ci.yaml` so a CI deploy and this teardown for
+# the same PR are serialized, and so two teardowns for the same PR (e.g.
+# closed -> reopened -> closed, or a PR close racing a manual dispatch)
+# cannot both hit the same CloudFormation stack at once.
+# `cancel-in-progress: false` so a queued run waits for the in-flight one
+# rather than killing the destroy mid-retry-loop.
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   cleanup_test_env:
     name: Clean up test environment ${{ github.ref }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -77,7 +87,6 @@ jobs:
 
       - name: Delete validation backend
         shell: bash
-        working-directory: packages/otelbin-validation
         env:
           AWS_ROLE_ARN: ${{ steps.select_credentials.outputs.role_arn }}
           AWS_DEFAULT_REGION: 'us-east-2'
@@ -86,4 +95,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
-          npx projen destroy --force
+          ./.github/workflows/scripts/destroy-validation-stack.sh

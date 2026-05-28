@@ -15,9 +15,11 @@ permissions:
   contents: read
 
 # Ensure we only have one such workflow running per branch, to avoid
-# conflicts in the test env
+# conflicts in the test env. `clean-up-test-env.yaml` uses the same
+# group key so a CI deploy and a teardown for the same PR are serialized.
 concurrency:
   group: ${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   otelbin-verify:
