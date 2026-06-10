@@ -33,7 +33,6 @@
     ]
   },
   "include": [
-    ".eslintrc.cjs",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
@@ -46,6 +45,7 @@
     "node_modules",
     "packages/otelbin-validation",
     "packages/otelbin-validation-image",
-    ".github/workflows/scripts/list-releases"
+    ".github/workflows/scripts/list-releases",
+    "eslint.config.mjs"
   ]
 }
