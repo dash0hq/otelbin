@@ -1,28 +1,22 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fileURLToPath } from "node:url";
-import { dirname } from "node:path";
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
 import headers from "eslint-plugin-headers";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 export default tseslint.config(
-	// Global ignores (replaces .eslintignore / default behaviour).
+	// Global ignores (replaces .eslintignore). `.next`, `out`, `build` and
+	// `next-env.d.ts` are already ignored by eslint-config-next.
 	{
 		ignores: [
-			"**/.next/**",
-			"**/out/**",
-			"**/build/**",
 			"**/coverage/**",
-			"next-env.d.ts",
 			"src/lib/urlState/jsurl2.ts",
 			"jest.config.ts",
 			// CommonJS build-config files were never linted under the previous
 			// `eslint . --ext .ts,.tsx,.js,.jsx` scope; keep them excluded.
-			"**/*.cjs",
+			"postcss.config.cjs",
+			"prettier.config.cjs",
 		],
 	},
 
@@ -31,19 +25,9 @@ export default tseslint.config(
 	...nextCoreWebVitals,
 
 	// @typescript-eslint recommended rules (previously: extends
-	// "plugin:@typescript-eslint/recommended").
+	// "plugin:@typescript-eslint/recommended"). These are syntactic rules; no
+	// enabled rule needs type information, so type-aware parsing is not enabled.
 	...tseslint.configs.recommended,
-
-	// Type-aware parsing for TS files (previously: parserOptions.project override).
-	{
-		files: ["**/*.ts", "**/*.tsx"],
-		languageOptions: {
-			parserOptions: {
-				project: true,
-				tsconfigRootDir: __dirname,
-			},
-		},
-	},
 
 	// Project rules + SPDX license header (previously the "header/header" rule).
 	{
