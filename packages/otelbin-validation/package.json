@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch-logs": "^3.1013.0",
-    "aws-cdk-lib": "^2.99.1",
+    "aws-cdk-lib": "^2.246.0",
     "aws-lambda": "^1.0.7",
     "constructs": "^10.5.1"
   },
