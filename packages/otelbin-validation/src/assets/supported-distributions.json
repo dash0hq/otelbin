@@ -386,6 +386,11 @@
     "repository": "signalfx/splunk-otel-collector",
     "releases": [
       {
+        "version": "v0.156.0",
+        "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.156.0/splunk-otel-collector-0.156.0-1.x86_64.rpm",
+        "released_at": "2026-07-10T21:04:10.000Z"
+      },
+      {
         "version": "v0.155.0",
         "artifact": "https://github.com/signalfx/splunk-otel-collector/releases/download/v0.155.0/splunk-otel-collector-0.155.0-1.x86_64.rpm",
         "released_at": "2026-07-02T21:34:51.000Z"
