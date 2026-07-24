@@ -8,7 +8,7 @@ const { compilerOptions } = JSON.parse(readFileSync("./tsconfig.json", "utf8")) 
 
 const config: Config = {
 	preset: "ts-jest",
-	testEnvironment: "node",
+	testEnvironment: "jsdom",
 	transform: {
 		"^.+\\.ts?$": "ts-jest",
 	},
