@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
