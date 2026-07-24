@@ -1,36 +1,52 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-/**
- * @jest-environment jsdom
- */
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { renderHook } from "@testing-library/react";
+import { stringify as encodeUrlValue } from "~/lib/urlState/jsurl2";
 
-"use client";
+// next/navigation hooks require an App Router runtime; stub them so the rest of
+// the URL-state pipeline (useHashSearchParams -> useUrlState -> the hook under
+// test) can run for real against jsdom's window.location.
+jest.mock("next/navigation", () => ({
+	usePathname: () => "/",
+	useSearchParams: () => new URLSearchParams(),
+}));
 
-import { jest, describe, expect, it } from "@jest/globals";
 import { useServerSideValidationEnabled } from "./otelCollectorConfigValidation";
-import * as useUrlStateModule from "~/lib/urlState/client/useUrlState";
 
-jest.mock("~/lib/urlState/client/useUrlState", () => {
-	return {
-		useUrlState: jest.fn(() => [{ distro: "mockDistro", distroVersion: "mockVersion" }]),
-	};
-});
+function setUrlHash(params: Record<string, string>) {
+	const hash = Object.entries(params)
+		.map(([k, v]) => `${k}=${encodeUrlValue(v)}`)
+		.join("&");
+	window.location.hash = hash;
+}
 
 describe("useServerSideValidationEnabled", () => {
-	it("should return true when distro and distroVersion are present", () => {
-		const result = useServerSideValidationEnabled();
-
-		expect(result).toBe(true);
+	beforeEach(() => {
+		window.location.hash = "";
 	});
 
-	it("should return false when either distro or distroVersion is missing", () => {
-		jest
-			.spyOn(useUrlStateModule, "useUrlState")
-			.mockImplementation(() => [{ distro: "mockDistro", distroVersion: null }, () => "mockPath"]);
+	it("returns true when both distro and distroVersion are in the URL hash", () => {
+		setUrlHash({ distro: "otelcol", distroVersion: "0.100.0" });
+		const { result } = renderHook(() => useServerSideValidationEnabled());
+		expect(result.current).toBe(true);
+	});
 
-		const result = useServerSideValidationEnabled();
+	it("returns false when distroVersion is missing", () => {
+		setUrlHash({ distro: "otelcol" });
+		const { result } = renderHook(() => useServerSideValidationEnabled());
+		expect(result.current).toBe(false);
+	});
 
-		expect(result).toBe(false);
+	it("returns false when distro is missing", () => {
+		setUrlHash({ distroVersion: "0.100.0" });
+		const { result } = renderHook(() => useServerSideValidationEnabled());
+		expect(result.current).toBe(false);
+	});
+
+	it("returns false when the URL hash is empty", () => {
+		const { result } = renderHook(() => useServerSideValidationEnabled());
+		expect(result.current).toBe(false);
 	});
 });
