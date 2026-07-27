@@ -3,7 +3,7 @@
 
 .PHONY: help \
         install install-otelbin install-validation install-validation-image \
-        test test-otelbin test-validation test-validation-image \
+        test test-otelbin test-validation test-validation-synth test-validation-integration test-validation-image \
         lint lint-otelbin \
         dev \
         build build-otelbin build-validation build-validation-image \
@@ -28,6 +28,13 @@ help:
 	@echo "  make test-otelbin    | test-validation    | test-validation-image"
 	@echo "  make build-otelbin   | build-validation   | build-validation-image"
 	@echo "  make lint-otelbin"
+	@echo ""
+	@echo "  make test-validation-synth          CDK synth check for the"
+	@echo "                                      validation stack"
+	@echo "                                      (needs some /tmp headroom)"
+	@echo "  make test-validation-integration    Live-AWS integration test"
+	@echo "                                      (requires API_GATEWAY_URL,"
+	@echo "                                      VALIDATION_API_KEY)"
 
 # ---- install -----------------------------------------------------------------
 
@@ -52,8 +59,19 @@ test-otelbin:
 test-validation-image:
 	cd $(VALIDATION_IMAGE_DIR) && npm test
 
+# Fast, environment-independent unit tests only. The package's own `npm test`
+# additionally runs test/stack.test.ts (a CDK synth test that needs headroom
+# on the filesystem) and test/main.test.ts (a live-AWS integration test that
+# needs API_GATEWAY_URL and VALIDATION_API_KEY). See the -synth and
+# -integration targets for those.
 test-validation:
-	cd $(VALIDATION_DIR) && npm test
+	cd $(VALIDATION_DIR) && npx jest src/ --no-coverage
+
+test-validation-synth:
+	cd $(VALIDATION_DIR) && npx jest test/stack.test.ts --no-coverage
+
+test-validation-integration:
+	cd $(VALIDATION_DIR) && npx jest test/main.test.ts --no-coverage
 
 # ---- lint --------------------------------------------------------------------
 
