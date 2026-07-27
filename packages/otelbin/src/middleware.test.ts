@@ -1,6 +1,3 @@
-/**
- * @jest-environment node
- */
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -37,7 +34,9 @@ describe("handleShortLinkRequest", () => {
 	});
 
 	it("passes through when the path does not match /s/<id>", async () => {
-		const response = await handleShortLinkRequest(makeRequest(`/SS/${SHORT_LINK_ID}`, { "user-agent": BOT_USER_AGENT }));
+		const response = await handleShortLinkRequest(
+			makeRequest(`/SS/${SHORT_LINK_ID}`, { "user-agent": BOT_USER_AGENT })
+		);
 
 		expect(response.headers.get("x-middleware-next")).toBe("1");
 		expect(response.headers.get("x-middleware-rewrite")).toBeNull();
