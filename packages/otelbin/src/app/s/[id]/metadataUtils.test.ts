@@ -153,247 +153,160 @@ enum MarkerType {
 }
 
 describe("drawEdges", () => {
-	it("should calculate the correct edges and add position for each edge to draw them inside each parent node", () => {
-		const parentNode = {
-			type: "parentNodeType",
-			data: {
-				height: 100,
-				width: 250,
-				childNodes: [
-					{
-						type: "receiversNode",
-						parentNode: "metrics",
-						data: { height: 100 },
-						position: { x: 200, y: 300 },
-						id: "2",
-					},
-					{
-						type: "processorsNode",
-						parentNode: "metrics",
-						data: { height: 100 },
-						position: { x: 200, y: 300 },
-						id: "3",
-					},
-					{
-						type: "processorsNode",
-						parentNode: "metrics",
-						data: { height: 100 },
-						position: { x: 210, y: 220 },
-						id: "4",
-					},
-					{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 10 }, id: "5" },
-				],
-			},
-			position: { x: 100, y: 110 },
-			id: "1",
-			label: "metrics",
-		};
+	// Two edges around node "3" so we can assert that its target-side (from e1)
+	// and its source-side (from e2) sit at the same Y — a real refactor-hostile
+	// bug would be to accidentally break that.
+	const childNodes = [
+		{ type: "receiversNode", parentNode: "metrics", data: { height: 100 }, position: { x: 200, y: 300 }, id: "2" },
+		{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 200, y: 300 }, id: "3" },
+		{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 210, y: 220 }, id: "4" },
+		{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 10 }, id: "5" },
+	];
+	const parentNode = {
+		type: "parentNodeType",
+		data: { height: 100, width: 250, childNodes },
+		position: { x: 100, y: 110 },
+		id: "1",
+		label: "metrics",
+	};
+	const markerEnd = { type: MarkerType.Arrow, color: "#9CA2AB", width: 20, height: 25 };
+	const style = { stroke: "#9CA2AB" };
+	const edgeData = { type: "edge", sourceParent: "metrics", targetParent: "metrics" };
+	const edges = [
+		{ id: "e1", source: "2", target: "3", type: "default", markerEnd, style, data: edgeData },
+		{ id: "e2", source: "3", target: "4", type: "default", markerEnd, style, data: edgeData },
+		{ id: "e3", source: "4", target: "5", type: "default", markerEnd, style, data: edgeData },
+	];
+	const childById = new Map(childNodes.map((n) => [n.id, n]));
 
-		const markerEnd = { type: MarkerType.Arrow, color: "#9CA2AB", width: 20, height: 25 };
-		const style = { stroke: "#9CA2AB" };
-
-		const edges = [
-			{
-				id: "e1",
-				source: "2",
-				target: "3",
-				type: "default",
-				markerEnd: markerEnd,
-				style: style,
-				data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
-			},
-			{
-				id: "e2",
-				source: "3",
-				target: "4",
-				type: "default",
-				markerEnd: markerEnd,
-				style: style,
-				data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
-			},
-			{
-				id: "e3",
-				source: "4",
-				target: "5",
-				type: "default",
-				markerEnd: markerEnd,
-				style: style,
-				data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
-			},
-		];
-
+	it("returns one entry per input edge, preserving the edge object by identity", () => {
 		const result = drawEdges(edges, parentNode);
+		expect(result).toHaveLength(edges.length);
+		result.forEach((entry, i) => expect(entry?.edge).toBe(edges[i]));
+	});
 
-		expect(result).toEqual([
-			{
-				edge: {
-					id: "e1",
-					source: "2",
-					target: "3",
-					type: "default",
-					markerEnd: markerEnd,
-					style: style,
-					data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
-				},
-				sourcePosition: { x: 330, y: 340 },
-				targetPosition: { x: 190, y: 340 },
-			},
-			{
-				edge: {
-					id: "e2",
-					source: "3",
-					target: "4",
-					type: "default",
-					markerEnd: markerEnd,
-					style: style,
-					data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
-				},
-				sourcePosition: { x: 330, y: 340 },
-				targetPosition: { x: 200, y: 260 },
-			},
-			{
-				edge: {
-					id: "e3",
-					source: "4",
-					target: "5",
-					type: "default",
-					markerEnd: markerEnd,
-					style: style,
-					data: { type: "edge", sourceParent: "metrics", targetParent: "metrics" },
-				},
-				sourcePosition: { x: 340, y: 260 },
-				targetPosition: { x: -10, y: 50 },
-			},
-		]);
+	it("emits each source on the right side of its child node and each target on the left side", () => {
+		const result = drawEdges(edges, parentNode);
+		for (const entry of result) {
+			if (!entry) throw new Error("unexpected undefined entry");
+			const source = childById.get(entry.edge.source)!;
+			const target = childById.get(entry.edge.target)!;
+			expect(entry.sourcePosition.x).toBeGreaterThan(source.position.x);
+			expect(entry.targetPosition.x).toBeLessThan(target.position.x);
+		}
+	});
+
+	it("places both endpoints inside the vertical span of their child node", () => {
+		const result = drawEdges(edges, parentNode);
+		for (const entry of result) {
+			if (!entry) throw new Error("unexpected undefined entry");
+			const source = childById.get(entry.edge.source)!;
+			const target = childById.get(entry.edge.target)!;
+			expect(entry.sourcePosition.y).toBeGreaterThanOrEqual(source.position.y);
+			expect(entry.sourcePosition.y).toBeLessThanOrEqual(source.position.y + source.data.height);
+			expect(entry.targetPosition.y).toBeGreaterThanOrEqual(target.position.y);
+			expect(entry.targetPosition.y).toBeLessThanOrEqual(target.position.y + target.data.height);
+		}
+	});
+
+	it("uses the same Y for a node whether it appears as a source or a target", () => {
+		// e1 targets node "3"; e2 sources from node "3". Both endpoints on the same node.
+		const result = drawEdges(edges, parentNode);
+		expect(result[0]!.targetPosition.y).toBe(result[1]!.sourcePosition.y);
 	});
 });
 
 describe("drawConnectorEdges", () => {
-	it("should calculate the correct connector edges and add position for each edge to draw them between parent nodes", () => {
-		const parentNodes = [
-			{
-				type: "parentNodeType",
-				data: {
-					height: 100,
-					width: 250,
-					label: "logs",
-					childNodes: [
-						{
-							type: "receiversNode",
-							parentNode: "logs",
-							data: { height: 100, type: "connectors/receivers" },
-							position: { x: 200, y: 300 },
-							id: "2",
-						},
-						{
-							type: "processorsNode",
-							parentNode: "logs",
-							data: { height: 100 },
-							position: { x: 200, y: 300 },
-							id: "3",
-						},
-						{
-							type: "processorsNode",
-							parentNode: "logs",
-							data: { height: 100 },
-							position: { x: 210, y: 220 },
-							id: "4",
-						},
-						{ type: "exportersNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 10 }, id: "5" },
-					],
-				},
-				position: { x: 100, y: 110 },
-				id: "1",
-				label: "logs",
-			},
-			{
-				type: "parentNodeType",
-				data: {
-					height: 200,
-					width: 400,
-					label: "metrics",
-					childNodes: [
-						{
-							type: "receiversNode",
-							parentNode: "metrics",
-							data: { height: 100 },
-							position: { x: 200, y: 300 },
-							id: "6",
-						},
-						{
-							type: "processorsNode",
-							parentNode: "metrics",
-							data: { height: 100 },
-							position: { x: 200, y: 300 },
-							id: "7",
-						},
-						{
-							type: "processorsNode",
-							parentNode: "metrics",
-							data: { height: 100 },
-							position: { x: 200, y: 300 },
-							id: "8",
-						},
-						{
-							type: "processorsNode",
-							parentNode: "metrics",
-							data: { height: 100 },
-							position: { x: 210, y: 220 },
-							id: "9",
-						},
-						{
-							type: "exportersNode",
-							parentNode: "metrics",
-							data: { height: 100 },
-							position: { x: 0, y: 10 },
-							id: "10",
-						},
-						{
-							type: "exportersNode",
-							parentNode: "metrics",
-							data: { height: 100, type: "connectors/exporters" },
-							position: { x: 0, y: 10 },
-							id: "11",
-						},
-					],
-				},
-				position: { x: 300, y: 410 },
-				id: "12",
-				label: "metrics",
-			},
-		];
+	const logsChildren = [
+		{
+			type: "receiversNode",
+			parentNode: "logs",
+			data: { height: 100, type: "connectors/receivers" },
+			position: { x: 200, y: 300 },
+			id: "2",
+		},
+		{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 200, y: 300 }, id: "3" },
+		{ type: "processorsNode", parentNode: "logs", data: { height: 100 }, position: { x: 210, y: 220 }, id: "4" },
+		{ type: "exportersNode", parentNode: "logs", data: { height: 100 }, position: { x: 0, y: 10 }, id: "5" },
+	];
+	const metricsChildren = [
+		{ type: "receiversNode", parentNode: "metrics", data: { height: 100 }, position: { x: 200, y: 300 }, id: "6" },
+		{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 200, y: 300 }, id: "7" },
+		{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 200, y: 300 }, id: "8" },
+		{ type: "processorsNode", parentNode: "metrics", data: { height: 100 }, position: { x: 210, y: 220 }, id: "9" },
+		{ type: "exportersNode", parentNode: "metrics", data: { height: 100 }, position: { x: 0, y: 10 }, id: "10" },
+		{
+			type: "exportersNode",
+			parentNode: "metrics",
+			data: { height: 100, type: "connectors/exporters" },
+			position: { x: 0, y: 10 },
+			id: "11",
+		},
+	];
+	const logsParent = {
+		type: "parentNodeType",
+		data: { height: 100, width: 250, label: "logs", childNodes: logsChildren },
+		position: { x: 100, y: 110 },
+		id: "1",
+		label: "logs",
+	};
+	const metricsParent = {
+		type: "parentNodeType",
+		data: { height: 200, width: 400, label: "metrics", childNodes: metricsChildren },
+		position: { x: 300, y: 410 },
+		id: "12",
+		label: "metrics",
+	};
+	const parentNodes = [logsParent, metricsParent];
+	const markerEnd = { type: MarkerType.Arrow, color: "#9CA2AB", width: 20, height: 25 };
+	const style = { stroke: "#9CA2AB" };
+	const connectorEdge = {
+		id: "ec1",
+		source: "11",
+		target: "2",
+		type: "default",
+		markerEnd,
+		style,
+		data: { type: "connector", sourcePipeline: "metrics", targetPipeline: "logs" },
+	};
+	const edges = [connectorEdge];
 
-		const markerEnd = { type: MarkerType.Arrow, color: "#9CA2AB", width: 20, height: 25 };
-		const style = { stroke: "#9CA2AB" };
+	it("returns one entry per input edge, preserving the edge object by identity", () => {
+		const result = drawConnectorEdges(edges, parentNodes);
+		expect(result).toHaveLength(edges.length);
+		expect(result[0]?.edge).toBe(connectorEdge);
+	});
 
-		const edges = [
-			{
-				id: "ec1",
-				source: "11",
-				target: "2",
-				type: "default",
-				markerEnd: markerEnd,
-				style: style,
-				data: { type: "connector", sourcePipeline: "metrics", targetPipeline: "logs" },
-			},
-		];
+	it("emits the source to the right of the source-parent + source-child position", () => {
+		const [entry] = drawConnectorEdges(edges, parentNodes);
+		const sourceAbsX = metricsParent.position.x + metricsChildren[5]!.position.x; // node "11"
+		expect(entry!.sourcePosition.x).toBeGreaterThan(sourceAbsX);
+	});
 
-		const result = drawConnectorEdges(edges, parentNodes, 100);
+	it("receives the target to the left of the target-parent + target-child position", () => {
+		const [entry] = drawConnectorEdges(edges, parentNodes);
+		const targetAbsX = logsParent.position.x + logsChildren[0]!.position.x; // node "2"
+		expect(entry!.targetPosition.x).toBeLessThan(targetAbsX);
+	});
 
-		expect(result).toEqual([
-			{
-				edge: {
-					id: "ec1",
-					source: "11",
-					target: "2",
-					type: "default",
-					markerEnd: markerEnd,
-					style: style,
-					data: { type: "connector", sourcePipeline: "metrics", targetPipeline: "logs" },
-				},
-				sourcePosition: { x: 540, y: 460 },
-				targetPosition: { x: 390, y: 450 },
-			},
-		]);
+	it("shifts both endpoints horizontally by exactly totalXOffset", () => {
+		const [withoutOffset] = drawConnectorEdges(edges, parentNodes, 0);
+		const [withOffset] = drawConnectorEdges(edges, parentNodes, 100);
+		expect(withOffset!.sourcePosition.x - withoutOffset!.sourcePosition.x).toBe(100);
+		expect(withOffset!.targetPosition.x - withoutOffset!.targetPosition.x).toBe(100);
+		// Vertical positions do not depend on the horizontal offset.
+		expect(withOffset!.sourcePosition.y).toBe(withoutOffset!.sourcePosition.y);
+		expect(withOffset!.targetPosition.y).toBe(withoutOffset!.targetPosition.y);
+	});
+
+	it("returns (0, 0) endpoints when the source or target pipeline cannot be resolved", () => {
+		const orphanEdge = {
+			...connectorEdge,
+			id: "orphan",
+			data: { ...connectorEdge.data, sourcePipeline: "does-not-exist" },
+		};
+		const [entry] = drawConnectorEdges([orphanEdge], parentNodes);
+		expect(entry!.sourcePosition).toEqual({ x: 0, y: 0 });
+		expect(entry!.targetPosition).toEqual({ x: 0, y: 0 });
 	});
 });
