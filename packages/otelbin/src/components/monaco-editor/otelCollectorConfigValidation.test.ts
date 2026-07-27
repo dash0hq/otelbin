@@ -16,11 +16,9 @@ import {
 import { capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
 import type { editor } from "monaco-editor";
 import YAML from "yaml";
+import { configBinding } from "./__fixtures__/configBinding";
 
-const editorBinding = {
-	prefix: "",
-	name: "config",
-	fallback: `
+const editorBinding = configBinding(`
 receivers:
   otlp:
 processors:
@@ -32,15 +30,9 @@ service:
 			receivers: [otlp]
 			processors: [batch]
 			exporters: [otlp]
-`
-		.trim()
-		.replaceAll(/\t/g, "  ") as string,
-} as const;
+`);
 
-const yamlData = {
-	prefix: "",
-	name: "config",
-	fallback: `
+const yamlData = configBinding(`
 receivers:
   otlp:
   2222:
@@ -54,10 +46,7 @@ service:
 			receivers: [otlp, 123, 456]
 			processors: [batch, 789]
 			exporters: [otlp]
-`
-		.trim()
-		.replaceAll(/\t/g, "  ") as string,
-} as const;
+`);
 
 // Tested with random strings
 test("capitalize and remove s", () => {
