@@ -1,16 +1,44 @@
 # Contributing
 
+## Repository Layout
+
+The repository holds three packages under `packages/`:
+
+- **`otelbin`** — the Next.js app served at [otelbin.io](https://www.otelbin.io). This is where the UI, the editor, and short-link handling live.
+- **`otelbin-validation`** — the AWS CDK infrastructure that hosts the server-side collector-configuration validation service. Managed via [`projen`](https://projen.io/).
+- **`otelbin-validation-image`** — the Lambda container image used by the validation service.
+
+Each package installs and runs independently. Most contributors touching the UI only need to work in `otelbin`.
+
 ## Local Development
 
-To develop OTelBin locally, you will need to clone this repository and set up all the env vars outlined in the [`.env.example` file](https://github.com/dash0hq/otelbin/blob/main/packages/otelbin/.env.example).
+Prerequisites: Node.js `>= 22` (see `.nvmrc`) and `make`.
 
-Once that's done, you can use the following commands to run the app locally:
+Clone the repository and set the env vars outlined in the [`.env.example` file](https://github.com/dash0hq/otelbin/blob/main/packages/otelbin/.env.example).
+
+The top-level `Makefile` wraps the common workflows. From the repository root:
+
+```
+make install   # install deps for every package (npm ci, lockfile-faithful)
+make dev       # start the otelbin Next.js dev server
+make test      # run every package's test suite
+make lint      # run the otelbin app linter (eslint + prettier + tsc --noEmit)
+make build     # build every package
+```
+
+Run `make` (or `make help`) to see all targets, including per-package variants like `make test-otelbin` for faster feedback when iterating on a single package.
+
+If you prefer to work directly in a package, the equivalent per-package commands are:
 
 ```
 cd packages/otelbin
-npm i
-npm run dev
+npm ci        # install exactly what the lockfile pins (use over `npm i`)
+npm test      # jest
+npm run lint  # eslint + prettier + tsc --noEmit
+npm run dev   # Next.js dev server
 ```
+
+Use `npm ci` rather than `npm i`. `npm i` can update the lockfile silently and leave your `node_modules` in a state that no other contributor (or CI) will reproduce.
 
 ## Using the JSON Schema
 
