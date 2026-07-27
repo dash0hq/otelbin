@@ -57,7 +57,12 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 			<div className="shrink-0">
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<IconButton onClick={handleCopy} variant={"transparent"} size={"xs"}>
+						<IconButton
+							onClick={handleCopy}
+							variant={"transparent"}
+							size={"xs"}
+							aria-label="Copy editor content to clipboard"
+						>
 							<Copy />
 						</IconButton>
 					</TooltipTrigger>
@@ -65,7 +70,12 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 				</Tooltip>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<IconButton onClick={handleDownload} variant={"transparent"} size={"xs"}>
+						<IconButton
+							onClick={handleDownload}
+							variant={"transparent"}
+							size={"xs"}
+							aria-label="Download editor content"
+						>
 							<ArrowDownToLine />
 						</IconButton>
 					</TooltipTrigger>
@@ -73,7 +83,12 @@ export default function EditorTopBar({ config, font }: { config: string; font: N
 				</Tooltip>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<IconButton onClick={() => setViewMode("pipeline")} variant={"transparent"} size={"xs"}>
+						<IconButton
+							onClick={() => setViewMode("pipeline")}
+							variant={"transparent"}
+							size={"xs"}
+							aria-label="Hide editor"
+						>
 							<PanelLeftClose />
 						</IconButton>
 					</TooltipTrigger>
