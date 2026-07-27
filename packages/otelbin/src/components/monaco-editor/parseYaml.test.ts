@@ -4,12 +4,10 @@
 import { describe, expect, it } from "@jest/globals";
 import type { IItem, IYamlElement } from "./parseYaml";
 import { getYamlDocument, extractServiceItems, findPipelinesKeyValues, parseYaml, selectConfigType } from "./parseYaml";
+import { configBinding } from "./__fixtures__/configBinding";
 
 //The example contains pipelines with duplicated names (otlp and batch)
-const editorBinding = {
-	prefix: "",
-	name: "config",
-	fallback: `
+const editorBinding = configBinding(`
 receivers:
   otlp:
 processors:
@@ -25,16 +23,10 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlp]
-`
-		.trim()
-		.replaceAll(/\t/g, "  ") as string,
-} as const;
+`);
 
 //The example contains service key with no pipelines
-const serviceTest = {
-	prefix: "",
-	name: "config",
-	fallback: `
+const serviceTest = configBinding(`
 receivers:
   otlp:
 processors:
@@ -43,10 +35,7 @@ service:
   extensions: [health_check, pprof, zpages]
 testItem1:
 testItem2:
-`
-		.trim()
-		.replaceAll(/\t/g, "  ") as string,
-} as const;
+`);
 
 // Tested with brief serviceTest.fallback
 describe("parseYaml", () => {
