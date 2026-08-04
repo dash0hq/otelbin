@@ -110,12 +110,23 @@ jobs:
   prep-itests:
     name: Deploy validation backend
     needs: ['otelbin-verify', 'otelbin-validation-image-verify', 'otelbin-validation-verify']
+    # Deploying the validation backend needs the AWS credentials, and GitHub does not hand
+    # repository secrets to runs it considers untrusted: Dependabot-triggered runs read from
+    # the (empty) Dependabot secret store, and fork pull requests get no secrets at all. Those
+    # runs would fail in `Configure AWS credentials` no matter what the change looks like, so
+    # skip the deployment and the integration tests instead of reporting a red build. The
+    # integration tests still run for these changes once they land on `main`, and a maintainer
+    # can re-run the workflow to get the full test coverage on the pull request itself.
+    if: >-
+      github.triggering_actor != 'dependabot[bot]'
+      && (github.event_name != 'pull_request'
+          || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: 8core_32gb
     timeout-minutes: 30
     outputs:
       test_matrix: ${{ steps.prepare_test_matrix.outputs.test_matrix }}
       validation_api_apigateway_name: ${{ steps.parse_cdk_output.outputs.api_gateway_name }}
-      validation_api_apigateway_url: ${{ steps.parse_cdk_output.outputs.api_gateway_url }}\
+      validation_api_apigateway_url: ${{ steps.parse_cdk_output.outputs.api_gateway_url }}
       validation_api_apigateway_key_id: ${{ steps.parse_cdk_output.outputs.api_gateway_key_id }}
       test_env_name: ${{ steps.get_test_env_name.outputs.test_env_name }}
     steps:
@@ -282,6 +293,39 @@ jobs:
           API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
           API_GATEWAY_KEY_ID: ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }}
           RELEASE_UNDER_TEST: ${{ matrix.test_matrix }}
+        # `apigateway:GetApiKey` is a control-plane API with a very low request rate, and every
+        # job of this matrix calls it at the same moment, so it answers a good share of them with
+        # `TooManyRequestsException`. Retry with a jittered backoff to spread the calls out, and
+        # bail out with a clear error if the key never arrives: assigning the key inline as a
+        # prefix to `npm run test` used to hide the throttling and surface it two minutes later
+        # as a misleading "environment variable 'VALIDATION_API_KEY' is missing" test failure.
         # language=bash
         run: |
-          VALIDATION_API_KEY=$(aws apigateway get-api-key --api-key "${API_GATEWAY_KEY_ID}" --include-value | jq -r '.value') npm run test
+          attempts=8
+          api_key=''
+          for attempt in $(seq 1 "${attempts}"); do
+            if api_key="$(aws apigateway get-api-key --api-key "${API_GATEWAY_KEY_ID}" \
+              --include-value --query 'value' --output text)" && [ -n "${api_key}" ] \
+              && [ "${api_key}" != 'None' ]; then
+              break
+            fi
+
+            api_key=''
+            if [ "${attempt}" -eq "${attempts}" ]; then
+              break
+            fi
+
+            backoff=$(( attempt * 10 + RANDOM % 10 ))
+            echo "Could not retrieve the value of API key '${API_GATEWAY_KEY_ID}'" \
+              "(attempt ${attempt} of ${attempts}), retrying in ${backoff}s"
+            sleep "${backoff}"
+          done
+
+          if [ -z "${api_key}" ]; then
+            echo "::error::Could not retrieve the value of API key '${API_GATEWAY_KEY_ID}'"
+            exit 1
+          fi
+
+          echo "::add-mask::${api_key}"
+
+          VALIDATION_API_KEY="${api_key}" npm run test
