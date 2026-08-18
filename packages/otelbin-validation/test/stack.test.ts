@@ -14,7 +14,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, test } from '@jest/globals';
 import { App } from 'aws-cdk-lib';
-import { Distributions, OTelBinValidationStack } from '../src/main';
+import { DASH0_AUTHORIZATION_TOKEN_SECRET_NAME, Distributions, OTelBinValidationStack } from '../src/main';
 
 const CF_MAX_RESOURCES = 500;
 
@@ -83,5 +83,31 @@ describe('OTelBinValidationStack synthesis', () => {
 
       expect(iamRoles).toHaveLength(0);
     }
+  });
+
+  test('the Dash0 authorization token is resolved via a Secrets Manager dynamic reference, never inlined', () => {
+    let sawLambdaFunction = false;
+
+    for (const stackArtifact of assembly.stacks) {
+      const resources = stackArtifact.template.Resources || {};
+
+      for (const resource of Object.values(resources)) {
+        const typedResource = resource as { Type: string; Properties?: Record<string, unknown> };
+        if (typedResource.Type !== 'AWS::Lambda::Function') {
+          continue;
+        }
+
+        const variables = (typedResource.Properties?.Environment as { Variables?: Record<string, unknown> } | undefined)?.Variables;
+        const token = variables?.DASH0_AUTHORIZATION_TOKEN;
+        if (token === undefined) {
+          continue;
+        }
+
+        sawLambdaFunction = true;
+        expect(token).toBe(`{{resolve:secretsmanager:${DASH0_AUTHORIZATION_TOKEN_SECRET_NAME}:SecretString:::}}`);
+      }
+    }
+
+    expect(sawLambdaFunction).toBe(true);
   });
 });
