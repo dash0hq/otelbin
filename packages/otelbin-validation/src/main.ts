@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
-import { App, CfnOutput, CustomResource, Duration, NestedStack, NestedStackProps, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
+import { App, CfnOutput, CustomResource, Duration, NestedStack, NestedStackProps, RemovalPolicy, SecretValue, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { ApiKeySourceType, AwsIntegration, IResource, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -9,6 +9,12 @@ import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+
+// Resolved by CloudFormation at deploy time via a dynamic reference, so the actual secret value
+// never appears in the synthesized template (or any CI artifact derived from it) - only this
+// placeholder name does. The secret must exist under this name in Secrets Manager in every
+// account this stack is deployed to.
+export const DASH0_AUTHORIZATION_TOKEN_SECRET_NAME = 'otelbin-validation/dash0-authorization-token';
 
 export interface Distributions {
   [key: string]: Distribution;
@@ -33,7 +39,6 @@ export interface DistributionNestedStackProps extends NestedStackProps {
   distributionName: string;
   distribution: Distribution;
   githubToken: string;
-  dash0AuthorizationToken?: string;
 }
 
 export class DistributionNestedStack extends NestedStack {
@@ -61,7 +66,7 @@ export class DistributionNestedStack extends NestedStack {
         }),
         environment: {
           DISTRO_NAME: props.distributionName,
-          DASH0_AUTHORIZATION_TOKEN: props.dash0AuthorizationToken || '',
+          DASH0_AUTHORIZATION_TOKEN: SecretValue.secretsManager(DASH0_AUTHORIZATION_TOKEN_SECRET_NAME).unsafeUnwrap(),
           SNOWFLAKE_CRL_ON_DISK_CACHE_DIR: '/tmp', // Remediation for https://github.com/snowflakedb/gosnowflake/pull/1526
         },
         /*
@@ -87,7 +92,6 @@ export class DistributionNestedStack extends NestedStack {
 export interface OTelBinValidationStackProps extends StackProps {
   testEnvironmentName: string;
   githubToken: string;
-  dash0AuthorizationToken?: string;
 }
 
 export class OTelBinValidationStack extends Stack {
@@ -207,7 +211,6 @@ export class OTelBinValidationStack extends Stack {
         distributionName,
         distribution,
         githubToken: props.githubToken,
-        dash0AuthorizationToken: props.dash0AuthorizationToken,
       });
       allLambdaFunctions.push(...nestedStack.lambdaFunctions);
     }
@@ -285,7 +288,6 @@ const env = {
   region: process.env.CDK_DEFAULT_REGION,
   testEnvironmentName,
   githubToken: process.env.GH_TOKEN,
-  dash0AuthorizationToken: process.env.DASH0_AUTHORIZATION_TOKEN,
 };
 
 const app = new App();

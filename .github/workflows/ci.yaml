@@ -9,6 +9,15 @@ on:
   pull_request:
     branches:
       - 'main'
+  # Dependabot PRs are excluded from repo secrets under the `pull_request` event, so the
+  # credentialed jobs below (prep-itests, run-itests) additionally run under
+  # `pull_request_target`, which is only actually used for the `dependabot[bot]` actor (see the
+  # `if:` conditions on those jobs). `pull_request_target` runs with the workflow file from
+  # `main`, not from the PR branch, so a dependency-bump PR can't rewrite the CI steps it runs
+  # under with elevated credentials.
+  pull_request_target:
+    branches:
+      - 'main'
 
 permissions:
   id-token: write
@@ -17,8 +26,12 @@ permissions:
 # Ensure we only have one such workflow running per branch, to avoid
 # conflicts in the test env. `clean-up-test-env.yaml` uses the same
 # group key so a CI deploy and a teardown for the same PR are serialized.
+# `github.head_ref` (the PR branch name) is used instead of `github.ref` so that
+# `pull_request` and `pull_request_target` runs for the same PR share a group; `pull_request_target`
+# reports `github.ref` as the base branch (`refs/heads/main`), which would otherwise put every
+# open PR's privileged run into the same group as every other PR and as `push` runs on main.
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.head_ref || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -26,6 +39,9 @@ jobs:
     name: OTelBin tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Skip the redundant pull_request_target run for everyone except dependabot: non-dependabot
+    # PRs already ran this under the plain pull_request event above.
+    if: github.event_name != 'pull_request_target' || github.actor == 'dependabot[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -56,6 +72,8 @@ jobs:
     name: OTelBin Validation Image Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # See otelbin-verify above for why this condition exists.
+    if: github.event_name != 'pull_request_target' || github.actor == 'dependabot[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -81,6 +99,8 @@ jobs:
     name: OTelBin Validation Stack Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # See otelbin-verify above for why this condition exists.
+    if: github.event_name != 'pull_request_target' || github.actor == 'dependabot[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -112,6 +132,13 @@ jobs:
     needs: ['otelbin-verify', 'otelbin-validation-image-verify', 'otelbin-validation-verify']
     runs-on: 8core_32gb
     timeout-minutes: 30
+    # Runs for: pushes to main; PRs from non-dependabot actors (via pull_request, which already
+    # has secrets for same-repo branches); and dependabot PRs (via pull_request_target only,
+    # since pull_request never carries secrets for the dependabot[bot] actor).
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]') ||
+      (github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]')
     outputs:
       test_matrix: ${{ steps.prepare_test_matrix.outputs.test_matrix }}
       validation_api_apigateway_name: ${{ steps.parse_cdk_output.outputs.api_gateway_name }}
@@ -122,6 +149,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # For pull_request_target, default checkout is the base branch (main); we need the
+          # PR's own head commit, which is what's actually being tested/deployed.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -132,8 +162,11 @@ jobs:
       - name: Install CDK dependencies
         shell: bash
         working-directory: packages/otelbin-validation
+        # --ignore-scripts: this job configures AWS credentials in a later step; skipping
+        # install-time scripts prevents a compromised/malicious dependency from planting
+        # something in this job that later reads those credentials from the shared runner env.
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npm i -g aws-cli
 
       - name: Get test environment name
@@ -193,7 +226,10 @@ jobs:
           CDK_DEPLOY_REGION: 'us-east-2'
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
-          DASH0_AUTHORIZATION_TOKEN: ${{ secrets.DASH0_AUTHORIZATION_TOKEN }}
+        # The Dash0 authorization token is no longer passed in here: the Lambda's environment
+        # variable is populated by CloudFormation from Secrets Manager at deploy time (see
+        # DASH0_AUTHORIZATION_TOKEN_SECRET_NAME in src/main.ts), so it never has to pass through
+        # this workflow (or any GitHub secret) at all.
         run: |
           npx projen deploy --require-approval never --outputs-file ./cdk-outputs.json
 
@@ -218,6 +254,12 @@ jobs:
   run-itests:
     name: Validation tests
     needs: ['prep-itests']
+    # See prep-itests above for why this condition exists; run-itests needs the same gating
+    # since it depends on prep-itests's outputs and shares the same credential requirements.
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]') ||
+      (github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]')
     strategy:
       matrix:
         test_matrix: ${{ fromJson(needs.prep-itests.outputs.test_matrix )}}
@@ -228,6 +270,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # See prep-itests above: check out the PR's own head commit, not the base branch.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -238,8 +282,9 @@ jobs:
       - name: Install CDK dependencies
         shell: bash
         working-directory: packages/otelbin-validation
+        # See prep-itests above for why --ignore-scripts is used here.
         run: |
-          npm ci
+          npm ci --ignore-scripts
 
       - name: Select credentials
         id: select_credentials
