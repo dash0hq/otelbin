@@ -13,7 +13,8 @@ process.env.GH_TOKEN = process.env.GH_TOKEN || 'test-token';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, test } from '@jest/globals';
-import { App } from 'aws-cdk-lib';
+import { App, NestedStack } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { DASH0_AUTHORIZATION_TOKEN_SECRET_NAME, Distributions, OTelBinValidationStack } from '../src/main';
 
 const CF_MAX_RESOURCES = 500;
@@ -25,6 +26,11 @@ describe('OTelBinValidationStack synthesis', () => {
     githubToken: 'test-token',
   });
   const assembly = app.synth();
+
+  // NestedStack templates are synthesized as assets (referenced via TemplateURL), not as
+  // top-level entries in the cloud assembly - assembly.stacks only has the parent. Template.
+  // fromStack() synthesizes a nested stack's own template directly from the construct instead.
+  const nestedStacks = app.node.findAll().filter((c): c is NestedStack => c instanceof NestedStack);
 
   test('stack is synthesized successfully', () => {
     expect(stack.stackName).toBe('test-stack');
@@ -73,61 +79,34 @@ describe('OTelBinValidationStack synthesis', () => {
   });
 
   test('nested stacks do not create individual Lambda execution roles', () => {
-    const nestedStacks = assembly.stacks.filter(s => s.stackName !== 'test-stack');
+    expect(nestedStacks.length).toBeGreaterThan(0);
 
     for (const nestedStack of nestedStacks) {
-      const resources = nestedStack.template.Resources || {};
-      const iamRoles = Object.values(resources).filter(
-        (r: unknown) => (r as Record<string, unknown>).Type === 'AWS::IAM::Role',
-      );
-
-      expect(iamRoles).toHaveLength(0);
+      Template.fromStack(nestedStack).resourceCountIs('AWS::IAM::Role', 0);
     }
   });
 
   test('the Dash0 authorization token is resolved via a Secrets Manager dynamic reference, never inlined', () => {
-    const found: { stackName: string; resourceId: string; token: unknown }[] = [];
+    expect(nestedStacks.length).toBeGreaterThan(0);
 
-    for (const stackArtifact of assembly.stacks) {
-      const resources = stackArtifact.template.Resources || {};
+    const expected = `{{resolve:secretsmanager:${DASH0_AUTHORIZATION_TOKEN_SECRET_NAME}:SecretString:::}}`;
+    let sawLambdaFunction = false;
 
-      for (const [resourceId, resource] of Object.entries(resources)) {
-        const typedResource = resource as { Type: string; Properties?: Record<string, unknown> };
-        if (typedResource.Type !== 'AWS::Lambda::Function') {
-          continue;
-        }
+    for (const nestedStack of nestedStacks) {
+      const lambdas = Template.fromStack(nestedStack).findResources('AWS::Lambda::Function');
 
-        const variables = (typedResource.Properties?.Environment as { Variables?: Record<string, unknown> } | undefined)?.Variables;
+      for (const resource of Object.values(lambdas)) {
+        const variables = (resource as { Properties?: { Environment?: { Variables?: Record<string, unknown> } } }).Properties?.Environment?.Variables;
         const token = variables?.DASH0_AUTHORIZATION_TOKEN;
         if (token === undefined) {
           continue;
         }
 
-        found.push({ stackName: stackArtifact.stackName, resourceId, token });
+        sawLambdaFunction = true;
+        expect(token).toBe(expected);
       }
     }
 
-    if (found.length === 0) {
-      // Dump every Lambda's Environment and every nested stack's Parameters so a failure here is
-      // debuggable from CI output alone, without needing a local repro.
-      const debugInfo = assembly.stacks.map(stackArtifact => {
-        const resources = stackArtifact.template.Resources || {};
-        return {
-          stackName: stackArtifact.stackName,
-          lambdas: Object.entries(resources)
-            .filter(([, r]) => (r as { Type: string }).Type === 'AWS::Lambda::Function')
-            .map(([id, r]) => ({ id, environment: (r as { Properties?: Record<string, unknown> }).Properties?.Environment })),
-          nestedStackParameters: Object.entries(resources)
-            .filter(([, r]) => (r as { Type: string }).Type === 'AWS::CloudFormation::Stack')
-            .map(([id, r]) => ({ id, parameters: (r as { Properties?: Record<string, unknown> }).Properties?.Parameters })),
-        };
-      });
-      throw new Error(`No Lambda function had a DASH0_AUTHORIZATION_TOKEN environment variable. Debug info:\n${JSON.stringify(debugInfo, null, 2)}`);
-    }
-
-    const expected = `{{resolve:secretsmanager:${DASH0_AUTHORIZATION_TOKEN_SECRET_NAME}:SecretString:::}}`;
-    for (const { stackName, resourceId, token } of found) {
-      expect({ stackName, resourceId, token }).toEqual({ stackName, resourceId, token: expected });
-    }
+    expect(sawLambdaFunction).toBe(true);
   });
 });
