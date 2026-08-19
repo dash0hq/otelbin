@@ -86,12 +86,12 @@ describe('OTelBinValidationStack synthesis', () => {
   });
 
   test('the Dash0 authorization token is resolved via a Secrets Manager dynamic reference, never inlined', () => {
-    let sawLambdaFunction = false;
+    const found: { stackName: string; resourceId: string; token: unknown }[] = [];
 
     for (const stackArtifact of assembly.stacks) {
       const resources = stackArtifact.template.Resources || {};
 
-      for (const resource of Object.values(resources)) {
+      for (const [resourceId, resource] of Object.entries(resources)) {
         const typedResource = resource as { Type: string; Properties?: Record<string, unknown> };
         if (typedResource.Type !== 'AWS::Lambda::Function') {
           continue;
@@ -103,11 +103,31 @@ describe('OTelBinValidationStack synthesis', () => {
           continue;
         }
 
-        sawLambdaFunction = true;
-        expect(token).toBe(`{{resolve:secretsmanager:${DASH0_AUTHORIZATION_TOKEN_SECRET_NAME}:SecretString:::}}`);
+        found.push({ stackName: stackArtifact.stackName, resourceId, token });
       }
     }
 
-    expect(sawLambdaFunction).toBe(true);
+    if (found.length === 0) {
+      // Dump every Lambda's Environment and every nested stack's Parameters so a failure here is
+      // debuggable from CI output alone, without needing a local repro.
+      const debugInfo = assembly.stacks.map(stackArtifact => {
+        const resources = stackArtifact.template.Resources || {};
+        return {
+          stackName: stackArtifact.stackName,
+          lambdas: Object.entries(resources)
+            .filter(([, r]) => (r as { Type: string }).Type === 'AWS::Lambda::Function')
+            .map(([id, r]) => ({ id, environment: (r as { Properties?: Record<string, unknown> }).Properties?.Environment })),
+          nestedStackParameters: Object.entries(resources)
+            .filter(([, r]) => (r as { Type: string }).Type === 'AWS::CloudFormation::Stack')
+            .map(([id, r]) => ({ id, parameters: (r as { Properties?: Record<string, unknown> }).Properties?.Parameters })),
+        };
+      });
+      throw new Error(`No Lambda function had a DASH0_AUTHORIZATION_TOKEN environment variable. Debug info:\n${JSON.stringify(debugInfo, null, 2)}`);
+    }
+
+    const expected = `{{resolve:secretsmanager:${DASH0_AUTHORIZATION_TOKEN_SECRET_NAME}:SecretString:::}}`;
+    for (const { stackName, resourceId, token } of found) {
+      expect({ stackName, resourceId, token }).toEqual({ stackName, resourceId, token: expected });
+    }
   });
 });
