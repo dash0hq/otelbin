@@ -264,6 +264,13 @@ jobs:
       matrix:
         test_matrix: ${{ fromJson(needs.prep-itests.outputs.test_matrix )}}
       fail-fast: false # We want to run all the tests, to prevent one failure from hiding another
+      # The test matrix has one entry per supported distribution release (~100 of them), and every
+      # job looks up the validation API's key via the API Gateway control plane, which is throttled
+      # per AWS account. Letting all of them start at once makes `GetApiKey` answer
+      # `TooManyRequestsException` for a good share of the jobs, so cap how many run concurrently.
+      # Combined with the retries configured on the lookup step below, this keeps the matrix well
+      # inside the throttle even when CI for more than one pull request overlaps.
+      max-parallel: 20
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -318,15 +325,40 @@ jobs:
           mask-aws-account-id: true
           role-to-assume: ${{ steps.select_credentials.outputs.role_arn }}
 
-      - name: Retrieve API Key for Validation API and run tests
+      # Looked up in a step of its own so that a throttled lookup fails the job right here with a
+      # clear error: when the lookup was inlined as a `VALIDATION_API_KEY=$(...) npm run test`
+      # assignment prefix, its exit code was not checked and the tests went on to fail with a
+      # misleading "Required environment variable 'VALIDATION_API_KEY' is missing".
+      - name: Retrieve API key for the validation API
+        shell: bash
+        env:
+          AWS_DEFAULT_REGION: 'us-east-2'
+          # The CLI defaults to 3 attempts, which is not enough to ride out the API Gateway
+          # control-plane throttle when several matrix jobs line up on `GetApiKey`.
+          AWS_RETRY_MODE: 'standard'
+          AWS_MAX_ATTEMPTS: '10'
+          API_GATEWAY_KEY_ID: ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }}
+        # language=bash
+        run: |
+          validation_api_key=$(aws apigateway get-api-key --api-key "${API_GATEWAY_KEY_ID}" --include-value | jq -r '.value')
+          if [ -z "${validation_api_key}" ] || [ "${validation_api_key}" == 'null' ]; then
+            echo "::error::Could not read the value of API key '${API_GATEWAY_KEY_ID}' of the validation API"
+            exit 1
+          fi
+          # Mask the key for the rest of the job, and hand it to the test step via the environment:
+          # step outputs are not masked, and this keeps the key inside this job.
+          echo "::add-mask::${validation_api_key}"
+          echo "VALIDATION_API_KEY=${validation_api_key}" >> "${GITHUB_ENV}"
+
+      - name: Run validation tests
         shell: bash
         working-directory: packages/otelbin-validation
         env:
           AWS_DEFAULT_REGION: 'us-east-2'
           API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
           API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
-          API_GATEWAY_KEY_ID: ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }}
           RELEASE_UNDER_TEST: ${{ matrix.test_matrix }}
+        # VALIDATION_API_KEY comes from the lookup step above via $GITHUB_ENV.
         # language=bash
         run: |
-          VALIDATION_API_KEY=$(aws apigateway get-api-key --api-key "${API_GATEWAY_KEY_ID}" --include-value | jq -r '.value') npm run test
+          npm run test
