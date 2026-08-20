@@ -96,3 +96,13 @@ jobs:
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
         run: |
           ./.github/workflows/scripts/destroy-validation-stack.sh
+
+      - name: Delete validation API key from SSM
+        shell: bash
+        env:
+          AWS_DEFAULT_REGION: 'us-east-2'
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+        # Published once per test env by ci.yaml's "Publish validation API key to SSM" step;
+        # torn down here so per-PR parameters don't accumulate indefinitely.
+        run: |
+          aws ssm delete-parameter --name "/otelbin-validation/${TEST_ENVIRONMENT_NAME}/validation-api-key" || true

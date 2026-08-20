@@ -143,7 +143,6 @@ jobs:
       test_matrix: ${{ steps.prepare_test_matrix.outputs.test_matrix }}
       validation_api_apigateway_name: ${{ steps.parse_cdk_output.outputs.api_gateway_name }}
       validation_api_apigateway_url: ${{ steps.parse_cdk_output.outputs.api_gateway_url }}\
-      validation_api_apigateway_key_id: ${{ steps.parse_cdk_output.outputs.api_gateway_key_id }}
       test_env_name: ${{ steps.get_test_env_name.outputs.test_env_name }}
     steps:
       - name: Checkout
@@ -244,6 +243,26 @@ jobs:
           echo api_gateway_url=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apiurl" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
           echo api_gateway_key_id=$(jq -r ".[\"otelbin-validation-${TEST_ENVIRONMENT_NAME}\"] | .apikeyid" < ./cdk-outputs.json) >> ${GITHUB_OUTPUT}
 
+      - name: Publish validation API key to SSM
+        shell: bash
+        env:
+          AWS_DEFAULT_REGION: 'us-east-2'
+          API_GATEWAY_KEY_ID: ${{ steps.parse_cdk_output.outputs.api_gateway_key_id }}
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+        # Fetch the API key's value exactly once, here, and hand it to the ~90 parallel run-itests
+        # matrix jobs via SSM Parameter Store instead of each of them independently calling
+        # `apigateway get-api-key --include-value`. That's a control-plane API with a low
+        # per-account throttle, and ~90 concurrent callers reliably tripped TooManyRequestsException.
+        # SSM's GetParameter is built for exactly this high-fan-out read pattern.
+        run: |
+          API_KEY_VALUE=$(aws apigateway get-api-key --api-key "${API_GATEWAY_KEY_ID}" --include-value --query value --output text)
+          echo "::add-mask::${API_KEY_VALUE}"
+          aws ssm put-parameter \
+            --name "/otelbin-validation/${TEST_ENVIRONMENT_NAME}/validation-api-key" \
+            --type SecureString \
+            --value "${API_KEY_VALUE}" \
+            --overwrite
+
       - name: Prepare test matrix
         id: prepare_test_matrix
         shell: bash
@@ -325,8 +344,27 @@ jobs:
           AWS_DEFAULT_REGION: 'us-east-2'
           API_GATEWAY_NAME: ${{ needs.prep-itests.outputs.validation_api_apigateway_name }}
           API_GATEWAY_URL: ${{ needs.prep-itests.outputs.validation_api_apigateway_url }}
-          API_GATEWAY_KEY_ID: ${{ needs.prep-itests.outputs.validation_api_apigateway_key_id }}
+          TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
           RELEASE_UNDER_TEST: ${{ matrix.test_matrix }}
         # language=bash
         run: |
-          VALIDATION_API_KEY=$(aws apigateway get-api-key --api-key "${API_GATEWAY_KEY_ID}" --include-value | jq -r '.value') npm run test
+          # Read the API key from SSM (published once by prep-itests) instead of calling
+          # apigateway get-api-key directly - see the "Publish validation API key to SSM" step.
+          # A short retry still absorbs any transient throttling from ~90 jobs reading at once.
+          for attempt in 1 2 3 4 5; do
+            if VALIDATION_API_KEY=$(aws ssm get-parameter \
+              --name "/otelbin-validation/${TEST_ENVIRONMENT_NAME}/validation-api-key" \
+              --with-decryption --query Parameter.Value --output text); then
+              break
+            fi
+            echo "Attempt ${attempt} to read the validation API key from SSM failed; retrying."
+            sleep $((attempt * 2))
+          done
+
+          if [ -z "${VALIDATION_API_KEY:-}" ]; then
+            echo "Failed to retrieve the validation API key from SSM after 5 attempts." >&2
+            exit 1
+          fi
+
+          echo "::add-mask::${VALIDATION_API_KEY}"
+          VALIDATION_API_KEY="${VALIDATION_API_KEY}" npm run test
