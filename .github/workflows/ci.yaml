@@ -131,7 +131,11 @@ jobs:
     name: Deploy validation backend
     needs: ['otelbin-verify', 'otelbin-validation-image-verify', 'otelbin-validation-verify']
     runs-on: 8core_32gb
-    timeout-minutes: 30
+    # The CDK deploy runs a median of ~25 minutes with a p90 of ~29, so a 30 minute limit killed
+    # roughly 8% of runs. A killed job also leaves the per-branch CloudFormation stack mid-deploy,
+    # and reports as `cancelled` rather than `failed`, which reads like a human pressed cancel.
+    # 60 matches `cleanup_test_env` in `clean-up-test-env.yaml`.
+    timeout-minutes: 60
     # Runs for: pushes to main; PRs from non-dependabot actors (via pull_request, which already
     # has secrets for same-repo branches); and dependabot PRs (via pull_request_target only,
     # since pull_request never carries secrets for the dependabot[bot] actor).
