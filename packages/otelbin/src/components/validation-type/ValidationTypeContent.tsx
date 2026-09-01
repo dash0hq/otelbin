@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AppWindow, Cloud, Github } from "lucide-react";
+import { AppWindow, Cloud } from "lucide-react";
+import { Github } from "~/components/assets/brand-icons";
 import { Button } from "../button";
 import BackendValidation from "./BackendValidation";
 import type { ICurrentDistributionVersion } from "./ValidationType";

@@ -3,7 +3,7 @@
 
 import Love from "~/components/assets/svg/love.svg";
 import Dash0 from "~/components/assets/svg/dash0.svg";
-import { Github, Slack } from "lucide-react";
+import { Github, Slack } from "~/components/assets/brand-icons";
 import React from "react";
 import { Legal } from "~/components/legal/Legal";
 

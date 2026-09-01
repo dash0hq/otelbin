@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from "~/components/button";
-import { Github, Slack } from "lucide-react";
+import { Github, Slack } from "~/components/assets/brand-icons";
 import React, { memo } from "react";
 import { type Node } from "reactflow";
 
