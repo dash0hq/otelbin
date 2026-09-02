@@ -390,3 +390,62 @@ jobs:
 
           echo "::add-mask::${VALIDATION_API_KEY}"
           VALIDATION_API_KEY="${VALIDATION_API_KEY}" npm run test
+
+  # A single fixed-name check, so that the validation suite can actually be required on main.
+  # `run-itests` is a matrix whose legs are named from supported-distributions.json, so it
+  # reports ~109 differently-named checks and the set changes whenever that file changes. No
+  # fixed list of context names can cover it. This job collapses every job above into one name.
+  ci-gate:
+    name: CI passed
+    needs:
+      - otelbin-verify
+      - otelbin-validation-image-verify
+      - otelbin-validation-verify
+      - prep-itests
+      - run-itests
+    # `always()` is load-bearing: without it this job is skipped whenever a dependency fails,
+    # and a skipped check does not block a merge, which would make the gate worse than useless.
+    # `!cancelled()` would have the same defect for a cancelled run.
+    #
+    # The event/actor condition is copied from prep-itests deliberately. Both the pull_request
+    # and pull_request_target runs report to the same head commit, and in every PR exactly one
+    # of them legitimately skips the itests: the pull_request run for dependabot, the
+    # pull_request_target run for everyone else. Without this condition, that run would report
+    # a spurious failure under this same check name. With it, that run reports `skipped`
+    # instead, which is the same shape the already-required `OTelBin tests` check produces on
+    # every PR today.
+    if: |
+      always() && (
+        github.event_name == 'push' ||
+        (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]') ||
+        (github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail unless every upstream job succeeded
+        shell: bash
+        env:
+          NEEDS_JSON: ${{ toJson(needs) }}
+        # language=bash
+        run: |
+          set -euo pipefail
+
+          echo "${NEEDS_JSON}" | jq .
+
+          # Treat anything other than `success` as a failure, `skipped` included. A skipped
+          # itest job is precisely the hole this gate closes: prep-itests failing skips
+          # run-itests, and an empty test matrix produces no legs at all. Reporting success in
+          # either case would mean the validation suite never ran and nobody noticed.
+          not_succeeded=$(
+            echo "${NEEDS_JSON}" \
+              | jq -r 'to_entries[] | select(.value.result != "success") | "  \(.key): \(.value.result)"'
+          )
+
+          if [ -n "${not_succeeded}" ]; then
+            echo "::error::Not every upstream job succeeded:"
+            echo "${not_succeeded}"
+            exit 1
+          fi
+
+          echo 'Every upstream job succeeded.'
