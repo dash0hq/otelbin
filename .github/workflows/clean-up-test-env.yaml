@@ -6,14 +6,20 @@ on:
     types: [ closed ]
   workflow_dispatch:
 
-# Use the same group key as `ci.yaml` so a CI deploy and this teardown for
-# the same PR are serialized, and so two teardowns for the same PR (e.g.
-# closed -> reopened -> closed, or a PR close racing a manual dispatch)
-# cannot both hit the same CloudFormation stack at once.
+# Byte-for-byte the same group key as `ci.yaml`, so a CI deploy and this teardown
+# for the same PR are serialized: both resolve `github.head_ref` to the PR's branch
+# name. This also keeps two teardowns for the same PR (e.g. closed -> reopened ->
+# closed) in one group, so they cannot both hit the same CloudFormation stack at
+# once. `github.ref` alone would not do it: under a `pull_request` event it is
+# `refs/pull/<number>/merge`, which never matches `ci.yaml`'s branch-name group.
+# Known gap: under `workflow_dispatch` there is no `head_ref`, so the group falls
+# back to `refs/heads/<branch>`. That matches a `push` run of `ci.yaml` but not a
+# `pull_request` run for the same branch, so a manual teardown can still race a
+# PR's deploy.
 # `cancel-in-progress: false` so a queued run waits for the in-flight one
 # rather than killing the destroy mid-retry-loop.
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.head_ref || github.ref }}
   cancel-in-progress: false
 
 jobs:
