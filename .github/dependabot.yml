@@ -16,6 +16,18 @@ updates:
       - "/packages/otelbin-validation-image"
     schedule:
       interval: "monthly"
+    # The OpenTelemetry JS packages have to move in lockstep. The stable ones version at 1.x
+    # and 2.x while the experimental exporters and instrumentations version at 0.x, and a
+    # given experimental release only works against one stable major. Bumping a single
+    # package across that boundary is what broke main: @opentelemetry/sdk-trace-node went to
+    # 2.x on its own, and 2.x removed TracerProvider.addSpanProcessor out from under
+    # packages/otelbin-validation-image/src/lambda-wrapper.ts. Grouping them means such a
+    # bump arrives as one pull request that passes or fails as a set, instead of one that
+    # looks harmless and is not.
+    groups:
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
     pull-request-branch-name:
       # Separate sections of the branch name with a hyphen
       # for example, `dependabot-npm_and_yarn-next_js-acorn-6.4.1`
