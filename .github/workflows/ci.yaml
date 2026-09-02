@@ -46,6 +46,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # See prep-itests below: under pull_request_target the default checkout is the base
+          # branch (main), which would test main's code and report the result on the PR.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -78,6 +81,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # See prep-itests below: under pull_request_target the default checkout is the base
+          # branch (main), which would test main's code and report the result on the PR.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -105,6 +111,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # See prep-itests below: under pull_request_target the default checkout is the base
+          # branch (main), which would test main's code and report the result on the PR.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
