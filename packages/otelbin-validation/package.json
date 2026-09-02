@@ -40,7 +40,7 @@
     "jest": "^30.3.0",
     "jest-circus": "^30.3.0",
     "jest-junit": "^16",
-    "projen": "^0.99.19",
+    "projen": "^0.103.11",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
