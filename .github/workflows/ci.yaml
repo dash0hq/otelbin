@@ -19,8 +19,11 @@ on:
     branches:
       - 'main'
 
+# Only `contents: read` is needed. `actions/checkout` reads the repo, and the AWS steps
+# authenticate with static access keys rather than OIDC, so nothing ever requested an OIDC
+# token. Granting `id-token: write` put a requestable token in every job's environment,
+# including the `pull_request_target` jobs that install dependency versions the PR proposes.
 permissions:
-  id-token: write
   contents: read
 
 # Ensure we only have one such workflow running per branch, to avoid
@@ -59,7 +62,11 @@ jobs:
       - name: Install dependencies
         shell: bash
         working-directory: packages/otelbin
-        run: npm ci
+        # --ignore-scripts: under pull_request_target this job installs the dependency versions
+        # the PR proposes, so an install script would execute PR-controlled code. Unlike
+        # prep-itests below, this job references no secrets, so the flag closes the code
+        # execution path itself rather than protecting credentials from it.
+        run: npm ci --ignore-scripts
 
       - name: Lint
         shell: bash
@@ -94,7 +101,8 @@ jobs:
       - name: Install dependencies
         shell: bash
         working-directory: packages/otelbin-validation-image
-        run: npm ci
+        # See otelbin-verify above for why --ignore-scripts is used here.
+        run: npm ci --ignore-scripts
 
       - name: Test
         shell: bash
@@ -124,7 +132,8 @@ jobs:
       - name: Install dependencies
         shell: bash
         working-directory: packages/otelbin-validation
-        run: npm ci
+        # See otelbin-verify above for why --ignore-scripts is used here.
+        run: npm ci --ignore-scripts
 
       - name: Unit tests
         shell: bash
