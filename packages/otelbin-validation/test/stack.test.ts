@@ -36,9 +36,22 @@ describe('OTelBinValidationStack synthesis', () => {
     expect(stack.stackName).toBe('test-stack');
   });
 
+  // Every stack that CloudFormation deploys, parent and nested alike. `assembly.stacks` holds
+  // only the parent, so checking that alone leaves the nested stacks unverified, which is where
+  // every Lambda function and log group lives.
+  const allTemplates: Array<{ name: string; resources: Record<string, unknown> }> = [
+    ...assembly.stacks.map(s => ({
+      name: s.stackName,
+      resources: (s.template.Resources || {}) as Record<string, unknown>,
+    })),
+    ...nestedStacks.map(ns => ({
+      name: ns.node.id,
+      resources: (Template.fromStack(ns).toJSON().Resources || {}) as Record<string, unknown>,
+    })),
+  ];
+
   test('no stack exceeds the CloudFormation resource limit', () => {
-    for (const stackArtifact of assembly.stacks) {
-      const resources = stackArtifact.template.Resources || {};
+    for (const { name, resources } of allTemplates) {
       const resourceCount = Object.keys(resources).length;
 
       if (resourceCount > CF_MAX_RESOURCES) {
@@ -53,7 +66,7 @@ describe('OTelBinValidationStack synthesis', () => {
           .join('\n');
 
         throw new Error(
-          `Stack '${stackArtifact.stackName}' has ${resourceCount} resources, ` +
+          `Stack '${name}' has ${resourceCount} resources, ` +
           `which exceeds the CloudFormation limit of ${CF_MAX_RESOURCES}.\n` +
           `Resource breakdown:\n${breakdown}`,
         );
@@ -83,6 +96,50 @@ describe('OTelBinValidationStack synthesis', () => {
 
     for (const nestedStack of nestedStacks) {
       Template.fromStack(nestedStack).resourceCountIs('AWS::IAM::Role', 0);
+    }
+  });
+
+  test('every validation Lambda has its own declared log group with three-day retention', () => {
+    expect(nestedStacks.length).toBeGreaterThan(0);
+
+    for (const nestedStack of nestedStacks) {
+      const template = Template.fromStack(nestedStack);
+      const functions = template.findResources('AWS::Lambda::Function');
+      const logGroups = template.findResources('AWS::Logs::LogGroup');
+
+      // One group per function, so a new release cannot quietly ship without a retention policy.
+      expect(Object.keys(logGroups).length).toBe(Object.keys(functions).length);
+      expect(Object.keys(functions).length).toBeGreaterThan(0);
+
+      for (const logGroup of Object.values(logGroups)) {
+        const properties = (logGroup as { Properties?: { RetentionInDays?: number } }).Properties;
+        expect(properties?.RetentionInDays).toBe(3);
+      }
+
+      // Without LoggingConfig the function writes to an implicit /aws/lambda/<name> group that
+      // CloudFormation does not own, and the retention above would apply to nothing.
+      for (const lambdaFunction of Object.values(functions)) {
+        const properties = (lambdaFunction as { Properties?: { LoggingConfig?: { LogGroup?: unknown } } }).Properties;
+        expect(properties?.LoggingConfig?.LogGroup).toBeDefined();
+      }
+    }
+  });
+
+  test('nothing sets log retention at runtime through an IAM permission', () => {
+    // Log retention used to be applied by a custom resource that looped over every log group at
+    // deploy time. Retention is declarative now, so no principal in the stack should still be
+    // able to call PutRetentionPolicy. This fails if that pattern comes back.
+    for (const { name, resources } of allTemplates) {
+      for (const [logicalId, resource] of Object.entries(resources)) {
+        const typed = resource as { Type?: string; Properties?: { PolicyDocument?: { Statement?: unknown[] } } };
+        if (typed.Type !== 'AWS::IAM::Policy' && typed.Type !== 'AWS::IAM::Role') {
+          continue;
+        }
+
+        const serialized = JSON.stringify(typed.Properties ?? {});
+        expect(serialized).not.toContain('logs:PutRetentionPolicy');
+        expect(`${name}/${logicalId}`).not.toContain('logretention');
+      }
     }
   });
 
