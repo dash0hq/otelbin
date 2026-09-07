@@ -161,16 +161,6 @@
         "version": "v0.134.1",
         "artifact": "otelcol_0.134.1_linux_amd64.rpm",
         "released_at": "2025-09-03T16:36:15.000Z"
-      },
-      {
-        "version": "v0.135.0-nightly.202509020233",
-        "artifact": "otelcol_0.135.0-nightly.202509020233_linux_amd64.rpm",
-        "released_at": "2025-09-02T19:03:47.000Z"
-      },
-      {
-        "version": "v0.134.0-nightly.202508310234",
-        "artifact": "otelcol_0.134.0-nightly.202508310234_linux_amd64.rpm",
-        "released_at": "2025-08-31T04:33:22.000Z"
       }
     ],
     "ignoredReleases": "<v0.134.0"
@@ -337,16 +327,6 @@
         "version": "v0.134.1",
         "artifact": "otelcol-contrib_0.134.1_linux_amd64.rpm",
         "released_at": "2025-09-03T17:50:41.000Z"
-      },
-      {
-        "version": "v0.135.0-nightly.202509020233",
-        "artifact": "otelcol-contrib_0.135.0-nightly.202509020233_linux_amd64.rpm",
-        "released_at": "2025-09-02T17:26:56.000Z"
-      },
-      {
-        "version": "v0.134.0-nightly.202508310234",
-        "artifact": "otelcol-contrib_0.134.0-nightly.202508310234_linux_amd64.rpm",
-        "released_at": "2025-08-31T04:38:29.000Z"
       }
     ],
     "ignoredReleases": "<v0.134.0"
