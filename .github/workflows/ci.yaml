@@ -19,11 +19,10 @@ on:
     branches:
       - 'main'
 
-# Default to `contents: read` only. `actions/checkout` reads the repo, and most jobs never
-# authenticate to AWS. The three jobs that do now federate via OIDC and so need
-# `id-token: write`, but that is granted per job rather than here: a workflow-level grant would
-# put a requestable OIDC token in every job's environment, including the `pull_request_target`
-# jobs that install the dependency versions a PR proposes.
+# Baseline for every job: read the repository, nothing else. The jobs that authenticate to
+# AWS grant themselves `id-token: write` individually. Granting it here would instead put a
+# requestable OIDC token in the environment of every job, including the `pull_request_target`
+# jobs, which install the dependency versions a pull request proposes.
 permissions:
   contents: read
 
@@ -150,16 +149,19 @@ jobs:
     name: Deploy validation backend
     needs: ['otelbin-verify', 'otelbin-validation-image-verify', 'otelbin-validation-verify']
     permissions:
-      # Needed to mint the OIDC token this job federates into AWS with. Scoped to this job
-      # rather than the whole workflow; see the note on the workflow-level `permissions` above.
+      # Mints the OIDC token that `Configure AWS credentials` exchanges for AWS credentials.
+      # Scoped to this job; see the workflow-level `permissions` above.
       id-token: write
       contents: read
-    # Binds the job to a GitHub environment so the OIDC `sub` claim identifies the
-    # target account. A ref-based claim cannot do this: a dependabot
-    # `pull_request_target` run presents the base ref (`refs/heads/main`), which is
-    # byte-identical to the claim for a push to main, i.e. the production deploy.
-    # The condition matches `test_env_name.sh`, which yields `main` only when the
-    # ref name is `main`; tag pushes and PRs all deploy to the development account.
+    # Chooses which AWS account this job federates into. The environment name becomes the
+    # `sub` claim of the OIDC token (`repo:dash0hq/otelbin:environment:<name>`), and the role
+    # in each account trusts exactly one name.
+    #
+    # The claim has to key off the environment rather than the ref: under
+    # `pull_request_target` the ref claim is the base ref, `refs/heads/main`, which is
+    # indistinguishable from a push to main. The condition mirrors `test_env_name.sh`, which
+    # yields `main` only for a ref named `main`, so tag pushes and pull requests go to
+    # development.
     environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'otelbin-production' || 'otelbin-development' }}
     runs-on: 8core_32gb
     # The CDK deploy runs a median of ~25 minutes with a p90 of ~29, so a 30 minute limit killed
@@ -224,8 +226,8 @@ jobs:
           OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
           OTELBIN_AUTOMATION_ACCOUNT_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}
           OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
-        # No access keys here any more: the role is assumed via GitHub OIDC, so only
-        # the account ID and the role ARN need selecting.
+        # Resolves the account ID that CDK deploys into and the ARN of the role to assume.
+        # The credentials themselves come from OIDC, so nothing secret is selected here.
         # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
@@ -301,16 +303,19 @@ jobs:
     name: Validation tests
     needs: ['prep-itests']
     permissions:
-      # Needed to mint the OIDC token this job federates into AWS with. Scoped to this job
-      # rather than the whole workflow; see the note on the workflow-level `permissions` above.
+      # Mints the OIDC token that `Configure AWS credentials` exchanges for AWS credentials.
+      # Scoped to this job; see the workflow-level `permissions` above.
       id-token: write
       contents: read
-    # Binds the job to a GitHub environment so the OIDC `sub` claim identifies the
-    # target account. A ref-based claim cannot do this: a dependabot
-    # `pull_request_target` run presents the base ref (`refs/heads/main`), which is
-    # byte-identical to the claim for a push to main, i.e. the production deploy.
-    # The condition matches `test_env_name.sh`, which yields `main` only when the
-    # ref name is `main`; tag pushes and PRs all deploy to the development account.
+    # Chooses which AWS account this job federates into. The environment name becomes the
+    # `sub` claim of the OIDC token (`repo:dash0hq/otelbin:environment:<name>`), and the role
+    # in each account trusts exactly one name.
+    #
+    # The claim has to key off the environment rather than the ref: under
+    # `pull_request_target` the ref claim is the base ref, `refs/heads/main`, which is
+    # indistinguishable from a push to main. The condition mirrors `test_env_name.sh`, which
+    # yields `main` only for a ref named `main`, so tag pushes and pull requests go to
+    # development.
     environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'otelbin-production' || 'otelbin-development' }}
     # See prep-itests above for why this condition exists; run-itests needs the same gating
     # since it depends on prep-itests's outputs and shares the same credential requirements.
@@ -351,7 +356,7 @@ jobs:
           TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
           OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
           OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
-        # No access keys here any more: the role is assumed via GitHub OIDC.
+        # Resolves the ARN of the role to assume; the credentials come from OIDC.
         # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then

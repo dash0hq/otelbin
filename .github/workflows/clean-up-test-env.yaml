@@ -6,9 +6,8 @@ on:
     types: [ closed ]
   workflow_dispatch:
 
-# Default to `contents: read`; the one job that authenticates to AWS grants itself
-# `id-token: write` below. Same reasoning as `ci.yaml`: a workflow-level OIDC grant is
-# wider than it needs to be.
+# Baseline for every job: read the repository, nothing else. The one job that authenticates
+# to AWS grants itself `id-token: write` below, so no OIDC token is requestable anywhere else.
 permissions:
   contents: read
 
@@ -32,13 +31,12 @@ jobs:
   cleanup_test_env:
     name: Clean up test environment ${{ github.ref }}
     permissions:
-      # Needed to mint the OIDC token this job federates into AWS with. This workflow
-      # previously authenticated with static access keys and declared no permissions at all.
+      # Mints the OIDC token that `Configure AWS credentials` exchanges for AWS credentials.
       id-token: write
       contents: read
-    # Binds the job to a GitHub environment so the OIDC `sub` claim identifies the
-    # target account. See the same block in `ci.yaml`. This workflow only ever
-    # reaches production via a manual dispatch on main; every `pull_request` close
+    # Chooses which AWS account this job federates into; see the equivalent block in
+    # `ci.yaml` for how the environment name reaches the OIDC `sub` claim. Production is
+    # reachable only by dispatching this workflow on main; closing a pull request always
     # tears down a development test environment.
     environment: ${{ (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') && 'otelbin-production' || 'otelbin-development' }}
     runs-on: ubuntu-latest
@@ -80,8 +78,8 @@ jobs:
           OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
           OTELBIN_AUTOMATION_ACCOUNT_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}
           OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
-        # No access keys here any more: the role is assumed via GitHub OIDC, so only
-        # the account ID and the role ARN need selecting.
+        # Resolves the account ID that CDK targets and the ARN of the role to assume.
+        # The credentials themselves come from OIDC, so nothing secret is selected here.
         # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
