@@ -155,14 +155,16 @@ jobs:
       contents: read
     # Chooses which AWS account this job federates into. The environment name becomes the
     # `sub` claim of the OIDC token (`repo:dash0hq/otelbin:environment:<name>`), and the role
-    # in each account trusts exactly one name.
+    # in each account trusts exactly one name. The `-Backend` names pair with Vercel's
+    # `Preview` and `Production` environments, which cover the frontend deploys in this same
+    # repository; case is significant, since the role matches the claim with `StringLike`.
     #
     # The claim has to key off the environment rather than the ref: under
     # `pull_request_target` the ref claim is the base ref, `refs/heads/main`, which is
     # indistinguishable from a push to main. The condition mirrors `test_env_name.sh`, which
-    # yields `main` only for a ref named `main`, so tag pushes and pull requests go to
-    # development.
-    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'otelbin-production' || 'otelbin-development' }}
+    # yields `main` only for a ref named `main`, so tag pushes and pull requests land on
+    # `Preview-Backend`.
+    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'Production-Backend' || 'Preview-Backend' }}
     runs-on: 8core_32gb
     # The CDK deploy runs a median of ~25 minutes with a p90 of ~29, so a 30 minute limit killed
     # roughly 8% of runs. A killed job also leaves the per-branch CloudFormation stack mid-deploy,
@@ -309,14 +311,16 @@ jobs:
       contents: read
     # Chooses which AWS account this job federates into. The environment name becomes the
     # `sub` claim of the OIDC token (`repo:dash0hq/otelbin:environment:<name>`), and the role
-    # in each account trusts exactly one name.
+    # in each account trusts exactly one name. The `-Backend` names pair with Vercel's
+    # `Preview` and `Production` environments, which cover the frontend deploys in this same
+    # repository; case is significant, since the role matches the claim with `StringLike`.
     #
     # The claim has to key off the environment rather than the ref: under
     # `pull_request_target` the ref claim is the base ref, `refs/heads/main`, which is
     # indistinguishable from a push to main. The condition mirrors `test_env_name.sh`, which
-    # yields `main` only for a ref named `main`, so tag pushes and pull requests go to
-    # development.
-    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'otelbin-production' || 'otelbin-development' }}
+    # yields `main` only for a ref named `main`, so tag pushes and pull requests land on
+    # `Preview-Backend`.
+    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'Production-Backend' || 'Preview-Backend' }}
     # See prep-itests above for why this condition exists; run-itests needs the same gating
     # since it depends on prep-itests's outputs and shares the same credential requirements.
     if: |
