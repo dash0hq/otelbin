@@ -148,6 +148,13 @@ jobs:
   prep-itests:
     name: Deploy validation backend
     needs: ['otelbin-verify', 'otelbin-validation-image-verify', 'otelbin-validation-verify']
+    # Binds the job to a GitHub environment so the OIDC `sub` claim identifies the
+    # target account. A ref-based claim cannot do this: a dependabot
+    # `pull_request_target` run presents the base ref (`refs/heads/main`), which is
+    # byte-identical to the claim for a push to main, i.e. the production deploy.
+    # The condition matches `test_env_name.sh`, which yields `main` only when the
+    # ref name is `main`; tag pushes and PRs all deploy to the development account.
+    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'otelbin-production' || 'otelbin-development' }}
     runs-on: 8core_32gb
     # The CDK deploy runs a median of ~25 minutes with a p90 of ~29, so a 30 minute limit killed
     # roughly 8% of runs. A killed job also leaves the per-branch CloudFormation stack mid-deploy,
@@ -202,38 +209,30 @@ jobs:
         run: |
           echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> "$GITHUB_OUTPUT" || exit 1
 
-      - name: Select credentials
+      - name: Select target account
         id: select_credentials
         shell: bash
         env:
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
           OTELBIN_AUTOMATION_ACCOUNT_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_PROD}}
-          OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}
-          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}
           OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
           OTELBIN_AUTOMATION_ACCOUNT_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCOUNT_DEV}}
-          OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}
-          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}
           OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
+        # No access keys here any more: the role is assumed via GitHub OIDC, so only
+        # the account ID and the role ARN need selecting.
         # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
             echo "aws_account=${OTELBIN_AUTOMATION_ACCOUNT_PROD}" >> "${GITHUB_OUTPUT}"
-            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}" >> "${GITHUB_OUTPUT}"
-            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}" >> "${GITHUB_OUTPUT}"
             echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_PROD}" >> "${GITHUB_OUTPUT}"
           else
             echo "aws_account=${OTELBIN_AUTOMATION_ACCOUNT_DEV}" >> "${GITHUB_OUTPUT}"
-            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}" >> "${GITHUB_OUTPUT}"
-            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}" >> "${GITHUB_OUTPUT}"
             echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_DEV}" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
         with:
-          aws-access-key-id: ${{ steps.select_credentials.outputs.aws_access_key }}
-          aws-secret-access-key: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           aws-region: 'us-east-2'
           mask-aws-account-id: true
           role-to-assume: ${{ steps.select_credentials.outputs.role_arn }}
@@ -295,6 +294,13 @@ jobs:
   run-itests:
     name: Validation tests
     needs: ['prep-itests']
+    # Binds the job to a GitHub environment so the OIDC `sub` claim identifies the
+    # target account. A ref-based claim cannot do this: a dependabot
+    # `pull_request_target` run presents the base ref (`refs/heads/main`), which is
+    # byte-identical to the claim for a push to main, i.e. the production deploy.
+    # The condition matches `test_env_name.sh`, which yields `main` only when the
+    # ref name is `main`; tag pushes and PRs all deploy to the development account.
+    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'otelbin-production' || 'otelbin-development' }}
     # See prep-itests above for why this condition exists; run-itests needs the same gating
     # since it depends on prep-itests's outputs and shares the same credential requirements.
     if: |
@@ -327,34 +333,25 @@ jobs:
         run: |
           npm ci --ignore-scripts
 
-      - name: Select credentials
+      - name: Select target account
         id: select_credentials
         shell: bash
         env:
           TEST_ENVIRONMENT_NAME: ${{ needs.prep-itests.outputs.test_env_name }}
-          OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}}
-          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}}
           OTELBIN_AUTOMATION_ROLE_ARN_PROD: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_PROD}}
-          OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV: ${{secrets.OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}}
-          OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV: ${{secrets.OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}}
           OTELBIN_AUTOMATION_ROLE_ARN_DEV: ${{secrets.OTELBIN_AUTOMATION_ROLE_ARN_DEV}}
+        # No access keys here any more: the role is assumed via GitHub OIDC.
         # language=bash
         run: |
           if [ "${TEST_ENVIRONMENT_NAME}" == 'main' ]; then
-            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_PROD}" >> "${GITHUB_OUTPUT}"
-            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_PROD}" >> "${GITHUB_OUTPUT}"
             echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_PROD}" >> "${GITHUB_OUTPUT}"
           else
-            echo "aws_access_key=${OTELBIN_AUTOMATION_ACCESS_KEY_ID_DEV}" >> "${GITHUB_OUTPUT}"
-            echo "aws_secret_access_key=${OTELBIN_AUTOMATION_SECRET_ACCESS_KEY_DEV}" >> "${GITHUB_OUTPUT}"
             echo "role_arn=${OTELBIN_AUTOMATION_ROLE_ARN_DEV}" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
         with:
-          aws-access-key-id: ${{ steps.select_credentials.outputs.aws_access_key }}
-          aws-secret-access-key: ${{ steps.select_credentials.outputs.aws_secret_access_key }}
           aws-region: 'us-east-2'
           mask-aws-account-id: true
           role-to-assume: ${{ steps.select_credentials.outputs.role_arn }}
