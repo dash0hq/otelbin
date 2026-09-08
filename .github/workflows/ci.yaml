@@ -19,10 +19,11 @@ on:
     branches:
       - 'main'
 
-# Only `contents: read` is needed. `actions/checkout` reads the repo, and the AWS steps
-# authenticate with static access keys rather than OIDC, so nothing ever requested an OIDC
-# token. Granting `id-token: write` put a requestable token in every job's environment,
-# including the `pull_request_target` jobs that install dependency versions the PR proposes.
+# Default to `contents: read` only. `actions/checkout` reads the repo, and most jobs never
+# authenticate to AWS. The three jobs that do now federate via OIDC and so need
+# `id-token: write`, but that is granted per job rather than here: a workflow-level grant would
+# put a requestable OIDC token in every job's environment, including the `pull_request_target`
+# jobs that install the dependency versions a PR proposes.
 permissions:
   contents: read
 
@@ -148,6 +149,11 @@ jobs:
   prep-itests:
     name: Deploy validation backend
     needs: ['otelbin-verify', 'otelbin-validation-image-verify', 'otelbin-validation-verify']
+    permissions:
+      # Needed to mint the OIDC token this job federates into AWS with. Scoped to this job
+      # rather than the whole workflow; see the note on the workflow-level `permissions` above.
+      id-token: write
+      contents: read
     # Binds the job to a GitHub environment so the OIDC `sub` claim identifies the
     # target account. A ref-based claim cannot do this: a dependabot
     # `pull_request_target` run presents the base ref (`refs/heads/main`), which is
@@ -294,6 +300,11 @@ jobs:
   run-itests:
     name: Validation tests
     needs: ['prep-itests']
+    permissions:
+      # Needed to mint the OIDC token this job federates into AWS with. Scoped to this job
+      # rather than the whole workflow; see the note on the workflow-level `permissions` above.
+      id-token: write
+      contents: read
     # Binds the job to a GitHub environment so the OIDC `sub` claim identifies the
     # target account. A ref-based claim cannot do this: a dependabot
     # `pull_request_target` run presents the base ref (`refs/heads/main`), which is
