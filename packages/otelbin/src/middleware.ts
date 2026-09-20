@@ -4,14 +4,17 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { isBotRequest } from "./lib/utils";
+import { isClerkConfigured } from "./lib/capabilities";
 
 const isCreateNewRoute = createRouteMatcher(["/s/new"]);
 
-export default clerkMiddleware(async (auth, request) => {
+const authenticatedMiddleware = clerkMiddleware(async (auth, request) => {
 	if (isCreateNewRoute(request)) await auth.protect();
 
 	return handleShortLinkRequest(request);
 });
+
+export default isClerkConfigured() ? authenticatedMiddleware : handleShortLinkRequest;
 
 export const config = {
 	matcher: ["/s/(.*)"],

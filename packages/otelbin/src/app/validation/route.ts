@@ -3,22 +3,24 @@
 
 import z from "zod";
 import retryFetch from "fetch-retry";
-import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import { type NextRequest, NextResponse } from "next/server";
 import { getUserIdentifier } from "~/lib/userIdentifier";
 import { assertValue } from "~/lib/env";
+import { createRedisIfConfigured } from "~/lib/redis";
 
 const allowedCharacters = /^[a-z0-9.\-_]+$/i;
 
-const redis = Redis.fromEnv();
+const redis = createRedisIfConfigured();
 
-const rateLimit = new Ratelimit({
-	redis,
-	limiter: Ratelimit.slidingWindow(40, "1 m"),
-	analytics: true,
-	prefix: "rate-limit-validate",
-});
+const rateLimit = redis
+	? new Ratelimit({
+			redis,
+			limiter: Ratelimit.slidingWindow(40, "1 m"),
+			analytics: true,
+			prefix: "rate-limit-validate",
+		})
+	: undefined;
 
 const validationPayloadSchema = z.object({
 	config: z.string(),
@@ -59,17 +61,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		);
 	}
 
-	const userIdentifier = getUserIdentifier(request);
-	const { success } = await rateLimit.blockUntilReady(userIdentifier, 1000 * 60);
-	if (!success) {
-		return NextResponse.json(
-			{
-				error: "Rate limit exceeded",
-			},
-			{
-				status: 429,
-			}
-		);
+	if (rateLimit) {
+		const userIdentifier = getUserIdentifier(request);
+		const { success } = await rateLimit.blockUntilReady(userIdentifier, 1000 * 60);
+		if (!success) {
+			return NextResponse.json(
+				{
+					error: "Rate limit exceeded",
+				},
+				{
+					status: 429,
+				}
+			);
+		}
 	}
 
 	const response = await retryFetch(fetch)(
