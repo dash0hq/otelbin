@@ -57,9 +57,10 @@ const prepareValidationPayload = (testConfigFilename: string, env?: Env) => JSON
 const defaultTimeout = 10_000; // 10 seconds
 
 const otelcolConfigValid = prepareValidationPayload('config-default.yaml');
-const otelcolConfigValidEnvInterpolation = prepareValidationPayload('config-default.yaml', {
+const otelcolConfigValidEnvInterpolation = prepareValidationPayload('config-env-interpolation.yaml', {
   OTLP_ENDPOINT: 'otelcol:4317',
 });
+const otelcolConfigAwsEcsContainerMetrics = prepareValidationPayload('config-awsecscontainermetrics.yaml');
 const otelcolConfigInvalidNoReceivers = prepareValidationPayload('config-no-receivers.yaml');
 const otelcolConfigInvalidUndeclaredExtension = prepareValidationPayload('config-undeclared-extension.yaml');
 const otelcolConfigInvalidUndeclaredReceiver = prepareValidationPayload('config-undeclared-receiver.yaml');
@@ -138,6 +139,22 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
           },
         });
       }, defaultTimeout);
+
+      if (distributionName === 'otelcol-contrib') {
+        test('accepts awsecscontainermetrics configuration outside ECS', async () => {
+          await expect(axios.post(validationUrl, otelcolConfigAwsEcsContainerMetrics, {
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Api-Key': apiKey,
+            },
+          })).resolves.toMatchObject({
+            status: 200,
+            data: {
+              message: 'Configuration is valid',
+            },
+          });
+        }, defaultTimeout);
+      }
 
       test('rejects empty validation payload', async () => {
         await expect(axios.post(validationUrl, '{}', {
