@@ -15,7 +15,7 @@ interface SpawnError extends Error {
 
 interface ValidationPayload {
 	config: string;
-	env: Env;
+	env?: Env;
 }
 
 interface Env {
@@ -23,6 +23,47 @@ interface Env {
 }
 
 const distroName = process.env.DISTRO_NAME;
+const ecsContainerMetadataEndpointEnvVar = "ECS_CONTAINER_METADATA_URI_V4";
+const validationOnlyEcsMetadataEndpoint = "http://127.0.0.1:9";
+
+function hasReceiver(config: unknown, receiverType: string): boolean {
+	if (config == null || typeof config !== "object" || Array.isArray(config)) {
+		return false;
+	}
+
+	const receivers = (config as { receivers?: unknown }).receivers;
+	if (receivers == null || typeof receivers !== "object" || Array.isArray(receivers)) {
+		return false;
+	}
+
+	return Object.keys(receivers as Record<string, unknown>)
+		.some(receiverId => receiverId.split("/", 1)[0] === receiverType);
+}
+
+exports.buildValidationEnvironment = function buildValidationEnvironment(config: unknown, env: Env): NodeJS.ProcessEnv {
+	const validationEnv: NodeJS.ProcessEnv = {
+		...process.env,
+		...env
+	};
+
+	/*
+	 * The awsecscontainermetrics receiver resolves ECS task metadata during component construction.
+	 * The Collector's validate command builds the pipeline graph but never starts the receiver, so
+	 * no metadata request is made. Supplying a validation-only endpoint lets the factory be created
+	 * without requiring OTelBin itself to run inside ECS.
+	 *
+	 * Respect a caller-provided value: if users explicitly provide this environment variable, the
+	 * Collector should validate exactly what they supplied.
+	 */
+	if (
+		hasReceiver(config, "awsecscontainermetrics") &&
+		!(ecsContainerMetadataEndpointEnvVar in validationEnv)
+	) {
+		validationEnv[ecsContainerMetadataEndpointEnvVar] = validationOnlyEcsMetadataEndpoint;
+	}
+
+	return validationEnv;
+};
 
 /**
  * Using CommonJS export to allow for AWS lambda layer to work as per the
@@ -45,7 +86,7 @@ exports.handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult>
 
 	const validationPayload = JSON.parse(body) as ValidationPayload;
 	const config = validationPayload.config;
-	const env = validationPayload.env;
+	const env = validationPayload.env ?? {};
 
 	if (
 		!validationPayload || // Empty event
@@ -78,7 +119,12 @@ exports.handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult>
 				await exports.validateAdot(otelcolRealPath, configPath, env);
 				break;
 			default:
-				await exports.validateOtelCol(otelcolRealPath, configPath, env);
+				await exports.validateOtelCol(
+					otelcolRealPath,
+					configPath,
+					env,
+					yaml.load(config, { schema: yaml.JSON_SCHEMA })
+				);
 		}
 
 		return {
@@ -191,7 +237,12 @@ exports.validateAdot = async (otelcolRealPath: string, configPath: string, env: 
 		});
 };
 
-exports.validateOtelCol = async (otelcolRealPath: string, configPath: string, env: Env): Promise<void> => {
+exports.validateOtelCol = async (
+	otelcolRealPath: string,
+	configPath: string,
+	env: Env,
+	config: unknown
+): Promise<void> => {
 	/*
 	 * Node.js spawn is unreliable in terms of collecting stdout and stderr through the spawn call
 	 * (see https://github.com/nodejs/node/issues/19218). Getting a shell around the otelcol binary
@@ -201,7 +252,8 @@ exports.validateOtelCol = async (otelcolRealPath: string, configPath: string, en
 		ignoreStdio: false,
 		detached: false,
 		stdio: "pipe",
-		timeout: 10_000
+		timeout: 10_000,
+		env: exports.buildValidationEnvironment(config, env)
 	});
 };
 
