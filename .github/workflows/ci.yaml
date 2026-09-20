@@ -138,7 +138,12 @@ jobs:
       - name: Unit tests
         shell: bash
         working-directory: packages/otelbin-validation
-        run: npx jest src/ --no-coverage
+        # --passWithNoTests: `src/` currently holds no tests. Its only one covered a handler that
+        # was deleted along with the log retention custom resource, and everything left in `src/`
+        # is CDK construct code that "Test CDK stack synthesis" below covers by synthesizing it.
+        # Without the flag jest exits 1 on an empty pattern and fails the job. The step stays so
+        # that a future `src/**/*.test.ts` runs in CI without anyone having to remember to add it.
+        run: npx jest src/ --no-coverage --passWithNoTests
 
       - name: Test CDK stack synthesis
         shell: bash

@@ -1,13 +1,13 @@
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
-import { App, CfnOutput, CustomResource, Duration, NestedStack, NestedStackProps, RemovalPolicy, SecretValue, Stack, StackProps, Tags } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, NestedStack, NestedStackProps, RemovalPolicy, SecretValue, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { ApiKeySourceType, AwsIntegration, IResource, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Architecture, Code, DockerImageCode, DockerImageFunction, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
-import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
 // Resolved by CloudFormation at deploy time via a dynamic reference, so the actual secret value
@@ -42,15 +42,26 @@ export interface DistributionNestedStackProps extends NestedStackProps {
 }
 
 export class DistributionNestedStack extends NestedStack {
-  readonly lambdaFunctions: DockerImageFunction[] = [];
-
   constructor(scope: Construct, id: string, props: DistributionNestedStackProps) {
     super(scope, id, props);
 
     const distributionResource = props.validationResource.addResource(props.distributionName);
 
     for (let release of props.distribution.releases) {
+      /*
+       * Declared explicitly so that CloudFormation owns the retention setting and the group's
+       * lifecycle. Left implicit, Lambda creates /aws/lambda/<function> on first invocation with
+       * retention set to Never Expire, and nothing in the stack can express otherwise. The log
+       * group name is CDK-generated rather than /aws/lambda/<function>, because the function name
+       * is only known after the function is created and the function needs the group up front.
+       */
+      const releaseLogGroup = new LogGroup(this, `${props.distributionName}-${release.version}-logs`, {
+        retention: RetentionDays.THREE_DAYS,
+        removalPolicy: RemovalPolicy.DESTROY,
+      });
+
       const releaseLambda = new DockerImageFunction(this, `${props.distributionName}-${release.version}`, {
+        logGroup: releaseLogGroup,
         description: `Configuration validation for the the '${props.distributionName}' distribution, version '${release.version}'`,
         architecture: Architecture.X86_64,
         role: props.lambdaExecutionRole,
@@ -84,7 +95,6 @@ export class DistributionNestedStack extends NestedStack {
       });
 
       Tags.of(releaseLambda).add('otelcol-version', `${props.distributionName}-${release.version}`);
-      this.lambdaFunctions.push(releaseLambda);
     }
   }
 }
@@ -202,62 +212,15 @@ export class OTelBinValidationStack extends Stack {
       ],
     });
 
-    const allLambdaFunctions: DockerImageFunction[] = [];
-
     for (let [distributionName, distribution] of Object.entries(supportedDistributions)) {
-      const nestedStack = new DistributionNestedStack(this, `distribution-${distributionName}`, {
+      new DistributionNestedStack(this, `distribution-${distributionName}`, {
         validationResource: validation,
         lambdaExecutionRole,
         distributionName,
         distribution,
         githubToken: props.githubToken,
       });
-      allLambdaFunctions.push(...nestedStack.lambdaFunctions);
     }
-
-    const logRetentionHandler = new LambdaFunction(this, 'log-retention-handler', {
-      runtime: Runtime.NODEJS_22_X,
-      handler: 'index.handler',
-      // language=JavaScript
-      code: Code.fromInline(`
-const { CloudWatchLogsClient, CreateLogGroupCommand, PutRetentionPolicyCommand } = require("@aws-sdk/client-cloudwatch-logs");
-exports.handler = async (event) => {
-  if (event.RequestType === "Delete") {
-    return { PhysicalResourceId: event.PhysicalResourceId };
-  }
-  const client = new CloudWatchLogsClient();
-  const logGroupNames = event.ResourceProperties.LogGroupNames || [];
-  const retentionInDays = parseInt(event.ResourceProperties.RetentionInDays);
-  for (const logGroupName of logGroupNames) {
-    try {
-      await client.send(new CreateLogGroupCommand({ logGroupName }));
-    } catch (e) {
-      if (e.name !== "ResourceAlreadyExistsException") throw e;
-    }
-    await client.send(new PutRetentionPolicyCommand({ logGroupName, retentionInDays }));
-  }
-  return { PhysicalResourceId: "log-retention-policy" };
-};
-      `),
-      timeout: Duration.minutes(5),
-    });
-
-    logRetentionHandler.addToRolePolicy(new PolicyStatement({
-      actions: ['logs:CreateLogGroup', 'logs:PutRetentionPolicy'],
-      resources: ['*'],
-    }));
-
-    const logRetentionProvider = new Provider(this, 'log-retention-provider', {
-      onEventHandler: logRetentionHandler,
-    });
-
-    new CustomResource(this, 'log-retention-policy', {
-      serviceToken: logRetentionProvider.serviceToken,
-      properties: {
-        LogGroupNames: allLambdaFunctions.map(fn => `/aws/lambda/${fn.functionName}`),
-        RetentionInDays: '3',
-      },
-    });
 
     new CfnOutput(this, 'api-name', {
       exportName: `api-name-${props.testEnvironmentName}`,
