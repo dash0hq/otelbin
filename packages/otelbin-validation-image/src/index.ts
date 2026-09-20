@@ -150,11 +150,16 @@ exports.validateAdot = async (otelcolRealPath: string, configPath: string, env: 
 	let stdout = "";
 	let stderr = "";
 
-	otelcol.stdout.on("data", (data) => {
+	/*
+	 * These three callback parameters are annotated explicitly because `spawn` is pulled in with
+	 * require() above, which makes it `any` and leaves the callbacks with no contextual type.
+	 * The annotations are what child_process would supply on its own under a static import.
+	 */
+	otelcol.stdout.on("data", (data: Buffer) => {
 		stdout += data.toString();
 	});
 
-	otelcol.stderr.on("data", (data) => {
+	otelcol.stderr.on("data", (data: Buffer) => {
 		/*
 		 * If the configuration is valid, the ADOT collector outputs to stderr:
 		 * `Everything is ready. Begin running and processing data.`
@@ -166,7 +171,7 @@ exports.validateAdot = async (otelcolRealPath: string, configPath: string, env: 
 		}
 	});
 
-	otelcol.on("close", (code) => {
+	otelcol.on("close", (code: number | null) => {
 		if (!isResolved) {
 			if (code===0) {
 				resolveFn();
@@ -254,6 +259,15 @@ function extractValidationErrorMessage(error: string): string {
 		[0];
 }
 
-exports.extractErrorPath = function extractErrorPath(errorMessage: string): string[] {
+/*
+ * Returns undefined when the message carries no `section::subsection:` prefix, which is what the
+ * optional chain below already did at runtime. The declared type used to claim `string[]`, and
+ * nothing objected because this file was never type checked. The caller passes the value straight
+ * to JSON.stringify, which drops an undefined key, and the reader in
+ * packages/otelbin/src/components/monaco-editor/otelCollectorConfigValidation.ts defaults a
+ * missing `path` to []. Returning [] here instead would put `"path":[]` on the wire, so the type
+ * is corrected rather than the behaviour.
+ */
+exports.extractErrorPath = function extractErrorPath(errorMessage: string): string[] | undefined {
 	return errorMessage.match(/^((?:[\w/]+(?:::)?)+):[^:]/)?.[1].split("::");
 }
