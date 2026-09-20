@@ -6,6 +6,7 @@ import { useEditorRef, useFocus } from "~/contexts/EditorContext";
 import { FlowClick } from "../FlowClick";
 import type { IData } from "../FlowClick";
 import ConnectorIcon from "~/components/assets/svg/connector.svg";
+import { splitComponentId } from "~/lib/componentId";
 
 export const handleStyle = {
 	backgroundColor: "rgb(44 48 70 / 0%)",
@@ -58,7 +59,7 @@ const Node = ({
 	}
 
 	const label = data.label || "";
-	const splitLabel = label.includes("/") ? label.split("/") : [label];
+	const { type: componentType, name: instanceName } = splitComponentId(label);
 	const isConnector = data.type.includes("connectors");
 
 	return (
@@ -80,7 +81,7 @@ const Node = ({
 				}
                  text-xs font-medium h-[35%] overflow-hidden whitespace-nowrap overflow-ellipsis w-full flex items-center justify-center`}
 			>
-				{splitLabel[0]}
+				{componentType}
 			</div>
 			<div
 				style={customNodeStyles}
@@ -97,17 +98,17 @@ const Node = ({
 				{handle1}
 				<div
 					className={`flex w-full flex-col items-center justify-center gap-y-1 px-2 ${
-						splitLabel[1] && splitLabel[1].length > 0 && "mt-[2px]"
+						instanceName && instanceName.length > 0 && "mt-[2px]"
 					}`}
 				>
 					<div style={iconColor}>{isConnector ? <ConnectorIcon /> : icon}</div>
-					{splitLabel.length > 1 && (
+					{instanceName !== undefined && (
 						<div
 							className={`${
 								hovered ? "text-neutral-900" : "text-neutral-600"
 							} text-[10px] font-normal  overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[90%]`}
 						>
-							{splitLabel[1]}
+							{instanceName}
 						</div>
 					)}
 				</div>
