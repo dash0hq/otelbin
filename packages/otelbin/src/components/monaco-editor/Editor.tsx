@@ -25,13 +25,13 @@ import { AppFooter } from "~/components/AppFooter";
 import { AutoSizer } from "~/components/AutoSizer";
 import { ResizeBar } from "~/components/monaco-editor/ResizeBar";
 import { Fira_Code } from "next/font/google";
-import { useClerk } from "@clerk/nextjs";
 import { PanelLeftOpen } from "lucide-react";
 import { IconButton } from "~/components/icon-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
 import { selectConfigType } from "./parseYaml";
+import type { AppCapabilities } from "~/lib/capabilities";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -39,7 +39,15 @@ const firaCode = Fira_Code({
 	subsets: ["latin"],
 });
 
-export default function Editor({ locked, setLocked }: { locked: boolean; setLocked: (locked: boolean) => void }) {
+export default function Editor({
+	locked,
+	setLocked,
+	capabilities,
+}: {
+	locked: boolean;
+	setLocked: (locked: boolean) => void;
+	capabilities: AppCapabilities;
+}) {
 	const editorDidMount = useEditorDidMount();
 	const editorRef = useEditorRef();
 	const monacoRef = useMonacoRef();
@@ -49,7 +57,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [openDialog, setOpenDialog] = useState(savedOpenModal ? !savedOpenModal : true);
 	const [{ config }, getLink] = useUrlState([editorBinding]);
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
-	const clerk = useClerk();
+	const [monacoReady, setMonacoReady] = useState(false);
 	const serverSideValidationResult = useServerSideValidation();
 	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const onWidthChange = useCallback((newWidth: number) => {
@@ -112,33 +120,39 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	}, [onChangeConfig, currentConfig, config]);
 
 	useEffect(() => {
-		if (clerk.loaded) {
-			loader.init().then((monaco) => {
-				monaco.editor.defineTheme("OTelBin", {
-					base: "vs-dark",
-					inherit: true,
-					rules: [
-						{ token: "comment", foreground: "#6D737D" },
-						{ token: "string.yaml", foreground: "#38BDF8" },
-						{ token: "number.yaml", foreground: "#38BDF8" },
-						{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
-					],
-					colors: {
-						"editor.background": "#151721",
-						"editorLineNumber.foreground": "#6D737D",
-						"editorLineNumber.activeForeground": "#F9FAFB",
-						"editorCursor.foreground": "#F9FAFB",
-						"editor.selectionBackground": "#30353D",
-						"editor.selectionHighlightBackground": "#30353D",
-						"editor.hoverHighlightBackground": "#30353D",
-						"editor.lineHighlightBackground": "#30353D",
-						"editor.lineHighlightBorder": "#30353D",
-					},
-				});
-				monaco.editor.setTheme("OTelBin");
+		let cancelled = false;
+		loader.init().then((monaco) => {
+			monaco.editor.defineTheme("OTelBin", {
+				base: "vs-dark",
+				inherit: true,
+				rules: [
+					{ token: "comment", foreground: "#6D737D" },
+					{ token: "string.yaml", foreground: "#38BDF8" },
+					{ token: "number.yaml", foreground: "#38BDF8" },
+					{ token: "keyword.operator.assignment", foreground: "#38BDF8" },
+				],
+				colors: {
+					"editor.background": "#151721",
+					"editorLineNumber.foreground": "#6D737D",
+					"editorLineNumber.activeForeground": "#F9FAFB",
+					"editorCursor.foreground": "#F9FAFB",
+					"editor.selectionBackground": "#30353D",
+					"editor.selectionHighlightBackground": "#30353D",
+					"editor.hoverHighlightBackground": "#30353D",
+					"editor.lineHighlightBackground": "#30353D",
+					"editor.lineHighlightBorder": "#30353D",
+				},
 			});
-		}
-	}, [clerk.loaded]);
+			monaco.editor.setTheme("OTelBin");
+			if (!cancelled) {
+				setMonacoReady(true);
+			}
+		});
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	function calculateViewWidth(viewMode: string, width: number) {
 		switch (viewMode) {
@@ -156,7 +170,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 			<WelcomeModal open={openDialog} setOpen={setOpenDialog} />
 			<div className="flex h-full max-h-screen min-h-screen flex-col">
 				<ReactFlowProvider>
-					<AppHeader />
+					<AppHeader capabilities={capabilities} />
 					<div className="flex h-full w-full shrink grow">
 						<div
 							className={`relative flex shrink-0 flex-col`}
@@ -166,7 +180,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 						>
 							<EditorTopBar config={currentConfig} font={firaCode} />
 							<div className={`h-full w-full shrink grow ${firaCode.className}`}>
-								{clerk.loaded && (
+								{monacoReady && (
 									<AutoSizer>
 										{({ width, height }) => (
 											<MonacoEditor

@@ -1,23 +1,37 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Redis } from "@upstash/redis";
 import * as crypto from "crypto";
 import { Ratelimit } from "@upstash/ratelimit";
 import { type NextRequest, NextResponse } from "next/server";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import { getUserIdentifier } from "~/lib/userIdentifier";
+import { isClerkConfigured } from "~/lib/capabilities";
+import { createRedisIfConfigured } from "~/lib/redis";
 
-const redis = Redis.fromEnv();
+const redis = createRedisIfConfigured();
 
-const rateLimit = new Ratelimit({
-	redis,
-	limiter: Ratelimit.slidingWindow(10, "1 m"),
-	analytics: true,
-	prefix: "rate-limit-short-links",
-});
+const rateLimit = redis
+	? new Ratelimit({
+			redis,
+			limiter: Ratelimit.slidingWindow(10, "1 m"),
+			analytics: true,
+			prefix: "rate-limit-short-links",
+		})
+	: undefined;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+	if (!isClerkConfigured() || !redis || !rateLimit) {
+		return NextResponse.json(
+			{
+				error: "Short links are not configured on this OTelBin instance",
+			},
+			{
+				status: 503,
+			}
+		);
+	}
+
 	const longURL = await request.text();
 	if (!longURL) {
 		return NextResponse.json(

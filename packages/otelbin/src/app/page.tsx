@@ -1,20 +1,9 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-"use client";
-
-import { Suspense, useEffect, useState } from "react";
-import { EditorProvider } from "~/contexts/EditorContext";
-import Editor from "~/components/monaco-editor/Editor";
+import ClientPage from "./ClientPage";
+import { getAppCapabilities } from "~/lib/capabilities";
 
 export default function Page() {
-	const [locked, setLocked] = useState<boolean>(true);
-	const [isClient, setIsClient] = useState<boolean>(false);
-	useEffect(() => setIsClient(true), []);
-
-	return (
-		<Suspense>
-			<EditorProvider>{isClient && <Editor locked={locked} setLocked={setLocked} />}</EditorProvider>
-		</Suspense>
-	);
+	return <ClientPage capabilities={getAppCapabilities()} />;
 }

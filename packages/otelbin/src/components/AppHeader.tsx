@@ -7,8 +7,9 @@ import { Share } from "~/components/share/Share";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "~/components/button";
 import ValidationType from "./validation-type/ValidationType";
+import type { AppCapabilities } from "~/lib/capabilities";
 
-export default function AppHeader() {
+export default function AppHeader({ capabilities }: { capabilities: AppCapabilities }) {
 	return (
 		<div className="flex shrink-0 items-center justify-between border-b-1 border-subtle bg-neutral-150 px-4 py-3">
 			<div className="flex items-center gap-x-4">
@@ -22,25 +23,33 @@ export default function AppHeader() {
 				<ValidationType />
 			</div>
 			<div className="flex gap-x-2">
-				<Share />
+				<Share shortLinksEnabled={capabilities.shortLinks} />
 
-				<SignedIn>
-					<UserButton
-						appearance={{
-							elements: {
-								avatarBox: "w-6 h-6",
-							},
-						}}
-					/>
-				</SignedIn>
-				<SignedOut>
-					<SignInButton mode="modal" forceRedirectUrl="/restore">
-						<Button size="xs">
-							<LogIn />
-						</Button>
-					</SignInButton>
-				</SignedOut>
+				{capabilities.auth && <AuthControls />}
 			</div>
 		</div>
+	);
+}
+
+function AuthControls() {
+	return (
+		<>
+			<SignedIn>
+				<UserButton
+					appearance={{
+						elements: {
+							avatarBox: "w-6 h-6",
+						},
+					}}
+				/>
+			</SignedIn>
+			<SignedOut>
+				<SignInButton mode="modal" forceRedirectUrl="/restore">
+					<Button size="xs">
+						<LogIn />
+					</Button>
+				</SignInButton>
+			</SignedOut>
+		</>
 	);
 }
