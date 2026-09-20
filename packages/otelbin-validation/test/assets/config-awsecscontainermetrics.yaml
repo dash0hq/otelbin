@@ -1,0 +1,11 @@
+receivers:
+  awsecscontainermetrics:
+
+exporters:
+  debug:
+
+service:
+  pipelines:
+    metrics:
+      receivers: [awsecscontainermetrics]
+      exporters: [debug]
