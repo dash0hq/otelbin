@@ -13,7 +13,7 @@ import {
 	getYamlDocument,
 	parseYaml,
 } from "./parseYaml";
-import { capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
+import { addConnectorCycleErrors, capitalize, customValidate, findErrorElement } from "./otelCollectorConfigValidation";
 import type { editor } from "monaco-editor";
 import YAML from "yaml";
 import { configBinding } from "./__fixtures__/configBinding";
@@ -243,6 +243,37 @@ describe("customValidate", () => {
 			],
 			customWarnings: [],
 		});
+	});
+});
+
+describe("addConnectorCycleErrors", () => {
+	it("adds one console error and marks every exporter reference involved in the cycle", () => {
+		const configData = `connectors:\n  first:\n  second:\nservice:\n  pipelines:\n    traces:\n      receivers: [second]\n      exporters: [first]\n    metrics:\n      receivers: [first]\n      exporters: [second]\n`;
+		const pipelineReferences = {
+			exporters: [
+				{
+					source: "first",
+					offset: configData.indexOf("first", configData.indexOf("exporters")),
+					level1Parent: "traces",
+				},
+				{ source: "second", offset: configData.lastIndexOf("second"), level1Parent: "metrics" },
+			],
+		};
+		const errorMarkers: editor.IMarkerData[] = [];
+		const totalErrors = { customErrors: [] as string[] };
+
+		addConnectorCycleErrors(YAML.parse(configData), pipelineReferences, errorMarkers, totalErrors, configData);
+
+		expect(totalErrors.customErrors).toEqual([
+			'Connector cycle detected between pipelines "metrics", "traces" via "first", "second".',
+		]);
+		expect(errorMarkers).toHaveLength(2);
+		expect(errorMarkers).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ startLineNumber: 8, startColumn: 19, endColumn: 24, severity: 8 }),
+				expect.objectContaining({ startLineNumber: 11, startColumn: 19, endColumn: 25, severity: 8 }),
+			])
+		);
 	});
 });
 
