@@ -18,8 +18,8 @@ RUN /usr/bin/rpm_download.sh
 FROM public.ecr.aws/lambda/nodejs:22 AS builder
 
 WORKDIR /usr/app
-COPY package.json package.json
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY src/ src/
 RUN npm run build
 
