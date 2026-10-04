@@ -18,11 +18,13 @@ import {
 	extractServiceItems,
 	findLeafs,
 	findLineAndColumn,
+	findPipelinesKeyValues,
 	parseYaml,
 } from "./parseYaml";
 import type { ValidationState } from "../validation/useServerSideValidation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
+import { connectorCycleMessage, findConnectorCycles } from "./connectorCycles";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
@@ -46,6 +48,8 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	const parsedYamlConfig = parseYaml(docElements);
 	const mainItemsData: IValidateItem = extractMainItemsData(docElements);
 	const serviceItems: IItem[] | undefined = extractServiceItems(docElements);
+	const pipelineItems = serviceItems?.filter((item: IItem) => item.key?.source === "pipelines") ?? [];
+	const pipelineReferences = findPipelinesKeyValues(pipelineItems, undefined, undefined, {});
 	serviceItemsData = {};
 	serviceItemsData = findLeafs(
 		serviceItems,
@@ -53,10 +57,11 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		serviceItemsData
 	);
 	const serverSideValidationPath = serverSideValidationResult?.result?.path ?? [];
+	let parsedConfig: unknown;
 
 	try {
-		const jsonData = YAML.parse(configData, { logLevel: "error", schema: "failsafe" });
-		const valid = ajv.validate(schema, jsonData);
+		parsedConfig = YAML.parse(configData, { logLevel: "error", schema: "failsafe" });
+		const valid = ajv.validate(schema, parsedConfig);
 		if (!valid) {
 			const errors = ajv.errors;
 
@@ -107,6 +112,9 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			configData,
 			isServerSideValidationEnabled
 		);
+		if (!isServerSideValidationEnabled) {
+			addConnectorCycleErrors(parsedConfig, pipelineReferences, errorMarkers, totalErrors, configData);
+		}
 		const totalBrowserSideErrorsCount = (totalErrors.ajvErrors?.length ?? 0) + (totalErrors.customErrors?.length ?? 0);
 		if (!totalBrowserSideErrorsCount) {
 			const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
@@ -130,6 +138,38 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	}
 	return totalErrors;
+}
+
+export function addConnectorCycleErrors(
+	config: unknown,
+	pipelineReferences: IValidateItem | undefined,
+	errorMarkers: editor.IMarkerData[],
+	totalErrors: IError,
+	configData: string
+) {
+	for (const cycle of findConnectorCycles(config)) {
+		const message = connectorCycleMessage(cycle);
+		totalErrors.customErrors?.push(message);
+
+		for (const reference of cycle.references) {
+			const item = pipelineReferences?.exporters?.find(
+				(candidate) => candidate.level1Parent === reference.sourcePipeline && candidate.source === reference.connector
+			);
+			if (!item) {
+				continue;
+			}
+
+			const { line, column } = findLineAndColumn(configData, item.offset);
+			errorMarkers.push({
+				startLineNumber: line,
+				endLineNumber: line,
+				startColumn: column,
+				endColumn: column + (item.source?.length ?? 0),
+				severity: 8,
+				message,
+			});
+		}
+	}
 }
 
 export function customValidate(
