@@ -1,4 +1,12 @@
-const {extractErrorPath, extractErrorMessage} = require("./index");
+jest.mock("@expo/spawn-async", () => jest.fn());
+
+const spawnAsync = require("@expo/spawn-async");
+const {
+	extractErrorPath,
+	extractErrorMessage,
+	buildValidationEnvironment,
+	validateOtelCol
+} = require("./index");
 
 describe("extractErrorMessage", () => {
 	it("must extract error message for OTel collector core/contrib when config parsing fails", () => {
@@ -43,5 +51,92 @@ describe('extractErrorPath', () => {
 		const errorMessage = `receivers::prometheus: no Prometheus scrape_configs or target_allocator set (Line 9)`;
 		const expected = ['receivers', 'prometheus'];
 		expect(extractErrorPath(errorMessage)).toEqual(expected);
+	});
+});
+
+
+describe("buildValidationEnvironment", () => {
+	const ecsEnvVar = "ECS_CONTAINER_METADATA_URI_V4";
+	const originalEcsEndpoint = process.env[ecsEnvVar];
+
+	beforeEach(() => {
+		delete process.env[ecsEnvVar];
+	});
+
+	afterAll(() => {
+		if (originalEcsEndpoint === undefined) {
+			delete process.env[ecsEnvVar];
+		} else {
+			process.env[ecsEnvVar] = originalEcsEndpoint;
+		}
+	});
+
+	it("adds a validation-only ECS metadata endpoint for awsecscontainermetrics", () => {
+		const env = buildValidationEnvironment({
+			receivers: {
+				awsecscontainermetrics: {}
+			}
+		}, {});
+
+		expect(env[ecsEnvVar]).toBe("http://127.0.0.1:9");
+	});
+
+	it("recognizes named awsecscontainermetrics receiver instances", () => {
+		const env = buildValidationEnvironment({
+			receivers: {
+				"awsecscontainermetrics/task": {}
+			}
+		}, {});
+
+		expect(env[ecsEnvVar]).toBe("http://127.0.0.1:9");
+	});
+
+	it("does not add an ECS metadata endpoint for unrelated receivers", () => {
+		const env = buildValidationEnvironment({
+			receivers: {
+				otlp: {}
+			}
+		}, {});
+
+		expect(env[ecsEnvVar]).toBeUndefined();
+	});
+
+	it("preserves an ECS metadata endpoint explicitly supplied by the caller", () => {
+		const endpoint = "http://169.254.170.2/v4/example";
+		const env = buildValidationEnvironment({
+			receivers: {
+				awsecscontainermetrics: {}
+			}
+		}, {
+			[ecsEnvVar]: endpoint
+		});
+
+		expect(env[ecsEnvVar]).toBe(endpoint);
+	});
+});
+
+describe("validateOtelCol", () => {
+	beforeEach(() => {
+		spawnAsync.mockReset();
+		spawnAsync.mockResolvedValue({});
+	});
+
+	it("passes caller-provided environment variables to the Collector process", async () => {
+		await validateOtelCol(
+			"/usr/bin/otelcol",
+			"/tmp/config.yaml",
+			{ OTLP_ENDPOINT: "collector:4317" },
+			{ receivers: { otlp: {} } }
+		);
+
+		expect(spawnAsync).toHaveBeenCalledWith(
+			"/bin/sh",
+			["-c", "/usr/bin/otelcol validate --config=/tmp/config.yaml"],
+			expect.objectContaining({
+				env: expect.objectContaining({
+					OTLP_ENDPOINT: "collector:4317"
+				})
+			})
+		);
 	});
 });
