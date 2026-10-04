@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2023 Dash0 Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Redis } from "@upstash/redis";
 import type { Metadata } from "next";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
@@ -9,6 +8,7 @@ import { editorBinding } from "~/components/monaco-editor/editorBinding";
 import JsYaml, { FAILSAFE_SCHEMA } from "js-yaml";
 import { extractComponents, sortAndDeduplicate, toUrlState } from "~/app/s/[id]/metadataUtils";
 import { notFound } from "next/navigation";
+import { createRedisIfConfigured } from "~/lib/redis";
 
 interface ExtendedMetadata {
 	twitterData1: string;
@@ -17,14 +17,14 @@ interface ExtendedMetadata {
 	twitterLabel2: string;
 }
 
-const redis = Redis.fromEnv();
+const redis = createRedisIfConfigured();
 const width = 1200;
 const height = 630;
 const ogImageAlt = "OpenTelemetry collector configuration pipeline visualization by OTelBin";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
 	const { id } = await params;
-	if (!id) {
+	if (!id || !redis) {
 		return notFound();
 	}
 	const extendedMetadata: ExtendedMetadata = {

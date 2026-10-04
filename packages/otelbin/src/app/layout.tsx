@@ -13,6 +13,7 @@ import { Toaster } from "~/components/toaster";
 import { dark } from "@clerk/themes";
 import { Inter } from "next/font/google";
 import { cn } from "~/lib/utils";
+import { isClerkConfigured } from "~/lib/capabilities";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,29 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
+	const app = (
+		<html lang="en" className="dark overflow-hidden">
+			<head>
+				<meta name="viewport" content="initial-scale=1" />
+				<link rel="preload" href="/validation/supported-distributions" as="fetch" crossOrigin="anonymous" />
+				<Dash0 />
+			</head>
+			<body
+				className={cn("max-h-screen min-h-screen min-w-[64rem] bg-background font-sans antialiased", inter.className)}
+			>
+				<TooltipProvider>
+					<main className="max-h-screen min-h-screen">{children}</main>
+					<Toaster />
+				</TooltipProvider>
+				<Analytics />
+			</body>
+		</html>
+	);
+
+	if (!isClerkConfigured()) {
+		return app;
+	}
+
 	return (
 		<ClerkProvider
 			afterSignOutUrl="/restore"
@@ -32,22 +56,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				},
 			}}
 		>
-			<html lang="en" className="dark overflow-hidden">
-				<head>
-					<meta name="viewport" content="initial-scale=1" />
-					<link rel="preload" href="/validation/supported-distributions" as="fetch" crossOrigin="anonymous" />
-					<Dash0 />
-				</head>
-				<body
-					className={cn("max-h-screen min-h-screen min-w-[64rem] bg-background font-sans antialiased", inter.className)}
-				>
-					<TooltipProvider>
-						<main className="max-h-screen min-h-screen">{children}</main>
-						<Toaster />
-					</TooltipProvider>
-					<Analytics />
-				</body>
-			</html>
+			{app}
 		</ClerkProvider>
 	);
 }

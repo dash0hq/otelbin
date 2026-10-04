@@ -7,8 +7,9 @@ import { Share2 } from "lucide-react";
 import { Button } from "~/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/popover";
 import { ShareContent } from "~/components/share/ShareContent";
+import { BasicShareContent } from "~/components/share/BasicShareContent";
 
-export function Share() {
+export function Share({ shortLinksEnabled }: { shortLinksEnabled: boolean }) {
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
@@ -18,7 +19,7 @@ export function Share() {
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent align="end" className="p-0">
-				<ShareContent />
+				{shortLinksEnabled ? <ShareContent /> : <BasicShareContent />}
 			</PopoverContent>
 		</Popover>
 	);

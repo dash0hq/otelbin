@@ -5,7 +5,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ImageResponse } from "next/og";
 import { calcNodes } from "~/components/react-flow/useClientNodes";
 import ParentsNode, { svgArrowHead } from "../../../og/ParentsNode";
-import { Redis } from "@upstash/redis";
 import { getShortLinkPersistenceKey } from "~/lib/shortLink";
 import type { IConfig } from "~/components/react-flow/dataType";
 import { editorBinding } from "~/components/monaco-editor/editorBinding";
@@ -15,14 +14,15 @@ import Logo from "~/components/assets/svg/otelbin_logo_white.svg";
 import { notFound } from "next/navigation";
 import { calcEdges } from "~/components/react-flow/useEdgeCreator";
 import { getLayoutedElements } from "~/components/react-flow/layout/useLayout";
+import { createRedisIfConfigured } from "~/lib/redis";
 
 export const runtime = "edge";
 
-const redis = Redis.fromEnv();
+const redis = createRedisIfConfigured();
 
 export async function GET(request: NextRequest) {
 	const shortLinkId = request.nextUrl.searchParams.get("id") ?? "";
-	if (!shortLinkId) {
+	if (!shortLinkId || !redis) {
 		return notFound();
 	}
 	const fullLink = (await redis.get<string>(getShortLinkPersistenceKey(shortLinkId))) ?? "";
