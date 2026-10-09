@@ -114,6 +114,11 @@ export function calcEdges(nodeIdsArray: Node[]) {
 		const connectorEdges = connectorsAsExporter.flatMap((sourceNode) =>
 			connectorsAsReceiver
 				.filter((node) => node?.data?.label === sourceNode?.data?.label)
+				.filter(
+					(targetNode) =>
+						sourceNode.data.label.split("/")[0] !== "forward" ||
+						sourceNode.parentNode?.split("/")[0] === targetNode.parentNode?.split("/")[0]
+				)
 				.map((targetNode) => createConnectorEdge(sourceNode, targetNode))
 		);
 
