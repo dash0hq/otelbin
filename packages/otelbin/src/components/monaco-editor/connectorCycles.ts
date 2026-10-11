@@ -114,6 +114,18 @@ function stronglyConnectedComponents(adjacency: Map<string, Set<string>>): strin
  * Finds pipeline cycles formed by connectors in an OpenTelemetry Collector
  * configuration. A connector creates a directed edge from every pipeline that
  * exports to it to every pipeline that receives from it.
+ *
+ * This is the second place in the codebase that models connectors as edges between pipelines;
+ * `calcEdges` in `../react-flow/useEdgeCreator` builds the same graph to draw it. The two are
+ * deliberately independent, but they are not identical: the renderer is gaining an exception
+ * for `forward`, which only moves data between pipelines of the same signal type, while this
+ * graph treats every connector alike.
+ *
+ * Over-approximating is sound here. Reaching a cycle that exists in this graph but not in the
+ * collector's requires a connector to be wired across signal types in a way the collector
+ * rejects for its own reasons, so the configuration is invalid either way, though the message
+ * would name the wrong problem. Teaching this graph about signal types means keeping the two
+ * models in step; a change to either is a reason to look at the other.
  */
 export function findConnectorCycles(config: unknown): ConnectorCycle[] {
 	if (!isRecord(config)) {
