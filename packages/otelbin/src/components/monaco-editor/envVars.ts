@@ -18,8 +18,16 @@
  *   - Any other scheme (`file:`, `http:`, `https:`, `yaml:`, ...) is resolved
  *     by a provider we cannot emulate during server-side validation.
  *
+ * Resolution happens against the *parsed* configuration, and only over values:
+ * `expandValue` walks a `map[string]any` rebuilding it as `nmap[mk] = val`, so
+ * a substitution in a mapping key is copied through untouched. A substitution
+ * is therefore only real when it sits inside a value, which also rules out the
+ * ones written in comments, since those never reach the resolver at all.
+ *
  * @see https://opentelemetry.io/docs/collector/configuration/
  */
+
+import YAML from "yaml";
 
 /** Environment variable names the collector accepts. */
 const ENV_VAR_NAME_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
@@ -110,9 +118,51 @@ function splitDefaultValue(body: string): { location: string; defaultValue?: str
 }
 
 /**
+ * The offsets spanned by every scalar the collector would expand: the values of
+ * mappings and the items of sequences, but not mapping keys, and not comments,
+ * which are not nodes at all.
+ *
+ * Returns `undefined` when the configuration does not parse, which happens
+ * routinely mid-edit. Callers then fall back to accepting every substitution:
+ * a configuration that does not parse cannot be validated anyway, and keeping
+ * the detected variables on screen beats blanking the panel on each keystroke.
+ */
+function findValueRanges(config: string): [number, number][] | undefined {
+	let document: YAML.Document.Parsed;
+	try {
+		// The failsafe schema keeps every scalar a string, so no tag resolution
+		// can fail on us. We only care where the scalars are, not what they mean.
+		document = YAML.parseDocument(config, { logLevel: "silent", schema: "failsafe" });
+	} catch {
+		return undefined;
+	}
+
+	if (document.errors.length > 0) {
+		return undefined;
+	}
+
+	const ranges: [number, number][] = [];
+	YAML.visit(document, {
+		Scalar(key, node) {
+			// `key` is "key" for a mapping key, "value" for a mapping value, and
+			// the index for a sequence item.
+			if (key === "key" || !node.range) {
+				return;
+			}
+			ranges.push([node.range[0], node.range[1]]);
+		},
+	});
+
+	return ranges;
+}
+
+/**
  * Finds every `${...}` substitution in the given configuration and groups them
  * into environment variable references, references to providers that cannot be
  * resolved during server-side validation, and outright invalid substitutions.
+ *
+ * Substitutions the collector would never expand — those in mapping keys and in
+ * comments — are ignored.
  */
 export function findSubstitutions(config: string): ISubstitutions {
 	const envVars: Record<string, IEnvVar> = {};
@@ -143,12 +193,24 @@ export function findSubstitutions(config: string): ISubstitutions {
 		return low + 1;
 	}
 
+	const valueRanges = findValueRanges(config);
+
+	function isExpanded(offset: number, end: number): boolean {
+		// Undefined means the configuration did not parse, so we cannot tell
+		// values from keys and accept everything.
+		return valueRanges === undefined || valueRanges.some(([start, stop]) => offset >= start && end <= stop);
+	}
+
 	SUBSTITUTION_PATTERN.lastIndex = 0;
 	let match: RegExpExecArray | null;
 	while ((match = SUBSTITUTION_PATTERN.exec(config)) !== null) {
 		const body = match[1];
 		// A `$$` escape. It yields a literal `$` and never starts a substitution.
 		if (body === undefined) {
+			continue;
+		}
+
+		if (!isExpanded(match.index, match.index + match[0].length)) {
 			continue;
 		}
 
@@ -245,9 +307,16 @@ export interface IRenderedLine {
  * Substitutions without a value, and those addressed to a provider we cannot
  * resolve, are left verbatim: the preview then shows exactly the mix of
  * resolved and unresolved text the collector would work with.
+ *
+ * Takes the ranges from an earlier {@link findSubstitutions} rather than
+ * scanning again, so that rendering on every keystroke costs one parse of the
+ * configuration rather than two.
  */
-export function renderSubstitutions(config: string, bindings: Record<string, IEnvVarBinding>): IRenderedLine[] {
-	const { ranges } = findSubstitutions(config);
+export function renderSubstitutions(
+	config: string,
+	ranges: ISubstitutionRange[],
+	bindings: Record<string, IEnvVarBinding>
+): IRenderedLine[] {
 	const lines = config.split("\n");
 
 	const lineStartOffsets: number[] = [];

@@ -6,8 +6,8 @@ import { bindEnvVars, findSubstitutions, findValidationBlockers, renderSubstitut
 
 /** Renders `config` with the values the user bound, as the editor does. */
 function render(config: string, boundValues: Record<string, string> = {}) {
-	const { envVars } = findSubstitutions(config);
-	return renderSubstitutions(config, bindEnvVars(envVars, boundValues));
+	const { envVars, ranges } = findSubstitutions(config);
+	return renderSubstitutions(config, ranges, bindEnvVars(envVars, boundValues));
 }
 
 describe("findSubstitutions", () => {
@@ -92,6 +92,47 @@ describe("findSubstitutions", () => {
 			{ scheme: "http", source: "${http://example.com/c.yaml}", line: 2 },
 			{ scheme: "yaml", source: "${yaml:{k: v}", line: 3 },
 		]);
+	});
+
+	it("ignores a substitution in a comment, which never reaches the resolver", () => {
+		const config = ["# remember to set ${env:NOTE} first", "exporters:", "  otlp:", "    endpoint: otelcol:4317"].join(
+			"\n"
+		);
+
+		const { envVars } = findSubstitutions(config);
+
+		expect(envVars).toEqual({});
+	});
+
+	it("ignores a substitution in a mapping key, which the collector copies through untouched", () => {
+		const { envVars } = findSubstitutions("endp${KEY}int:\n  endpoint: otelcol:4317");
+
+		expect(envVars).toEqual({});
+	});
+
+	it("detects a substitution embedded in a value", () => {
+		const { envVars } = findSubstitutions("endpoint: endp${SOZ}int");
+
+		expect(Object.keys(envVars)).toEqual(["SOZ"]);
+	});
+
+	it("detects a substitution in a quoted value", () => {
+		const { envVars } = findSubstitutions('authorization: "${env:TOKEN}"');
+
+		expect(Object.keys(envVars)).toEqual(["TOKEN"]);
+	});
+
+	it("detects a substitution in a sequence item", () => {
+		const { envVars } = findSubstitutions('receivers: ["${env:RECEIVER}", otlp]');
+
+		expect(Object.keys(envVars)).toEqual(["RECEIVER"]);
+	});
+
+	it("falls back to accepting every substitution when the configuration does not parse", () => {
+		// The tab makes this invalid YAML, as happens routinely mid-edit.
+		const { envVars } = findSubstitutions("exporters:\n\tendpoint: ${env:HOST}");
+
+		expect(Object.keys(envVars)).toEqual(["HOST"]);
 	});
 
 	it("reports substitutions whose variable name the collector would reject", () => {

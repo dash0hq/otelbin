@@ -66,7 +66,7 @@ export function useSubstitutionDecorations() {
 				};
 			});
 
-			const previews: editor.IModelDeltaDecoration[] = renderSubstitutions(config, bindings).map((rendered) => {
+			const previews: editor.IModelDeltaDecoration[] = renderSubstitutions(config, ranges, bindings).map((rendered) => {
 				const column = model.getLineMaxColumn(rendered.line);
 
 				return {
