@@ -48,8 +48,6 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	const parsedYamlConfig = parseYaml(docElements);
 	const mainItemsData: IValidateItem = extractMainItemsData(docElements);
 	const serviceItems: IItem[] | undefined = extractServiceItems(docElements);
-	const pipelineItems = serviceItems?.filter((item: IItem) => item.key?.source === "pipelines") ?? [];
-	const pipelineReferences = findPipelinesKeyValues(pipelineItems, undefined, undefined, {});
 	serviceItemsData = {};
 	serviceItemsData = findLeafs(
 		serviceItems,
@@ -113,6 +111,10 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			isServerSideValidationEnabled
 		);
 		if (!isServerSideValidationEnabled) {
+			// Only collected for the cycle check: when a distro and version are selected the
+			// collector backend reports these errors instead, and this traversal would be discarded.
+			const pipelineItems = serviceItems?.filter((item: IItem) => item.key?.source === "pipelines") ?? [];
+			const pipelineReferences = findPipelinesKeyValues(pipelineItems, undefined, undefined, {});
 			addConnectorCycleErrors(parsedConfig, pipelineReferences, errorMarkers, totalErrors, configData);
 		}
 		const totalBrowserSideErrorsCount = (totalErrors.ajvErrors?.length ?? 0) + (totalErrors.customErrors?.length ?? 0);
