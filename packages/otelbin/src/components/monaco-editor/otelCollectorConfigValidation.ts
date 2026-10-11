@@ -140,6 +140,20 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 	return totalErrors;
 }
 
+/**
+ * `findPipelinesKeyValues` reports the raw YAML source of a key or scalar, so a quoted
+ * `"traces":` arrives as `"traces"` while the parsed configuration holds `traces`. Strip one
+ * layer of matching quotes so references still resolve; the raw source is kept for the marker
+ * width, which should cover the quotes along with the name.
+ */
+function unquoteYamlSource(value?: string): string | undefined {
+	const quote = value?.[0];
+	if ((quote === '"' || quote === "'") && value !== undefined && value.length > 1 && value.endsWith(quote)) {
+		return value.slice(1, -1);
+	}
+	return value;
+}
+
 export function addConnectorCycleErrors(
 	config: unknown,
 	pipelineReferences: IValidateItem | undefined,
@@ -164,7 +178,9 @@ export function addConnectorCycleErrors(
 			markedExporters.add(exporterKey);
 
 			const item = pipelineReferences?.exporters?.find(
-				(candidate) => candidate.level1Parent === reference.sourcePipeline && candidate.source === reference.connector
+				(candidate) =>
+					unquoteYamlSource(candidate.level1Parent) === reference.sourcePipeline &&
+					unquoteYamlSource(candidate.source) === reference.connector
 			);
 			if (!item) {
 				continue;

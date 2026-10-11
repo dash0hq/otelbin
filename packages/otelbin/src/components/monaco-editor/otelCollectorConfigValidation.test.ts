@@ -352,6 +352,25 @@ describe("addConnectorCycleErrors on references collected by findPipelinesKeyVal
 		expect(marked).toEqual([{ line: 9, text: "forward" }]);
 	});
 
+	it("resolves references when the pipeline key and the component name are quoted", () => {
+		const { customErrors, marked } = markCycles(
+			[
+				"connectors:",
+				"  forward:",
+				"service:",
+				"  pipelines:",
+				'    "traces":',
+				"      receivers: [forward]",
+				'      exporters: ["forward"]',
+				"",
+			].join("\n")
+		);
+
+		expect(customErrors).toEqual(['Connector "forward" creates a cycle in pipeline "traces".']);
+		// The marker spans the quotes along with the name, so the whole scalar is underlined.
+		expect(marked).toEqual([{ line: 7, text: '"forward"' }]);
+	});
+
 	it("marks a fanned-out exporter reference once rather than once per target pipeline", () => {
 		const { customErrors, marked } = markCycles(
 			[
