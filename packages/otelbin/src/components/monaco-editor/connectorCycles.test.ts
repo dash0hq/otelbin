@@ -92,6 +92,24 @@ describe("findConnectorCycles", () => {
 		expect(cycles).toEqual([]);
 	});
 
+	it("handles a pipeline chain deeper than the call stack would allow", () => {
+		const length = 20000;
+		const connectors: Record<string, unknown> = {};
+		const pipelines: Record<string, unknown> = {};
+		for (let index = 0; index < length; index++) {
+			connectors[`forward/${index}`] = {};
+			pipelines[`traces/${index}`] = {
+				receivers: [`forward/${(index - 1 + length) % length}`],
+				exporters: [`forward/${index}`],
+			};
+		}
+
+		const cycles = findConnectorCycles({ connectors, service: { pipelines } });
+
+		expect(cycles).toHaveLength(1);
+		expect(cycles[0]?.pipelines).toHaveLength(length);
+	});
+
 	it.each([null, [], {}, { connectors: {} }, { connectors: {}, service: {} }])(
 		"handles incomplete configuration %#",
 		(config) => {

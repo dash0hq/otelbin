@@ -33,6 +33,20 @@ function stringArray(value: unknown): string[] {
 	return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
+interface TraversalFrame {
+	node: string;
+	successors: string[];
+	nextSuccessor: number;
+}
+
+/**
+ * Tarjan's algorithm, driven by an explicit stack rather than recursion. The depth of the
+ * traversal is bounded by the number of pipelines, and a configuration can be pasted into the
+ * editor wholesale, so recursing once per pipeline put a ceiling on the configurations that
+ * could be validated at all: a chain of roughly five thousand pipelines overflowed the call
+ * stack, and the resulting RangeError escaped the validator rather than surfacing as an error
+ * in the console.
+ */
 function stronglyConnectedComponents(adjacency: Map<string, Set<string>>): string[][] {
 	let nextIndex = 0;
 	const indices = new Map<string, number>();
@@ -41,39 +55,55 @@ function stronglyConnectedComponents(adjacency: Map<string, Set<string>>): strin
 	const onStack = new Set<string>();
 	const components: string[][] = [];
 
-	const visit = (node: string) => {
+	const discover = (node: string): TraversalFrame => {
 		indices.set(node, nextIndex);
 		lowLinks.set(node, nextIndex);
 		nextIndex++;
 		stack.push(node);
 		onStack.add(node);
-
-		for (const successor of adjacency.get(node) ?? []) {
-			if (!indices.has(successor)) {
-				visit(successor);
-				lowLinks.set(node, Math.min(lowLinks.get(node) as number, lowLinks.get(successor) as number));
-			} else if (onStack.has(successor)) {
-				lowLinks.set(node, Math.min(lowLinks.get(node) as number, indices.get(successor) as number));
-			}
-		}
-
-		if (lowLinks.get(node) !== indices.get(node)) {
-			return;
-		}
-
-		const component: string[] = [];
-		let member: string;
-		do {
-			member = stack.pop() as string;
-			onStack.delete(member);
-			component.push(member);
-		} while (member !== node);
-		components.push(component);
+		return { node, successors: [...(adjacency.get(node) ?? [])], nextSuccessor: 0 };
 	};
 
-	for (const node of adjacency.keys()) {
-		if (!indices.has(node)) {
-			visit(node);
+	for (const root of adjacency.keys()) {
+		if (indices.has(root)) {
+			continue;
+		}
+
+		const traversal: TraversalFrame[] = [discover(root)];
+		while (traversal.length > 0) {
+			const frame = traversal[traversal.length - 1] as TraversalFrame;
+
+			if (frame.nextSuccessor < frame.successors.length) {
+				const successor = frame.successors[frame.nextSuccessor] as string;
+				frame.nextSuccessor++;
+				if (!indices.has(successor)) {
+					traversal.push(discover(successor));
+				} else if (onStack.has(successor)) {
+					lowLinks.set(frame.node, Math.min(lowLinks.get(frame.node) as number, indices.get(successor) as number));
+				}
+				continue;
+			}
+
+			// Every successor of this node has been explored: fold its low link into its parent,
+			// the step that happened on return from the recursive call.
+			traversal.pop();
+			const parent = traversal[traversal.length - 1];
+			if (parent) {
+				lowLinks.set(parent.node, Math.min(lowLinks.get(parent.node) as number, lowLinks.get(frame.node) as number));
+			}
+
+			if (lowLinks.get(frame.node) !== indices.get(frame.node)) {
+				continue;
+			}
+
+			const component: string[] = [];
+			let member: string;
+			do {
+				member = stack.pop() as string;
+				onStack.delete(member);
+				component.push(member);
+			} while (member !== frame.node);
+			components.push(component);
 		}
 	}
 
