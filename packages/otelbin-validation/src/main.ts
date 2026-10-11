@@ -48,13 +48,6 @@ export class DistributionNestedStack extends NestedStack {
     const distributionResource = props.validationResource.addResource(props.distributionName);
 
     for (let release of props.distribution.releases) {
-      /*
-       * Declared explicitly so that CloudFormation owns the retention setting and the group's
-       * lifecycle. Left implicit, Lambda creates /aws/lambda/<function> on first invocation with
-       * retention set to Never Expire, and nothing in the stack can express otherwise. The log
-       * group name is CDK-generated rather than /aws/lambda/<function>, because the function name
-       * is only known after the function is created and the function needs the group up front.
-       */
       const releaseLogGroup = new LogGroup(this, `${props.distributionName}-${release.version}-logs`, {
         retention: RetentionDays.THREE_DAYS,
         removalPolicy: RemovalPolicy.DESTROY,
