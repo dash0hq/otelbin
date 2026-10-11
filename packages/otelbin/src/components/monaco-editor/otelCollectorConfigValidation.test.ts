@@ -10,6 +10,7 @@ import {
 	extractMainItemsData,
 	extractServiceItems,
 	findLeafs,
+	findPipelinesKeyValues,
 	getYamlDocument,
 	parseYaml,
 } from "./parseYaml";
@@ -274,6 +275,105 @@ describe("addConnectorCycleErrors", () => {
 				expect.objectContaining({ startLineNumber: 11, startColumn: 19, endColumn: 25, severity: 8 }),
 			])
 		);
+	});
+});
+
+// `addConnectorCycleErrors` locates exporter references through the `IValidateItem` that
+// `findPipelinesKeyValues` builds. Nothing else in the codebase calls that function with this
+// argument shape, so these tests pin the contract end to end rather than hand-building the
+// references: `level1Parent` must carry the pipeline name and `source` the component name.
+describe("addConnectorCycleErrors on references collected by findPipelinesKeyValues", () => {
+	function markCycles(configData: string) {
+		const serviceItems = extractServiceItems(getYamlDocument(configData));
+		const pipelineItems = serviceItems?.filter((item: IItem) => item.key?.source === "pipelines") ?? [];
+		const pipelineReferences = findPipelinesKeyValues(pipelineItems, undefined, undefined, {});
+		const errorMarkers: editor.IMarkerData[] = [];
+		const totalErrors = { customErrors: [] as string[] };
+		const parsedConfig = YAML.parse(configData, { logLevel: "error", schema: "failsafe" });
+
+		addConnectorCycleErrors(parsedConfig, pipelineReferences, errorMarkers, totalErrors, configData);
+
+		const lines = configData.split("\n");
+		return {
+			customErrors: totalErrors.customErrors,
+			// Resolving each marker back to the text it covers keeps these assertions readable and
+			// independent of the exact offsets `findPipelinesKeyValues` happens to report.
+			marked: errorMarkers.map((marker) => ({
+				line: marker.startLineNumber,
+				text: lines[marker.startLineNumber - 1]?.slice(marker.startColumn - 1, marker.endColumn - 1),
+			})),
+		};
+	}
+
+	it("marks the exporter reference of every pipeline in a two-pipeline cycle", () => {
+		const { customErrors, marked } = markCycles(
+			[
+				"connectors:",
+				"  first:",
+				"  second:",
+				"service:",
+				"  pipelines:",
+				"    traces:",
+				"      receivers: [second]",
+				"      exporters: [first]",
+				"    metrics:",
+				"      receivers: [first]",
+				"      exporters: [second]",
+				"",
+			].join("\n")
+		);
+
+		expect(customErrors).toEqual([
+			'Connector cycle detected between pipelines "metrics", "traces" via "first", "second".',
+		]);
+		expect(marked).toEqual([
+			{ line: 8, text: "first" },
+			{ line: 11, text: "second" },
+		]);
+	});
+
+	it("marks block sequence entries and resolves slash-qualified pipeline names", () => {
+		const { customErrors, marked } = markCycles(
+			[
+				"connectors:",
+				"  forward:",
+				"service:",
+				"  pipelines:",
+				"    traces/sub:",
+				"      receivers:",
+				"        - forward",
+				"      exporters:",
+				"        - forward",
+				"",
+			].join("\n")
+		);
+
+		expect(customErrors).toEqual(['Connector "forward" creates a cycle in pipeline "traces/sub".']);
+		expect(marked).toEqual([{ line: 9, text: "forward" }]);
+	});
+
+	it("reports no cycle for acyclic fan-out through a connector", () => {
+		const { customErrors, marked } = markCycles(
+			[
+				"connectors:",
+				"  fanout:",
+				"service:",
+				"  pipelines:",
+				"    traces:",
+				"      receivers: [otlp]",
+				"      exporters: [fanout]",
+				"    traces/a:",
+				"      receivers: [fanout]",
+				"      exporters: [debug]",
+				"    traces/b:",
+				"      receivers: [fanout]",
+				"      exporters: [debug]",
+				"",
+			].join("\n")
+		);
+
+		expect(customErrors).toEqual([]);
+		expect(marked).toEqual([]);
 	});
 });
 
