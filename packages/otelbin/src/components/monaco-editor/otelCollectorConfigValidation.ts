@@ -18,11 +18,13 @@ import {
 	extractServiceItems,
 	findLeafs,
 	findLineAndColumn,
+	findPipelinesKeyValues,
 	parseYaml,
 } from "./parseYaml";
 import type { ValidationState } from "../validation/useServerSideValidation";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
+import { connectorCycleMessage, findConnectorCycles } from "./connectorCycles";
 
 type EditorRefType = RefObject<editor.IStandaloneCodeEditor | null>;
 type MonacoRefType = RefObject<Monaco | null>;
@@ -53,10 +55,11 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		serviceItemsData
 	);
 	const serverSideValidationPath = serverSideValidationResult?.result?.path ?? [];
+	let parsedConfig: unknown;
 
 	try {
-		const jsonData = YAML.parse(configData, { logLevel: "error", schema: "failsafe" });
-		const valid = ajv.validate(schema, jsonData);
+		parsedConfig = YAML.parse(configData, { logLevel: "error", schema: "failsafe" });
+		const valid = ajv.validate(schema, parsedConfig);
 		if (!valid) {
 			const errors = ajv.errors;
 
@@ -107,6 +110,13 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 			configData,
 			isServerSideValidationEnabled
 		);
+		if (!isServerSideValidationEnabled) {
+			// Only collected for the cycle check: when a distro and version are selected the
+			// collector backend reports these errors instead, and this traversal would be discarded.
+			const pipelineItems = serviceItems?.filter((item: IItem) => item.key?.source === "pipelines") ?? [];
+			const pipelineReferences = findPipelinesKeyValues(pipelineItems, undefined, undefined, {});
+			addConnectorCycleErrors(parsedConfig, pipelineReferences, errorMarkers, totalErrors, configData);
+		}
 		const totalBrowserSideErrorsCount = (totalErrors.ajvErrors?.length ?? 0) + (totalErrors.customErrors?.length ?? 0);
 		if (!totalBrowserSideErrorsCount) {
 			const serverSideErrorElement = findErrorElement(serverSideValidationPath, parsedYamlConfig);
@@ -130,6 +140,65 @@ export function validateOtelCollectorConfigurationAndSetMarkers(
 		model && monacoRef?.current?.editor.setModelMarkers(model, "json", errorMarkers);
 	}
 	return totalErrors;
+}
+
+/**
+ * `findPipelinesKeyValues` reports the raw YAML source of a key or scalar, so a quoted
+ * `"traces":` arrives as `"traces"` while the parsed configuration holds `traces`. Strip one
+ * layer of matching quotes so references still resolve; the raw source is kept for the marker
+ * width, which should cover the quotes along with the name.
+ */
+function unquoteYamlSource(value?: string): string | undefined {
+	const quote = value?.[0];
+	if ((quote === '"' || quote === "'") && value !== undefined && value.length > 1 && value.endsWith(quote)) {
+		return value.slice(1, -1);
+	}
+	return value;
+}
+
+export function addConnectorCycleErrors(
+	config: unknown,
+	pipelineReferences: IValidateItem | undefined,
+	errorMarkers: editor.IMarkerData[],
+	totalErrors: IError,
+	configData: string
+) {
+	for (const cycle of findConnectorCycles(config)) {
+		const message = connectorCycleMessage(cycle);
+		totalErrors.customErrors?.push(message);
+
+		// A cycle holds one reference per (connector, source, target) triple, so a pipeline that
+		// exports to a connector several pipelines in the cycle receive from would otherwise be
+		// marked once per target. The exporter reference is the same token every time.
+		const markedExporters = new Set<string>();
+
+		for (const reference of cycle.references) {
+			const exporterKey = `${reference.sourcePipeline}\u0000${reference.connector}`;
+			if (markedExporters.has(exporterKey)) {
+				continue;
+			}
+			markedExporters.add(exporterKey);
+
+			const item = pipelineReferences?.exporters?.find(
+				(candidate) =>
+					unquoteYamlSource(candidate.level1Parent) === reference.sourcePipeline &&
+					unquoteYamlSource(candidate.source) === reference.connector
+			);
+			if (!item) {
+				continue;
+			}
+
+			const { line, column } = findLineAndColumn(configData, item.offset);
+			errorMarkers.push({
+				startLineNumber: line,
+				endLineNumber: line,
+				startColumn: column,
+				endColumn: column + (item.source?.length ?? 0),
+				severity: 8,
+				message,
+			});
+		}
+	}
 }
 
 export function customValidate(
