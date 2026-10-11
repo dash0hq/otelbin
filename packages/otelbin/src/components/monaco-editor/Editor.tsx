@@ -32,6 +32,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import { track } from "@vercel/analytics";
 import { useServerSideValidation } from "../validation/useServerSideValidation";
 import { selectConfigType } from "./parseYaml";
+import EnvVarPanel from "../env-vars/EnvVarPanel";
+import { useEnvVars } from "../env-vars/useEnvVars";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -51,6 +53,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const [currentConfig, setCurrentConfig] = useState<string>(config);
 	const clerk = useClerk();
 	const serverSideValidationResult = useServerSideValidation();
+	const { hasEnvVars } = useEnvVars();
 	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));
@@ -196,6 +199,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 							{viewMode !== "pipeline" && <ValidationErrorConsole errors={totalValidationErrors} font={firaCode} />}
 							{viewMode == "both" && <ResizeBar onWidthChange={onWidthChange} />}
 						</div>
+						{hasEnvVars && <EnvVarPanel />}
 						<div className="z-0 min-h-full w-full shrink grow relative">
 							<AutoSizer>
 								{({ width, height }) => (

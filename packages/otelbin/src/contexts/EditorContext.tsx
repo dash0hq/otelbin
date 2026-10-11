@@ -8,6 +8,8 @@ import { type Monaco, type OnMount } from "@monaco-editor/react";
 import { configureMonacoYaml } from "monaco-yaml";
 import schema from "../components/monaco-editor/schema.json";
 import { type IItem, getYamlDocument, selectConfigType } from "../components/monaco-editor/parseYaml";
+import { findSubstitutions } from "../components/monaco-editor/envVars";
+import "../components/react-flow/decorationStyles.css";
 import {
 	useServerSideValidationEnabled,
 	validateOtelCollectorConfigurationAndSetMarkers,
@@ -52,8 +54,22 @@ export const BreadcrumbsContext = createContext<{
 	},
 });
 
+export const EnvVarPanelContext = createContext<{
+	isEnvVarPanelOpen: boolean;
+	setEnvVarPanelOpen: (isEnvVarPanelOpen: boolean) => void;
+}>({
+	isEnvVarPanelOpen: false,
+	setEnvVarPanelOpen: () => {
+		return;
+	},
+});
+
 export function useEditorRef() {
 	return React.useContext(EditorContext);
+}
+
+export function useEnvVarPanel() {
+	return React.useContext(EnvVarPanelContext);
 }
 
 export function useMonacoRef() {
@@ -85,6 +101,8 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const viewState = editorRef.current?.saveViewState();
 	const [monaco, setMonaco] = useState<Monaco>();
+	const [isEnvVarPanelOpen, setEnvVarPanelOpen] = useState(false);
+	const substitutionDecorations = useRef<editor.IEditorDecorationsCollection | null>(null);
 
 	useEffect(() => {
 		if (!isServerValidationEnabled && monaco) {
@@ -128,11 +146,53 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 			wordPattern: /\w+\/[\w_]+(?:-[\w_]+)*|\w+/,
 		});
 
+		/**
+		 * Highlights every `${...}` substitution so that it stands out from the
+		 * surrounding YAML, since the collector resolves it before parsing.
+		 */
+		function decorateSubstitutions() {
+			const model = editorRef.current?.getModel();
+			if (!model) {
+				return;
+			}
+
+			const { ranges } = findSubstitutions(model.getValue());
+			const decorations = ranges.map((substitution) => {
+				const start = model.getPositionAt(substitution.offset);
+				const end = model.getPositionAt(substitution.offset + substitution.length);
+
+				return {
+					range: {
+						startLineNumber: start.lineNumber,
+						startColumn: start.column,
+						endLineNumber: end.lineNumber,
+						endColumn: end.column,
+					},
+					options: {
+						isWholeLine: false,
+						inlineClassName: substitution.kind === "env" ? "envVarDecoration" : "unresolvableSubstitutionDecoration",
+						hoverMessage: {
+							value:
+								substitution.kind === "env"
+									? "Environment variable. Bind a value to it to validate against a distribution."
+									: "This substitution cannot be resolved during validation.",
+						},
+						stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+					},
+				};
+			});
+
+			substitutionDecorations.current ??= editor.createDecorationsCollection();
+			substitutionDecorations.current.set(decorations);
+		}
+
 		let value = editorRef.current?.getValue() ?? "";
 		let docElements = getYamlDocument(value);
+		decorateSubstitutions();
 		editorRef.current?.onDidChangeModelContent(() => {
 			value = editorRef.current?.getValue() ?? "";
 			docElements = getYamlDocument(value);
+			decorateSubstitutions();
 		});
 
 		function correctKey(value: string, key?: string, key2?: string) {
@@ -227,13 +287,20 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		path: path,
 	};
 
+	const envVarPanelContext = {
+		isEnvVarPanelOpen: isEnvVarPanelOpen,
+		setEnvVarPanelOpen: setEnvVarPanelOpen,
+	};
+
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>
 			<EditorContext.Provider value={editorRef}>
 				<MonacoContext.Provider value={monacoRef}>
 					<FocusContext.Provider value={focusContext}>
 						<ViewModeContext.Provider value={viewModeContext}>
-							<BreadcrumbsContext.Provider value={breadcrumbsContext}>{children}</BreadcrumbsContext.Provider>
+							<BreadcrumbsContext.Provider value={breadcrumbsContext}>
+								<EnvVarPanelContext.Provider value={envVarPanelContext}>{children}</EnvVarPanelContext.Provider>
+							</BreadcrumbsContext.Provider>
 						</ViewModeContext.Provider>
 					</FocusContext.Provider>
 				</MonacoContext.Provider>
