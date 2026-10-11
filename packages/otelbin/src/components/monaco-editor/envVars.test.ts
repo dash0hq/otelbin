@@ -2,7 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { describe, expect, it } from "@jest/globals";
-import { bindEnvVars, findSubstitutions, findValidationBlockers } from "./envVars";
+import { bindEnvVars, findSubstitutions, findValidationBlockers, renderSubstitutions } from "./envVars";
+
+/** Renders `config` with the values the user bound, as the editor does. */
+function render(config: string, boundValues: Record<string, string> = {}) {
+	const { envVars } = findSubstitutions(config);
+	return renderSubstitutions(config, bindEnvVars(envVars, boundValues));
+}
 
 describe("findSubstitutions", () => {
 	it("finds no substitution in a configuration without one", () => {
@@ -132,10 +138,16 @@ describe("bindEnvVars", () => {
 		expect(binding?.defaultValues).toEqual(["x", "y"]);
 	});
 
-	it("requires a value when only some occurrences declare a default", () => {
+	it("does not require a value when only some occurrences declare a default", () => {
 		const { envVars } = findSubstitutions("a: ${env:FOO:-x}\nb: ${FOO}");
 
-		expect(bindEnvVars(envVars, {}).FOO?.isUnbound).toBe(true);
+		expect(bindEnvVars(envVars, {}).FOO?.isUnbound).toBe(false);
+	});
+
+	it("treats an empty default as a value", () => {
+		const { envVars } = findSubstitutions("a: ${FOO:-}");
+
+		expect(bindEnvVars(envVars, {}).FOO?.isUnbound).toBe(false);
 	});
 
 	it("de-duplicates repeated default values", () => {
@@ -183,5 +195,73 @@ describe("findValidationBlockers", () => {
 			"1 environment variable is unbound: FOO",
 			"The file: provider cannot be resolved during validation",
 		]);
+	});
+});
+
+describe("renderSubstitutions", () => {
+	it("renders nothing for a configuration without substitutions", () => {
+		expect(render("endpoint: otelcol:4317")).toEqual([]);
+	});
+
+	it("renders a bound value in place of the substitution", () => {
+		expect(render("endpoint: ${env:HOST}", { HOST: "otelcol:4317" })).toEqual([
+			{ line: 1, text: "endpoint: otelcol:4317" },
+		]);
+	});
+
+	it("falls back to the declared default when nothing is bound", () => {
+		expect(render("endpoint: ${HOST:-localhost:4317}")).toEqual([{ line: 1, text: "endpoint: localhost:4317" }]);
+	});
+
+	it("prefers the bound value over the declared default", () => {
+		expect(render("endpoint: ${env:HOST:-localhost}", { HOST: "otelcol" })).toEqual([
+			{ line: 1, text: "endpoint: otelcol" },
+		]);
+	});
+
+	it("renders every substitution on a line", () => {
+		expect(render("endpoint: ${HOST}:${PORT}", { HOST: "otelcol", PORT: "4317" })).toEqual([
+			{ line: 1, text: "endpoint: otelcol:4317" },
+		]);
+	});
+
+	it("leaves a substitution without a value verbatim", () => {
+		expect(render("endpoint: ${HOST}:${PORT}", { HOST: "otelcol" })).toEqual([
+			{ line: 1, text: "endpoint: otelcol:${PORT}" },
+		]);
+	});
+
+	it("skips a line whose substitutions all lack a value", () => {
+		expect(render("endpoint: ${HOST}")).toEqual([]);
+	});
+
+	it("leaves substitutions addressed to another provider verbatim", () => {
+		expect(render("a: ${file:/ca.pem} ${HOST}", { HOST: "otelcol" })).toEqual([
+			{ line: 1, text: "a: ${file:/ca.pem} otelcol" },
+		]);
+	});
+
+	it("reports the line each rendering belongs to", () => {
+		const config = [
+			"receivers:",
+			"  otlp:",
+			"    endpoint: ${HOST}",
+			"exporters:",
+			"  otlp:",
+			"    endpoint: ${HOST}",
+		].join("\n");
+
+		expect(render(config, { HOST: "otelcol:4317" })).toEqual([
+			{ line: 3, text: "    endpoint: otelcol:4317" },
+			{ line: 6, text: "    endpoint: otelcol:4317" },
+		]);
+	});
+
+	it("renders an empty value as the empty string", () => {
+		expect(render("endpoint: ${HOST}", { HOST: "" })).toEqual([{ line: 1, text: "endpoint: " }]);
+	});
+
+	it("ignores an escaped dollar sign", () => {
+		expect(render("a: $${HOST} ${PORT}", { HOST: "x", PORT: "4317" })).toEqual([{ line: 1, text: "a: $${HOST} 4317" }]);
 	});
 });

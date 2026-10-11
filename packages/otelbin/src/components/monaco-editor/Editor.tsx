@@ -34,6 +34,7 @@ import { useServerSideValidation } from "../validation/useServerSideValidation";
 import { selectConfigType } from "./parseYaml";
 import EnvVarPanel from "../env-vars/EnvVarPanel";
 import { useEnvVars } from "../env-vars/useEnvVars";
+import { useSubstitutionDecorations } from "../env-vars/useSubstitutionDecorations";
 
 const firaCode = Fira_Code({
 	display: "swap",
@@ -54,6 +55,7 @@ export default function Editor({ locked, setLocked }: { locked: boolean; setLock
 	const clerk = useClerk();
 	const serverSideValidationResult = useServerSideValidation();
 	const { hasEnvVars } = useEnvVars();
+	useSubstitutionDecorations();
 	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const onWidthChange = useCallback((newWidth: number) => {
 		localStorage.setItem("width", String(newWidth));

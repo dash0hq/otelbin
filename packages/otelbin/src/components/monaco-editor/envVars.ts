@@ -73,6 +73,10 @@ export interface ISubstitutionRange {
 	/** Length of the substitution, including the `${` and `}` delimiters. */
 	length: number;
 	kind: "env" | "unsupported" | "invalid";
+	/** The variable name, for `env` substitutions. */
+	name?: string;
+	/** The default declared at this occurrence, for `env` substitutions. */
+	defaultValue?: string;
 }
 
 export interface ISubstitutions {
@@ -172,7 +176,7 @@ export function findSubstitutions(config: string): ISubstitutions {
 
 		const envVar = (envVars[name] ??= { name, occurrences: [] });
 		envVar.occurrences.push({ source, line, defaultValue });
-		ranges.push({ offset: match.index, length: source.length, kind: "env" });
+		ranges.push({ offset: match.index, length: source.length, kind: "env", name, defaultValue });
 	}
 
 	return { envVars, unsupportedProviders, invalid, ranges };
@@ -187,9 +191,11 @@ export interface IEnvVarBinding extends IEnvVar {
 	 */
 	defaultValues: string[];
 	/**
-	 * Whether the collector would fail to resolve this variable during
-	 * server-side validation: it is referenced at least once without a default
-	 * value and the user has not bound a value to it.
+	 * Whether no value at all is available for this variable: the user has not
+	 * bound one and no occurrence declares a default. A default declared at any
+	 * occurrence counts, even if other occurrences lack one — the collector
+	 * resolves those to the empty string with a warning rather than failing, so
+	 * holding validation back over them would cost more than it catches.
 	 */
 	isUnbound: boolean;
 }
@@ -213,19 +219,96 @@ export function bindEnvVars(
 					.filter((defaultValue): defaultValue is string => defaultValue !== undefined)
 			),
 		];
-		// Occurrences carrying a default resolve on their own. The variable only
-		// needs a value from the user if at least one occurrence lacks a default.
-		const hasOccurrenceWithoutDefault = envVar.occurrences.some((occurrence) => occurrence.defaultValue === undefined);
-
 		bindings[envVar.name] = {
 			...envVar,
 			boundValue,
 			defaultValues,
-			isUnbound: boundValue === undefined && hasOccurrenceWithoutDefault,
+			isUnbound: boundValue === undefined && defaultValues.length === 0,
 		};
 	}
 
 	return bindings;
+}
+
+export interface IRenderedLine {
+	/** 1-based line number. */
+	line: number;
+	/** The line as the collector would see it, once substitutions resolve. */
+	text: string;
+}
+
+/**
+ * Renders each line of the configuration that contains at least one
+ * substitution we can resolve, so the editor can preview the value the
+ * collector would actually read.
+ *
+ * Substitutions without a value, and those addressed to a provider we cannot
+ * resolve, are left verbatim: the preview then shows exactly the mix of
+ * resolved and unresolved text the collector would work with.
+ */
+export function renderSubstitutions(config: string, bindings: Record<string, IEnvVarBinding>): IRenderedLine[] {
+	const { ranges } = findSubstitutions(config);
+	const lines = config.split("\n");
+
+	const lineStartOffsets: number[] = [];
+	let offset = 0;
+	for (const line of lines) {
+		lineStartOffsets.push(offset);
+		offset += line.length + 1;
+	}
+
+	function lineIndexAt(target: number): number {
+		let low = 0;
+		let high = lineStartOffsets.length - 1;
+		while (low < high) {
+			const mid = Math.ceil((low + high) / 2);
+			if ((lineStartOffsets[mid] ?? 0) <= target) {
+				low = mid;
+			} else {
+				high = mid - 1;
+			}
+		}
+		return low;
+	}
+
+	const replacementsByLine = new Map<number, { start: number; end: number; value: string }[]>();
+
+	for (const range of ranges) {
+		if (range.kind !== "env" || range.name === undefined) {
+			continue;
+		}
+
+		const value = bindings[range.name]?.boundValue ?? range.defaultValue;
+		if (value === undefined) {
+			continue;
+		}
+
+		const lineIndex = lineIndexAt(range.offset);
+		const start = range.offset - (lineStartOffsets[lineIndex] ?? 0);
+		const end = start + range.length;
+		// A substitution may legally span lines. Previewing one against a single
+		// line would corrupt the text, so leave those alone.
+		if (end > (lines[lineIndex]?.length ?? 0)) {
+			continue;
+		}
+
+		const replacements = replacementsByLine.get(lineIndex) ?? [];
+		replacements.push({ start, end, value });
+		replacementsByLine.set(lineIndex, replacements);
+	}
+
+	const rendered: IRenderedLine[] = [];
+
+	for (const [lineIndex, replacements] of [...replacementsByLine.entries()].sort((a, b) => a[0] - b[0])) {
+		let text = lines[lineIndex] ?? "";
+		// Apply right to left so that each replacement's offsets stay valid.
+		for (const replacement of [...replacements].sort((a, b) => b.start - a.start)) {
+			text = text.slice(0, replacement.start) + replacement.value + text.slice(replacement.end);
+		}
+		rendered.push({ line: lineIndex + 1, text });
+	}
+
+	return rendered;
 }
 
 /**

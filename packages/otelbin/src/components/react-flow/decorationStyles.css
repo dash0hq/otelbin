@@ -12,3 +12,8 @@
 	text-decoration: underline wavy #f87171;
 	text-underline-offset: 3px;
 }
+
+.substitutionPreviewDecoration {
+	color: #6d737d !important;
+	font-style: italic;
+}
