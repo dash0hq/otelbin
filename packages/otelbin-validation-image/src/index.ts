@@ -198,6 +198,10 @@ exports.validateOtelCol = async (otelcolRealPath: string, configPath: string, en
 	 * increases the reliability.
 	 */
 	await spawnAsync("/bin/sh", ["-c", `${otelcolRealPath} validate --config=${configPath}`], {
+		env: {
+			...process.env, // Ensure $PATH, terminal env vars and other basic niceties are set
+			...env
+		},
 		ignoreStdio: false,
 		detached: false,
 		stdio: "pipe",
