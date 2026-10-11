@@ -151,7 +151,18 @@ export function addConnectorCycleErrors(
 		const message = connectorCycleMessage(cycle);
 		totalErrors.customErrors?.push(message);
 
+		// A cycle holds one reference per (connector, source, target) triple, so a pipeline that
+		// exports to a connector several pipelines in the cycle receive from would otherwise be
+		// marked once per target. The exporter reference is the same token every time.
+		const markedExporters = new Set<string>();
+
 		for (const reference of cycle.references) {
+			const exporterKey = `${reference.sourcePipeline}\u0000${reference.connector}`;
+			if (markedExporters.has(exporterKey)) {
+				continue;
+			}
+			markedExporters.add(exporterKey);
+
 			const item = pipelineReferences?.exporters?.find(
 				(candidate) => candidate.level1Parent === reference.sourcePipeline && candidate.source === reference.connector
 			);

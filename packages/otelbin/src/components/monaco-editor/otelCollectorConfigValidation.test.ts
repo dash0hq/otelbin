@@ -352,6 +352,37 @@ describe("addConnectorCycleErrors on references collected by findPipelinesKeyVal
 		expect(marked).toEqual([{ line: 9, text: "forward" }]);
 	});
 
+	it("marks a fanned-out exporter reference once rather than once per target pipeline", () => {
+		const { customErrors, marked } = markCycles(
+			[
+				"connectors:",
+				"  fanout:",
+				"  back:",
+				"service:",
+				"  pipelines:",
+				"    traces:",
+				"      receivers: [back]",
+				"      exporters: [fanout]",
+				"    traces/a:",
+				"      receivers: [fanout]",
+				"      exporters: [back]",
+				"    traces/b:",
+				"      receivers: [fanout]",
+				"      exporters: [back]",
+				"",
+			].join("\n")
+		);
+
+		expect(customErrors).toEqual([
+			'Connector cycle detected between pipelines "traces", "traces/a", "traces/b" via "back", "fanout".',
+		]);
+		expect(marked).toEqual([
+			{ line: 8, text: "fanout" },
+			{ line: 11, text: "back" },
+			{ line: 14, text: "back" },
+		]);
+	});
+
 	it("reports no cycle for acyclic fan-out through a connector", () => {
 		const { customErrors, marked } = markCycles(
 			[
