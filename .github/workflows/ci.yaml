@@ -138,8 +138,7 @@ jobs:
       - name: Unit tests
         shell: bash
         working-directory: packages/otelbin-validation
-        # --passWithNoTests: `src/` currently holds no tests.
-        run: npx jest src/ --no-coverage --passWithNoTests
+        run: npx jest src/ --no-coverage
 
       - name: Test CDK stack synthesis
         shell: bash
@@ -220,6 +219,17 @@ jobs:
         run: |
           echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> "$GITHUB_OUTPUT" || exit 1
 
+      - name: Resolve release cap
+        id: resolve_release_cap
+        shell: bash
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+        # How many releases per distribution this environment deploys; empty means "all of
+        # them". See the script for why preview environments deploy fewer than production.
+        # language=bash
+        run: |
+          echo "max_releases=$(./.github/workflows/scripts/release_cap.sh)" >> "${GITHUB_OUTPUT}" || exit 1
+
       - name: Select target account
         id: select_credentials
         shell: bash
@@ -257,6 +267,7 @@ jobs:
           CDK_DEPLOY_REGION: 'us-east-2'
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+          MAX_RELEASES_PER_DISTRIBUTION: ${{ steps.resolve_release_cap.outputs.max_releases }}
         # The Dash0 authorization token is no longer passed in here: the Lambda's environment
         # variable is populated by CloudFormation from Secrets Manager at deploy time (see
         # DASH0_AUTHORIZATION_TOKEN_SECRET_NAME in src/main.ts), so it never has to pass through
@@ -299,8 +310,13 @@ jobs:
         id: prepare_test_matrix
         shell: bash
         working-directory: packages/otelbin-validation
+        env:
+          MAX_RELEASES_PER_DISTRIBUTION: ${{ steps.resolve_release_cap.outputs.max_releases }}
+        # Shares `selectReleases` with the stack rather than re-deriving the list with jq, so the
+        # matrix cannot drift from what was actually deployed a few steps above and ask for a
+        # release that has no route behind it.
         run: |
-          echo test_matrix=$(jq -r '. | [to_entries[] | {distribution: .key, release: .value.releases[].version} | "\(.distribution)/\(.release)"]' < ./src/assets/supported-distributions.json) >> ${GITHUB_OUTPUT}
+          echo "test_matrix=$(npx ts-node -P tsconfig.json src/test-matrix.ts)" >> "${GITHUB_OUTPUT}"
 
   run-itests:
     name: Validation tests

@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { describe, expect, test } from '@jest/globals';
 import { App, NestedStack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { readSupportedDistributions } from '../src/distributions';
 import { DASH0_AUTHORIZATION_TOKEN_SECRET_NAME, Distributions, OTelBinValidationStack } from '../src/main';
 
 const CF_MAX_RESOURCES = 500;
@@ -165,5 +166,46 @@ describe('OTelBinValidationStack synthesis', () => {
     }
 
     expect(sawLambdaFunction).toBe(true);
+  });
+});
+
+describe('OTelBinValidationStack with maxReleasesPerDistribution', () => {
+  const maxReleases = 5;
+
+  const app = new App();
+  new OTelBinValidationStack(app, 'capped-stack', {
+    testEnvironmentName: 'capped',
+    githubToken: 'test-token',
+    maxReleasesPerDistribution: maxReleases,
+  });
+  app.synth();
+
+  const nestedStacks = app.node.findAll().filter((c): c is NestedStack => c instanceof NestedStack);
+
+  test('deploys at most N Lambdas per distribution', () => {
+    expect(nestedStacks.length).toBeGreaterThan(0);
+
+    for (const nestedStack of nestedStacks) {
+      const lambdas = Template.fromStack(nestedStack).findResources('AWS::Lambda::Function');
+      expect(Object.keys(lambdas).length).toBeLessThanOrEqual(maxReleases);
+    }
+  });
+
+  test('caps a distribution that has more releases than N', () => {
+    const distributions = readSupportedDistributions();
+    const uncapped = Object.values(distributions).filter(d => d.releases.length > maxReleases);
+
+    // Guards the test itself: if the fixture ever shrinks below the cap, the assertion above
+    // would pass vacuously.
+    expect(uncapped.length).toBeGreaterThan(0);
+
+    const deployed = nestedStacks.reduce(
+      (total, nestedStack) =>
+        total + Object.keys(Template.fromStack(nestedStack).findResources('AWS::Lambda::Function')).length,
+      0,
+    );
+    const everything = Object.values(distributions).reduce((total, d) => total + d.releases.length, 0);
+
+    expect(deployed).toBeLessThan(everything);
   });
 });

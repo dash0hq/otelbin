@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { App, CfnOutput, Duration, NestedStack, NestedStackProps, RemovalPolicy, SecretValue, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { ApiKeySourceType, AwsIntegration, IResource, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
@@ -9,29 +8,15 @@ import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
+import { Distribution, readSupportedDistributions, resolveMaxReleasesPerDistribution, selectReleases } from './distributions';
+
+export { Distribution, Distributions, Release } from './distributions';
 
 // Resolved by CloudFormation at deploy time via a dynamic reference, so the actual secret value
 // never appears in the synthesized template (or any CI artifact derived from it) - only this
 // placeholder name does. The secret must exist under this name in Secrets Manager in every
 // account this stack is deployed to.
 export const DASH0_AUTHORIZATION_TOKEN_SECRET_NAME = 'otelbin-validation/dash0-authorization-token';
-
-export interface Distributions {
-  [key: string]: Distribution;
-}
-
-export interface Distribution {
-  provider: string;
-  description: string;
-  website: string;
-  repository: string;
-  releases: Release[];
-}
-
-export interface Release {
-  version: string;
-  artifact: string;
-}
 
 export interface DistributionNestedStackProps extends NestedStackProps {
   validationResource: IResource;
@@ -95,6 +80,20 @@ export class DistributionNestedStack extends NestedStack {
 export interface OTelBinValidationStackProps extends StackProps {
   testEnvironmentName: string;
   githubToken: string;
+
+  /**
+   * Deploy only the newest N releases of each distribution instead of every release in
+   * supported-distributions.json. Undefined means "all of them".
+   *
+   * Each release costs a Docker image build, a Lambda, and an API Gateway resource, method and
+   * permission, so the full set is ~110 releases and ~480 resources, which is both slow and
+   * close to the CloudFormation limit. Preview environments cap this: a pull request can only
+   * regress the validation image and the Lambda plumbing, and that code is the same for every
+   * collector version, so testing it against every frozen release tests the same path over and
+   * over. Production leaves it unset - the web app's version picker is populated from whatever
+   * the deployed stack serves, so a cap there would remove versions users can validate against.
+   */
+  maxReleasesPerDistribution?: number;
 }
 
 export class OTelBinValidationStack extends Stack {
@@ -127,7 +126,10 @@ export class OTelBinValidationStack extends Stack {
       },
     });
 
-    const supportedDistributionsPath = join(__dirname, 'assets');
+    const supportedDistributions = selectReleases(
+      readSupportedDistributions(),
+      props.maxReleasesPerDistribution,
+    );
 
     const supportedDistributionsListBucket = new Bucket(this, 'supported-distributions-list', {
       bucketName: `supported-distributions-list-${props.testEnvironmentName}`,
@@ -137,8 +139,12 @@ export class OTelBinValidationStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
+    // Serves the same (possibly capped) set that is actually deployed below, rather than the
+    // raw asset file. Uploading supported-distributions.json verbatim would advertise releases
+    // that have no Lambda behind them in a capped environment, and the web app's version picker
+    // reads exactly this document.
     new BucketDeployment(this, 'deploy-supported-distributions-list', {
-      sources: [Source.asset(supportedDistributionsPath)],
+      sources: [Source.jsonData('supported-distributions.json', supportedDistributions)],
       destinationBucket: supportedDistributionsListBucket,
     });
 
@@ -194,10 +200,6 @@ export class OTelBinValidationStack extends Stack {
       },
     });
 
-    const supportedDistributions = JSON.parse(
-      (readFileSync(join(__dirname, 'assets', 'supported-distributions.json'))).toString(),
-    ) as Distributions;
-
     const lambdaExecutionRole = new Role(this, 'lambda-execution-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [
@@ -244,6 +246,7 @@ const env = {
   region: process.env.CDK_DEFAULT_REGION,
   testEnvironmentName,
   githubToken: process.env.GH_TOKEN,
+  maxReleasesPerDistribution: resolveMaxReleasesPerDistribution(),
 };
 
 const app = new App();

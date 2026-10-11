@@ -6,7 +6,8 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { describe, expect, jest, test } from '@jest/globals';
 import axios from 'axios';
-import { Distributions } from '../src/main';
+import { resolveMaxReleasesPerDistribution } from '../src/distributions';
+import { buildTestMatrix } from '../src/test-matrix';
 
 interface Env {
   [key: string]: string;
@@ -31,20 +32,9 @@ const enumerateTestCases = () => {
     return [[distributionName, release]];
   }
 
-  const distributions = JSON.parse(
-    (readFileSync(join(__dirname, '..', 'src', 'assets', 'supported-distributions.json'))).toString(),
-  ) as Distributions;
-
-  const testCases = new Array<string[]>();
-  for (let distributionName of Object.keys(distributions)) {
-    const distribution = distributions[distributionName];
-
-    for (let { version } of distribution.releases) {
-      testCases.push([distributionName, version]);
-    }
-  }
-
-  return testCases;
+  // Same list the `run-itests` matrix is built from, so a local run against a capped
+  // environment does not try releases that environment never deployed.
+  return buildTestMatrix(resolveMaxReleasesPerDistribution()).map(entry => entry.split('/'));
 };
 
 const assetFolderPath = join(__dirname, 'assets');
