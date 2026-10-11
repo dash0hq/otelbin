@@ -81,7 +81,7 @@
 		"postcss": "^8.5.23",
 		"prettier": "3.1.1",
 		"prettier-plugin-tailwindcss": "^0.8.1",
-		"tailwindcss": "^3.3.5",
+		"tailwindcss": "^4.3.3",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.3.2",
 		"typescript-eslint": "^8.61.0"
