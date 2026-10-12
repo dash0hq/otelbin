@@ -10,6 +10,7 @@ import { useDistributions } from "../validation/useDistributions";
 import { useUrlState } from "~/lib/urlState/client/useUrlState";
 import { distroBinding, distroVersionBinding } from "../validation/binding";
 import InfoBox from "./InfoBox";
+import EnvVarBox from "./EnvVarBox";
 
 export interface ICurrentDistributionVersion {
 	distro: string;
@@ -49,6 +50,7 @@ export default function ValidationType() {
 				</PopoverContent>
 			</Popover>
 			{distro === null && distroVersion === null && <InfoBox />}
+			{distro !== null && distroVersion !== null && <EnvVarBox />}
 		</div>
 	);
 }

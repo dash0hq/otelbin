@@ -52,8 +52,33 @@ export const BreadcrumbsContext = createContext<{
 	},
 });
 
+export const EnvVarPanelContext = createContext<{
+	isEnvVarPanelOpen: boolean;
+	setEnvVarPanelOpen: (isEnvVarPanelOpen: boolean) => void;
+}>({
+	isEnvVarPanelOpen: false,
+	setEnvVarPanelOpen: () => {
+		return;
+	},
+});
+
+/**
+ * The Monaco instance, once the editor has mounted. Unlike {@link MonacoContext}
+ * this is state rather than a ref, so consumers re-render when it becomes
+ * available and can set up editor features against it.
+ */
+export const MountedMonacoContext = createContext<Monaco | undefined>(undefined);
+
 export function useEditorRef() {
 	return React.useContext(EditorContext);
+}
+
+export function useMountedMonaco() {
+	return React.useContext(MountedMonacoContext);
+}
+
+export function useEnvVarPanel() {
+	return React.useContext(EnvVarPanelContext);
 }
 
 export function useMonacoRef() {
@@ -85,6 +110,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 	const isServerValidationEnabled = useServerSideValidationEnabled();
 	const viewState = editorRef.current?.saveViewState();
 	const [monaco, setMonaco] = useState<Monaco>();
+	const [isEnvVarPanelOpen, setEnvVarPanelOpen] = useState(false);
 
 	useEffect(() => {
 		if (!isServerValidationEnabled && monaco) {
@@ -227,15 +253,24 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 		path: path,
 	};
 
+	const envVarPanelContext = {
+		isEnvVarPanelOpen: isEnvVarPanelOpen,
+		setEnvVarPanelOpen: setEnvVarPanelOpen,
+	};
+
 	return (
 		<EditorDidMount.Provider value={editorDidMount}>
 			<EditorContext.Provider value={editorRef}>
 				<MonacoContext.Provider value={monacoRef}>
-					<FocusContext.Provider value={focusContext}>
-						<ViewModeContext.Provider value={viewModeContext}>
-							<BreadcrumbsContext.Provider value={breadcrumbsContext}>{children}</BreadcrumbsContext.Provider>
-						</ViewModeContext.Provider>
-					</FocusContext.Provider>
+					<MountedMonacoContext.Provider value={monaco}>
+						<FocusContext.Provider value={focusContext}>
+							<ViewModeContext.Provider value={viewModeContext}>
+								<BreadcrumbsContext.Provider value={breadcrumbsContext}>
+									<EnvVarPanelContext.Provider value={envVarPanelContext}>{children}</EnvVarPanelContext.Provider>
+								</BreadcrumbsContext.Provider>
+							</ViewModeContext.Provider>
+						</FocusContext.Provider>
+					</MountedMonacoContext.Provider>
 				</MonacoContext.Provider>
 			</EditorContext.Provider>
 		</EditorDidMount.Provider>

@@ -47,9 +47,16 @@ const prepareValidationPayload = (testConfigFilename: string, env?: Env) => JSON
 const defaultTimeout = 10_000; // 10 seconds
 
 const otelcolConfigValid = prepareValidationPayload('config-default.yaml');
-const otelcolConfigValidEnvInterpolation = prepareValidationPayload('config-default.yaml', {
+/*
+ * Deliberately a configuration that only validates once the environment is applied: its
+ * exporter endpoint is nothing but `${OTLP_ENDPOINT}`, so a collector that does not receive
+ * the variable expands it to the empty string and rejects the configuration. Validating
+ * `config-default.yaml` here instead would pass either way and catch nothing.
+ */
+const otelcolConfigValidEnvInterpolation = prepareValidationPayload('config-env-interpolation.yaml', {
   OTLP_ENDPOINT: 'otelcol:4317',
 });
+const otelcolConfigEnvInterpolationWithoutEnv = prepareValidationPayload('config-env-interpolation.yaml');
 const otelcolConfigInvalidNoReceivers = prepareValidationPayload('config-no-receivers.yaml');
 const otelcolConfigInvalidUndeclaredExtension = prepareValidationPayload('config-undeclared-extension.yaml');
 const otelcolConfigInvalidUndeclaredReceiver = prepareValidationPayload('config-undeclared-receiver.yaml');
@@ -125,6 +132,20 @@ describe.each(enumerateTestCases())('Validation API', (distributionName, release
           status: 200,
           data: {
             message: 'Configuration is valid',
+          },
+        });
+      }, defaultTimeout);
+
+      test('rejects a configuration whose env var interpolation has no environment to resolve against', async () => {
+        await expect(axios.post(validationUrl, otelcolConfigEnvInterpolationWithoutEnv, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Api-Key': apiKey,
+          },
+        })).resolves.toMatchObject({
+          status: 200,
+          data: {
+            message: 'The provided configuration is invalid',
           },
         });
       }, defaultTimeout);
