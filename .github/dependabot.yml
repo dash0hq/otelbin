@@ -28,6 +28,18 @@ updates:
       opentelemetry:
         patterns:
           - "@opentelemetry/*"
+    # Tailwind CSS 4 is not a dependency bump, it is a migration: the PostCSS plugin moved to
+    # @tailwindcss/postcss, @tailwind directives became @import "tailwindcss", JS config and
+    # presets (packages/otelbin/src/design-tokens/tailwind.preset.js) give way to @theme in
+    # CSS, tailwindcss-animate is superseded by tw-animate-css, and the v4 defaults silently
+    # restyle the app (border color currentColor, 1px rings, renamed utilities such as
+    # shadow-sm -> shadow-xs and outline-none -> outline-hidden). A Dependabot pull request
+    # for it only ever breaks the build. Drop this entry when someone takes on the migration
+    # deliberately, with a visual review of the editor UI.
+    ignore:
+      - dependency-name: "tailwindcss"
+        update-types:
+          - "version-update:semver-major"
     pull-request-branch-name:
       # Separate sections of the branch name with a hyphen
       # for example, `dependabot-npm_and_yarn-next_js-acorn-6.4.1`

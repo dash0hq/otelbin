@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { describe, expect, test } from '@jest/globals';
 import { App, NestedStack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { readSupportedDistributions } from '../src/distributions';
 import { DASH0_AUTHORIZATION_TOKEN_SECRET_NAME, Distributions, OTelBinValidationStack } from '../src/main';
 
 const CF_MAX_RESOURCES = 500;
@@ -36,9 +37,22 @@ describe('OTelBinValidationStack synthesis', () => {
     expect(stack.stackName).toBe('test-stack');
   });
 
+  // Every stack that CloudFormation deploys, parent and nested alike. `assembly.stacks` holds
+  // only the parent, so checking that alone leaves the nested stacks unverified, which is where
+  // every Lambda function and log group lives.
+  const allTemplates: Array<{ name: string; resources: Record<string, unknown> }> = [
+    ...assembly.stacks.map(s => ({
+      name: s.stackName,
+      resources: (s.template.Resources || {}) as Record<string, unknown>,
+    })),
+    ...nestedStacks.map(ns => ({
+      name: ns.node.id,
+      resources: (Template.fromStack(ns).toJSON().Resources || {}) as Record<string, unknown>,
+    })),
+  ];
+
   test('no stack exceeds the CloudFormation resource limit', () => {
-    for (const stackArtifact of assembly.stacks) {
-      const resources = stackArtifact.template.Resources || {};
+    for (const { name, resources } of allTemplates) {
       const resourceCount = Object.keys(resources).length;
 
       if (resourceCount > CF_MAX_RESOURCES) {
@@ -53,7 +67,7 @@ describe('OTelBinValidationStack synthesis', () => {
           .join('\n');
 
         throw new Error(
-          `Stack '${stackArtifact.stackName}' has ${resourceCount} resources, ` +
+          `Stack '${name}' has ${resourceCount} resources, ` +
           `which exceeds the CloudFormation limit of ${CF_MAX_RESOURCES}.\n` +
           `Resource breakdown:\n${breakdown}`,
         );
@@ -86,6 +100,50 @@ describe('OTelBinValidationStack synthesis', () => {
     }
   });
 
+  test('every validation Lambda has its own declared log group with three-day retention', () => {
+    expect(nestedStacks.length).toBeGreaterThan(0);
+
+    for (const nestedStack of nestedStacks) {
+      const template = Template.fromStack(nestedStack);
+      const functions = template.findResources('AWS::Lambda::Function');
+      const logGroups = template.findResources('AWS::Logs::LogGroup');
+
+      // One group per function, so a new release cannot quietly ship without a retention policy.
+      expect(Object.keys(logGroups).length).toBe(Object.keys(functions).length);
+      expect(Object.keys(functions).length).toBeGreaterThan(0);
+
+      for (const logGroup of Object.values(logGroups)) {
+        const properties = (logGroup as { Properties?: { RetentionInDays?: number } }).Properties;
+        expect(properties?.RetentionInDays).toBe(3);
+      }
+
+      // Without LoggingConfig the function writes to an implicit /aws/lambda/<name> group that
+      // CloudFormation does not own, and the retention above would apply to nothing.
+      for (const lambdaFunction of Object.values(functions)) {
+        const properties = (lambdaFunction as { Properties?: { LoggingConfig?: { LogGroup?: unknown } } }).Properties;
+        expect(properties?.LoggingConfig?.LogGroup).toBeDefined();
+      }
+    }
+  });
+
+  test('nothing sets log retention at runtime through an IAM permission', () => {
+    // Log retention used to be applied by a custom resource that looped over every log group at
+    // deploy time. Retention is declarative now, so no principal in the stack should still be
+    // able to call PutRetentionPolicy. This fails if that pattern comes back.
+    for (const { name, resources } of allTemplates) {
+      for (const [logicalId, resource] of Object.entries(resources)) {
+        const typed = resource as { Type?: string; Properties?: { PolicyDocument?: { Statement?: unknown[] } } };
+        if (typed.Type !== 'AWS::IAM::Policy' && typed.Type !== 'AWS::IAM::Role') {
+          continue;
+        }
+
+        const serialized = JSON.stringify(typed.Properties ?? {});
+        expect(serialized).not.toContain('logs:PutRetentionPolicy');
+        expect(`${name}/${logicalId}`).not.toContain('logretention');
+      }
+    }
+  });
+
   test('the Dash0 authorization token is resolved via a Secrets Manager dynamic reference, never inlined', () => {
     expect(nestedStacks.length).toBeGreaterThan(0);
 
@@ -108,5 +166,46 @@ describe('OTelBinValidationStack synthesis', () => {
     }
 
     expect(sawLambdaFunction).toBe(true);
+  });
+});
+
+describe('OTelBinValidationStack with maxReleasesPerDistribution', () => {
+  const maxReleases = 5;
+
+  const app = new App();
+  new OTelBinValidationStack(app, 'capped-stack', {
+    testEnvironmentName: 'capped',
+    githubToken: 'test-token',
+    maxReleasesPerDistribution: maxReleases,
+  });
+  app.synth();
+
+  const nestedStacks = app.node.findAll().filter((c): c is NestedStack => c instanceof NestedStack);
+
+  test('deploys at most N Lambdas per distribution', () => {
+    expect(nestedStacks.length).toBeGreaterThan(0);
+
+    for (const nestedStack of nestedStacks) {
+      const lambdas = Template.fromStack(nestedStack).findResources('AWS::Lambda::Function');
+      expect(Object.keys(lambdas).length).toBeLessThanOrEqual(maxReleases);
+    }
+  });
+
+  test('caps a distribution that has more releases than N', () => {
+    const distributions = readSupportedDistributions();
+    const uncapped = Object.values(distributions).filter(d => d.releases.length > maxReleases);
+
+    // Guards the test itself: if the fixture ever shrinks below the cap, the assertion above
+    // would pass vacuously.
+    expect(uncapped.length).toBeGreaterThan(0);
+
+    const deployed = nestedStacks.reduce(
+      (total, nestedStack) =>
+        total + Object.keys(Template.fromStack(nestedStack).findResources('AWS::Lambda::Function')).length,
+      0,
+    );
+    const everything = Object.values(distributions).reduce((total, d) => total + d.releases.length, 0);
+
+    expect(deployed).toBeLessThan(everything);
   });
 });

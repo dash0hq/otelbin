@@ -19,7 +19,12 @@ const sharedProjectConfig = {
 	preset: "ts-jest",
 	transform: { "^.+\\.tsx?$": "ts-jest" },
 	transformIgnorePatterns: ["<rootDir>/node_modules/"],
-	moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+	moduleNameMapper: {
+		// Components pull in stylesheets for their side effect only. Jest cannot
+		// parse CSS, so stub it out; nothing under test asserts on styling.
+		"\\.css$": "<rootDir>/src/test/styleStub.ts",
+		...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+	},
 };
 
 const config: Config = {

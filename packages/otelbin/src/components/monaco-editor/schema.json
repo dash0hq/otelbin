@@ -54062,6 +54062,100 @@
       "description": "A connector is both an exporter and receiver.",
       "additionalProperties": false,
       "patternProperties":{
+        "^count(/[^/]+)*$": {
+          "description": "The count connector can be used to count spans, span events, metrics, data points, and log records.",
+          "properties": {
+            "spans": {
+              "type": "object",
+              "description": ""
+            },
+            "spanevents": {
+              "type": "object",
+              "description": ""
+            },
+            "metrics": {
+              "type": "object",
+              "description": ""
+            },
+            "datapoints": {
+              "type": "object",
+              "description": ","
+            },
+            "logs": {
+              "type": "object",
+              "description": ""
+            }
+          }
+        },
+        "^exceptions(/[^/]+)*$": {
+          "description": "Generate metrics and logs from recorded application exceptions associated with spans.",
+          "properties": {
+            "dimensions": {
+              "description": "The list of dimensions to add together with the default dimensions defined above.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "default": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "^forward(/[^/]+)*$": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "description": "Forwards data from one pipeline to another pipeline of the same signal type, without modifying it. The forward connector takes no configuration.\n"
+        },
+        "^routing(/[^/]+)*$": {
+          "description": "Routes logs, metrics or traces based on resource attributes to specific \n pipelines using OpenTelemetry Transformation Language (OTTL) statements as routing conditions.",
+          "properties": {
+            "default_pipelines": {
+              "description": "Contains the list of pipelines to use when a record does not meet any of specified conditions.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "error_mode": {
+              "description": "Determines how errors returned from OTTL statements are handled. Valid values are ignore and propagate",
+              "type": "string",
+              "enum": [
+                "ignore",
+                "propagate"
+              ]
+            },
+            "table": {
+              "description": "The routing table for this connector.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "statement": {
+                    "type": "string"
+                  },
+                  "pipelines": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "^datadog(/[^/]+)*$": {
           "type": [
             "object",
@@ -54466,6 +54560,14 @@
         }
       },
     "properties":{
+      "forward": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "description": "Forwards data from one pipeline to another pipeline of the same signal type, without modifying it. The forward connector takes no configuration.\n"
+      },
       "count":{
         "description": "The count connector can be used to count spans, span events, metrics, data points, and log records.",
         "properties": {

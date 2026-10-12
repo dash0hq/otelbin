@@ -1,37 +1,22 @@
-import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
-import { App, CfnOutput, CustomResource, Duration, NestedStack, NestedStackProps, RemovalPolicy, SecretValue, Stack, StackProps, Tags } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, NestedStack, NestedStackProps, RemovalPolicy, SecretValue, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { ApiKeySourceType, AwsIntegration, IResource, LambdaIntegration, RestApi, UsagePlan } from 'aws-cdk-lib/aws-apigateway';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Architecture, Code, DockerImageCode, DockerImageFunction, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
-import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+import { Distribution, readSupportedDistributions, resolveMaxReleasesPerDistribution, selectReleases } from './distributions';
+
+export { Distribution, Distributions, Release } from './distributions';
 
 // Resolved by CloudFormation at deploy time via a dynamic reference, so the actual secret value
 // never appears in the synthesized template (or any CI artifact derived from it) - only this
 // placeholder name does. The secret must exist under this name in Secrets Manager in every
 // account this stack is deployed to.
 export const DASH0_AUTHORIZATION_TOKEN_SECRET_NAME = 'otelbin-validation/dash0-authorization-token';
-
-export interface Distributions {
-  [key: string]: Distribution;
-}
-
-export interface Distribution {
-  provider: string;
-  description: string;
-  website: string;
-  repository: string;
-  releases: Release[];
-}
-
-export interface Release {
-  version: string;
-  artifact: string;
-}
 
 export interface DistributionNestedStackProps extends NestedStackProps {
   validationResource: IResource;
@@ -42,15 +27,19 @@ export interface DistributionNestedStackProps extends NestedStackProps {
 }
 
 export class DistributionNestedStack extends NestedStack {
-  readonly lambdaFunctions: DockerImageFunction[] = [];
-
   constructor(scope: Construct, id: string, props: DistributionNestedStackProps) {
     super(scope, id, props);
 
     const distributionResource = props.validationResource.addResource(props.distributionName);
 
     for (let release of props.distribution.releases) {
+      const releaseLogGroup = new LogGroup(this, `${props.distributionName}-${release.version}-logs`, {
+        retention: RetentionDays.THREE_DAYS,
+        removalPolicy: RemovalPolicy.DESTROY,
+      });
+
       const releaseLambda = new DockerImageFunction(this, `${props.distributionName}-${release.version}`, {
+        logGroup: releaseLogGroup,
         description: `Configuration validation for the the '${props.distributionName}' distribution, version '${release.version}'`,
         architecture: Architecture.X86_64,
         role: props.lambdaExecutionRole,
@@ -84,7 +73,6 @@ export class DistributionNestedStack extends NestedStack {
       });
 
       Tags.of(releaseLambda).add('otelcol-version', `${props.distributionName}-${release.version}`);
-      this.lambdaFunctions.push(releaseLambda);
     }
   }
 }
@@ -92,6 +80,20 @@ export class DistributionNestedStack extends NestedStack {
 export interface OTelBinValidationStackProps extends StackProps {
   testEnvironmentName: string;
   githubToken: string;
+
+  /**
+   * Deploy only the newest N releases of each distribution instead of every release in
+   * supported-distributions.json. Undefined means "all of them".
+   *
+   * Each release costs a Docker image build, a Lambda, and an API Gateway resource, method and
+   * permission, so the full set is ~110 releases and ~480 resources, which is both slow and
+   * close to the CloudFormation limit. Preview environments cap this: a pull request can only
+   * regress the validation image and the Lambda plumbing, and that code is the same for every
+   * collector version, so testing it against every frozen release tests the same path over and
+   * over. Production leaves it unset - the web app's version picker is populated from whatever
+   * the deployed stack serves, so a cap there would remove versions users can validate against.
+   */
+  maxReleasesPerDistribution?: number;
 }
 
 export class OTelBinValidationStack extends Stack {
@@ -124,7 +126,10 @@ export class OTelBinValidationStack extends Stack {
       },
     });
 
-    const supportedDistributionsPath = join(__dirname, 'assets');
+    const supportedDistributions = selectReleases(
+      readSupportedDistributions(),
+      props.maxReleasesPerDistribution,
+    );
 
     const supportedDistributionsListBucket = new Bucket(this, 'supported-distributions-list', {
       bucketName: `supported-distributions-list-${props.testEnvironmentName}`,
@@ -134,8 +139,12 @@ export class OTelBinValidationStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
+    // Serves the same (possibly capped) set that is actually deployed below, rather than the
+    // raw asset file. Uploading supported-distributions.json verbatim would advertise releases
+    // that have no Lambda behind them in a capped environment, and the web app's version picker
+    // reads exactly this document.
     new BucketDeployment(this, 'deploy-supported-distributions-list', {
-      sources: [Source.asset(supportedDistributionsPath)],
+      sources: [Source.jsonData('supported-distributions.json', supportedDistributions)],
       destinationBucket: supportedDistributionsListBucket,
     });
 
@@ -191,10 +200,6 @@ export class OTelBinValidationStack extends Stack {
       },
     });
 
-    const supportedDistributions = JSON.parse(
-      (readFileSync(join(__dirname, 'assets', 'supported-distributions.json'))).toString(),
-    ) as Distributions;
-
     const lambdaExecutionRole = new Role(this, 'lambda-execution-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [
@@ -202,62 +207,15 @@ export class OTelBinValidationStack extends Stack {
       ],
     });
 
-    const allLambdaFunctions: DockerImageFunction[] = [];
-
     for (let [distributionName, distribution] of Object.entries(supportedDistributions)) {
-      const nestedStack = new DistributionNestedStack(this, `distribution-${distributionName}`, {
+      new DistributionNestedStack(this, `distribution-${distributionName}`, {
         validationResource: validation,
         lambdaExecutionRole,
         distributionName,
         distribution,
         githubToken: props.githubToken,
       });
-      allLambdaFunctions.push(...nestedStack.lambdaFunctions);
     }
-
-    const logRetentionHandler = new LambdaFunction(this, 'log-retention-handler', {
-      runtime: Runtime.NODEJS_22_X,
-      handler: 'index.handler',
-      // language=JavaScript
-      code: Code.fromInline(`
-const { CloudWatchLogsClient, CreateLogGroupCommand, PutRetentionPolicyCommand } = require("@aws-sdk/client-cloudwatch-logs");
-exports.handler = async (event) => {
-  if (event.RequestType === "Delete") {
-    return { PhysicalResourceId: event.PhysicalResourceId };
-  }
-  const client = new CloudWatchLogsClient();
-  const logGroupNames = event.ResourceProperties.LogGroupNames || [];
-  const retentionInDays = parseInt(event.ResourceProperties.RetentionInDays);
-  for (const logGroupName of logGroupNames) {
-    try {
-      await client.send(new CreateLogGroupCommand({ logGroupName }));
-    } catch (e) {
-      if (e.name !== "ResourceAlreadyExistsException") throw e;
-    }
-    await client.send(new PutRetentionPolicyCommand({ logGroupName, retentionInDays }));
-  }
-  return { PhysicalResourceId: "log-retention-policy" };
-};
-      `),
-      timeout: Duration.minutes(5),
-    });
-
-    logRetentionHandler.addToRolePolicy(new PolicyStatement({
-      actions: ['logs:CreateLogGroup', 'logs:PutRetentionPolicy'],
-      resources: ['*'],
-    }));
-
-    const logRetentionProvider = new Provider(this, 'log-retention-provider', {
-      onEventHandler: logRetentionHandler,
-    });
-
-    new CustomResource(this, 'log-retention-policy', {
-      serviceToken: logRetentionProvider.serviceToken,
-      properties: {
-        LogGroupNames: allLambdaFunctions.map(fn => `/aws/lambda/${fn.functionName}`),
-        RetentionInDays: '3',
-      },
-    });
 
     new CfnOutput(this, 'api-name', {
       exportName: `api-name-${props.testEnvironmentName}`,
@@ -288,6 +246,7 @@ const env = {
   region: process.env.CDK_DEFAULT_REGION,
   testEnvironmentName,
   githubToken: process.env.GH_TOKEN,
+  maxReleasesPerDistribution: resolveMaxReleasesPerDistribution(),
 };
 
 const app = new App();

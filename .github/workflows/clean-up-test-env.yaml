@@ -47,7 +47,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
 
@@ -68,6 +68,18 @@ jobs:
         # language=bash
         run: |
           echo "test_env_name=$(./.github/workflows/scripts/test_env_name.sh)" >> "$GITHUB_OUTPUT" || exit 1
+
+      - name: Resolve release cap
+        id: resolve_release_cap
+        shell: bash
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+        # `cdk destroy` synthesizes the app before it deletes anything, and synthesis stages one
+        # copy of the validation image directory per release. Matching the cap this environment
+        # was deployed with keeps the teardown from staging ~90 assets it has no use for.
+        # language=bash
+        run: |
+          echo "max_releases=$(./.github/workflows/scripts/release_cap.sh)" >> "${GITHUB_OUTPUT}" || exit 1
 
       - name: Select target account
         id: select_credentials
@@ -106,6 +118,7 @@ jobs:
           CDK_DEPLOY_REGION: 'us-east-2'
           GH_TOKEN: ${{ github.token }}
           TEST_ENVIRONMENT_NAME: ${{ steps.get_test_env_name.outputs.test_env_name }}
+          MAX_RELEASES_PER_DISTRIBUTION: ${{ steps.resolve_release_cap.outputs.max_releases }}
         run: |
           ./.github/workflows/scripts/destroy-validation-stack.sh
 
