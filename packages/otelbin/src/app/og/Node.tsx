@@ -4,6 +4,7 @@
 import React from "react";
 import ConnectorIcon from "../../components/assets/svg/connector.svg";
 import type { XYPosition } from "reactflow";
+import { splitComponentId } from "~/lib/componentId";
 
 export interface IData {
 	label: string;
@@ -39,7 +40,7 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 	};
 
 	const label = data.label || "";
-	const splitLabel = label.includes("/") ? label.split("/") : [label];
+	const { type: componentType, name: instanceName } = splitComponentId(label);
 	const isConnector = data.type.includes("connectors");
 
 	return (
@@ -63,17 +64,17 @@ const Node = ({ data, icon, type }: { data: IData; icon: React.ReactNode; type: 
 						}
                 `}
 			>
-				{splitLabel[0]}
+				{componentType}
 			</div>
 			<div style={customNodeStyles} tw="flex-col">
 				<div
 					tw={`flex w-full flex-col items-center justify-center px-2 ${
-						splitLabel[1] && splitLabel[1].length > 0 ? "mt-[2px]" : ""
+						instanceName && instanceName.length > 0 ? "mt-[2px]" : ""
 					}`}
 				>
 					<div style={iconColor}>{isConnector ? <ConnectorIcon /> : icon}</div>
-					{splitLabel.length > 1 && (
-						<div tw={"text-neutral-600 text-[10px] font-normal  overflow-hidden max-w-[90%]"}>{splitLabel[1]}</div>
+					{instanceName !== undefined && (
+						<div tw={"text-neutral-600 text-[10px] font-normal  overflow-hidden max-w-[90%]"}>{instanceName}</div>
 					)}
 				</div>
 			</div>

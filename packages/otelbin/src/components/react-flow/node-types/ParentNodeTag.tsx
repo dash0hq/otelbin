@@ -2,16 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { parentNodesConfig } from "./ParentsNode";
+import { splitComponentId } from "~/lib/componentId";
 
 export function FormatTag(tagName: string) {
 	const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-	let resultString = [""];
-	if (tagName.includes("/")) {
-		resultString = tagName.split("/");
-		return capitalize(resultString.join(" / "));
-	} else {
-		return capitalize(tagName);
+	const { type, name } = splitComponentId(tagName);
+	if (name === undefined) {
+		return capitalize(type);
 	}
+	return capitalize(`${type} / ${name}`);
 }
 
 export default function ParentNodeTag({ tag }: { tag: string }) {
