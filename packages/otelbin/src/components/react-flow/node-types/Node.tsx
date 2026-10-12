@@ -98,7 +98,7 @@ const Node = ({
 				{handle1}
 				<div
 					className={`flex w-full flex-col items-center justify-center gap-y-1 px-2 ${
-						instanceName && instanceName.length > 0 && "mt-[2px]"
+						instanceName && instanceName.length > 0 ? "mt-[2px]" : ""
 					}`}
 				>
 					<div style={iconColor}>{isConnector ? <ConnectorIcon /> : icon}</div>
