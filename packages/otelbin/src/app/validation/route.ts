@@ -22,7 +22,7 @@ const rateLimit = new Ratelimit({
 
 const validationPayloadSchema = z.object({
 	config: z.string(),
-	env: z.record(z.string()).optional(),
+	env: z.record(z.string(), z.string()).optional(),
 });
 type ValidationPayload = z.infer<typeof validationPayloadSchema>;
 
