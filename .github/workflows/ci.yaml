@@ -104,6 +104,15 @@ jobs:
         # See otelbin-verify above for why --ignore-scripts is used here.
         run: npm ci --ignore-scripts
 
+      # This package is bundled by esbuild, which strips types without checking them, so nothing in
+      # CI ever compared the source against the types of its dependencies. That is how the SDK 2.0
+      # removal of TracerProvider.addSpanProcessor() got through a green build and reached a
+      # deployed Lambda, where it surfaced as an HTTP 502 from API Gateway.
+      - name: Typecheck
+        shell: bash
+        working-directory: packages/otelbin-validation-image
+        run: npm run typecheck
+
       - name: Test
         shell: bash
         working-directory: packages/otelbin-validation-image
