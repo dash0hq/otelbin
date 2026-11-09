@@ -1,0 +1,33 @@
+{
+  // This package had no tsconfig.json and no type-checking step. esbuild bundles without type
+  // checking, so `npm run build` reported success on code that could not run: the SDK 2.0
+  // removal of TracerProvider.addSpanProcessor() reached a deployed Lambda and surfaced only as
+  // HTTP 502 from API Gateway. `npm run typecheck` closes that gap.
+  //
+  // "target" matches the --target=es2020 the esbuild scripts emit, so the compiler and the
+  // bundler agree on what syntax is available.
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": [
+      "ES2020"
+    ],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

@@ -6,49 +6,51 @@
 // Changes from original:
 // - removed ability to overwrite config sections via globals
 // - removed some default instrumentations
+// - static imports instead of require(), so tsc checks these calls against the SDK's real types.
+//   Under require() every SDK symbol is `any`, which is how the removal of addSpanProcessor in
+//   SDK 2.0 reached a deployed Lambda with no build step objecting to it.
+// - the DNS, HTTP and Net instrumentations are listed in `instrumentations` rather than passed
+//   to AwsLambdaInstrumentation as its config. See the comment on that array.
 
-const { NodeTracerConfig, NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
-const {
-	BatchSpanProcessor,
-	ConsoleSpanExporter,
-	SDKRegistrationConfig,
-	SimpleSpanProcessor
-} = require("@opentelemetry/sdk-trace-base");
-const { registerInstrumentations } = require("@opentelemetry/instrumentation");
-const { awsLambdaDetector } = require("@opentelemetry/resource-detector-aws");
-const { detectResourcesSync, envDetector, processDetector } = require("@opentelemetry/resources");
-const { AwsInstrumentation } = require("@opentelemetry/instrumentation-aws-sdk");
-const {
-	AwsLambdaInstrumentation,
-} = require("@opentelemetry/instrumentation-aws-lambda");
-const { diag, DiagConsoleLogger, DiagLogLevel } = require("@opentelemetry/api");
-const { getEnv } = require("@opentelemetry/core");
-const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-proto");
-const { MeterProvider, MeterProviderOptions } = require("@opentelemetry/sdk-metrics");
-
-function defaultConfigureInstrumentations() {
-	// Use require statements for instrumentation to avoid having to have transitive dependencies on all the typescript
-	// definitions.
-	const { DnsInstrumentation } = require("@opentelemetry/instrumentation-dns");
-	const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
-	const { NetInstrumentation } = require("@opentelemetry/instrumentation-net");
-	return [new DnsInstrumentation(),
-		new HttpInstrumentation(),
-		new NetInstrumentation()
-	];
-}
+import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
+import { diagLogLevelFromString, getStringFromEnv } from '@opentelemetry/core';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
+import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { AwsLambdaInstrumentation } from '@opentelemetry/instrumentation-aws-lambda';
+import { AwsInstrumentation } from '@opentelemetry/instrumentation-aws-sdk';
+import { DnsInstrumentation } from '@opentelemetry/instrumentation-dns';
+import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
+import { NetInstrumentation } from '@opentelemetry/instrumentation-net';
+import { awsLambdaDetector } from '@opentelemetry/resource-detector-aws';
+import { detectResources, envDetector, processDetector } from '@opentelemetry/resources';
+import { MeterProvider } from '@opentelemetry/sdk-metrics';
+import { BatchSpanProcessor, ConsoleSpanExporter, SimpleSpanProcessor, SpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 
 console.log("Registering OpenTelemetry");
 
+/*
+ * The DNS, HTTP and Net instrumentations used to be built by a helper whose return value, an
+ * array, was passed to AwsLambdaInstrumentation as its config object. They were never part of
+ * this list. They still took effect, because constructing an instrumentation patches its target
+ * on its own, and spreading an array into the config yields only numeric keys, so that argument
+ * was equivalent to `{}`. Listing them here keeps exactly that behaviour while letting tsc check
+ * the call, which it cannot do when an array is passed where a config is expected.
+ */
 const instrumentations = [
 	new AwsInstrumentation({
 		suppressInternalInstrumentation: true
 	}),
-	new AwsLambdaInstrumentation(defaultConfigureInstrumentations())
+	new AwsLambdaInstrumentation({}),
+	new DnsInstrumentation(),
+	new HttpInstrumentation(),
+	new NetInstrumentation()
 ];
 
-// configure lambda logging
-const logLevel = getEnv().OTEL_LOG_LEVEL;
+// configure lambda logging.
+// SDK 2.0 removed getEnv(). diagLogLevelFromString is the supported way to read OTEL_LOG_LEVEL and
+// returns undefined for an unset or unrecognised value, which leaves diag at its default level.
+const logLevel = diagLogLevelFromString(getStringFromEnv("OTEL_LOG_LEVEL"));
 diag.setLogger(new DiagConsoleLogger(), logLevel);
 
 // Register instrumentations synchronously to ensure code is patched even before provider is ready.
@@ -56,39 +58,36 @@ registerInstrumentations({
 	instrumentations
 });
 
-async function initializeProvider() {
-	const resource = detectResourcesSync({
-		detectors: [awsLambdaDetector, envDetector, processDetector]
-	});
+// SDK 2.0 removed detectResourcesSync. detectResources is synchronous and returns a Resource.
+const resource = detectResources({
+	detectors: [awsLambdaDetector, envDetector, processDetector]
+});
 
-	let config: typeof NodeTracerConfig = {
-		resource
-	};
+// SDK 2.0 removed TracerProvider.addSpanProcessor(). Processors are constructor-only now, so the
+// list has to be complete before the provider is built instead of appended to afterwards.
+const spanProcessors: SpanProcessor[] = [
+	new BatchSpanProcessor(new OTLPTraceExporter())
+];
 
-	const tracerProvider = new NodeTracerProvider(config);
-		tracerProvider.addSpanProcessor(
-			new BatchSpanProcessor(new OTLPTraceExporter())
-		);
-	// logging for debug
-	if (logLevel===DiagLogLevel.DEBUG) {
-		tracerProvider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
-	}
-
-	let sdkRegistrationConfig: typeof SDKRegistrationConfig = {};
-	tracerProvider.register(sdkRegistrationConfig);
-
-	// Configure default meter provider (doesn't export metrics)
-	let meterConfig: typeof MeterProviderOptions = {
-		resource
-	};
-
-	const meterProvider = new MeterProvider(meterConfig);
-	// Re-register instrumentation with initialized provider. Patched code will see the update.
-	registerInstrumentations({
-		instrumentations,
-		tracerProvider,
-		meterProvider
-	});
+// logging for debug
+if (logLevel === DiagLogLevel.DEBUG) {
+	spanProcessors.push(new SimpleSpanProcessor(new ConsoleSpanExporter()));
 }
 
-initializeProvider();
+const tracerProvider = new NodeTracerProvider({
+	resource,
+	spanProcessors
+});
+tracerProvider.register();
+
+// Configure default meter provider (doesn't export metrics)
+const meterProvider = new MeterProvider({
+	resource
+});
+
+// Re-register instrumentation with initialized provider. Patched code will see the update.
+registerInstrumentations({
+	instrumentations,
+	tracerProvider,
+	meterProvider
+});
