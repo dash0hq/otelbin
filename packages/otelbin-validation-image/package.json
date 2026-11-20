@@ -10,7 +10,8 @@
 		"test": "jest",
 		"build": "npm run build:app && npm run build:wrapper",
 		"build:app": "esbuild src/index.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
-		"build:wrapper": "esbuild src/lambda-wrapper.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=dist/lambda-wrapper.js"
+		"build:wrapper": "esbuild src/lambda-wrapper.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=dist/lambda-wrapper.js",
+		"typecheck": "tsc --noEmit"
 	},
 	"repository": {
 		"type": "git",
@@ -30,25 +31,27 @@
 		"@types/node": "^20.8.10",
 		"esbuild": "^0.28.1",
 		"jest": "^30.3.0",
-		"ts-jest": "^29.4.9"
+		"ts-jest": "^29.4.9",
+		"typescript": "^5.9.3"
 	},
 	"dependencies": {
 		"@expo/spawn-async": "^1.7.2",
+		"@opentelemetry/api": "^1.9.1",
+		"@opentelemetry/core": "^2.11.0",
+		"@opentelemetry/exporter-metrics-otlp-proto": "^0.222.0",
+		"@opentelemetry/exporter-trace-otlp-proto": "^0.222.0",
+		"@opentelemetry/instrumentation": "^0.222.0",
+		"@opentelemetry/instrumentation-aws-lambda": "^0.74.0",
+		"@opentelemetry/instrumentation-aws-sdk": "^0.77.0",
+		"@opentelemetry/instrumentation-dns": "^0.65.0",
+		"@opentelemetry/instrumentation-http": "^0.222.0",
+		"@opentelemetry/instrumentation-net": "^0.66.0",
+		"@opentelemetry/resource-detector-aws": "^2.22.0",
+		"@opentelemetry/resources": "^2.11.0",
+		"@opentelemetry/sdk-metrics": "^2.11.0",
+		"@opentelemetry/sdk-trace-base": "^2.11.0",
+		"@opentelemetry/sdk-trace-node": "^2.11.0",
 		"aws-lambda": "^1.0.7",
-		"js-yaml": "^4.3.1",
-		"@opentelemetry/api": "^1.7.0",
-		"@opentelemetry/exporter-trace-otlp-proto": "^0.50.0",
-		"@opentelemetry/exporter-metrics-otlp-proto": "^0.50.0",
-		"@opentelemetry/instrumentation": "^0.50.0",
-		"@opentelemetry/instrumentation-aws-lambda": "^0.40.0",
-		"@opentelemetry/instrumentation-aws-sdk": "^0.40.0",
-		"@opentelemetry/instrumentation-dns": "^0.35.0",
-		"@opentelemetry/instrumentation-http": "^0.35.0",
-		"@opentelemetry/instrumentation-net": "^0.35.0",
-		"@opentelemetry/resource-detector-aws": "^1.3.4",
-		"@opentelemetry/resources": "^1.18.1",
-		"@opentelemetry/sdk-metrics": "^1.18.1",
-		"@opentelemetry/sdk-trace-base": "^1.18.1",
-		"@opentelemetry/sdk-trace-node": "^1.18.1"
+		"js-yaml": "^4.3.1"
 	}
 }
